@@ -1,4 +1,10 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+    import Sidebar from "$lib/components/sidebar.svelte";
 
-<button class="btn btn-primary text-red">Click Me</button>
+</script>
+
+<Sidebar options={[
+  {
+    name: "Models",
+  }
+]} />
