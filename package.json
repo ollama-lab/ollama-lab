@@ -14,8 +14,7 @@
   },
   "dependencies": {
     "@melt-ui/svelte": "^0.81.0",
-    "autoprefixer": "^10.4.19",
-    "ollama": "^0.5.2"
+    "autoprefixer": "^10.4.19"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
