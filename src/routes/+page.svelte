@@ -5,6 +5,7 @@
 
 <Sidebar options={[
   {
+    id: "models",
     name: "Models",
   }
 ]} />
