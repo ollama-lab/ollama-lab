@@ -13,11 +13,6 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.5.2",
-    "@fortawesome/free-brands-svg-icons": "^6.5.2",
-    "@fortawesome/free-regular-svg-icons": "^6.5.2",
-    "@fortawesome/free-solid-svg-icons": "^6.5.2",
-    "@fortawesome/svelte-fontawesome": "^0.2.2",
     "@sveltejs/adapter-auto": "^3.2.2",
     "@sveltejs/adapter-static": "^3.0.2",
     "@sveltejs/kit": "^2.5.18",
@@ -28,6 +23,7 @@
     "@svelteuidev/motion": "^0.15.6",
     "@svelteuidev/preprocessors": "^0.15.6",
     "@svelteuidev/prism": "^0.15.6",
+    "@tabler/icons-svelte": "^3.8.0",
     "@tauri-apps/cli": "^1.6.0",
     "@types/bun": "^1.1.6",
     "@types/eslint": "^8.56.10",
