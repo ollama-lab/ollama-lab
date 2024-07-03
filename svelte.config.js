@@ -1,4 +1,3 @@
-import { preprocessMeltUI } from '@melt-ui/pp';
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
@@ -8,7 +7,6 @@ const config = {
 	// for more information about preprocessors
 	preprocess: [
 		vitePreprocess(),
-		preprocessMeltUI(),
 	],
 
 	kit: {
