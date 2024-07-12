@@ -12,10 +12,10 @@ const config: Config = {
   ],
   plugins: [
     skeleton({
-      themes: { preset: [ "gold-nouveau" ] }
+      themes: { preset: [ "wintry" ] }
     }),
   ],
-  darkMode: "media",
+  darkMode: "class",
   theme: {
     extend: {},
   },
