@@ -16,7 +16,6 @@
   <div class="flex flex-col">
     <div class="place-self-start flex gap-1 place-items-center">
       <span class="text-sm font-semibold">LLM {feed.model?.model ?? "unknown"}:{feed.model?.variant ?? "unknown"}</span>
-      <StatusIndicator status={feed.status ?? "completed"} />
     </div>
     <div class={`markdown-view generated-text-block ${feed.status === "generating" ? "generating" : ""} bg-surface-200 dark:bg-surface-800 px-4 py-2 rounded-2xl rounded-tl-none`}>
       <!-- HTML sanitized, no worries! -->
@@ -25,6 +24,9 @@
         <IconPointFilled class="inline-block" />
       {/if}
     </div>
-    <span class="text-xs place-self-start">{feed.date.toLocaleString()}</span>
+    <div class="place-self-start flex gap-1 place-items-center">
+      <span class="text-xs">{feed.date.toLocaleString()}</span>
+      <StatusIndicator status={feed.status ?? "completed"} />
+    </div>
   </div>
 </div>
