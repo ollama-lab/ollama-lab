@@ -32,7 +32,7 @@
     {/if}
     <div class="flex flex-col gap-2">
       <p class="text-xs text-secondary-600 dark:text-secondary-400 select-none">
-        Fun fact: LLMs can technically pick up the conversations between you and other models :D
+        Fun fact: LLMs can technically pick up previous conversations between you and other models :D
       </p>
       <div class="flex gap-2">
         <div class="flex-1 flex flex-col">
