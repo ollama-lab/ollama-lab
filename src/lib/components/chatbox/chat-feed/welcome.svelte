@@ -2,7 +2,7 @@
   const kbdHints: { keys: string[], description: string }[] = [
     {
       keys: ["Enter"],
-      description: "Send message",
+      description: "Send prompt",
     },
     {
       keys: ["Shift", "AND", "Enter"],
