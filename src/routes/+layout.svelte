@@ -11,9 +11,9 @@
   })
 </script>
 
-<head>
+<svelte:head>
   <title>Ollama Lab</title>
-</head>
+</svelte:head>
 
 <Modal />
 
