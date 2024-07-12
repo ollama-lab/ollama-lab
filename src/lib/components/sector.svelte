@@ -19,7 +19,7 @@
 
 </script>
 
-<AppRail class="dark:bg-surface-700">
+<AppRail class="dark:bg-surface-700 z-20">
   {#each tabData as { name, label, icon } (name)}
     <AppRailTile bind:group={currentTile} {name} value={name}>
       <svelte:fragment slot="lead">

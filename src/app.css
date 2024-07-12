@@ -5,3 +5,29 @@
 body {
   font-family: 'Inter Variable', sans-serif;
 }
+
+.generated-text-block.generating > p:nth-last-child(2) {
+  display: inline-block;
+}
+
+@layer utilities {
+  .markdown-view table {
+    @apply rounded-lg overflow-hidden
+  }
+
+  .markdown-view th,td {
+    @apply px-3 py-1
+  }
+
+  .markdown-view th {
+    @apply bg-primary-200 dark:bg-primary-900
+  }
+
+  .markdown-view td {
+    @apply bg-surface-200/50 dark:bg-surface-800/50
+  }
+
+  .markdown-view {
+    @apply space-y-3
+  }
+}

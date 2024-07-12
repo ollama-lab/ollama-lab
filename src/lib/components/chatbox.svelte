@@ -6,7 +6,7 @@ import SessionList from "./chatbox/session-list.svelte"
 </script>
 
 <div class="h-full flex flex-row">
-  <div class="flex flex-col">
+  <div class="flex flex-col z-[2] shadow-lg">
     <div class="flex-auto flex">
       <SessionList bind:activeSession />
     </div>

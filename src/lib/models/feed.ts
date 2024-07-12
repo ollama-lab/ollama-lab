@@ -3,11 +3,10 @@ import type { User } from "./user"
 
 export type FeedStatus = "processing" | "generating" | "completed"
 
-export type MultitypeSender = "system" | LLMKind | User
-
 export interface Feed {
   status?: FeedStatus
-  sender: MultitypeSender
+  model?: LLMKind
+  user?: User
   content: string
   date: Date
   isEdited?: boolean
