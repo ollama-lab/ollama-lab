@@ -4,4 +4,4 @@ Yet another Ollama GUI based on [Tauri](https://tauri.app). We make Ollama easy-
 
 > [!NOTE]
 >
-> Ollama Lab is NOT affiliated or part of the [Ollama Project](https://github.com/ollama/ollama).
+> Ollama Lab is NOT affiliated to or part of the [Ollama Project](https://github.com/ollama/ollama).
