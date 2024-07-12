@@ -6,7 +6,7 @@
   export let feed: Feed
 </script>
 
-<div class="flex flex-row place-self-end gap-4 place-items-center">
+<div class="group flex flex-row place-self-end gap-4 place-items-center relative">
   <div class="flex flex-col">
     <span class="place-self-end text-sm font-semibold select-none">{feed.user?.username ?? "You"}</span>
     <div class="markdown-view bg-primary-200 dark:bg-primary-800 px-4 py-2 rounded-2xl rounded-tr-none">

@@ -9,7 +9,7 @@
 
 </script>
 
-<div class="flex flex-row place-self-start place-items-center gap-4">
+<div class="flex flex-row place-self-start place-items-center gap-4 relative">
   <div class="place-self-stretch">
     <Avatar width="w-10" src="/favicon.svg" background="bg-white" class="p-2" />
   </div>
