@@ -1,9 +1,8 @@
 <script lang="ts">
   import { AppRail, AppRailTile } from "@skeletonlabs/skeleton";
   import { IconBrain, IconMessageChatbot } from "@tabler/icons-svelte"
-  import type { SvelteComponent } from "svelte"
 
-  const tabData: { name: string, label: string, icon: SvelteComponent }[] = [
+  const tabData = [
     {
       name: "sessions",
       label: "Sessions",
@@ -20,7 +19,7 @@
 
 </script>
 
-<AppRail>
+<AppRail class="dark:bg-surface-700">
   {#each tabData as { name, label, icon } (name)}
     <AppRailTile bind:group={currentTile} {name} value={name}>
       <svelte:fragment slot="lead">

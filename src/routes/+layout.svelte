@@ -1,8 +1,10 @@
 <script>
   import { onMount } from "svelte";
-  import { autoModeWatcher } from "@skeletonlabs/skeleton";
+  import { autoModeWatcher, initializeStores, Modal } from "@skeletonlabs/skeleton";
   import "../app.css"
   import '@fontsource-variable/inter'
+
+  initializeStores()
   
   onMount(() => {
     autoModeWatcher()
@@ -12,5 +14,7 @@
 <head>
   <title>Ollama Lab</title>
 </head>
+
+<Modal />
 
 <slot />

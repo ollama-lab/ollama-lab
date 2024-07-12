@@ -19,7 +19,7 @@ import { IconDotsVertical, IconMessageCirclePlus } from "@tabler/icons-svelte";
 
 <div class="flex flex-col px-2 bg-surface-200 dark:bg-surface-800">
   <div class="flex flex-row place-items-center">
-    <span class="flex-auto font-bold px-2 text-lg py-4">Sessions</span>
+    <span class="flex-auto font-bold px-2 text-lg py-4 select-none">Sessions</span>
     <div>
       <button
         class="btn-icon variant-ghost"
