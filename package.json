@@ -27,7 +27,7 @@
     "@types/eslint": "^8.56.10",
     "autoprefixer": "^10.4.19",
     "dompurify": "^3.1.6",
-    "eslint": "^9.6.0",
+    "eslint": "^9.7.0",
     "eslint-plugin-svelte": "^2.42.0",
     "globals": "^15.8.0",
     "marked": "^13.0.2",
