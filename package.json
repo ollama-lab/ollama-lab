@@ -23,7 +23,6 @@
     "@tabler/icons-svelte": "^3.10.0",
     "@tauri-apps/cli": "^1.6.0",
     "@types/autosize": "^4.0.3",
-    "@types/bun": "^1.1.6",
     "@types/dompurify": "^3.0.5",
     "@types/eslint": "^8.56.10",
     "autoprefixer": "^10.4.19",
