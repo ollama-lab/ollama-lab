@@ -1,11 +1,20 @@
 <script lang="ts">
-    import { IconArrowUp } from "@tabler/icons-svelte";
+  import { IconArrowUp } from "@tabler/icons-svelte"
+  import autosize from "autosize";
+    import { onDestroy } from "svelte";
 
-    let prompt: string = ""
+  let form: HTMLFormElement | undefined
+  let textEntry: HTMLTextAreaElement | undefined
 
-    $: rows = Math.min(prompt.split("\n").length, 10)
+  let prompt: string = ""
 
-    let form: HTMLFormElement
+  $: {
+    textEntry && autosize(textEntry)
+  }
+
+  onDestroy(() => {
+    textEntry && autosize.destroy(textEntry)
+  })
 </script>
 
 <form
@@ -23,16 +32,17 @@
 >
   <div class="flex-auto flex place-items-center">
     <textarea
+      bind:this={textEntry}
       name="prompt"
-      class="textarea border-none ring-0 !bg-transparent outline-none w-full resize-none"
-      {rows}
+      class="textarea border-none ring-0 !bg-transparent outline-none w-full resize-none max-h-32 lg:max-h-52 xl:max-h-72"
+      rows={1}
       bind:value={prompt}
       placeholder="Enter prompt here"
       required
       on:keypress={ev => {
         if (ev.key === "Enter" && !ev.shiftKey && !ev.ctrlKey) {
           ev.preventDefault()
-          form.requestSubmit()
+          form?.requestSubmit()
         }
       }}
     />
