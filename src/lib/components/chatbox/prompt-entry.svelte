@@ -1,19 +1,21 @@
 <script lang="ts">
   import { IconArrowUp } from "@tabler/icons-svelte"
   import autosize from "autosize";
-    import { onDestroy } from "svelte";
+  import { onDestroy } from "svelte";
 
   let form: HTMLFormElement | undefined
   let textEntry: HTMLTextAreaElement | undefined
 
   let prompt: string = ""
 
-  $: {
-    textEntry && autosize(textEntry)
+  $: if (textEntry) {
+    autosize(textEntry)
   }
 
   onDestroy(() => {
-    textEntry && autosize.destroy(textEntry)
+    if (textEntry) {
+      autosize.destroy(textEntry)
+    }
   })
 </script>
 
