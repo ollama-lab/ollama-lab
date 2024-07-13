@@ -7,6 +7,7 @@ We make Ollama easy-to-use for everyone.
 
 - Chat with LLMs 💬 (obviously!)
 - Manage, install, and uninstall LLMs 🤖
+- Easy to use 👩‍🍳 Designed for everyone, not exclusively for professionals.
 - Free and open source! 🈚 Everyone can use and change without any marketing concerns!
 
 ## Why named after Ollama?
