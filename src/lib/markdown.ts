@@ -30,3 +30,10 @@ marked.use(
 export function parseMarkdown(markdown: string): string {
   return DOMPurify.sanitize(marked.parse(markdown, { async: false }) as string)
 }
+
+/**
+ * Parse Markdown to sanitized HTML (async)
+ */
+export async function parseMarkdownAsync(markdown: string): Promise<string> {
+  return DOMPurify.sanitize(await (marked.parse(markdown, { async: true }) as Promise<string>))
+}
