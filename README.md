@@ -1,4 +1,4 @@
-# Ollama Lab
+# Ollama Lab 😮🦙⚗️
 
 Yet another [Ollama](https://github.com/ollama/ollama) GUI but based on [Svelte](https://svelte.dev/) and [Tauri](https://tauri.app).
 We make Ollama easy-to-use for everyone.
