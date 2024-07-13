@@ -1,6 +1,6 @@
 # Ollama Lab
 
-Yet another Ollama GUI based on [Tauri](https://tauri.app). We make Ollama easy-to-use for everyone.
+Yet another Ollama GUI but based on [Tauri](https://tauri.app). We make Ollama easy-to-use for everyone.
 
 > [!NOTE]
 >
