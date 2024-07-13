@@ -13,7 +13,12 @@
       <!-- HTML sanitized, no worries! -->
       {@html parseMarkdown(feed.content)}
     </div>
-    <span class="text-xs place-self-end select-none">{feed.date.toLocaleString()}</span>
+    <div class="place-self-end flex gap-1">
+      <span class="text-xs select-none">{feed.date.toLocaleString()}</span>
+      {#if feed.isEdited}
+        <span class="text-xs select-none">(edited)</span>
+      {/if}
+    </div>
   </div>
   <div class="place-self-stretch">
     <Avatar width="w-10" initials={feed.user?.username} background="bg-tertiary-700" />
