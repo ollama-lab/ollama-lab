@@ -1,6 +1,8 @@
 import DOMPurify from "dompurify"
 import { marked } from "marked"
 import markedKatex from "marked-katex-extension"
+import { markedHighlight } from "marked-highlight"
+import hljs from "highlight.js"
 
 marked.use(
   {
@@ -8,6 +10,17 @@ marked.use(
   }, 
   markedKatex({
     throwOnError: false,
+  }),
+  markedHighlight({
+    langPrefix: "hljs language-",
+    highlight(code, lang, _info) {
+      return hljs.highlight(
+        code,
+        {
+          language: hljs.getLanguage(lang) ? lang : "plaintext",
+        },
+      ).value
+    },
   }),
 )
 
