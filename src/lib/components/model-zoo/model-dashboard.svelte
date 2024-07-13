@@ -1,7 +1,14 @@
 <script lang="ts">
   import type { ModelEntry, ModelInfo } from "$lib/models/models"
-    import { IconDotsVertical } from "@tabler/icons-svelte";
-    import convert from "convert";
+  import { CodeBlock, Tab, TabGroup } from "@skeletonlabs/skeleton";
+  import { IconDotsVertical, IconPointFilled } from "@tabler/icons-svelte";
+  import convert from "convert";
+  import TimeAgo from "javascript-time-ago"
+  import en from 'javascript-time-ago/locale/en'
+
+  TimeAgo.addDefaultLocale(en)
+
+  const timeAgo = new TimeAgo("en-US")
 
   export let entry: ModelEntry
 
@@ -43,11 +50,21 @@
       "tokenizer.ggml.tokens": []             // populates if `verbose=true`
     }
   }
+
+  let tabs: { value: string, label: string }[] = [
+    { value: "details", label: "Details" },
+    { value: "info", label: "Model info" },
+    { value: "modelfile", label: "Modelfile" },
+    { value: "params", label: "Parameters" },
+    { value: "template", label: "Template" },
+  ]
+
+  let currentTab: string = "details"
 </script>
 
 <div class="w-full h-dvh flex flex-col">
   <div class="flex flex-col px-4 py-2 lg:px-8 lg:py-6 overflow-y-scroll">
-    <div class="flex flex-col md:px-8 md:py-10 lg:px-12 lg:py-16 gap-5">
+    <div class="flex flex-col md:px-6 md:py-8 lg:px-12 lg:py-14 gap-5">
       <div class="flex-auto flex">
         <h1 class="font-bold text-2xl flex-auto">{entry.name}</h1>
         <div class="flex place-items-center">
@@ -56,11 +73,64 @@
           </button>
         </div>
       </div>
-      <div class="flex flex-col gap-1">
-        <span>Model family: {modelInfo.details.family}</span>
-        <span>Parameter size: {modelInfo.details.parameter_size}</span>
-        <span>Model size: {convert(entry.size, "byte").to("best", "imperial").toString(2)} ({entry.size.toLocaleString()} bytes)</span>
+      <div class="flex gap-3">
+        {#if entry.status}
+          <div class="flex gap-1 place-items-center">
+            <IconPointFilled class="text-green-600 dark:text-green-400" />
+            <span>Running</span>
+          </div>
+          <div class="flex gap-4">
+            <span title={entry.size.toLocaleString() + " bytes"}>
+              VRAM: {convert(entry.status.size_vram, "byte").to("best", "imperial").toString(2)}
+            </span>
+            <span title={entry.status.expires_at.toString()}>
+              Session expires {timeAgo.format(entry.status.expires_at)}
+            </span>
+          </div>
+        {:else}
+          <div class="flex gap-1 place-items-center">
+            <IconPointFilled class="text-gray-600 dark:text-gray-400" />
+            <span>Inactive</span>
+          </div>
+        {/if}
       </div>
+    </div>
+    <div class="flex flex-col card px-3 py-2">
+      <TabGroup>
+        {#each tabs as { value, label } (value)}
+          <Tab bind:group={currentTab} name="{value}Tab" {value}>{label}</Tab>
+        {/each}
+
+        <svelte:fragment slot="panel">
+          <div class="flex flex-col gap-1 px-3 py-4">
+            {#if currentTab === "details"}
+              <span>Model family: {modelInfo.details.family}</span>
+              <span>Parent model: {modelInfo.details.parent_model || "(none)"}</span>
+              <span>Parameter size: {modelInfo.details.parameter_size}</span>
+              <span>Format: {modelInfo.details.format}</span>
+              <span>Model size: {convert(entry.size, "byte").to("best", "imperial").toString(2)} ({entry.size.toLocaleString()} bytes)</span>
+              <span>Quantization Level: {modelInfo.details.quantization_level}</span>
+            {:else if currentTab === "info"}
+              <div class="table-container">
+                <table class="table table-hover">
+                  {#each Object.entries(modelInfo.model_info) as [key, value] (key)}
+                    <tr class="border-b border-surface-400 dark:border-surface-700">
+                      <td>{key}</td>
+                      <td>{value.toString()}</td>
+                    </tr>
+                  {/each}
+                </table>
+              </div>
+            {:else if currentTab === "modelfile"}
+              <CodeBlock language="modelfile" code={modelInfo.modelfile} buttonCopied="Copied" />
+            {:else if currentTab === "params"}
+              <CodeBlock code={modelInfo.parameters} buttonCopied="Copied" />
+            {:else if currentTab === "template"}
+              <CodeBlock code={modelInfo.template} buttonCopied="Copied" />
+            {/if}
+          </div>
+        </svelte:fragment>
+      </TabGroup>
     </div>
   </div>
 </div>

@@ -13,7 +13,7 @@ marked.use(
   }),
   markedHighlight({
     langPrefix: "hljs language-",
-    highlight(code, lang, _info) {
+    highlight(code, lang,) {
       return hljs.highlight(
         code,
         {
