@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { ModelEntry, ModelInfo } from "$lib/models/models"
   import { CodeBlock, popup, Tab, TabGroup } from "@skeletonlabs/skeleton";
-  import { IconCloudUpload, IconDotsVertical, IconPointFilled, IconTrash } from "@tabler/icons-svelte";
+  import { IconCloudUpload, IconCopy, IconDotsVertical, IconPointFilled, IconTrash } from "@tabler/icons-svelte";
   import convert from "convert";
   import TimeAgo from "javascript-time-ago"
   import en from 'javascript-time-ago/locale/en'
@@ -77,6 +77,12 @@
           </button>
           <div class="card" data-popup="popupOps">
             <ul class="list">
+              <li>
+                <button class="btn rounded-none flex place-content-center">
+                  <IconCopy />
+                  <span>Copy</span>
+                </button>
+              </li>
               <li>
                 <button class="btn rounded-none flex place-content-center">
                   <IconCloudUpload />
