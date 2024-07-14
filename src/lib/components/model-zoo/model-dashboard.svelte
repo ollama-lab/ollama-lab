@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { ModelEntry, ModelInfo } from "$lib/models/models"
-  import { CodeBlock, Tab, TabGroup } from "@skeletonlabs/skeleton";
-  import { IconDotsVertical, IconPointFilled } from "@tabler/icons-svelte";
+  import { CodeBlock, popup, Tab, TabGroup } from "@skeletonlabs/skeleton";
+  import { IconCloudUpload, IconDotsVertical, IconPointFilled, IconTrash } from "@tabler/icons-svelte";
   import convert from "convert";
   import TimeAgo from "javascript-time-ago"
   import en from 'javascript-time-ago/locale/en'
@@ -68,9 +68,29 @@
       <div class="flex-auto flex">
         <h1 class="font-bold text-2xl flex-auto">{entry.name}</h1>
         <div class="flex place-items-center">
-          <button class="btn-icon btn-icon-sm variant-ghost">
+          <button class="btn-icon btn-icon-sm variant-ghost" use:popup={{
+            event: "click",
+            target: "popupOps",
+            placement: "bottom-end",
+          }}>
             <IconDotsVertical />
           </button>
+          <div class="card" data-popup="popupOps">
+            <ul class="list">
+              <li>
+                <button class="btn rounded-none flex place-content-center">
+                  <IconCloudUpload />
+                  <span>Push</span>
+                </button>
+              </li>
+              <li>
+                <button class="btn rounded-none flex place-content-center">
+                  <IconTrash class="text-error-600 dark:text-error-400" />
+                  <span>Delete</span>
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       <div class="flex gap-3">

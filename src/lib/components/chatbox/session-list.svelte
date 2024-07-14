@@ -34,7 +34,7 @@ import { IconDotsVertical, IconMessageCirclePlus } from "@tabler/icons-svelte";
   <div class="flex-auto overflow-y-scroll">
     <ListBox>
       {#each sessions as { id, title } (id)}
-        <ListBoxItem bind:group={activeSession} name="session" value={id} class="group">
+        <ListBoxItem bind:group={activeSession} name="session" value={id} class="group" rounded="rounded-xl" active="variant-ghost">
           <span class="flex-auto truncate">{title}</span>
           <svelte:fragment slot="trail">
             <button type="button" class="btn-icon bg-initial btn-icon-sm opacity-0 group-hover:opacity-100">

@@ -3,7 +3,8 @@
   import Header from "$lib/components/header.svelte"
   import Sector from "$lib/components/sector.svelte"
   import ModelZoo from "$lib/components/model-zoo.svelte"
-
+  import SettingsPage from "$lib/components/settings-page.svelte"
+  
   let opened = false
 
   function toggleOpened() {
@@ -30,6 +31,8 @@
         <Chatbox />
       {:else if currentTile === "models"}
         <ModelZoo />
+      {:else if currentTile === "settings"}
+        <SettingsPage />
       {/if}
     </div>
   </div>

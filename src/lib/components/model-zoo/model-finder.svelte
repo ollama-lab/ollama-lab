@@ -43,8 +43,8 @@
           bind:group={selectedModel}
           name="model"
           value={model.name}
-          rounded="rounded-lg"
-          class="aria-selected:bg-surface-300 dark:aria-selected:bg-surface-700 aria-selected:text-black dark:aria-selected:text-white"
+          rounded="rounded-xl"
+          active="variant-ghost"
         >
           <div class="group flex">
             <div class="flex flex-col flex-auto">
@@ -60,7 +60,7 @@
               </div>
             </div>
             <div class="flex">
-              <button class="btn-icon btn-icon-sm text-red-600 dark:text-red-400 opacity-0 group-hover:opacity-100">
+              <button class="btn-icon btn-icon-sm text-error-600 dark:text-error-400 opacity-0 group-hover:opacity-100">
                 <IconTrash />
               </button>
             </div>
