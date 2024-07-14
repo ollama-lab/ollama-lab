@@ -19,6 +19,7 @@ tauri = { version = "1.7", features = [] }
 diesel = { version = "2.2", features = ["sqlite"] }
 diesel_migrations = { version = "2.2", features = ["sqlite"] }
 clap = { version = "^4.5", features = ["derive"] }
+ollama-rest = { version = "*", path = "../../ollama-rest-rs" }
 
 [features]
 custom-protocol = [ "tauri/custom-protocol" ]
