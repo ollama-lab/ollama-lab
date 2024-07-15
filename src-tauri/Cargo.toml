@@ -15,7 +15,6 @@ tauri-build = { version = "1.5.2", features = [] }
 
 [dependencies]
 tauri = { version = "1.7", features = [] }
-clap = { version = "^4.5", features = ["derive"] }
 
 [features]
 custom-protocol = [ "tauri/custom-protocol" ]
