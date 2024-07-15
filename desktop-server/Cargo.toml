@@ -1,0 +1,12 @@
+[package]
+name = "ollama-lab_desktop-server"
+description = "Standalone Ollama Lab server in desktop mode without Tauri"
+
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
