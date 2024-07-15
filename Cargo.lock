@@ -1669,6 +1669,10 @@ name = "ollama-lab_db-desktop"
 version = "0.1.0"
 
 [[package]]
+name = "ollama-lab_desktop-server"
+version = "0.1.0"
+
+[[package]]
 name = "once_cell"
 version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
