@@ -29,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "org.ollama-lab.tauri",
+      "identifier": "org.ollamalab.tauri",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
