@@ -1,25 +1,21 @@
 [package]
 name = "ollama-lab"
-version = "0.1.0"
 description = "Yet another Ollama GUI"
-authors = ["Charles Dong <chardon_cs@proton.me>"]
-license = "MIT"
-repository = "https://github.com/chardoncs/ollama-lab.git"
 default-run = "ollama-lab"
-edition = "2021"
-rust-version = "1.60"
+
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+edition.workspace = true
+rust-version.workspace = true
 
 [build-dependencies]
 tauri-build = { version = "1.5.2", features = [] }
 
 [dependencies]
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.7", features = [] }
-diesel = { version = "2.2", features = ["sqlite"] }
-diesel_migrations = { version = "2.2", features = ["sqlite"] }
 clap = { version = "^4.5", features = ["derive"] }
-ollama-rest = { version = "*", path = "../../ollama-rest-rs" }
 
 [features]
 custom-protocol = [ "tauri/custom-protocol" ]

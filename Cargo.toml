@@ -1,0 +1,20 @@
+[workspace]
+
+resolver = "2"
+members = [
+    "axum",
+    "db-desktop",
+    "db-multiuser-pg",
+    "src-multiuser-server",
+    "src-tauri",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Charles Dong <chardon_cs@proton.me>"]
+license = "MIT"
+repository = "https://github.com/chardoncs/ollama-lab.git"
+rust-version = "1.70"
+
+[workspace.dependencies]
