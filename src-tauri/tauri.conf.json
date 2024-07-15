@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeBuildCommand": "bun run build",
-    "beforeDevCommand": "bun run dev",
+    "beforeBuildCommand": "bun ui:build",
+    "beforeDevCommand": "bun ui:dev",
     "devPath": "http://localhost:5173",
     "distDir": "../public"
   },
@@ -29,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "org.ollama-lab.tauri",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
