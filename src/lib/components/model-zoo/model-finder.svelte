@@ -3,10 +3,7 @@
   import type { Model, RunningModel } from "$lib/models/models"
   import { ListBox, ListBoxItem } from "@skeletonlabs/skeleton";
   import TimeAgo from "javascript-time-ago";
-  import en from 'javascript-time-ago/locale/en'
   import convert from "convert"
-
-  TimeAgo.addDefaultLocale(en)
 
   export let selectedModel: string | null
 
