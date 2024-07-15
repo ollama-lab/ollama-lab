@@ -1,14 +1,17 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+use axum::{routing::get, Router};
+
+mod api;
+
+pub trait ServerRoutes {
+    fn add_server_routes(self) -> Self;
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+impl ServerRoutes for Router {
+    fn add_server_routes(self) -> Self {
+        self.route("/", get(root))
     }
+}
+
+async fn root() -> &'static str {
+    "Hello world"
 }
