@@ -4,8 +4,6 @@ resolver = "2"
 members = [
     "axum",
     "db-desktop",
-    "db-multiuser-pg",
-    "src-multiuser-server",
     "src-tauri",
 ]
 
