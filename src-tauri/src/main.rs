@@ -7,7 +7,7 @@ use networking::AddrState;
 use tauri::Manager;
 
 use axum::Router;
-use ollama_lab_axum::ServerRoutes;
+use ollama_lab_api::ServerRoutes;
 use tokio::net::TcpListener;
 
 use networking::get_addr;
