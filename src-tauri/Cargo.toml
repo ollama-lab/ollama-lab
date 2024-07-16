@@ -15,7 +15,7 @@ tauri-build = { version = "2.0.0-beta", features = [] }
 
 [dependencies]
 axum = { version = "0.7", features = ["http2"] }
-ollama-lab_axum = { version = "*", path = "../axum"}
+ollama-lab_api = { version = "*", path = "../api"}
 rand = "0.8"
 tauri = { version = "2.0.0-beta", features = [] }
 tokio = { version = "1", features = ["full"] }

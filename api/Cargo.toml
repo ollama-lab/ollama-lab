@@ -1,5 +1,5 @@
 [package]
-name = "ollama-lab_axum"
+name = "ollama-lab_api"
 
 version.workspace = true
 edition.workspace = true
