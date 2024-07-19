@@ -1,4 +1,5 @@
-use axum::{routing::get, Router};
+use api::ollama::chat;
+use axum::{routing::post, Router};
 
 mod api;
 
@@ -8,10 +9,6 @@ pub trait ServerRoutes {
 
 impl ServerRoutes for Router {
     fn add_server_routes(self) -> Self {
-        self.route("/", get(root))
+        self.route("/api/chat", post(chat))
     }
-}
-
-async fn root() -> &'static str {
-    "Hello world"
 }
