@@ -1,10 +1,10 @@
 <script lang="ts">
   import { AppBar } from "@skeletonlabs/skeleton";
-    import ModelSelector from "../model-selector.svelte";
-    import PromptEntry from "./prompt-entry.svelte";
-    import Welcome from "./chat-feed/welcome.svelte";
-    import BubbleList from "./bubble-list.svelte";
-    import type { Feed } from "$lib/models/feed";
+  import ModelSelector from "../model-selector.svelte";
+  import PromptEntry from "./prompt-entry.svelte";
+  import Welcome from "./chat-feed/welcome.svelte";
+  import BubbleList from "./bubble-list.svelte";
+  import type { Feed } from "$lib/models/feed";
 
   export let activeSession: number | null
 

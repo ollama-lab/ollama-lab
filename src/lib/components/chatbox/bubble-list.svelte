@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Feed } from "$lib/models/feed"
-    import GuestBubble from "./bubbles/guest-bubble.svelte";
-    import HostBubble from "./bubbles/host-bubble.svelte";
+  import GuestBubble from "./bubbles/guest-bubble.svelte";
+  import HostBubble from "./bubbles/host-bubble.svelte";
 
   export let feeds: Feed[]
 </script>

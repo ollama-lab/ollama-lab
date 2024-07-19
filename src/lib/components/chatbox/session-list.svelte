@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { ListBox, ListBoxItem } from "@skeletonlabs/skeleton";
-import { IconDotsVertical, IconMessageCirclePlus } from "@tabler/icons-svelte";
+  import { ListBox, ListBoxItem } from "@skeletonlabs/skeleton";
+  import { IconDotsVertical, IconMessageCirclePlus } from "@tabler/icons-svelte";
 
   let sessions: { id: number, title: string }[] = [
     {

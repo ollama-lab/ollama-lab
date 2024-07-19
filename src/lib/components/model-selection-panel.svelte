@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ListBox, ListBoxItem } from "@skeletonlabs/skeleton";
+  import { ListBox, ListBoxItem } from "@skeletonlabs/skeleton";
 
   export let activeModel: string
 
