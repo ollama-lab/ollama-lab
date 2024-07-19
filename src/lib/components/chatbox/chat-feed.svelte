@@ -20,10 +20,7 @@
     },
     {
       status: "completed",
-      model: {
-        model: "llama3",
-        variant: "7B",
-      },
+      model: "llama3:7B",
       content: `\
 The largest building in the world is the Abraj Khalid Tower, also known as the Makkah Clock Tower, located in Mecca, Saudi Arabia. It was completed in 2012 and stands at a
 height of 601 meters (1,972 feet) with 120 floors.
@@ -55,10 +52,7 @@ Would you like to know more about this incredible structure or perhaps explore o
     },
     {
       status: "completed",
-      model: {
-        model: "llama3",
-        variant: "7B",
-      },
+      model: "llama3:7B",
       content: `\
 Here's a comparison of the top 10 tallest buildings in the world, based on data from the Council on Tall Buildings and Urban Habitat (CTBUH) as of 2021:
 
@@ -96,10 +90,7 @@ These towering structures are not only marvels of engineering but also serve as 
     },
     {
       status: "completed",
-      model: {
-        model: "llama3",
-        variant: "7B",
-      },
+      model: "llama3:7B",
       content: `\
 Here's one:
 
@@ -127,17 +118,17 @@ Feel free to try solving this equation or explore its connections to other mathe
 Would you like me to generate another cool equation?\
 `,
       date: new Date("5/12/2024 15:52:10"),
+      isEdited: true,
     },
   ]
 
-  let model: string = "llama3"
-  let variant: string = "7B"
+  let model: string = "llama3:7B"
 
 </script>
 
 <div class="w-full h-dvh flex flex-col">
   <AppBar class="shadow-lg z-[1]">
-    <ModelSelector bind:model bind:variant />
+    <ModelSelector bind:model />
   </AppBar>
   <div class="flex-auto overflow-y-scroll">
     {#if activeSession === null}

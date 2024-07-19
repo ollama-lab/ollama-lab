@@ -1,6 +1,6 @@
 <script>
   import { AppBar } from "@skeletonlabs/skeleton"
-    import { IconSquare, IconX } from "@tabler/icons-svelte";
+  import { IconSquare, IconX } from "@tabler/icons-svelte";
 </script>
 
 <AppBar class="!p-0">

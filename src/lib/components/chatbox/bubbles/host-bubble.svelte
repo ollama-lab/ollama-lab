@@ -15,7 +15,7 @@
   </div>
   <div class="flex flex-col">
     <div class="place-self-start flex gap-1 place-items-center">
-      <span class="text-sm font-semibold select-none">LLM {feed.model?.model ?? "unknown"}:{feed.model?.variant ?? "unknown"}</span>
+      <span class="text-sm font-semibold select-none">LLM {feed.model ?? "unknown"}</span>
     </div>
     <div class={`markdown-view generated-text-block ${feed.status === "generating" ? "generating" : ""} bg-surface-200 dark:bg-surface-800 px-4 py-2 rounded-2xl rounded-tl-none`}>
       <!-- HTML sanitized, no worries! -->
@@ -26,6 +26,9 @@
     </div>
     <div class="place-self-start flex gap-1 place-items-center">
       <span class="text-xs select-none">{feed.date.toLocaleString()}</span>
+      {#if feed.isEdited}
+        <span class="text-xs select-none">(regenerated)</span>
+      {/if}
       <StatusIndicator status={feed.status ?? "completed"} />
     </div>
   </div>
