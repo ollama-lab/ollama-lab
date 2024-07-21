@@ -22,7 +22,7 @@ fn main() {
 
             tauri::async_runtime::spawn(async move {
                 let app = Router::new()
-                    .add_server_routes();
+                    .load_chat_apis();
 
                 let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
 

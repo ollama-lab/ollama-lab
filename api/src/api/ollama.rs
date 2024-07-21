@@ -3,6 +3,7 @@ use futures::{Stream, TryStreamExt};
 use ollama_rest::{models::chat::ChatRequest, Ollama};
 use once_cell::sync::Lazy;
 
+// TODO: Dynamic host address
 static API: Lazy<Ollama> = Lazy::new(|| Ollama::default());
 
 pub(crate) async fn chat(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, ollama_rest::errors::Error>>> {

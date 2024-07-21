@@ -4,11 +4,13 @@ use axum::{routing::post, Router};
 mod api;
 
 pub trait ServerRoutes {
-    fn add_server_routes(self) -> Self;
+    fn load_chat_apis(self) -> Self;
+    
+    // TODO: More APIs
 }
 
 impl ServerRoutes for Router {
-    fn add_server_routes(self) -> Self {
+    fn load_chat_apis(self) -> Self {
         self.route("/api/chat", post(chat))
     }
 }
