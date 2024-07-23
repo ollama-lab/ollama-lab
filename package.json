@@ -16,7 +16,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@floating-ui/dom": "^1.6.7",
+    "@floating-ui/dom": "^1.6.8",
     "@fontsource-variable/inter": "^5.0.19",
     "@skeletonlabs/skeleton": "^2.10.2",
     "@skeletonlabs/tw-plugin": "^0.4.0",
@@ -28,7 +28,7 @@
     "@tauri-apps/cli": "^2.0.0-beta.22",
     "@types/autosize": "^4.0.3",
     "@types/dompurify": "^3.0.5",
-    "@types/eslint": "^8.56.10",
+    "@types/eslint": "^8.56.11",
     "@types/javascript-time-ago": "^2.0.8",
     "autoprefixer": "^10.4.19",
     "autosize": "^6.0.1",
@@ -47,8 +47,8 @@
     "svelte-check": "^3.8.4",
     "tailwindcss": "^3.4.6",
     "tslib": "^2.6.3",
-    "typescript": "^5.5.3",
-    "typescript-eslint": "^8.0.0-alpha.49",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.0.0-alpha.51",
     "vite": "^5.3.4"
   }
 }
