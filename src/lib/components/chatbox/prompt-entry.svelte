@@ -21,7 +21,7 @@
 
 <form
   bind:this={form}
-  class="flex flex-row bg-surface-200 dark:bg-surface-700 rounded-3xl pl-6 pr-2 py-2 gap-4 place-items-stretch"
+  class="flex flex-row bg-surface-200 dark:bg-surface-700 rounded-[1.4rem] pl-6 pr-2 py-2 gap-4 place-items-stretch"
   on:submit={ev => {
     ev.preventDefault()
 
