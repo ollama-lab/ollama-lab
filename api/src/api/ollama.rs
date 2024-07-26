@@ -1,10 +1,11 @@
+use std::sync::LazyLock;
+
 use axum::{response::{sse::Event, Sse}, Json};
 use futures::{Stream, TryStreamExt};
 use ollama_rest::{models::chat::ChatRequest, Ollama};
-use once_cell::sync::Lazy;
 
 // TODO: Dynamic host address
-static API: Lazy<Ollama> = Lazy::new(|| Ollama::default());
+static API: LazyLock<Ollama> = LazyLock::new(Ollama::default);
 
 pub(crate) async fn chat(Json(payload): Json<ChatRequest>) -> Sse<impl Stream<Item = Result<Event, ollama_rest::errors::Error>>> {
     Sse::new(

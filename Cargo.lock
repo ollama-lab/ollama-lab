@@ -2242,7 +2242,6 @@ dependencies = [
  "futures",
  "ollama-lab_db-desktop",
  "ollama-rest",
- "once_cell",
  "serde",
  "serde_json",
  "tokio",

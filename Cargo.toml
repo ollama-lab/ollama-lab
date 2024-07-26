@@ -14,5 +14,3 @@ authors = ["Charles Dong <chardon_cs@proton.me>"]
 license = "MIT"
 repository = "https://github.com/chardoncs/ollama-lab.git"
 rust-version = "1.70"
-
-[workspace.dependencies]
