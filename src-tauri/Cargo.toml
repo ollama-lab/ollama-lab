@@ -14,11 +14,14 @@ rust-version.workspace = true
 tauri-build = { version = "2.0.0-beta", features = [] }
 
 [dependencies]
-axum = { version = "0.7", features = ["http2"] }
-ollama-lab_api = { version = "0.1.0-dev.1", path = "../api"}
 rand = "0.8"
+ollama-lab_db-desktop = { path = "../db-desktop/" }
+ollama-rest = { git = "https://github.com/chardoncs/ollama-rest-rs.git", branch = "main" }
 tauri = { version = "2.0.0-beta", features = [] }
 tokio = { version = "1", features = ["full"] }
+toml = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+dirs = "5.0"
 
 [features]
 custom-protocol = [ "tauri/custom-protocol" ]
