@@ -1,13 +1,19 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use command::chat::send_prompt;
+
+mod api;
 mod command;
+mod error;
 mod paths;
 mod settings;
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![])
+        .invoke_handler(tauri::generate_handler![
+            send_prompt,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

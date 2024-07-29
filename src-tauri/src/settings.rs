@@ -43,11 +43,9 @@ impl Settings {
                     .map_err(|err| Error::Io(err.kind()))
                     .and_then(|mut file| {
                         let mut content = String::new();
-                        file.read_to_string(&mut content)
-                            .map_err(|err| Error::Io(err.kind()))?;
+                        file.read_to_string(&mut content)?;
 
-                        toml::from_str::<Self>(content.as_str())
-                            .map_err(|_| Error::TomlParsing)
+                        Ok(toml::from_str::<Self>(content.as_str())?)
                     })
                     .or_else(|err| match err {
                         Error::Io(std::io::ErrorKind::NotFound) => Ok(Self::default()),
@@ -64,11 +62,9 @@ impl Settings {
                 File::create(settings_file)
                     .map_err(|err| Error::Io(err.kind()))
                     .and_then(|mut file| {
-                        let config_toml = toml::to_string::<Self>(self)
-                            .map_err(|_| Error::TomlParsing)?;
+                        let config_toml = toml::to_string::<Self>(self)?;
 
-                        file.write_all(config_toml.as_bytes())
-                            .map_err(|err| Error::Io(err.kind()))
+                        Ok(file.write_all(config_toml.as_bytes())?)
                     })
             })?;
 
@@ -93,6 +89,11 @@ impl Settings {
             .map_err(|_| Error::Sync)?;
 
         Ok(())
+    }
+
+    pub fn save_to_static(self) -> Result<(), Error> {
+        self.save();
+        self.into_static()
     }
 
     pub fn addr(&self) -> Option<&str> {

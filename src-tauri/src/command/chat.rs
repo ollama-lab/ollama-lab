@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::settings::Settings;
+use crate::{api::get_ollama, error::Error};
 
 #[derive(Debug, Deserialize)]
 pub struct Prompt {
@@ -19,7 +19,14 @@ impl Prompt {
 }
 
 #[tauri::command]
-pub async fn send_prompt(prompt: &Prompt) -> Result<(), String> {
-    todo!();
-    Settings::get_static()
+pub async fn send_prompt(prompt: Prompt) -> Result<(), Error> {
+    let ollama = get_ollama()?;
+
+    todo!("Save to DB");
+
+    todo!("Construct chat history");
+
+    todo!("Call ollama");
+
+    Ok(())
 }
