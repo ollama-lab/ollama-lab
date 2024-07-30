@@ -1,5 +1,7 @@
 use std::{path::PathBuf, sync::OnceLock};
 
+use ollama_lab_db_desktop::{diesel::{associations::HasTable, prelude::*, ExpressionMethods, SqliteConnection}, model::user::User, schema::users};
+
 use crate::{error::Error, paths::local_data_dir};
 
 pub(crate) static DB_URL: OnceLock<String> = OnceLock::new();
@@ -43,4 +45,12 @@ pub async fn create_db_file() -> Result<tokio::fs::File, Error> {
     let file = tokio::fs::File::create_new(db_file()?).await?;
 
     Ok(file)
+}
+
+pub fn current_user(conn: &mut SqliteConnection) -> Result<User, Error> {
+    // FIXME
+    User::table()
+        .order(users::dsl::is_default.desc())
+        .first(conn)
+        .map_err(|_| Error::DbFailure)
 }

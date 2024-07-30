@@ -5,9 +5,10 @@ use diesel::prelude::*;
 
 use crate::schema::bubbles;
 
-use super::Role;
+use super::{Role, session::Session};
 
-#[derive(Debug, Queryable, Selectable)]
+#[derive(Debug, Identifiable, Queryable, Selectable, Associations)]
+#[diesel(belongs_to(Session, foreign_key = session))]
 pub struct Bubble {
     id: i32,
     session: i32,

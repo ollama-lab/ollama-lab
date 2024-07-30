@@ -1,7 +1,7 @@
-use ollama_lab_db_desktop::{diesel::{self, prelude::*}, load_connection, schema::bubbles};
+use ollama_lab_db_desktop::{diesel::{self, prelude::*}, load_connection, model::session::Session, schema::{bubbles, sessions}};
 use serde::Deserialize;
 
-use crate::{api::get_ollama, db::DB_URL, error::Error};
+use crate::{api::get_ollama, db::{current_user, DB_URL}, error::Error};
 
 #[derive(Debug, Deserialize)]
 pub struct Prompt {
@@ -29,25 +29,28 @@ struct NewPrompt<'a> {
 
 #[tauri::command]
 pub async fn send_prompt(prompt: Prompt) -> Result<(), Error> {
-    //let ollama = get_ollama()?;
+    let ollama = get_ollama()?;
 
-    //let mut conn = load_connection(DB_URL.get().ok_or_else(|| Error::NoDataPath)?).map_err(|_| Error::DbFailure)?;
+    let mut conn = load_connection(DB_URL.get().ok_or_else(|| Error::NoDataPath)?).map_err(|_| Error::DbFailure)?;
 
-    //conn.immediate_transaction(|conn| {
-    //    {
-    //        use ollama_lab_db_desktop::schema::sessions::dsl::*;
+    let user = current_user(&mut conn)?;
 
-    //        let matched_count = sessions
-    //            .filter(id.eq(prompt.session()))
-    //            .count()
-    //            .get_result(conn);
+    conn.immediate_transaction(|conn| {
+        {
+            use ollama_lab_db_desktop::schema::sessions::dsl::*;
 
-    //        if matched_count < 1 {
-    //        }
-    //    }
+            // FIXME
+            let matched_count = Session::belonging_to(user)
+                .filter(id.eq(prompt.session()))
+                .count()
+                .get_result(conn);
 
-    //    Ok(())
-    //}).map_err(|_| Error::DbFailure)?;
+            if matched_count < 1 {
+            }
+        }
+
+        Ok(())
+    }).map_err(|_| Error::DbFailure)?;
 
     todo!("Construct chat history");
 

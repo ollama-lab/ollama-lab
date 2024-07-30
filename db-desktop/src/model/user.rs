@@ -3,7 +3,7 @@ use diesel::prelude::*;
 
 use crate::schema::users;
 
-#[derive(Debug, Queryable, Selectable)]
+#[derive(Debug, Identifiable, Queryable, Selectable)]
 pub struct User {
     id: String,
     password: Option<String>,

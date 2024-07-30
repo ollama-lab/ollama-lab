@@ -7,7 +7,7 @@ CREATE TABLE users (
     date_created    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO users (id, is_default) VALUES ('local', TRUE);
+INSERT INTO users (id, is_default) VALUES ('default', TRUE);
 
 CREATE TABLE roles (
     name            VARCHAR(50) NOT NULL PRIMARY KEY

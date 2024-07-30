@@ -2,8 +2,10 @@ use chrono::{DateTime, Local};
 use diesel::prelude::*;
 
 use crate::schema::sessions;
+use super::user::User;
 
-#[derive(Debug, Queryable, Selectable)]
+#[derive(Debug, Identifiable, Queryable, Selectable, Associations)]
+#[diesel(belongs_to(User, foreign_key = owner))]
 pub struct Session {
     id: i32,
     title: Option<String>,
@@ -49,7 +51,7 @@ impl<'a> NewSession<'a> {
 
     #[inline]
     pub fn new_local(title: Option<&'a str>) -> Self {
-        Self::new(title, "local")
+        Self::new(title, "default")
     }
 }
 
