@@ -5,8 +5,13 @@ use serde::Serialize;
 use crate::settings;
 
 pub enum Error {
+    AccessDenied,
     Api(ollama_rest::errors::Error),
+    DbFailure,
+    Io(std::io::ErrorKind),
+    NoDataPath,
     Settings(settings::error::Error),
+    StaticSync,
 }
 
 impl Debug for Error {
@@ -22,6 +27,14 @@ impl Debug for Error {
                 cache = Some(format!("{:?}", err));
                 cache.as_ref().unwrap().as_str()
             }
+            Self::NoDataPath => "No data path",
+            Self::StaticSync => "Static syncing failed",
+            Self::AccessDenied => "Access denied",
+            Self::Io(err_kind) => {
+                cache = Some(format!("{:?}", err_kind));
+                cache.as_ref().unwrap().as_str()
+            }
+            Self::DbFailure => "Database execution failed",
         })
     }
 }
@@ -44,5 +57,11 @@ impl From<settings::error::Error> for Error {
 impl From<ollama_rest::errors::Error> for Error {
     fn from(value: ollama_rest::errors::Error) -> Self {
         Self::Api(value)
+    }
+}
+
+impl From<std::io::Error> for Error {
+    fn from(value: std::io::Error) -> Self {
+        Self::Io(value.kind())
     }
 }

@@ -9,5 +9,5 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-diesel = { version = "2.2", features = ["sqlite"] }
+diesel = { version = "2.2", features = ["chrono", "sqlite"] }
 diesel_migrations = { version = "2.2", features = ["sqlite"] }

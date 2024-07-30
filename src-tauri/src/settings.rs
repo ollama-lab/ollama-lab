@@ -66,9 +66,7 @@ impl Settings {
 
                         Ok(file.write_all(config_toml.as_bytes())?)
                     })
-            })?;
-
-        Ok(())
+            })
     }
 
     pub fn get_static() -> Result<&'static Self, Error> {
@@ -91,9 +89,11 @@ impl Settings {
         Ok(())
     }
 
-    pub fn save_to_static(self) -> Result<(), Error> {
-        self.save();
-        self.into_static()
+    pub fn save_into_static(self) -> Result<(), Error> {
+        self.save()?;
+        self.into_static()?;
+
+        Ok(())
     }
 
     pub fn addr(&self) -> Option<&str> {
