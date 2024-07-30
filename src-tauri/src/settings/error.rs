@@ -16,7 +16,7 @@ impl Debug for Error {
             Error::Io(err_kind) => {
                 cache = Some(format!("File I/O ({err_kind:?})"));
                 cache.as_ref().unwrap().as_str()
-            }
+            },
             Error::NoValidConfigPath => "No config path",
             Error::Sync => "Syncing Error",
             Error::TomlParsing(err) => {

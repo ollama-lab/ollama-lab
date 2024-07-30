@@ -4,7 +4,6 @@ use diesel::prelude::*;
 use crate::schema::sessions;
 
 #[derive(Debug, Queryable, Selectable)]
-#[diesel(table_name = sessions)]
 pub struct Session {
     id: i32,
     title: Option<String>,
