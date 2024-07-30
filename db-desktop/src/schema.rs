@@ -2,7 +2,7 @@
 
 diesel::table! {
     bubbles (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         session -> Integer,
         role -> Text,
         content -> Text,
@@ -13,13 +13,13 @@ diesel::table! {
 
 diesel::table! {
     roles (name) {
-        name -> Nullable<Text>,
+        name -> Text,
     }
 }
 
 diesel::table! {
     sessions (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         title -> Nullable<Text>,
         owner -> Text,
         date_created -> Timestamp,
@@ -28,7 +28,7 @@ diesel::table! {
 
 diesel::table! {
     users (id) {
-        id -> Nullable<Text>,
+        id -> Text,
         password -> Nullable<Text>,
         is_default -> Bool,
         date_created -> Timestamp,
