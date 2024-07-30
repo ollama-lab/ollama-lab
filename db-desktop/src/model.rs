@@ -12,6 +12,16 @@ pub enum Role {
     Assistant,
 }
 
+impl Role {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Role::System => "system",
+            Role::User => "user",
+            Role::Assistant => "assistant",
+        }
+    }
+}
+
 impl FromStr for Role {
     type Err = RoleConversionError;
 
@@ -27,10 +37,12 @@ impl FromStr for Role {
 
 impl Display for Role {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", match self {
-            Role::System => "system",
-            Role::User => "user",
-            Role::Assistant => "assistant",
-        })
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl Into<&'static str> for Role {
+    fn into(self) -> &'static str {
+        self.as_str()
     }
 }

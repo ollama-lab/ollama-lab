@@ -1,4 +1,4 @@
-use std::{intrinsics::unreachable, str::FromStr};
+use std::str::FromStr;
 
 use chrono::{DateTime, Local};
 use diesel::prelude::*;
@@ -43,13 +43,18 @@ impl Bubble {
     pub fn date_created(&self) -> &DateTime<Local> {
         &self.date_created
     }
+
+    #[inline]
+    pub fn is_edited(&self) -> bool {
+        self.is_edited
+    }
 }
 
 #[derive(Debug, Insertable)]
 #[diesel(table_name = bubbles)]
 pub struct NewBubble<'a> {
     session: i32,
-    role: String,
+    role: &'a str,
     content: &'a str,
 }
 
@@ -57,6 +62,6 @@ impl<'a> NewBubble<'a> {
     #[must_use]
     #[inline]
     pub fn new(session: i32, role: Role, content: &'a str) -> Self {
-        Self { session, role: role.to_string(), content }
+        Self { session, role: role.into(), content }
     }
 }
