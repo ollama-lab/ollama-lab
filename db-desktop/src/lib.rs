@@ -5,6 +5,7 @@ use diesel::{sqlite::Sqlite, Connection, SqliteConnection};
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use error::Error;
 
+pub mod model;
 pub mod schema;
 pub mod error;
 
