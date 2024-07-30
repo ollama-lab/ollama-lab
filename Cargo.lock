@@ -2144,6 +2144,7 @@ dependencies = [
 name = "ollama-lab_db-desktop"
 version = "0.1.0-dev.1"
 dependencies = [
+ "chrono",
  "diesel",
  "diesel_migrations",
 ]
