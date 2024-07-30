@@ -13,7 +13,7 @@ CREATE TABLE roles (
     name            VARCHAR(50) PRIMARY KEY
 );
 
-INSERT INTO roles VALUES ('user', 'system', 'assistant');
+INSERT INTO roles VALUES ('user'), ('system'), ('assistant');
 
 CREATE TABLE sessions (
     id              INTEGER PRIMARY KEY AUTOINCREMENT,
