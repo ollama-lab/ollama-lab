@@ -1,5 +1,6 @@
 use std::fmt::Debug;
 
+use ollama_lab_db_desktop::sqlx;
 use serde::Serialize;
 
 use crate::settings;
@@ -8,6 +9,7 @@ pub enum Error {
     AccessDenied,
     Api(ollama_rest::errors::Error),
     DbFailure,
+    DbQuery(sqlx::Error),
     Io(std::io::ErrorKind),
     NoDataPath,
     Settings(settings::error::Error),
@@ -35,6 +37,10 @@ impl Debug for Error {
                 cache.as_ref().unwrap().as_str()
             }
             Self::DbFailure => "Database execution failed",
+            Self::DbQuery(err) => {
+                cache = Some(format!("{:?}", err));
+                cache.as_ref().unwrap().as_str()
+            }
         })
     }
 }
@@ -63,5 +69,11 @@ impl From<ollama_rest::errors::Error> for Error {
 impl From<std::io::Error> for Error {
     fn from(value: std::io::Error) -> Self {
         Self::Io(value.kind())
+    }
+}
+
+impl From<sqlx::Error> for Error {
+    fn from(value: sqlx::Error) -> Self {
+        Self::DbQuery(value)
     }
 }

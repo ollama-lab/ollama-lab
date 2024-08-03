@@ -10,5 +10,4 @@ rust-version.workspace = true
 
 [dependencies]
 chrono = "0.4"
-diesel = { version = "2.2", features = ["chrono", "sqlite"] }
-diesel_migrations = { version = "2.2", features = ["sqlite"] }
+sqlx = { version = "0.8", features = ["chrono", "runtime-tokio", "sqlite"] }

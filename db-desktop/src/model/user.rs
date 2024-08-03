@@ -1,9 +1,7 @@
 use chrono::{DateTime, Local};
-use diesel::prelude::*;
+use sqlx::SqliteExecutor;
 
-use crate::schema::users;
-
-#[derive(Debug, Identifiable, Queryable, Selectable)]
+#[derive(sqlx::FromRow)]
 pub struct User {
     id: String,
     password: Option<String>,
@@ -31,19 +29,10 @@ impl User {
     pub fn date_created(&self) -> &DateTime<Local> {
         &self.date_created
     }
-}
 
-#[derive(Debug, Insertable)]
-#[diesel(table_name = users)]
-pub struct NewUser<'a> {
-    id: &'a str,
-    password: Option<&'a str>,
-}
-
-impl<'a> NewUser<'a> {
-    #[must_use]
-    #[inline]
-    pub fn new(id: &'a str, password: Option<&'a str>) -> Self {
-        Self { id, password }
+    pub async fn try_default(exec: impl SqliteExecutor<'_>) -> Result<User, sqlx::Error> {
+        sqlx::query_as::<_, User>("SELECT * FROM users WHERE is_default = TRUE AND id = 'default' LIMIT 1")
+            .fetch_one(exec)
+            .await
     }
 }
