@@ -46,6 +46,7 @@ async fn generate_prompt(win: &tauri::Window, conn: &mut SqliteConnection, sessi
                     Role::Assistant => ollama_rest::models::chat::Role::Assistant,
                 },
                 content: bubble.content().to_string(),
+                // TODO: Implement images and tool call interaction
                 images: None,
                 tool_calls: None,
             }
