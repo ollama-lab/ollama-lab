@@ -2302,10 +2302,12 @@ name = "ollama-lab"
 version = "0.1.0-dev.1"
 dependencies = [
  "dirs",
+ "futures",
  "ollama-lab_db-desktop",
  "ollama-rest",
  "rand 0.8.5",
  "serde",
+ "serde_json",
  "tauri",
  "tauri-build",
  "tokio",
