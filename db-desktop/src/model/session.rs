@@ -1,35 +1,16 @@
 use chrono::{DateTime, Local};
+use serde::Serialize;
 use sqlx::SqliteConnection;
 
-#[derive(sqlx::FromRow)]
+#[derive(sqlx::FromRow, Serialize)]
 pub struct Session {
-    id: i32,
-    title: Option<String>,
-    owner: String,
-    date_created: DateTime<Local>,
+    pub id: i32,
+    pub title: Option<String>,
+    pub owner: String,
+    pub date_created: DateTime<Local>,
 }
 
 impl Session {
-    #[inline]
-    pub fn id(&self) -> i32 {
-        self.id
-    }
-
-    #[inline]
-    pub fn title(&self) -> Option<&str> {
-        self.title.as_ref().map(|s| s.as_str())
-    }
-
-    #[inline]
-    pub fn owner(&self) -> &str {
-        self.owner.as_str()
-    }
-
-    #[inline]
-    pub fn date_created(&self) -> &DateTime<Local> {
-        &self.date_created
-    }
-
     pub async fn from_id(conn: &mut SqliteConnection, id: i32) -> Result<Self, sqlx::Error> {
         sqlx::query_as::<_, Self>("SELECT * FROM sessions WHERE id = $1")
             .bind(id)
@@ -42,6 +23,11 @@ impl Session {
             .bind(owner_id)
             .fetch_all(&mut *conn)
             .await
+    }
+
+    #[inline]
+    pub async fn from_default_owner(conn: &mut SqliteConnection) -> Result<Vec<Self>, sqlx::Error> {
+        Self::from_owner(conn, "default").await
     }
 
     pub async fn update_title_by_id(conn: &mut SqliteConnection, id: i32, new_title: Option<&str>) -> Result<Self, sqlx::Error> {
@@ -57,7 +43,7 @@ impl Session {
 
     pub async fn update_title(&mut self, conn: &mut SqliteConnection, new_title: Option<&str>) -> Result<(), sqlx::Error> {
         let session = Self::update_title_by_id(&mut *conn, self.id, new_title).await?;
-        self.title = session.title().map(|s| s.to_string());
+        self.title = session.title;
 
         Ok(())
     }
@@ -72,7 +58,7 @@ impl Session {
     }
 
     pub async fn delete(self, conn: &mut SqliteConnection) -> Result<(), sqlx::Error> {
-        Self::delete_by_id(&mut *conn, self.id()).await
+        Self::delete_by_id(&mut *conn, self.id).await
     }
 }
 

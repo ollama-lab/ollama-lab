@@ -1,50 +1,26 @@
 use std::str::FromStr;
 
 use chrono::{DateTime, Local};
+use serde::Serialize;
 use sqlx::SqliteConnection;
 
 use super::Role;
 
-#[derive(sqlx::FromRow, Clone)]
+#[derive(sqlx::FromRow, Clone, Serialize)]
 pub struct Bubble {
-    id: i32,
-    session: i32,
+    pub id: i32,
+    pub session: i32,
     role: String,
-    content: String,
-    date_created: DateTime<Local>,
-    is_edited: bool,
+    pub content: String,
+    pub date_created: DateTime<Local>,
+    pub is_edited: bool,
 }
 
 impl Bubble {
     #[inline]
-    pub fn id(&self) -> i32 {
-        self.id
-    }
-
-    #[inline]
-    pub fn session(&self) -> i32 {
-        self.session
-    }
-
-    #[inline]
     pub fn role(&self) -> Role {
         Role::from_str(self.role.as_str())
             .unwrap_or_else(|_| unreachable!())
-    }
-
-    #[inline]
-    pub fn content(&self) -> &str {
-        self.content.as_str()
-    }
-
-    #[inline]
-    pub fn date_created(&self) -> &DateTime<Local> {
-        &self.date_created
-    }
-
-    #[inline]
-    pub fn is_edited(&self) -> bool {
-        self.is_edited
     }
 
     pub async fn from_id(conn: &mut SqliteConnection, id: i32) -> Result<Self, sqlx::Error> {
@@ -76,7 +52,7 @@ impl Bubble {
             FROM bubbles
             WHERE session = $1 AND id <= $2
             ORDER BY id ASC
-        "#).bind(bubble.session()).bind(id)
+        "#).bind(bubble.session).bind(id)
             .fetch_all(&mut *conn)
             .await
     }
@@ -87,11 +63,11 @@ impl Bubble {
             SET content = $1, is_edited = TRUE
             WHERE id = $2
             RETURNING *
-        "#).bind(content).bind(self.id())
+        "#).bind(content).bind(self.id)
             .fetch_one(&mut *conn)
             .await?;
 
-        self.content = bubble.content().to_string();
+        self.content = bubble.content;
         Ok(())
     }
 }
