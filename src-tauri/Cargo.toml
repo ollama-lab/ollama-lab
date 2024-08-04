@@ -11,13 +11,13 @@ edition.workspace = true
 rust-version.workspace = true
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-beta", features = [] }
+tauri-build = { version = "2.0.0-rc.0", features = [] }
 
 [dependencies]
 rand = "0.8"
 ollama-lab_db-desktop = { path = "../db-desktop/" }
 ollama-rest = { git = "https://github.com/chardoncs/ollama-rest-rs.git", branch = "main" }
-tauri = { version = "2.0.0-beta", features = [] }
+tauri = { version = "2.0.0-rc.0", features = [] }
 tokio = { version = "1", features = ["full"] }
 toml = "0.8"
 serde = { version = "1.0", features = ["derive"] }
