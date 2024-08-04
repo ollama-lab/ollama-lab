@@ -5,7 +5,7 @@ use sqlx::SqliteConnection;
 
 use super::Role;
 
-#[derive(sqlx::FromRow)]
+#[derive(sqlx::FromRow, Clone)]
 pub struct Bubble {
     id: i32,
     session: i32,
@@ -64,7 +64,7 @@ impl Bubble {
     pub async fn update_content_by_id(conn: &mut SqliteConnection, id: i32, content: &str) -> Result<Vec<Self>, sqlx::Error> {
         let bubble = sqlx::query_as::<_, Self>(r#"
             UPDATE bubbles
-            SET content = $1
+            SET content = $1, is_edited = TRUE
             WHERE id = $2
             RETURNING *
         "#).bind(content).bind(id)
@@ -81,13 +81,13 @@ impl Bubble {
             .await
     }
 
-    pub async fn update_content(&mut self, conn: &mut SqliteConnection, id: i32, content: &str) -> Result<(), sqlx::Error> {
+    pub async fn update_content(&mut self, conn: &mut SqliteConnection, content: &str) -> Result<(), sqlx::Error> {
         let bubble = sqlx::query_as::<_, Self>(r#"
             UPDATE bubbles
-            SET content = $1
+            SET content = $1, is_edited = TRUE
             WHERE id = $2
             RETURNING *
-        "#).bind(content).bind(id)
+        "#).bind(content).bind(self.id())
             .fetch_one(&mut *conn)
             .await?;
 

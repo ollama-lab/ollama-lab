@@ -23,8 +23,20 @@ struct StreamPayload {
 async fn generate_prompt(win: &tauri::Window, conn: &mut SqliteConnection, session_id: i32, model_id: &str) -> Result<Bubble, Error> {
     let ollama = get_ollama()?;
 
-    let chat_history: Vec<Message> = Bubble::from_session(&mut *conn, session_id)
-        .await?
+    let mut bubbles = Bubble::from_session(&mut *conn, session_id).await?;
+
+    let assistant_last_response_op = bubbles.last()
+        .and_then(|last_bubble| if let Role::Assistant = last_bubble.role() {
+            Some(last_bubble.clone())
+        } else {
+            None
+        });
+
+    if assistant_last_response_op.is_some() {
+        bubbles.pop();
+    }
+
+    let chat_history: Vec<Message> = bubbles
         .into_iter()
         .map(|bubble| {
             Message {
@@ -53,7 +65,7 @@ async fn generate_prompt(win: &tauri::Window, conn: &mut SqliteConnection, sessi
         if let Some(msg) = res.message {
             response.push_str(msg.content.as_str());
 
-            win.emit("llm_stream_out", StreamPayload {
+            win.emit("model_stream_chunk_out", StreamPayload {
                 session: session_id,
                 role: msg.role.to_string(),
                 content: msg.content,
@@ -61,9 +73,17 @@ async fn generate_prompt(win: &tauri::Window, conn: &mut SqliteConnection, sessi
         }
     }
 
-    let bubble = NewBubble::new(session_id, Role::Assistant, response.as_str())
-        .save_into_returning(&mut *conn)
-        .await?;
+    let bubble = if let Some(mut assistant_last_response) = assistant_last_response_op {
+        assistant_last_response
+            .update_content(&mut *conn, response.as_str())
+            .await?;
+
+        assistant_last_response
+    } else {
+        NewBubble::new(session_id, Role::Assistant, response.as_str())
+            .save_into_returning(&mut *conn)
+            .await?
+    };
 
     Ok(bubble)
 }
@@ -92,5 +112,13 @@ pub async fn send_prompt(window: tauri::Window, prompt: NewUserPrompt) -> Result
 
     generate_prompt(&window, &mut conn, session_id, prompt.model.as_str()).await?;
 
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn regenerate(window: tauri::Window, session_id: i32, model_id: &str) -> Result<(), Error> {
+    let mut conn = load_connection(DB_URL.get().ok_or_else(|| Error::NoDataPath)?).await?;
+
+    generate_prompt(&window, &mut conn, session_id, model_id).await?;
     Ok(())
 }
