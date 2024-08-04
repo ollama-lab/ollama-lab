@@ -66,7 +66,7 @@ async fn generate_prompt(win: &tauri::Window, conn: &mut SqliteConnection, sessi
         if let Some(msg) = res.message {
             response.push_str(msg.content.as_str());
 
-            win.emit("model_stream_chunk_out", StreamPayload {
+            win.emit("model-stream-chunk-out", StreamPayload {
                 session: session_id,
                 role: msg.role.to_string(),
                 content: msg.content,
