@@ -2301,6 +2301,7 @@ dependencies = [
 name = "ollama-lab"
 version = "0.1.0-dev.1"
 dependencies = [
+ "chrono",
  "dirs",
  "futures",
  "ollama-lab_db-desktop",
@@ -2319,6 +2320,7 @@ name = "ollama-lab_db-desktop"
 version = "0.1.0-dev.1"
 dependencies = [
  "chrono",
+ "serde",
  "sqlx",
 ]
 

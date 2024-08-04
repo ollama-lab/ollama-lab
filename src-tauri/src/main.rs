@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use command::chat::{regenerate, send_prompt};
+use command::{chat::{list_chat_bubbles, regenerate, send_prompt}, session::{list_sessions, remove_session}};
 use db::auto_load_db_url;
 
 mod api;
@@ -16,7 +16,10 @@ fn main() {
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
+            list_chat_bubbles,
+            list_sessions,
             regenerate,
+            remove_session,
             send_prompt,
         ])
         .run(tauri::generate_context!())

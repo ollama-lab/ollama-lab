@@ -45,7 +45,7 @@ async fn generate_prompt(win: &tauri::Window, conn: &mut SqliteConnection, sessi
                     Role::System => ollama_rest::models::chat::Role::System,
                     Role::Assistant => ollama_rest::models::chat::Role::Assistant,
                 },
-                content: bubble.content().to_string(),
+                content: bubble.content,
                 // TODO: Implement images and tool call interaction
                 images: None,
                 tool_calls: None,
@@ -102,7 +102,7 @@ pub async fn send_prompt(window: tauri::Window, prompt: NewUserPrompt) -> Result
         NewSession::new_local(Some(prompt.content.as_str()))
             .save_into_returning(&mut *tx)
             .await?
-            .id()
+            .id
     };
 
     NewBubble::new(session_id, Role::User, prompt.content.as_str())
@@ -122,4 +122,11 @@ pub async fn regenerate(window: tauri::Window, session_id: i32, model_id: &str) 
 
     generate_prompt(&window, &mut conn, session_id, model_id).await?;
     Ok(())
+}
+
+#[tauri::command]
+pub async fn list_chat_bubbles(session_id: i32) -> Result<Vec<Bubble>, Error> {
+    let mut conn = load_connection(DB_URL.get().ok_or_else(|| Error::NoDataPath)?).await?;
+
+    Ok(Bubble::from_session(&mut conn, session_id).await?)
 }
