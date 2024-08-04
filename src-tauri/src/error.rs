@@ -14,6 +14,7 @@ pub enum Error {
     NoDataPath,
     Settings(settings::error::Error),
     StaticSync,
+    Tauri(tauri::Error),
 }
 
 impl Debug for Error {
@@ -38,6 +39,10 @@ impl Debug for Error {
             }
             Self::DbFailure => "Database execution failed",
             Self::DbQuery(err) => {
+                cache = Some(format!("{:?}", err));
+                cache.as_ref().unwrap().as_str()
+            }
+            Self::Tauri(err) => {
                 cache = Some(format!("{:?}", err));
                 cache.as_ref().unwrap().as_str()
             }
@@ -75,5 +80,11 @@ impl From<std::io::Error> for Error {
 impl From<sqlx::Error> for Error {
     fn from(value: sqlx::Error) -> Self {
         Self::DbQuery(value)
+    }
+}
+
+impl From<tauri::Error> for Error {
+    fn from(value: tauri::Error) -> Self {
+        Self::Tauri(value)
     }
 }

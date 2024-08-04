@@ -1,5 +1,5 @@
 use chrono::{DateTime, Local};
-use sqlx::SqliteExecutor;
+use sqlx::SqliteConnection;
 
 #[derive(sqlx::FromRow)]
 pub struct Session {
@@ -30,49 +30,49 @@ impl Session {
         &self.date_created
     }
 
-    pub async fn from_id(exec: impl SqliteExecutor<'_>, id: i32) -> Result<Self, sqlx::Error> {
+    pub async fn from_id(conn: &mut SqliteConnection, id: i32) -> Result<Self, sqlx::Error> {
         sqlx::query_as::<_, Self>("SELECT * FROM sessions WHERE id = $1")
             .bind(id)
-            .fetch_one(exec)
+            .fetch_one(&mut *conn)
             .await
     }
     
-    pub async fn from_owner(exec: impl SqliteExecutor<'_>, owner_id: &str) -> Result<Vec<Self>, sqlx::Error> {
+    pub async fn from_owner(conn: &mut SqliteConnection, owner_id: &str) -> Result<Vec<Self>, sqlx::Error> {
         sqlx::query_as::<_, Self>("SELECT * FROM sessions WHERE owner = $1")
             .bind(owner_id)
-            .fetch_all(exec)
+            .fetch_all(&mut *conn)
             .await
     }
 
-    pub async fn update_title_by_id(exec: impl SqliteExecutor<'_>, id: i32, new_title: Option<&str>) -> Result<Self, sqlx::Error> {
+    pub async fn update_title_by_id(conn: &mut SqliteConnection, id: i32, new_title: Option<&str>) -> Result<Self, sqlx::Error> {
         sqlx::query_as::<_, Self>(r#"
             UPDATE sessions
             SET title = $1
             WHERE id = $2
             RETURNING *
         "#).bind(new_title).bind(id)
-            .fetch_one(exec)
+            .fetch_one(&mut *conn)
             .await
     }
 
-    pub async fn update_title(&mut self, exec: impl SqliteExecutor<'_>, new_title: Option<&str>) -> Result<(), sqlx::Error> {
-        let session = Self::update_title_by_id(exec, self.id, new_title).await?;
+    pub async fn update_title(&mut self, conn: &mut SqliteConnection, new_title: Option<&str>) -> Result<(), sqlx::Error> {
+        let session = Self::update_title_by_id(&mut *conn, self.id, new_title).await?;
         self.title = session.title().map(|s| s.to_string());
 
         Ok(())
     }
 
-    pub async fn delete_by_id(exec: impl SqliteExecutor<'_>, id: i32) -> Result<(), sqlx::Error> {
+    pub async fn delete_by_id(conn: &mut SqliteConnection, id: i32) -> Result<(), sqlx::Error> {
         sqlx::query("DELETE FROM sessions WHERE id = $1")
             .bind(id)
-            .execute(exec)
+            .execute(&mut *conn)
             .await?;
 
         Ok(())
     }
 
-    pub async fn delete(self, exec: impl SqliteExecutor<'_>) -> Result<(), sqlx::Error> {
-        Self::delete_by_id(exec, self.id()).await
+    pub async fn delete(self, conn: &mut SqliteConnection) -> Result<(), sqlx::Error> {
+        Self::delete_by_id(&mut *conn, self.id()).await
     }
 }
 
@@ -93,13 +93,24 @@ impl<'a> NewSession<'a> {
         Self::new(title, "default")
     }
 
-    pub async fn save_into(self, exec: impl SqliteExecutor<'_>) -> Result<Session, sqlx::Error> {
+    pub async fn save_into(self, conn: &mut SqliteConnection) -> Result<(), sqlx::Error> {
+        sqlx::query(r#"
+            INSERT INTO sessions(title, owner)
+            VALUES ($1, $2)
+        "#).bind(self.title).bind(self.owner)
+            .execute(&mut *conn)
+            .await?;
+
+        Ok(())
+    }
+
+    pub async fn save_into_returning(self, conn: &mut SqliteConnection) -> Result<Session, sqlx::Error> {
         sqlx::query_as::<_, Session>(r#"
             INSERT INTO sessions(title, owner)
             VALUES ($1, $2)
             RETURNING *
         "#).bind(self.title).bind(self.owner)
-            .fetch_one(exec)
+            .fetch_one(&mut *conn)
             .await
     }
 }

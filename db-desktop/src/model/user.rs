@@ -1,5 +1,5 @@
 use chrono::{DateTime, Local};
-use sqlx::SqliteExecutor;
+use sqlx::SqliteConnection;
 
 #[derive(sqlx::FromRow)]
 pub struct User {
@@ -30,9 +30,9 @@ impl User {
         &self.date_created
     }
 
-    pub async fn try_default(exec: impl SqliteExecutor<'_>) -> Result<User, sqlx::Error> {
+    pub async fn try_default(conn: &mut SqliteConnection) -> Result<User, sqlx::Error> {
         sqlx::query_as::<_, User>("SELECT * FROM users WHERE is_default = TRUE AND id = 'default' LIMIT 1")
-            .fetch_one(exec)
+            .fetch_one(&mut *conn)
             .await
     }
 }
