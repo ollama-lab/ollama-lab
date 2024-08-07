@@ -15,7 +15,7 @@ pub fn db_file() -> Result<PathBuf, Error> {
 
 pub fn load_db_url(transient_mode: bool) -> Result<(), Error> {
     DB_URL.set(if transient_mode {
-        ":memory:".to_string()
+        "sqlite::memory:".to_string()
     } else {
         db_file()?
             .to_str()
