@@ -1,4 +1,4 @@
-use std::{path::PathBuf, sync::OnceLock};
+use std::{ops::Not, path::PathBuf, sync::OnceLock};
 
 use crate::{error::Error, paths::local_data_dir};
 
@@ -28,7 +28,7 @@ pub fn load_db_url(transient_mode: bool) -> Result<(), Error> {
 }
 
 pub fn auto_load_db_url() -> Result<(), Error> {
-    load_db_url(!db_file()?.try_exists().map_err(|_| Error::AccessDenied)?)?;
+    load_db_url(db_file()?.try_exists().map_err(|_| Error::AccessDenied)?.not())?;
 
     Ok(())
 }
