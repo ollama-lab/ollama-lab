@@ -27,15 +27,14 @@ icon = [
 long-description = ""
 resources = [ ]
 short-description = ""
-createUpdaterArtifacts = "v1Compatible"
 
-  [bundle.windows]
-  digest-algorithm = "sha256"
-  timestamp-url = ""
+[bundle.windows]
+digest-algorithm = "sha256"
+timestamp-url = ""
 
-  [bundle.macOS]
-  exception-domain = ""
-  frameworks = [ ]
+[bundle.macOS]
+exception-domain = ""
+frameworks = [ ]
 
 [bundle.linux.deb]
 depends = [ ]
