@@ -1,18 +1,13 @@
 <script lang="ts">
-  import { IconCloudDownload, IconPlus, IconPointFilled, IconTrash } from "@tabler/icons-svelte";
-  import type { Model, RunningModel } from "$lib/models/models"
-  import { ListBox, ListBoxItem } from "@skeletonlabs/skeleton";
-  import TimeAgo from "javascript-time-ago";
+  import { IconCloudDownload, IconPlus, IconPointFilled, IconTrash } from "@tabler/icons-svelte"
+  import { ListBox, ListBoxItem } from "@skeletonlabs/skeleton"
+  import TimeAgo from "javascript-time-ago"
   import convert from "convert"
+  import { modelList, runningModels } from "$lib/stores/models"
 
   export let selectedModel: string | null
 
   const timeAgo = new TimeAgo("en-US")
-
-  export let allModels: Model[]
-
-  export let runningModels: RunningModel[]
-
 </script>
 
 <div class="flex flex-col h-dvh px-2 gap-4 bg-surface-200 dark:bg-surface-800 md:w-60 lg:w-80 xl:w-96">
@@ -35,7 +30,7 @@
   </div>
   <div class="flex-auto overflow-y-scroll">
     <ListBox>
-      {#each allModels as model (model.name)}
+      {#each $modelList as model (model.name)}
         <ListBoxItem
           bind:group={selectedModel}
           name="model"
@@ -47,7 +42,7 @@
             <div class="flex flex-col flex-auto">
               <div class="flex">
                 <span class="font-semibold">{model.name}</span>
-                {#if runningModels.find(runModel => runModel.name === model.name)}
+                {#if $runningModels.find(m => m.name === model.name)}
                   <span title="Running"><IconPointFilled class="text-green-600 dark:text-green-400" /></span>
                 {/if}
               </div>

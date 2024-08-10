@@ -1,17 +1,15 @@
 <script lang="ts">
   import ChatFeed from "./chatbox/chat-feed.svelte";
-import SessionList from "./chatbox/session-list.svelte"
-
-  let activeSession: number | null = null
+  import SessionList from "./chatbox/session-list.svelte"
 </script>
 
 <div class="h-full flex">
   <div class="flex flex-col z-[2] shadow-lg">
     <div class="flex-auto flex">
-      <SessionList bind:activeSession />
+      <SessionList />
     </div>
   </div>
   <div class="flex-auto flex">
-    <ChatFeed bind:activeSession />
+    <ChatFeed />
   </div>
 </div>
