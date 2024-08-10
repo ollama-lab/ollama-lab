@@ -1,22 +1,22 @@
 "$schema" = "../node_modules/@tauri-apps/cli/schema.json"
 
-productName = "ollama-lab"
+product-name = "ollama-lab"
 version = "0.1.0"
 identifier = "org.ollamalab.tauri"
 plugins = { }
 
 [build]
-beforeBuildCommand = "bun ui:build"
-beforeDevCommand = "bun ui:dev"
-frontendDist = "../public"
-devUrl = "http://localhost:5173"
+before-build-command = "bun ui:build"
+before-dev-command = "bun ui:dev"
+frontend-dist = "../public"
+dev-url = "http://localhost:5173"
 
 [bundle]
 active = true
 category = "DeveloperTool"
 copyright = ""
 targets = "all"
-externalBin = [ ]
+external-bin = [ ]
 icon = [
   "icons/32x32.png",
   "icons/128x128.png",
@@ -24,17 +24,17 @@ icon = [
   "icons/icon.icns",
   "icons/icon.ico"
 ]
-longDescription = ""
+long-description = ""
 resources = [ ]
-shortDescription = ""
+short-description = ""
 createUpdaterArtifacts = "v1Compatible"
 
   [bundle.windows]
-  digestAlgorithm = "sha256"
-  timestampUrl = ""
+  digest-algorithm = "sha256"
+  timestamp-url = ""
 
   [bundle.macOS]
-  exceptionDomain = ""
+  exception-domain = ""
   frameworks = [ ]
 
 [bundle.linux.deb]
