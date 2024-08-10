@@ -4,15 +4,15 @@
   import { onMount } from "svelte";
 
   let form: HTMLFormElement | undefined
-  let textEntry: HTMLTextAreaElement
+  let textEntry: HTMLTextAreaElement | undefined
 
   let prompt: string = ""
 
   onMount(() => {
-    autosize(textEntry)
+    textEntry && autosize(textEntry)
 
     return () => {
-      autosize.destroy(textEntry)
+      textEntry && autosize.destroy(textEntry)
     }
   })
 </script>
