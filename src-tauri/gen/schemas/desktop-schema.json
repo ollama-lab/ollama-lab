@@ -180,7 +180,7 @@
         {
           "type": "string",
           "enum": [
-            "data-access"
+            "http-local"
           ]
         },
         {

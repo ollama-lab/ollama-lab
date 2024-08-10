@@ -1,8 +1,0 @@
-[[permission]]
-identifier = "data-access"
-commands.allow = [
-    "read_file",
-    "read",
-    "open",
-    "write"
-]

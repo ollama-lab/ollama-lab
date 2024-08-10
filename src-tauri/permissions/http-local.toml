@@ -1,0 +1,5 @@
+[[permission]]
+identifier = "http-local"
+allow = [
+    { url = "http://localhost:*" },
+]
