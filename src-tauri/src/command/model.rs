@@ -1,4 +1,4 @@
-use ollama_rest::prelude::Model;
+use ollama_rest::models::model::Model;
 
 use crate::{api::get_ollama, error::Error};
 
