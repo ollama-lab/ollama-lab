@@ -8,7 +8,7 @@ plugins = { }
 [build]
 before-build-command = "bun ui:build"
 before-dev-command = "bun ui:dev"
-frontend-dist = "../public"
+frontend-dist = "../build"
 dev-url = "http://localhost:5173"
 
 [bundle]
@@ -48,3 +48,4 @@ width = 800
 maximized = true
 
 [app.security]
+capabilities = ["default"]
