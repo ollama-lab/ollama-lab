@@ -1,4 +1,4 @@
-use command::{chat::{list_chat_bubbles, regenerate, send_prompt}, model::list_models, session::{list_sessions, remove_session}};
+use command::{chat::{list_chat_bubbles, regenerate, send_prompt}, model::{list_models, list_running_models, model_info}, session::{list_sessions, remove_session}};
 use db::{auto_load_db_url, update_database};
 
 mod api;
@@ -14,7 +14,9 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             list_chat_bubbles,
             list_models,
+            list_running_models,
             list_sessions,
+            model_info,
             regenerate,
             remove_session,
             send_prompt,

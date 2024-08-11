@@ -33,7 +33,7 @@ export interface ModelInfo {
   parameters: string
   template: string
   details: ModelDetails
-  model_info: { [key: string]: string | number | [] }
+  model_info: { [key: string]: string | number | [] | null | undefined }
 }
 
 export type ModelEntry = Model & {

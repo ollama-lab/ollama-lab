@@ -1,33 +1,26 @@
 <script lang="ts">
-  import { IconCloudDownload, IconPlus, IconPointFilled, IconTrash } from "@tabler/icons-svelte"
+  import { IconPointFilled, IconTrash } from "@tabler/icons-svelte"
   import { ListBox, ListBoxItem } from "@skeletonlabs/skeleton"
   import convert from "convert"
   import { modelList, runningModels } from "$lib/stores/models"
   import dayjs from "dayjs"
   import relativeTime from "dayjs/plugin/relativeTime"
+  import RefreshButton from "./model-finder/refresh-button.svelte"
+  import CreateModelButton from "./model-finder/create-model-button.svelte"
+  import PullModelButton from "./model-finder/pull-model-button.svelte"
 
   dayjs.extend(relativeTime)
 
   export let selectedModel: string | null
-
 </script>
 
 <div class="flex flex-col h-dvh px-2 gap-4 bg-surface-200 dark:bg-surface-800 md:w-60 lg:w-80 xl:w-96">
   <div class="flex flex-row place-items-center pt-4">
     <h1 class="flex-auto font-bold px-2 text-lg select-none">Models</h1>
     <div class="flex gap-2 place-items-center">
-      <button
-        class="btn-icon btn-icon-sm variant-soft"
-        title="Create model"
-      >
-        <IconPlus />
-      </button>
-      <button
-        class="btn-icon btn-icon-sm variant-soft"
-        title="Pull model"
-      >
-        <IconCloudDownload />
-      </button>
+      <CreateModelButton />
+      <RefreshButton />
+      <PullModelButton />
     </div>
   </div>
   <div class="flex-auto overflow-y-scroll">
