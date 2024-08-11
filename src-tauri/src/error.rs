@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use ollama_lab_db_desktop::sqlx;
+use sqlx;
 use serde::Serialize;
 
 use crate::settings;

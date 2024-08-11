@@ -15,16 +15,17 @@ name = "ollama_lab_lib"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-rc.0", features = ["config-toml"] }
+tauri-build = { version = "2.0.0-rc", features = ["config-toml"] }
 
 [dependencies]
 rand = "0.8"
-ollama-lab_db-desktop = { path = "../db-desktop/" }
+ollama-lab_db-desktop = { path = "../db-desktop" }
 ollama-rest = { git = "https://github.com/chardoncs/ollama-rest-rs.git", branch = "main" }
-tauri = { version = "2.0.0-rc.0", features = ["config-toml"] }
+tauri = { version = "2.0.0-rc", features = ["config-toml"] }
 tokio = { version = "^1.39", features = ["full"] }
 toml = "0.8"
 serde = { version = "1.0", features = ["derive"] }
+sqlx = { version = "0.8", features = ["sqlite"] }
 dirs = "5.0"
 serde_json = "1.0"
 futures = "0.3"

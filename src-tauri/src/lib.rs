@@ -1,5 +1,5 @@
 use command::{chat::{list_chat_bubbles, regenerate, send_prompt}, model::list_models, session::{list_sessions, remove_session}};
-use db::auto_load_db_url;
+use db::{auto_load_db_url, update_database};
 
 mod api;
 mod command;
@@ -21,6 +21,7 @@ pub fn run() {
         ])
         .setup(|_| {
             auto_load_db_url().unwrap();
+            let _ = update_database();
 
             Ok(())
         })

@@ -1,8 +1,13 @@
 use std::{ops::Not, path::PathBuf, sync::OnceLock};
 
+use ollama_lab_db_desktop::{load_connection, load_migrations};
+use sqlx::SqliteConnection;
+
 use crate::{error::Error, paths::local_data_dir};
 
 pub(crate) static DB_URL: OnceLock<String> = OnceLock::new();
+
+pub(crate) static CONN: OnceLock<SqliteConnection> = OnceLock::new();
 
 pub fn db_file() -> Result<PathBuf, Error> {
     local_data_dir()
@@ -43,4 +48,12 @@ pub async fn create_db_file() -> Result<tokio::fs::File, Error> {
     let file = tokio::fs::File::create_new(db_file()?).await?;
 
     Ok(file)
+}
+
+pub async fn update_database() -> Result<(), Error> {
+    load_migrations(
+        &mut load_connection(DB_URL.get().ok_or(Error::NoDataPath)?).await?
+    ).await.map_err(|err| sqlx::Error::Migrate(Box::new(err)))?;
+
+    Ok(())
 }
