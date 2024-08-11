@@ -35,9 +35,3 @@ export interface ModelInfo {
   details: ModelDetails
   model_info: { [key: string]: string | number | [] | null | undefined }
 }
-
-export type ModelEntry = Model & {
-  status: RunningStatus | null
-}
-
-export type FullModelInfo = ModelInfo & ModelEntry

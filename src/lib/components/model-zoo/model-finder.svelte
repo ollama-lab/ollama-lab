@@ -12,6 +12,8 @@
   dayjs.extend(relativeTime)
 
   export let selectedModel: string | null
+
+  export let reloadRequired: boolean 
 </script>
 
 <div class="flex flex-col h-dvh px-2 gap-4 bg-surface-200 dark:bg-surface-800 md:w-60 lg:w-80 xl:w-96">
@@ -32,10 +34,11 @@
           value={model.name}
           rounded="rounded-xl"
           active="variant-ghost"
+          on:click={() => reloadRequired = true}
         >
           <div class="group flex">
             <div class="flex flex-col flex-auto">
-              <div class="flex">
+              <div class="flex place-items-center">
                 <span class="font-semibold">{model.name}</span>
                 {#if $runningModels.find(m => m.name === model.name)}
                   <span title="Running"><IconPointFilled class="text-green-600 dark:text-green-400" /></span>
@@ -43,7 +46,7 @@
               </div>
               <div class="flex place-items-center text-xs gap-2">
                 <span>{convert(model.size, "byte").to("best", "imperial").toString(2)}</span>
-                <span title={model.modified_at.toString()}>Updated {dayjs().from(dayjs(model.modified_at))}</span>
+                <span title={model.modified_at.toLocaleString()}>Updated {dayjs(model.modified_at).fromNow()}</span>
               </div>
             </div>
             <div class="flex">

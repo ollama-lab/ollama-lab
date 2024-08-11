@@ -18,7 +18,7 @@ export const runningModels = readable<RunningModel[]>([], set => {
 
   const interval = setInterval(async () => {
     set(await listRunningModels())
-  }, 20_000)
+  }, 10_000)
 
   return () => {
     clearInterval(interval)

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ModelEntry, ModelInfo } from "$lib/models/models"
+  import type { Model, ModelInfo, RunningStatus } from "$lib/models/models"
   import { CodeBlock, popup, ProgressRadial, Tab, TabGroup } from "@skeletonlabs/skeleton"
   import { IconCloudUpload, IconCopy, IconDotsVertical, IconPointFilled, IconTrash } from "@tabler/icons-svelte"
   import convert from "convert"
@@ -9,7 +9,10 @@
 
   dayjs.extend(relativeTime)
 
-  export let entry: ModelEntry
+  export let model: Model
+  export let status: RunningStatus | null
+
+  export let reloadRequired: boolean
 
   let modelInfo: ModelInfo | undefined
 
@@ -24,8 +27,37 @@
   let currentTab: string = "details"
 
   $: {
-    modelInfo = undefined
-    getModelInfo(entry.name).then(m => modelInfo = m)
+    if (reloadRequired) {
+      modelInfo = undefined
+    }
+
+    getModelInfo(model.name).then(m => modelInfo = m)
+    reloadRequired = false
+  }
+
+  $: expirationDate = status ? dayjs(status.expires_at) : undefined
+
+  let interval: Timer | null = null
+
+  let countdown: number | undefined = undefined
+
+  function updateExpiration() {
+    countdown = expirationDate?.diff(undefined, "seconds")
+  }
+
+  $: {
+    if (expirationDate) {
+      updateExpiration()
+
+      if (!interval) {
+        interval = setInterval(updateExpiration, 1_000)
+      }
+    } else {
+      if (interval) {
+        clearInterval(interval)
+        interval = null
+      }
+    }
   }
 </script>
 
@@ -33,7 +65,7 @@
   <div class="flex flex-col px-4 py-2 lg:px-8 lg:py-6 overflow-y-scroll">
     <div class="flex flex-col md:px-6 md:py-8 lg:px-12 lg:py-14 gap-5">
       <div class="flex-auto flex">
-        <h1 class="font-bold text-2xl flex-auto">{entry.name}</h1>
+        <h1 class="font-bold text-2xl flex-auto">{model.name}</h1>
         <div class="flex place-items-center">
           <button class="btn-icon btn-icon-sm variant-ghost" use:popup={{
             event: "click",
@@ -67,17 +99,17 @@
         </div>
       </div>
       <div class="flex gap-3">
-        {#if entry.status}
+        {#if status && countdown !== undefined && countdown >= 0}
           <div class="flex gap-1 place-items-center">
             <IconPointFilled class="text-green-600 dark:text-green-400" />
             <span>Running</span>
           </div>
           <div class="flex gap-4">
-            <span title={entry.size.toLocaleString() + " bytes"}>
-              VRAM: {convert(entry.status.size_vram, "byte").to("best", "imperial").toString(2)}
+            <span title={model.size.toLocaleString() + " bytes"}>
+              VRAM: {convert(status.size_vram, "byte").to("best", "imperial").toString(2)}
             </span>
-            <span title={entry.status.expires_at.toString()}>
-              Session expires {dayjs().from(dayjs(entry.status.expires_at))}
+            <span title={status.expires_at.toLocaleString()}>
+              Session expiring in {countdown} second{countdown !== 1 ? "s" : ""}
             </span>
           </div>
         {:else}
@@ -103,7 +135,7 @@
                 <span>Parent model: {modelInfo.details.parent_model || "(none)"}</span>
                 <span>Parameter size: {modelInfo.details.parameter_size}</span>
                 <span>Format: {modelInfo.details.format}</span>
-                <span>Model size: {convert(entry.size, "byte").to("best", "imperial").toString(2)} ({entry.size.toLocaleString()} bytes)</span>
+                <span>Model size: {convert(model.size, "byte").to("best", "imperial").toString(2)} ({model.size.toLocaleString()} bytes)</span>
                 <span>Quantization Level: {modelInfo.details.quantization_level}</span>
               {:else if currentTab === "info"}
                 <div class="table-container">
