@@ -180,6 +180,12 @@
         {
           "type": "string",
           "enum": [
+            "allow-all"
+          ]
+        },
+        {
+          "type": "string",
+          "enum": [
             "http-local"
           ]
         },
