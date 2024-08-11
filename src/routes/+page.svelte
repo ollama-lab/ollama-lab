@@ -4,6 +4,7 @@
   import Sector from "$lib/components/sector.svelte"
   import ModelZoo from "$lib/components/model-zoo.svelte"
   import SettingsPage from "$lib/components/settings-page.svelte"
+  import { Toast } from "@skeletonlabs/skeleton"
   
   let opened = false
 
@@ -17,6 +18,7 @@
 </script>
 
 <main class="size-full flex flex-col">
+  <Toast />
   <div>
     {#if customTitlebar}
       <Header />
