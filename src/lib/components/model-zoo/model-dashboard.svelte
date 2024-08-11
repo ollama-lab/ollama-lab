@@ -1,11 +1,12 @@
 <script lang="ts">
   import type { ModelEntry, ModelInfo } from "$lib/models/models"
-  import { CodeBlock, popup, Tab, TabGroup } from "@skeletonlabs/skeleton";
-  import { IconCloudUpload, IconCopy, IconDotsVertical, IconPointFilled, IconTrash } from "@tabler/icons-svelte";
-  import convert from "convert";
-  import TimeAgo from "javascript-time-ago"
+  import { CodeBlock, popup, Tab, TabGroup } from "@skeletonlabs/skeleton"
+  import { IconCloudUpload, IconCopy, IconDotsVertical, IconPointFilled, IconTrash } from "@tabler/icons-svelte"
+  import convert from "convert"
+  import dayjs from "dayjs"
+  import relativeTime from "dayjs/plugin/relativeTime"
 
-  const timeAgo = new TimeAgo("en-US")
+  dayjs.extend(relativeTime)
 
   export let entry: ModelEntry
 
@@ -107,7 +108,7 @@
               VRAM: {convert(entry.status.size_vram, "byte").to("best", "imperial").toString(2)}
             </span>
             <span title={entry.status.expires_at.toString()}>
-              Session expires {timeAgo.format(entry.status.expires_at)}
+              Session expires {dayjs().from(dayjs(entry.status.expires_at))}
             </span>
           </div>
         {:else}

@@ -1,13 +1,15 @@
 <script lang="ts">
   import { IconCloudDownload, IconPlus, IconPointFilled, IconTrash } from "@tabler/icons-svelte"
   import { ListBox, ListBoxItem } from "@skeletonlabs/skeleton"
-  import TimeAgo from "javascript-time-ago"
   import convert from "convert"
   import { modelList, runningModels } from "$lib/stores/models"
+  import dayjs from "dayjs"
+  import relativeTime from "dayjs/plugin/relativeTime"
+
+  dayjs.extend(relativeTime)
 
   export let selectedModel: string | null
 
-  const timeAgo = new TimeAgo("en-US")
 </script>
 
 <div class="flex flex-col h-dvh px-2 gap-4 bg-surface-200 dark:bg-surface-800 md:w-60 lg:w-80 xl:w-96">
@@ -48,7 +50,7 @@
               </div>
               <div class="flex place-items-center text-xs gap-2">
                 <span>{convert(model.size, "byte").to("best", "imperial").toString(2)}</span>
-                <span title={model.modified_at.toString()}>Updated {timeAgo.format(model.modified_at)}</span>
+                <span title={model.modified_at.toString()}>Updated {dayjs().from(dayjs(model.modified_at))}</span>
               </div>
             </div>
             <div class="flex">

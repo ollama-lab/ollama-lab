@@ -2,11 +2,12 @@
   import { IconSelector } from "@tabler/icons-svelte"
   import ModelSelectionPanel from "./model-selection-panel.svelte"
   import { popup } from "@skeletonlabs/skeleton"
-  import { currentModel } from "$lib/stores/models"
+
+  export let currentModel: string | undefined
 </script>
 
 <div class="flex place-items-center">
-  <span class="font-bold select-none">{$currentModel?.name ?? "No models"}</span>
+  <span class="font-bold select-none">{currentModel ?? "No models"}</span>
   <button
     class="btn-icon btn-icon-sm"
     use:popup={{
@@ -17,5 +18,5 @@
   >
     <IconSelector />
   </button>
-  <ModelSelectionPanel />
+  <ModelSelectionPanel bind:currentModel />
 </div>

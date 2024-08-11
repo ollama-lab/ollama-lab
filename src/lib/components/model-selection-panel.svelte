@@ -1,6 +1,8 @@
 <script lang="ts">
   import { ListBox, ListBoxItem } from "@skeletonlabs/skeleton"
-  import { currentModel, modelList } from "$lib/stores/models"
+  import { modelList } from "$lib/stores/models"
+
+  export let currentModel: string | undefined
 </script>
 
 <div class="card overflow-y-scroll max-h-60" data-popup="popupModelSelection">
@@ -10,10 +12,9 @@
         <ListBoxItem
           value={name}
           name="models"
-          group={$currentModel?.name}
+          bind:group={currentModel}
           active="variant-ghost"
           rounded="rounded-lg"
-          on:click={() => $currentModel = $modelList.find(m => m.name === name) ?? null}
         >
           {name}
         </ListBoxItem>
