@@ -8,7 +8,6 @@ use crate::settings;
 pub enum Error {
     AccessDenied,
     Api(ollama_rest::errors::Error),
-    DbFailure,
     DbQuery(sqlx::Error),
     Io(std::io::ErrorKind),
     NoDataPath,
@@ -37,7 +36,6 @@ impl Debug for Error {
                 cache = Some(format!("{:?}", err_kind));
                 cache.as_ref().unwrap().as_str()
             }
-            Self::DbFailure => "Database execution failed",
             Self::DbQuery(err) => {
                 cache = Some(format!("{:?}", err));
                 cache.as_ref().unwrap().as_str()
