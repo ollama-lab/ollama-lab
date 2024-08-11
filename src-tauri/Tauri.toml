@@ -3,13 +3,12 @@
 product-name = "ollama-lab"
 version = "0.1.0"
 identifier = "org.ollamalab.tauri"
-plugins = { }
 
 [build]
 before-build-command = "bun ui:build"
 before-dev-command = "bun ui:dev"
 frontend-dist = "../build"
-dev-url = "http://localhost:5173"
+dev-url = "http://localhost:1420"
 
 [bundle]
 active = true

@@ -10,8 +10,12 @@ repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 
+[lib]
+name = "ollama_lab_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
 [build-dependencies]
-tauri-build = { version = "2.0.0-rc.0", features = [] }
+tauri-build = { version = "2.0.0-rc.0", features = ["config-toml"] }
 
 [dependencies]
 rand = "0.8"
