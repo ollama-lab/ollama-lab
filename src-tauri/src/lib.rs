@@ -1,3 +1,5 @@
+use std::ops::Not;
+
 use command::{
     chat::{list_chat_bubbles, regenerate, send_prompt},
     model::{list_models, list_running_models, model_info},
@@ -14,7 +16,7 @@ mod paths;
 mod settings;
 
 async fn init() -> Result<(), Error> {
-    if !db_file()?.try_exists()? {
+    if db_file()?.try_exists()?.not() {
         create_db_file().await?;
     }
 
