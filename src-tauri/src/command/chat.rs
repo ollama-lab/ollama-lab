@@ -1,10 +1,11 @@
 use futures::StreamExt;
-use ollama_lab_db_desktop::{load_connection, model::{bubble::{Bubble, NewBubble}, session::NewSession, Role}, sqlx::{Connection, SqliteConnection}};
+use ollama_lab_db_desktop::model::{bubble::{Bubble, NewBubble}, session::NewSession, Role};
 use ollama_rest::prelude::{ChatRequest, Message};
 use serde::{Deserialize, Serialize};
+use sqlx::{pool::PoolConnection, Acquire, Sqlite};
 use tauri::Emitter;
 
-use crate::{api::get_ollama, db::DB_URL, error::Error};
+use crate::{api::get_ollama, db::get_connection, error::Error};
 
 #[derive(Deserialize)]
 pub struct NewUserPrompt {
@@ -20,7 +21,7 @@ struct StreamPayload {
     content: String,
 }
 
-async fn generate_prompt(win: &tauri::Window, conn: &mut SqliteConnection, session_id: i32, model_id: &str) -> Result<Bubble, Error> {
+async fn generate_prompt(win: &tauri::Window, conn: &mut PoolConnection<Sqlite>, session_id: i32, model_id: &str) -> Result<Bubble, Error> {
     let ollama = get_ollama()?;
 
     let mut bubbles = Bubble::from_session(&mut *conn, session_id).await?;
@@ -91,8 +92,7 @@ async fn generate_prompt(win: &tauri::Window, conn: &mut SqliteConnection, sessi
 
 #[tauri::command]
 pub async fn send_prompt(window: tauri::Window, prompt: NewUserPrompt) -> Result<(), Error> {
-    let mut conn = load_connection(DB_URL.get().ok_or_else(|| Error::NoDataPath)?)
-        .await?;
+    let mut conn = get_connection().await?;
 
     let mut tx = conn.begin().await?;
 
@@ -118,7 +118,7 @@ pub async fn send_prompt(window: tauri::Window, prompt: NewUserPrompt) -> Result
 
 #[tauri::command]
 pub async fn regenerate(window: tauri::Window, session_id: i32, model_id: &str) -> Result<(), Error> {
-    let mut conn = load_connection(DB_URL.get().ok_or_else(|| Error::NoDataPath)?).await?;
+    let mut conn = get_connection().await?;
 
     generate_prompt(&window, &mut conn, session_id, model_id).await?;
     Ok(())
@@ -126,7 +126,7 @@ pub async fn regenerate(window: tauri::Window, session_id: i32, model_id: &str) 
 
 #[tauri::command]
 pub async fn list_chat_bubbles(session_id: i32) -> Result<Vec<Bubble>, Error> {
-    let mut conn = load_connection(DB_URL.get().ok_or_else(|| Error::NoDataPath)?).await?;
+    let mut conn = get_connection().await?;
 
     Ok(Bubble::from_session(&mut conn, session_id).await?)
 }

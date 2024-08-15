@@ -1,5 +1,10 @@
-use command::{chat::{list_chat_bubbles, regenerate, send_prompt}, model::{list_models, list_running_models, model_info}, session::{list_sessions, remove_session}};
-use db::{auto_load_db_url, update_database};
+use command::{
+    chat::{list_chat_bubbles, regenerate, send_prompt},
+    model::{list_models, list_running_models, model_info},
+    session::{list_sessions, remove_session},
+};
+use db::{create_db_file, db_file, load_connection, update_database};
+use error::Error;
 
 mod api;
 mod command;
@@ -8,8 +13,21 @@ mod error;
 mod paths;
 mod settings;
 
+async fn init() -> Result<(), Error> {
+    if !db_file()?.try_exists()? {
+        create_db_file().await?;
+    }
+
+    load_connection().await?;
+    update_database().await?;
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
+pub async fn run() -> Result<(), Error> {
+    init().await?;
+
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             list_chat_bubbles,
@@ -21,12 +39,7 @@ pub fn run() {
             remove_session,
             send_prompt,
         ])
-        .setup(|_| {
-            auto_load_db_url().unwrap();
-            let _ = update_database();
+        .run(tauri::generate_context!())?;
 
-            Ok(())
-        })
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+    Ok(())
 }
