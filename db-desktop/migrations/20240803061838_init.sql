@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     password        VARCHAR(256),
     is_default      BOOLEAN NOT NULL DEFAULT FALSE,
     date_created    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-;
+);
 
 INSERT INTO users (id, is_default) VALUES ('default', TRUE);
 
