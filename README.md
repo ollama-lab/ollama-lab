@@ -1,5 +1,7 @@
 # Ollama Lab 😮🦙⚗️
 
+> Not to be confused with [Cyanosite/OllamaLab](https://github.com/Cyanosite/OllamaLab)
+
 Yet another [Ollama](https://github.com/ollama/ollama) GUI but based on [Svelte](https://svelte.dev/) and [Tauri](https://tauri.app).
 We make Ollama easy-to-use for everyone.
 
