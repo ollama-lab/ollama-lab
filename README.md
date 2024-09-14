@@ -1,5 +1,7 @@
 # Ollama Lab 😮🦙⚗️
 
+> Ollama Lab is currently under Alpha phase. The features are incomplete.
+
 > Not to be confused with [Cyanosite/OllamaLab](https://github.com/Cyanosite/OllamaLab)
 
 Yet another [Ollama](https://github.com/ollama/ollama) GUI but based on [Svelte](https://svelte.dev/) and [Tauri](https://tauri.app).
