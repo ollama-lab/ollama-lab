@@ -1,9 +1,9 @@
 <script lang="ts">
   import type { Feed } from "$lib/models/feed"
-  import Reload from "@tabler/icons-svelte/icons/reload"
   import GuestBubble from "./bubbles/guest-bubble.svelte"
   import HostBubble from "./bubbles/host-bubble.svelte"
   import { chatBubbles } from "$lib/stores/chats"
+    import { IconReload } from "@tabler/icons-svelte";
 
   let feeds: Feed[] = $chatBubbles
 </script>
@@ -19,7 +19,7 @@
 
   {#if !feeds[feeds.length - 1].model}
     <button class="btn variant-filled-primary place-self-center flex place-items-center">
-      <Reload class="size-5" />
+      <IconReload class="size-5" />
       <span>Regenerate</span>
     </button>
   {/if}

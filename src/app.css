@@ -31,12 +31,3 @@ body {
     @apply space-y-3
   }
 }
-
-@keyframes spin-counter {
-  from {
-    transform: rotate(360deg);
-  }
-  to {
-    transform: rotate(0deg);
-  }
-}

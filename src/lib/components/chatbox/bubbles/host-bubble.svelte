@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { parseMarkdown } from "$lib/markdown";
-  import type { Feed } from "$lib/models/feed";
-  import { Avatar } from "@skeletonlabs/skeleton";
-  import { IconPointFilled } from "@tabler/icons-svelte";
-  import StatusIndicator from "../status-indicator.svelte";
+  import { parseMarkdown } from "$lib/markdown"
+  import type { Feed } from "$lib/models/feed"
+  import { Avatar } from "@skeletonlabs/skeleton"
+  import { IconPointFilled } from "@tabler/icons-svelte"
+  import { twMerge } from "tailwind-merge"
+  import StatusIndicator from "../status-indicator.svelte"
 
   export let feed: Feed
 
@@ -17,7 +18,12 @@
     <div class="place-self-start flex gap-1 place-items-center">
       <span class="text-sm font-semibold select-none">LLM {feed.model ?? "unknown"}</span>
     </div>
-    <div class={`markdown-view generated-text-block ${feed.status === "generating" ? "generating" : ""} bg-surface-200 dark:bg-surface-800 px-4 py-2 rounded-2xl rounded-tl-none`}>
+    <div
+      class={twMerge(
+        "markdown-view generated-text-block bg-surface-200 dark:bg-surface-800 px-4 py-2 rounded-2xl rounded-tl-none",
+        feed.status,
+      )}
+    >
       <!-- HTML sanitized, no worries! -->
       {@html parseMarkdown(feed.content)}
       {#if feed.status !== "completed"}

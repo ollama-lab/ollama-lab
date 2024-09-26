@@ -2,10 +2,9 @@
   import { IconRefresh } from "@tabler/icons-svelte"
   import { refreshModelList } from "$lib/stores/models"
   import { getToastStore } from "@skeletonlabs/skeleton"
+  import { twMerge } from "tailwind-merge"
 
   let refreshing: boolean = false
-
-  $: style = refreshing ? "animation: spin-counter 1.5s linear infinite;" : ""
 
   const toastStore = getToastStore()
 </script>
@@ -29,5 +28,10 @@
   }}
   disabled={refreshing}
 >
-  <IconRefresh {style} />
+  <IconRefresh
+    class={twMerge(
+      "-scale-x-100",
+      refreshing ? "animate-spin" : "",
+    )}
+  />
 </button>

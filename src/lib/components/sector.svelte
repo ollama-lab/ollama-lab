@@ -1,6 +1,6 @@
 <script lang="ts">
   import { AppRail, AppRailTile } from "@skeletonlabs/skeleton";
-  import { IconBrain, IconMessageChatbot, IconSettings } from "@tabler/icons-svelte"
+  import { IconMessageChatbot, IconPackages, IconSettings } from "@tabler/icons-svelte"
 
   const tabData = [
     {
@@ -11,7 +11,7 @@
     {
       name: "models",
       label: "Models",
-      icon: IconBrain,
+      icon: IconPackages,
     },
   ]
 

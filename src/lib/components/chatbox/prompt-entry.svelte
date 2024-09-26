@@ -1,18 +1,27 @@
 <script lang="ts">
-  import { IconArrowUp } from "@tabler/icons-svelte"
-  import autosize from "autosize";
-  import { onMount } from "svelte";
+  import autosize from "autosize"
+  import { onMount } from "svelte"
+  import SendButton from "./prompt-entry/send-button.svelte"
+  import type { PromptInteractionStatus, PromptSubmissionStatus } from "$lib/models/prompts"
 
   let form: HTMLFormElement | undefined
   let textEntry: HTMLTextAreaElement | undefined
 
   let prompt: string = ""
+  $: trimmedPrompt = prompt.trim()
+
+  let interactionStatus: PromptInteractionStatus | undefined = undefined
+  $: status = (interactionStatus ?? (trimmedPrompt.length ? "submittable" : "disallowed")) as PromptSubmissionStatus
 
   onMount(() => {
-    textEntry && autosize(textEntry)
+    if (textEntry) {
+      autosize(textEntry)
+    }
 
     return () => {
-      textEntry && autosize.destroy(textEntry)
+      if (textEntry) {
+        autosize.destroy(textEntry)
+      }
     }
   })
 </script>
@@ -23,9 +32,11 @@
   on:submit={ev => {
     ev.preventDefault()
 
-    if (!prompt.length) {
+    if (!trimmedPrompt.length) {
       return false
     }
+
+    interactionStatus = "submitting"
     
     // TODO
   }}
@@ -48,13 +59,6 @@
     />
   </div>
   <div class="flex flex-col place-content-end">
-    <button
-      type="submit"
-      class="btn-icon variant-filled btn-icon-sm"
-      title="Send prompt"
-      disabled={!prompt.length}
-    >
-      <IconArrowUp />
-    </button>
+    <SendButton {status} />
   </div>
 </form>
