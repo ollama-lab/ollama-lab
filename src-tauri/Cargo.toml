@@ -20,7 +20,7 @@ tauri-build = { version = "2.0.0-rc", features = ["config-toml"] }
 [dependencies]
 rand = "0.8"
 ollama-lab_db-desktop = { path = "../db-desktop" }
-ollama-rest = { git = "https://github.com/chardoncs/ollama-rest-rs.git", branch = "main" }
+ollama-rest = "0.3"
 tauri = { version = "2.0.0-rc", features = ["config-toml"] }
 tokio = { version = "^1.39", features = ["full"] }
 toml = "0.8"
