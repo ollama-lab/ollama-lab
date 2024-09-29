@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { AppBar } from "@skeletonlabs/skeleton";
-  import ModelSelector from "../model-selector.svelte";
-  import PromptEntry from "./prompt-entry.svelte";
-  import Welcome from "./chat-feed/welcome.svelte";
-  import BubbleList from "./bubble-list.svelte";
-  import { currentSession, sessionList } from "$lib/stores/sessions";
+  import { AppBar } from "@skeletonlabs/skeleton"
+  import ModelSelector from "../model-selector.svelte"
+  import PromptEntry from "./prompt-entry.svelte"
+  import Welcome from "./chat-feed/welcome.svelte"
+  import BubbleList from "./bubble-list.svelte"
+  import { currentSession, sessionList } from "$lib/stores/sessions"
 
   let currentModel: string | undefined = $sessionList.find(s => s.id === $currentSession)?.currentModel
 </script>

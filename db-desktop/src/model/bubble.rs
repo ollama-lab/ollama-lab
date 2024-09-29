@@ -11,6 +11,7 @@ pub struct Bubble {
     pub id: i32,
     pub session: i32,
     role: String,
+    pub model: Option<String>,
     pub content: String,
     pub date_created: DateTime<Local>,
     pub is_edited: bool,

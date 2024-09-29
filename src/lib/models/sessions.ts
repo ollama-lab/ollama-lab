@@ -1,5 +1,7 @@
 export interface Session {
   id: number
-  title: string
-  currentModel: string
+  title: string | null
+  owner: string
+  model: string | null
+  date_created: Date
 }

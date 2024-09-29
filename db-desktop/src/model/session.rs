@@ -7,6 +7,7 @@ pub struct Session {
     pub id: i32,
     pub title: Option<String>,
     pub owner: String,
+    pub model: Option<String>,
     pub date_created: DateTime<Local>,
 }
 

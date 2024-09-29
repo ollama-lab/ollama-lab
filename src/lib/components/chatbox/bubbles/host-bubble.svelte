@@ -16,7 +16,7 @@
   </div>
   <div class="flex flex-col">
     <div class="place-self-start flex gap-1 place-items-center">
-      <span class="text-sm font-semibold select-none">LLM {feed.model ?? "unknown"}</span>
+      <span class="text-sm font-semibold select-none">{feed.name}</span>
     </div>
     <div
       class={twMerge(
@@ -31,11 +31,13 @@
       {/if}
     </div>
     <div class="place-self-start flex gap-1 place-items-center">
-      <span class="text-xs select-none">{feed.date.toLocaleString()}</span>
-      {#if feed.isEdited}
-        <span class="text-xs select-none">(regenerated)</span>
-      {/if}
       <StatusIndicator status={feed.status ?? "completed"} />
+      {#if feed.status === "completed"}
+        <span class="text-xs select-none">{feed.date.toLocaleString()}</span>
+        {#if feed.isEdited}
+          <span class="text-xs select-none">(regenerated)</span>
+        {/if}
+      {/if}
     </div>
   </div>
 </div>

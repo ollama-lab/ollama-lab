@@ -1,8 +1,8 @@
 <script lang="ts">
   import { IconRefresh } from "@tabler/icons-svelte"
-  import { refreshModelList } from "$lib/stores/models"
   import { getToastStore } from "@skeletonlabs/skeleton"
   import { twMerge } from "tailwind-merge"
+  import { modelList } from "$lib/stores/models"
 
   let refreshing: boolean = false
 
@@ -14,7 +14,7 @@
   title="Refresh model list"
   on:click={() => {
     refreshing = true
-    refreshModelList()
+    modelList.refresh()
       .then(() => toastStore.trigger({
         message: "Refresh complete",
         timeout: 5_000,

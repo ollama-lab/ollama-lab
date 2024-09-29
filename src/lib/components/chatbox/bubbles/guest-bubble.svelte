@@ -8,7 +8,7 @@
 
 <div class="group flex flex-row place-self-end gap-4 place-items-center relative">
   <div class="flex flex-col">
-    <span class="place-self-end text-sm font-semibold select-none">{feed.user?.username ?? "You"}</span>
+    <span class="place-self-end text-sm font-semibold select-none">{feed.name}</span>
     <div class="markdown-view bg-primary-200 dark:bg-primary-800 px-4 py-2 rounded-2xl rounded-tr-none">
       <!-- HTML sanitized, no worries! -->
       {@html parseMarkdown(feed.content)}
@@ -21,6 +21,6 @@
     </div>
   </div>
   <div class="place-self-stretch">
-    <Avatar width="w-10" initials={feed.user?.username} background="bg-tertiary-700" />
+    <Avatar width="w-10" initials={feed.name} background="bg-tertiary-700" />
   </div>
 </div>

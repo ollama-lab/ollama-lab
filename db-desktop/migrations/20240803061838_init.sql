@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     title           TEXT,
     owner           VARCHAR(80) NOT NULL REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    model           VARCHAR(200),
     date_created    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -26,6 +27,7 @@ CREATE TABLE IF NOT EXISTS bubbles (
     id              INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     session         INTEGER NOT NULL REFERENCES sessions (id) ON DELETE CASCADE ON UPDATE CASCADE,
     role            VARCHAR(50) NOT NULL REFERENCES roles(id) ON UPDATE CASCADE,
+    model           VARCHAR(200),
     content         TEXT NOT NULL,
     date_created    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_edited       BOOLEAN NOT NULL DEFAULT FALSE

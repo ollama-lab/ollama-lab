@@ -1,5 +1,3 @@
-// NOTE: Snake case naming is used intentionally for matching returning values from Tauri backend
-
 export interface ModelDetails {
   parent_model?: string
   format: string

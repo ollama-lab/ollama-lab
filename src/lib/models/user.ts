@@ -1,4 +1,4 @@
 export interface User {
-  avatar?: any      // Reserved
+  avatar?: string // Reserved
   username: string
 }

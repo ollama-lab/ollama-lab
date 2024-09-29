@@ -6,12 +6,6 @@
   import SettingsPage from "$lib/components/settings-page.svelte"
   import { Toast } from "@skeletonlabs/skeleton"
   
-  let opened = false
-
-  function toggleOpened() {
-    opened = !opened
-  }
-
   let customTitlebar = false
 
   let currentTile: string = "sessions"
