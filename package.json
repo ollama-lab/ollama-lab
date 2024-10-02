@@ -24,8 +24,8 @@
     "@sveltejs/kit": "^2.6.1",
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tabler/icons-svelte": "^3.19.0",
-    "@tauri-apps/api": "^2.0.0-rc.6",
-    "@tauri-apps/cli": "^2.0.0-rc.17",
+    "@tauri-apps/api": "^2.0.1",
+    "@tauri-apps/cli": "^2.0.0",
     "@types/autosize": "^4.0.3",
     "@types/dompurify": "^3.0.5",
     "@types/eslint": "^9.6.1",
@@ -36,7 +36,7 @@
     "dompurify": "^3.1.7",
     "eslint": "^9.11.1",
     "eslint-plugin-svelte": "^2.44.1",
-    "globals": "^15.9.0",
+    "globals": "^15.10.0",
     "highlight.js": "^11.10.0",
     "marked": "^14.1.2",
     "marked-highlight": "^2.1.4",
@@ -48,7 +48,7 @@
     "tailwindcss": "^3.4.13",
     "tslib": "^2.7.0",
     "typescript": "^5.6.2",
-    "typescript-eslint": "^8.7.0",
+    "typescript-eslint": "^8.8.0",
     "vite": "^5.4.8"
   }
 }
