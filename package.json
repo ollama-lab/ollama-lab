@@ -1,0 +1,31 @@
+{
+  "name": "ollama-lab",
+  "version": "0.1.0",
+  "description": "Ollama client",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "tauri": "tauri"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@tauri-apps/api": "^2.2.0",
+    "@tauri-apps/plugin-opener": "^2.2.3"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.8",
+    "@sveltejs/kit": "^2.15.1",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "svelte": "^5.16.2",
+    "svelte-check": "^4.1.1",
+    "vite": "^6.0.7",
+    "@tauri-apps/cli": "^2.2.2"
+  },
+  "peerDependencies": {
+    "typescript": "latest"
+  }
+}
