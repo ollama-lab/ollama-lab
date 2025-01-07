@@ -3,7 +3,20 @@
   import Button from "../ui/button/button.svelte"
   import { ScrollArea } from "../ui/scroll-area"
   import { currentSessionId } from "$lib/stores/sessions"
+  import type { Session } from "$lib/models/session"
+  import SessionListItem from "./session-list/session-list-item.svelte"
 
+  // Placeholder sessions
+  const sessions: Session[] = [
+    {
+      id: 1,
+      title: "Why is the sky blue?",
+    },
+    {
+      id: 2,
+      title: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong title",
+    },
+  ]
 </script>
 
 <div class="w-full h-full flex flex-col">
@@ -23,7 +36,10 @@
     </div>
   </div>
   <ScrollArea class="flex-grow">
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2 px-2">
+      {#each sessions as { id, title } (id)}
+        <SessionListItem sessionId={id} {title} />
+      {/each}
     </div>
   </ScrollArea>
 </div>

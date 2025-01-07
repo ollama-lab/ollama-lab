@@ -5,7 +5,7 @@
 </script>
 
 <ResizablePaneGroup direction="horizontal">
-  <ResizablePane defaultSize={25}>
+  <ResizablePane defaultSize={25} collapsible>
     <SessionList />
   </ResizablePane>
   <ResizableHandle />
