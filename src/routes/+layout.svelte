@@ -1,10 +1,17 @@
 <script lang="ts">
-  import '../app.css';
   import { ModeWatcher } from "mode-watcher"
+  import '../app.css'
+  import AppBar from "$lib/components/app-bar.svelte"
 
-  let { children } = $props();
+  let { children } = $props()
 </script>
 
 <ModeWatcher defaultTheme="system" />
 
-{@render children()}
+<div class="flex flex-row w-dvw h-dvh">
+  <AppBar />
+
+  <div class="flex-grow">
+    {@render children()}
+  </div>
+</div>
