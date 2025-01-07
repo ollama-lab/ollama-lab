@@ -11,7 +11,7 @@
   } = $props()
 </script>
 
-<div class={cn("group flex m-1 rounded", active && "bg-secondary")}>
+<div class={cn("group flex m-1 rounded cursor-pointer", active && "bg-secondary")}>
   <div class="py-1">
     <hr
       class={cn(
@@ -24,6 +24,7 @@
     href={href ?? "#"}
     aria-label={name}
     title={name}
+    draggable={false}
     class={cn(
       "p-3",
     )}
