@@ -48,6 +48,7 @@
     }
 
     clickedTimes++
+    resetTimer()
   }}
 >
   {text}
