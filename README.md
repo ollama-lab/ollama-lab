@@ -1,6 +1,8 @@
 # Ollama Lab 😮🦙⚗️
 
-> Ollama Lab is currently under Alpha phase. The features are incomplete.
+> [!WARNING]
+>
+> You are at the branch storing the legacy version of Ollama Lab, which is unfinished and only for reference use.
 
 > Not to be confused with [Cyanosite/OllamaLab](https://github.com/Cyanosite/OllamaLab)
 
