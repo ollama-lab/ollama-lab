@@ -1,8 +1,6 @@
 <script lang="ts">
   import { ResizablePane, ResizablePaneGroup } from "$lib/components/ui/resizable"
   import ResizableHandle from "$lib/components/ui/resizable/resizable-handle.svelte"
-
-
 </script>
 
 <ResizablePaneGroup direction="horizontal">
