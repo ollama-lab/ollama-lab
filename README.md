@@ -1,6 +1,6 @@
 # Ollama Lab 😮🦙⚗️
 
-> Ollama Lab is currently under Alpha phase. The features are incomplete.
+> Ollama Lab is currently under pre-alpha phase. The features are incomplete.
 
 > Not to be confused with [Cyanosite/OllamaLab](https://github.com/Cyanosite/OllamaLab)
 
