@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { page } from "$app/state"
-  import { Button } from "$lib/components/ui/button"
   import type { Section } from "$lib/models/section"
   import { BotMessageSquareIcon, PackageIcon, SettingsIcon } from "lucide-svelte"
+  import TabLink from "./app-bar/tab-link.svelte"
+  import { page } from "$app/state"
 
   const tabs: Section[] = [
     {
@@ -29,31 +29,29 @@
   ]
 </script>
 
-<nav class="flex flex-col">
+<nav class="flex flex-col border border-border">
   <div class="flex-grow flex flex-col">
     {#each tabs as { name, icon, href, activePattern, onClick }}
-      <Button
-        variant={activePattern?.test(page.url.pathname) ? "outline" : "ghost"}
+      <TabLink
         {href}
-        onclick={() => onClick?.()}
-        size="icon"
-        title={name}
+        {onClick}
+        {name}
+        active={activePattern?.test(page.url.pathname)}
       >
         <svelte:component this={icon} />
-      </Button>
+      </TabLink>
     {/each}
   </div>
-  <div class="flex-shrink-0">
+  <div class="flex-shrink-0 flex flex-col">
     {#each footerTabs as { name, icon, href, activePattern, onClick }}
-      <Button
-        variant={activePattern?.test(page.url.pathname) ? "outline" : "ghost"}
+      <TabLink
         {href}
-        onclick={() => onClick?.()}
-        size="icon"
-        title={name}
+        {onClick}
+        {name}
+        active={activePattern?.test(page.url.pathname)}
       >
         <svelte:component this={icon} />
-      </Button>
+      </TabLink>
     {/each}
   </div> 
 </nav>
