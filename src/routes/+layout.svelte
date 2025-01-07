@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { ModeWatcher } from "mode-watcher"
+  import "@fontsource-variable/figtree"
+  import "@fontsource-variable/inter"
   import '../app.css'
+  import { ModeWatcher } from "mode-watcher"
   import AppBar from "$lib/components/app-bar.svelte"
 
   let { children } = $props()
