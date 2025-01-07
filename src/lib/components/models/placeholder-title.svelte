@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte"
 
-  const egg = atob("RGV2aWFudHMsIGZhc2NpbmF0aW5nIGFyZW4ndCB0aGV5Pwo=")
+  const egg = "RGV2aWFudHMsIGZhc2NpbmF0aW5nIGFyZW4ndCB0aGV5Pwo="
   let eggTriggered = $state(false)
 
   let text = $state("Oh llama, your llama. 🦙")
@@ -43,7 +43,7 @@
     if (clickedTimes >= 10) {
       eggTriggered = true
       clearTimer()
-      text = egg + " 😏"
+      text = atob(egg) + " 😏"
       return
     }
 
