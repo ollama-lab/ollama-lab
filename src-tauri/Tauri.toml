@@ -1,0 +1,31 @@
+product-name = "ollama-lab"
+version = "0.1.0"
+identifier = "org.ollamalab.tauri"
+
+[build]
+before-build-command = "bun build"
+before-dev-command = "bun dev"
+frontend-dist = "../build"
+dev-url = "http://localhost:1420"
+
+[bundle]
+active = true
+targets = "all"
+icon = [
+  "icons/32x32.png",
+  "icons/128x128.png",
+  "icons/128x128@2x.png",
+  "icons/icon.icns",
+  "icons/icon.ico"
+]
+
+[[app.windows]]
+fullscreen = false
+height = 600
+resizable = true
+title = "Ollama Lab"
+width = 800
+maximized = true
+
+[app.security]
+csp = ""
