@@ -20,10 +20,16 @@
     "@sveltejs/adapter-static": "^3.0.8",
     "@sveltejs/kit": "^2.15.1",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
-    "svelte": "^5.16.2",
+    "@tauri-apps/cli": "^2.2.2",
+    "autoprefixer": "^10.4.20",
+    "clsx": "^2.1.1",
+    "svelte": "^5.16.5",
     "svelte-check": "^4.1.1",
-    "vite": "^6.0.7",
-    "@tauri-apps/cli": "^2.2.2"
+    "tailwind-merge": "^2.6.0",
+    "tailwind-variants": "^0.3.0",
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7",
+    "vite": "^6.0.7"
   },
   "peerDependencies": {
     "typescript": "latest"
