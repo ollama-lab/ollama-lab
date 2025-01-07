@@ -1,8 +1,8 @@
 <script lang="ts">
-	import '../app.css';
-    import { ModeWatcher } from "mode-watcher"
+  import '../app.css';
+  import { ModeWatcher } from "mode-watcher"
 
-	let { children } = $props();
+  let { children } = $props();
 </script>
 
 <ModeWatcher defaultTheme="system" />
