@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { ScrollArea } from "$lib/components/ui/scroll-area"
   import type { ChatBubble, ChatHistory } from "$lib/models/session"
   import { cn } from "$lib/utils"
   import { BubbleSector } from "../bubble"
@@ -60,7 +59,7 @@ Would you like me to explain any part of this process in more detail or clarify 
   ]
 </script>
 
-<ScrollArea class="w-full h-full">
+<div>
   <div
     class={cn(
       "flex flex-col",
@@ -81,4 +80,4 @@ Would you like me to explain any part of this process in more detail or clarify 
       </div>
     {/if}
   </div>
-</ScrollArea>
+</div>

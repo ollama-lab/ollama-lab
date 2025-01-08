@@ -2,13 +2,14 @@
   import Header from "./chat-panel/header.svelte"
   import ChatFeeds from "./chat-panel/chat-feeds.svelte"
   import PromptInput from "./chat-panel/prompt-input.svelte"
+  import { ScrollArea } from "../ui/scroll-area"
 </script>
 
 <div class="flex flex-col w-full h-full">
   <Header />
-  <div class="flex-grow px-2 py-2 max-w-screen-lg mx-auto">
+  <ScrollArea class="flex-grow px-2 py-2 max-w-screen-lg mx-auto">
     <ChatFeeds />
-  </div>
+  </ScrollArea>
   <div class="max-w-screen-lg mx-auto">
     <PromptInput />
   </div>
