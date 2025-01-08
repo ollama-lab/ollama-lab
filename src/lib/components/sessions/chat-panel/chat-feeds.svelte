@@ -44,7 +44,7 @@ This is why we see a blue sky during the day, especially at high altitudes where
 Would you like me to explain any part of this process in more detail or clarify anything?`,
         dateSent: new Date(2025, 1, 8, 10, 49, 20),
         model: "llama3.2:3b",
-        status: "not sent",
+        status: "sent",
       },
     ],
   }
@@ -68,7 +68,7 @@ Would you like me to explain any part of this process in more detail or clarify 
     )}
   >
     {#if chatHistory}
-      {#each chatHistory.bubbles as bubble (bubble.id)}
+      {#each chatHistory.bubbles as bubble, i (bubble.id)}
         <BubbleSector data={bubble} />
       {/each}
       {#each continuedBubbles as bubble (bubble.id)}

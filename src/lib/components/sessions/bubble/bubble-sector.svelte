@@ -5,6 +5,7 @@
   import SectorFooter from "./sector-footer.svelte"
   import Bubble from "./bubble.svelte"
   import { Avatar, AvatarFallback } from "$lib/components/ui/avatar"
+  import { TriangleAlertIcon } from "lucide-svelte"
 
   let { data }: { data: ChatBubble } = $props()
 </script>
@@ -35,8 +36,12 @@
       </div>
     </div>
 
-    {#if data.role === "user" && data.status === "sending"}
-      <Loading />
+    {#if data.role === "user"}
+      {#if data.status === "sending"}
+        <Loading />
+      {:else if data.status === "not sent"}
+        <TriangleAlertIcon class="text-yellow-600" />
+      {/if}
     {/if}
   </div>
 {/if}
