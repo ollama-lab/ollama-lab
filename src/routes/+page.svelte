@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { SessionList } from "$lib/components/sessions"
-  import ChatPanel from "$lib/components/sessions/chat-panel.svelte"
+  import { ChatPanel, SessionList } from "$lib/components/sessions"
   import { ResizablePane, ResizablePaneGroup } from "$lib/components/ui/resizable"
   import ResizableHandle from "$lib/components/ui/resizable/resizable-handle.svelte"
 </script>

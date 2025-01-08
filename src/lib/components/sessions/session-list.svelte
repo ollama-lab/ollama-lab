@@ -11,10 +11,12 @@
     {
       id: 1,
       title: "Why is the sky blue?",
+      dateCreated: new Date(2025, 1, 8, 11),
     },
     {
       id: 2,
       title: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong title",
+      dateCreated: new Date(2025, 1, 8, 10),
     },
   ]
 </script>

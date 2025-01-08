@@ -1,21 +1,22 @@
 export interface Session {
   id: number
   title: string
+  dateCreated: Date
 }
 
 export type Role = "system" | "assistant" | "user"
 
-export type GenerationStatus = "processing" | "generating" | "done"
+export type TransmissionStatus = "preparing" | "sending" | "sent" | "not sent"
 
 export interface ChatBubble {
   id: number
   role: Role
   content: string
-  dateSent: Date
+  dateSent?: Date
   dateEdited?: Date
+  status: TransmissionStatus 
 
   model?: string
-  status?: GenerationStatus
 }
 
 export interface ChatHistory {
