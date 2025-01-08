@@ -7,10 +7,10 @@
 
 <div class="flex flex-col w-full h-full">
   <Header />
-  <ScrollArea class="flex-grow px-2 py-2 max-w-screen-lg mx-auto">
+  <ScrollArea class="flex-grow px-2 py-2 w-full max-w-screen-lg mx-auto">
     <ChatFeeds />
   </ScrollArea>
-  <div class="max-w-screen-lg mx-auto">
+  <div class="max-w-screen-lg w-full mx-auto">
     <PromptInput />
   </div>
 </div>
