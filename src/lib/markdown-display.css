@@ -37,3 +37,7 @@
 .marked-area h6 {
   @apply text-sm italic;
 }
+
+.marked-area.has-type-block :nth-last-child(2):is(p) {
+  @apply inline-block;
+}

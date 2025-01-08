@@ -29,7 +29,12 @@
     "marked-area",
     "px-5 py-2 rounded-2xl",
     data.role === "user" && "bg-secondary text-secondary-foreground px-5 py-2 rounded-2xl",
+    data.role === "assistant" && data.status === "sending" && "has-type-block",
   )}
 >
   {@html dataHTML}
+
+  {#if data.role === "assistant" && (data.status === "sending" || data.status === "preparing")}
+    <span>{"█"}</span>
+  {/if}
 </div>
