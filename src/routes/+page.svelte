@@ -1,5 +1,6 @@
 <script lang="ts">
   import { SessionList } from "$lib/components/sessions"
+  import ChatPanel from "$lib/components/sessions/chat-panel.svelte"
   import { ResizablePane, ResizablePaneGroup } from "$lib/components/ui/resizable"
   import ResizableHandle from "$lib/components/ui/resizable/resizable-handle.svelte"
 </script>
@@ -9,6 +10,8 @@
     <SessionList />
   </ResizablePane>
   <ResizableHandle />
-  <ResizablePane />
+  <ResizablePane>
+    <ChatPanel />
+  </ResizablePane>
 </ResizablePaneGroup>
 
