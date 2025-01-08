@@ -14,9 +14,7 @@
   >
     <EllipsisVerticalIcon class="size-4" />
   </DropdownMenuTrigger>
-  <DropdownMenuContent class="flex flex-col">
-    <DropdownMenuItem class="flex bg-destructive hover:bg-red-800 cursor-pointer">
-      <DeletionDialog />
-    </DropdownMenuItem>
+  <DropdownMenuContent>
+    <DeletionDialog />
   </DropdownMenuContent>
 </DropdownMenu>
