@@ -29,7 +29,7 @@
   ]
 </script>
 
-<nav class="flex flex-col border-r border-border">
+<nav class="flex flex-col border-r border-border px-1 py-1">
   <div class="flex-grow flex flex-col">
     {#each tabs as { name, icon, href, activePattern, onClick }}
       <TabLink

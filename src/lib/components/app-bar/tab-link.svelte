@@ -11,7 +11,7 @@
   } = $props()
 </script>
 
-<div class={cn("group flex m-1 rounded cursor-pointer", active && "bg-secondary")}>
+<div class={cn("group flex rounded cursor-pointer", active && "bg-secondary")}>
   <div class="py-1">
     <hr
       class={cn(
