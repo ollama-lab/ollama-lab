@@ -2,23 +2,9 @@
   import { PlusIcon } from "lucide-svelte"
   import Button from "../ui/button/button.svelte"
   import { ScrollArea } from "../ui/scroll-area"
-  import { currentSessionId } from "$lib/stores/sessions"
-  import type { Session } from "$lib/models/session"
+  import { currentSessionId, sessions } from "$lib/stores/sessions"
   import SessionListItem from "./session-list/session-list-item.svelte"
 
-  // Placeholder sessions
-  const sessions: Session[] = [
-    {
-      id: 1,
-      title: "Why is the sky blue?",
-      dateCreated: new Date(2025, 1, 8, 11),
-    },
-    {
-      id: 2,
-      title: "Looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong title",
-      dateCreated: new Date(2025, 1, 8, 10),
-    },
-  ]
 </script>
 
 <div class="w-full h-full flex flex-col">
@@ -39,9 +25,11 @@
   </div>
   <ScrollArea class="flex-grow">
     <div class="flex flex-col gap-2 px-2">
-      {#each sessions as { id, title } (id)}
-        <SessionListItem sessionId={id} {title} />
-      {/each}
+      {#if $sessions}
+        {#each $sessions as { id, title } (id)}
+          <SessionListItem sessionId={id} {title} />
+        {/each}
+      {/if}
     </div>
   </ScrollArea>
 </div>
