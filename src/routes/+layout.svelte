@@ -2,6 +2,7 @@
   import "@fontsource-variable/figtree"
   import "@fontsource-variable/inter"
   import '../app.css'
+  import "$lib/markdown-display.css"
   import { ModeWatcher } from "mode-watcher"
   import AppBar from "$lib/components/app-bar.svelte"
 

@@ -1,29 +1,28 @@
 <script lang="ts">
   import Kbd from "$lib/components/custom-ui/kbd.svelte"
+
+  const keyHints: { [key: string]: string } = {
+    "Enter": "Send prompt",
+    "Shift + Enter": "New line",
+  }
 </script>
 
 <table class="hint-table">
   <caption>Hints</caption>
   <tbody>
-    <tr>
-      <td><Kbd>Enter</Kbd></td><td>Send prompt</td>
-    </tr>
-    <tr>
-      <td><Kbd>Shift</Kbd> + <Kbd>Enter</Kbd></td><td>New line</td>
-    </tr>
+    {#each Object.entries(keyHints) as [key, value] (key)}
+      <tr>
+        <td class="text-end pr-2">
+          {#each key.split(" ") as kbd}
+            {#if kbd === "+" || kbd === "/"}
+              {kbd}
+            {:else}
+              <Kbd>{kbd}</Kbd>
+            {/if}
+          {/each}
+        </td>
+        <td class="text-start">{value}</td>
+      </tr>
+    {/each}
   </tbody>
 </table>
-
-<style>
-  @tailwind components;
-
-  @layer components {
-    table.hint-table tr > td:nth-child(1) {
-      @apply text-end pr-2;
-    }
-
-    table.hint-table tr > td:nth-child(2) {
-      @apply text-start;
-    }
-  }
-</style>

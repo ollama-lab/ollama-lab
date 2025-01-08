@@ -6,10 +6,10 @@
 
 <div class="flex flex-col w-full h-full">
   <Header />
-  <div class="flex-grow px-2 py-2 max-w-screen-lg">
+  <div class="flex-grow px-2 py-2 max-w-screen-lg mx-auto">
     <ChatFeeds />
   </div>
-  <div class="max-w-screen-lg">
+  <div class="max-w-screen-lg mx-auto">
     <PromptInput />
   </div>
 </div>

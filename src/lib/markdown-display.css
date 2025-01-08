@@ -1,0 +1,15 @@
+.marked-area {
+  @apply space-y-4;
+}
+
+.marked-area > ul {
+  @apply list-disc space-y-2;
+}
+
+.marked-area ol {
+  @apply list-decimal space-y-2;
+}
+
+.marked-area > :is(ul, ol) ul {
+  list-style-type: circle;
+}
