@@ -10,10 +10,11 @@
 
 <script lang="ts">
   import { Button } from "$lib/components/ui/button"
+  import { FormControl, FormField } from "$lib/components/ui/form"
   import autosize from "autosize"
   import { ArrowUpIcon } from "lucide-svelte"
   import { superForm } from "sveltekit-superforms"
-  import { zodClient } from "sveltekit-superforms/adapters"
+  import { zod } from "sveltekit-superforms/adapters"
 
   let textEntry = $state<HTMLTextAreaElement | undefined>()
 
@@ -30,33 +31,39 @@
     }
   })
 
-  const form = superForm({}, {
-    validators: zodClient(formSchema),
+  const form = superForm({ prompt: "" }, {
+    validators: zod(formSchema),
     onSubmit({ validators }) {
     },
   })
 
-  const { form: formData, enhance, submit } = form
+  const { form: formData, enhance, submit, isTainted, tainted } = form
 </script>
 
 <form
   class="bg-secondary text-secondary-foreground flex flex-col gap-2 px-3 py-3 mb-4 rounded-3xl"
   use:enhance
 >
-  <textarea
-    bind:this={textEntry}
-    id="prompt-input-textarea"
-    name="prompt"
-    class="border-none outline-none resize-none bg-transparent max-h-72 mx-2 mt-1"
-    placeholder="Enter your prompt here"
-    required
-    onkeypress={(ev) => {
-      if (ev.key === "Enter" && !ev.shiftKey && !ev.ctrlKey) {
-        ev.preventDefault()
-        submit()
-      }
-    }}
-  ></textarea>
+  <FormField {form} name="prompt">
+    <FormControl>
+      {#snippet children({ props })}
+        <textarea
+          bind:this={textEntry}
+          {...props}
+          bind:value={$formData.prompt}
+          class="w-full border-none outline-none resize-none bg-transparent max-h-72 mx-2 mt-1"
+          placeholder="Enter your prompt here"
+          required
+          onkeypress={(ev) => {
+            if (ev.key === "Enter" && !ev.shiftKey && !ev.ctrlKey) {
+              ev.preventDefault()
+              submit()
+            }
+          }}
+        ></textarea>
+      {/snippet}
+    </FormControl>
+  </FormField>
 
   <div class="flex">
     <div class="flex-grow flex">
@@ -67,6 +74,7 @@
         size="icon"
         class="rounded-full"
         type="submit"
+        disabled={!isTainted($tainted)}
       >
         <ArrowUpIcon class="!size-6" />
       </Button>
