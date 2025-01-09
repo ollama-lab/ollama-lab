@@ -2,7 +2,7 @@
   import { z } from "zod"
 
   export const formSchema = z.object({
-    prompt: z.string().trim().min(1),
+    prompt: z.string().min(1),
   })
 
   export type FormSchema = typeof formSchema
