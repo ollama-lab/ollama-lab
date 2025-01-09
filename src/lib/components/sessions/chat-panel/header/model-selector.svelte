@@ -22,7 +22,10 @@
   
   <DropdownMenuContent>
     {#each models as model}
-      <DropdownMenuItem onclick={() => value = model}>
+      <DropdownMenuItem
+        class="cursor-pointer"
+        onclick={() => value = model}
+      >
         {model}
       </DropdownMenuItem>
     {/each}
