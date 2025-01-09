@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Select, SelectContent, SelectItem, SelectTrigger } from "$lib/components/ui/select"
+  import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "$lib/components/ui/dropdown-menu"
+  import { ChevronsUpDownIcon } from "lucide-svelte"
 
   // TODO: This is a placeholder
   const models: string[] = [
@@ -13,15 +14,17 @@
 
 </script>
 
-<Select type="single" name="model" bind:value>
-  <SelectTrigger class="w-40">
-    {value}
-  </SelectTrigger>
-  <SelectContent>
+<DropdownMenu>
+  <DropdownMenuTrigger class="flex gap-2 px-4 h-full items-center">
+    <span class="flex-grow truncate text-start w-28">{value}</span>
+    <ChevronsUpDownIcon class="size-5" />
+  </DropdownMenuTrigger>
+  
+  <DropdownMenuContent>
     {#each models as model}
-      <SelectItem value={model} label={model}>
+      <DropdownMenuItem onclick={() => value = model}>
         {model}
-      </SelectItem>
+      </DropdownMenuItem>
     {/each}
-  </SelectContent>
-</Select>
+  </DropdownMenuContent>
+</DropdownMenu>
