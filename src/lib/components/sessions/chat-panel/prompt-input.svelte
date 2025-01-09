@@ -34,6 +34,7 @@
       if (el) {
         el.removeEventListener("focus", attachAutosize)
         autosize.destroy(el)
+        autosizeAttached = false
       }
     }
   })
