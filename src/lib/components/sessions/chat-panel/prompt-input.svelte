@@ -49,7 +49,6 @@
 
 <form
   class="bg-secondary text-secondary-foreground flex flex-col gap-2 px-3 py-3 mb-4 rounded-3xl"
-  use:enhance
 >
   <FormField {form} name="prompt">
     <FormControl>
