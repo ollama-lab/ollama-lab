@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { PlaceholderTitle } from "$lib/components/models"
-  import ModelList from "$lib/components/models/model-list.svelte"
+  import { ModelDetails, ModelList } from "$lib/components/models"
   import { ResizablePane, ResizablePaneGroup } from "$lib/components/ui/resizable"
   import ResizableHandle from "$lib/components/ui/resizable/resizable-handle.svelte"
 </script>
@@ -11,9 +10,7 @@
   </ResizablePane>
   <ResizableHandle />
   <ResizablePane>
-    <div class="flex flex-col place-items-center place-content-center h-full">
-      <PlaceholderTitle />
-    </div>
+    <ModelDetails />
   </ResizablePane>
 </ResizablePaneGroup>
 
