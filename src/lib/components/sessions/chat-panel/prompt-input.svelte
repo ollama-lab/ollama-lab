@@ -17,15 +17,22 @@
   import { zod } from "sveltekit-superforms/adapters"
 
   let textEntry = $state<HTMLTextAreaElement | undefined>()
+  let autosizeAttached = false
+
+  function attachAutosize() {
+    if (textEntry && !autosizeAttached) {
+      autosize(textEntry)
+      autosizeAttached = true
+    }
+  }
 
   $effect(() => {
     const el = textEntry
-    if (el) {
-      autosize(el)
-    }
+    el?.addEventListener("focus", attachAutosize)
 
     return () => {
       if (el) {
+        el.removeEventListener("focus", attachAutosize)
         autosize.destroy(el)
       }
     }
