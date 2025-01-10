@@ -85,7 +85,11 @@
           <div class="flex items-center text-xs gap-1">
             <span>{convert(size, "bytes").to("best", "imperial").toString(2)}</span>
             <div class="flex-grow"></div>
-            <span>Modified at {dayjs(modifiedAt).fromNow()}</span>
+            <span
+              title={modifiedAt.toLocaleString()}
+            >
+              Modified {dayjs(modifiedAt).fromNow()}
+            </span>
           </div>
         </div>
       {/each}
