@@ -11,6 +11,8 @@
   import dayjs from "dayjs"
   import relativeTime from "dayjs/plugin/relativeTime"
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
+  import { Button } from "../ui/button"
+  import { CopyIcon, TrashIcon } from "lucide-svelte"
 
   dayjs.extend(relativeTime)
 
@@ -29,8 +31,26 @@
 
 {#if model}
   <div class="flex flex-col h-full px-4 py-6 gap-4">
-    <div class="bg-secondary text-secondary-foreground px-4 py-3 rounded flex flex-col gap-3">
-      <h3 class="font-bold text-xl">{model}</h3>
+    <div class="border border-border px-4 py-3 rounded flex flex-col gap-3">
+      <div class="flex items-center gap-2">
+        <h3 class="font-bold text-xl flex-grow">{model}</h3>
+        <div class="flex gap-2 items-center">
+          <Button
+            variant="outline"
+            size="icon"
+            title="Copy"
+          >
+            <CopyIcon />
+          </Button>
+          <Button
+            variant="destructive"
+            size="icon"
+            title="Delete"
+          >
+            <TrashIcon />
+          </Button>
+        </div>
+      </div>
       <div class="flex gap-2 items-center text-sm">
         <span class="flex items-center select-none">
           <StatusDot status={sessionExpiredAt ? "success" : "disabled"} />
