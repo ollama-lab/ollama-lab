@@ -1,17 +1,16 @@
 export interface ModelListItem {
   name: string
-  modifiedAt: Date
+  modified_at: Date
   size: number
-  digest: string
 }
 
 export interface ModelDetails {
-  parentModel: string
+  parent_model: string
   format: string
   family: string
   families: string[]
-  parameterSize: string
-  quantizationLevel: string
+  parameter_size: string
+  quantization_level: string
 }
 
 export interface Model {
@@ -19,5 +18,5 @@ export interface Model {
   parameters: string
   template: string
   details: ModelDetails
-  modelInfo: { [key: string]: any }
+  model_info: { [key: string]: any }
 }

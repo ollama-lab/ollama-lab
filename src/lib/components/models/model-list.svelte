@@ -8,6 +8,10 @@
   import { convert } from "convert"
   import dayjs from "dayjs"
   import relativeTime from "dayjs/plugin/relativeTime"
+  import { onMount } from "svelte"
+  import type { CommandError } from "$lib/models/errors"
+  import { listLocalModels } from "$lib/commands/models"
+  import { toast } from "svelte-sonner"
 
   dayjs.extend(relativeTime)
 
@@ -18,25 +22,20 @@
   } = $props()
 
   // Stub data
-  const models: ModelListItem[] = [
-    {
-      name: "llama3.2:3b",
-      digest: "STUB",
-      modifiedAt: new Date(2025, 0, 9, 9, 10),
-      size: 3_000_000,
-    },
-    {
-      name: "mistral:3b",
-      digest: "STUB",
-      modifiedAt: new Date(2025, 0, 9, 9, 10),
-      size: 3_000_000,
-    },
-  ]
+  let models = $state<ModelListItem[]>([])
 
   // Stub data
   const activeModels: string[] = [
     "llama3.2:3b",
   ]
+
+  onMount(() => {
+    listLocalModels()
+      .then(result => models = result)
+      .catch((err: CommandError) => {
+        toast.error(err.message)
+      })
+  })
 </script>
 
 <div class="w-full h-full flex flex-col">
@@ -61,7 +60,7 @@
     }}
   >
     <div class="flex flex-col gap-2 px-2">
-      {#each models as { name, size, modifiedAt }, i (name)}
+      {#each models as { name, size, modified_at }, i (name)}
         <!-- svelte-ignore a11y_click_events_have_key_events  -->
         <div
           class={cn(
@@ -86,9 +85,9 @@
             <span>{convert(size, "bytes").to("best", "imperial").toString(2)}</span>
             <div class="flex-grow"></div>
             <span
-              title={modifiedAt.toLocaleString()}
+              title={modified_at.toLocaleString()}
             >
-              Modified {dayjs(modifiedAt).fromNow()}
+              Modified {dayjs(modified_at).fromNow()}
             </span>
           </div>
         </div>
