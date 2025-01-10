@@ -14,9 +14,22 @@ export interface ModelDetails {
 }
 
 export interface Model {
+  name: string
+  modified_at: Date
+  size: number
+  details: ModelDetails
+}
+
+export interface ModelInfo {
   modelfile: string
   parameters: string
   template: string
   details: ModelDetails
   model_info: { [key: string]: any }
+}
+
+export interface RunningModel {
+  name: string
+  expires_at: Date
+  size_vram: number
 }

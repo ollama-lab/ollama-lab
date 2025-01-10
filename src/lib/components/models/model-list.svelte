@@ -2,7 +2,7 @@
   import { CloudDownloadIcon } from "lucide-svelte"
   import Button from "../ui/button/button.svelte"
   import { ScrollArea } from "../ui/scroll-area"
-  import type { ModelListItem } from "$lib/models/model-item"
+  import type { ModelListItem, RunningModel } from "$lib/models/model-item"
   import { cn } from "$lib/utils"
   import StatusDot from "../custom-ui/status-dot.svelte"
   import { convert } from "convert"
@@ -17,19 +17,17 @@
 
   let {
     currentModel = $bindable(),
+    activeModels = $bindable(),
   }: {
     currentModel?: string
+    activeModels: RunningModel[]
   } = $props()
 
-  // Stub data
   let models = $state<ModelListItem[]>([])
 
-  // Stub data
-  const activeModels: string[] = [
-    "llama3.2:3b",
-  ]
-
   onMount(() => {
+    // TODO: Realtime update
+
     listLocalModels()
       .then(result => models = result)
       .catch((err: CommandError) => {
@@ -76,13 +74,13 @@
         >
           <div class="flex items-center select-none gap-1">
             <span class="font-bold">{name}</span>
-            {#if activeModels.includes(name)}
+            {#if activeModels.map(item => item.name).includes(name)}
               <StatusDot status="success" />
             {/if}
           </div>
 
           <div class="flex items-center text-xs gap-1">
-            <span>{convert(size, "bytes").to("best", "imperial").toString(2)}</span>
+            <span title={`${size.toLocaleString()} bytes`}>{convert(size, "bytes").to("best", "imperial").toString(2)}</span>
             <div class="flex-grow"></div>
             <span
               title={modified_at.toLocaleString()}

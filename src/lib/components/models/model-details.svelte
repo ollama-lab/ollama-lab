@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-  import type { Model } from "$lib/models/model-item"
+  import type { Model, RunningModel } from "$lib/models/model-item"
   import { PlaceholderTitle } from "."
   import StatusDot from "../custom-ui/status-dot.svelte"
   import dayjs from "dayjs"
@@ -14,9 +14,10 @@
 
   dayjs.extend(relativeTime)
 
-  let { model, sessionExpiredAt = $bindable() }: {
+  let { model, sessionExpiredAt = $bindable(), runningInfo }: {
     model?: string
     sessionExpiredAt?: Date
+    runningInfo?: RunningModel
   } = $props()
 
   // Stub data

@@ -1,6 +1,5 @@
 use std::{fmt::Display, str::FromStr};
 
-use ollama_rs::error::OllamaError;
 use serde::{Deserialize, Serialize};
 
 
@@ -39,8 +38,8 @@ impl From<String> for CommandError {
     }
 }
 
-impl From<OllamaError> for CommandError {
-    fn from(value: OllamaError) -> Self {
+impl From<ollama_rest::errors::Error> for CommandError {
+    fn from(value: ollama_rest::errors::Error) -> Self {
         format!("{}", value).into()
     }
 }
