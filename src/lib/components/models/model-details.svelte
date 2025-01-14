@@ -14,6 +14,8 @@
   import { Button } from "../ui/button"
   import { CopyIcon, TrashIcon } from "lucide-svelte"
   import { getModel } from "$lib/commands/models"
+    import CodeBlock from "../code-block/code-block.svelte";
+    import ScrollArea from "../ui/scroll-area/scroll-area.svelte";
 
   dayjs.extend(relativeTime)
 
@@ -38,7 +40,7 @@
 </script>
 
 {#if model}
-  <div class="flex flex-col h-full px-4 py-6 gap-4">
+  <div class="flex flex-col h-full px-4 py-6 gap-4 overflow-y-scroll">
     <div class="border border-border px-4 py-3 rounded flex flex-col gap-3">
       <div class="flex items-center gap-2">
         <h3 class="font-bold text-xl flex-grow">{model}</h3>
@@ -89,13 +91,13 @@
           <TabsTrigger value="modelfile">Modelfile</TabsTrigger>
           <TabsTrigger value="details">Details</TabsTrigger>
         </TabsList>
-        <TabsContent value="modelfile">
-          <pre>
-            {modelInfo?.modelfile}
-          </pre>
-        </TabsContent>
-        <TabsContent value="details">
-        </TabsContent>
+        <ScrollArea>
+          <TabsContent value="modelfile">
+            <CodeBlock lang="Modelfile">{modelInfo?.modelfile}</CodeBlock>
+          </TabsContent>
+          <TabsContent value="details">
+          </TabsContent>
+        </ScrollArea>
       </Tabs>
     </div>
   </div>
