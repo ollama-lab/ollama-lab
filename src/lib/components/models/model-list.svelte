@@ -12,6 +12,7 @@
   import type { CommandError } from "$lib/models/errors"
   import { listLocalModels } from "$lib/commands/models"
   import { toast } from "svelte-sonner"
+  import { Badge } from "../ui/badge"
 
   dayjs.extend(relativeTime)
 
@@ -77,6 +78,10 @@
             {#if activeModels.map(item => item.name).includes(name)}
               <StatusDot status="success" />
             {/if}
+
+            <Badge variant={currentModel === name ? "secondary" : "default"}>
+              Default
+            </Badge>
           </div>
 
           <div class="flex items-center text-xs gap-1">

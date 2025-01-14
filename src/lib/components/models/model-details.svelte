@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-  import type { Model, RunningModel } from "$lib/models/model-item"
+  import type { Model, ModelInfo, RunningModel } from "$lib/models/model-item"
   import { PlaceholderTitle } from "."
   import StatusDot from "../custom-ui/status-dot.svelte"
   import dayjs from "dayjs"
@@ -13,6 +13,7 @@
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
   import { Button } from "../ui/button"
   import { CopyIcon, TrashIcon } from "lucide-svelte"
+  import { getModel } from "$lib/commands/models"
 
   dayjs.extend(relativeTime)
 
@@ -22,9 +23,16 @@
     runningInfo?: RunningModel
   } = $props()
 
-  // Stub data
-  const modelInfo: Model = {
-  }
+  let modelInfo = $state<ModelInfo | undefined>()
+
+  $effect(() => {
+    if (!model) {
+      modelInfo = undefined
+      return
+    }
+
+    getModel(model).then(result => modelInfo = result)
+  })
 
   let tabValue = $state<string>("modelfile")
 </script>
@@ -35,6 +43,9 @@
       <div class="flex items-center gap-2">
         <h3 class="font-bold text-xl flex-grow">{model}</h3>
         <div class="flex gap-2 items-center">
+          <Button>
+            Set default
+          </Button>
           <Button
             variant="outline"
             size="icon"
@@ -79,6 +90,9 @@
           <TabsTrigger value="details">Details</TabsTrigger>
         </TabsList>
         <TabsContent value="modelfile">
+          <pre>
+            {modelInfo?.modelfile}
+          </pre>
         </TabsContent>
         <TabsContent value="details">
         </TabsContent>

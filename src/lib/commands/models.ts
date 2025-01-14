@@ -1,4 +1,4 @@
-import type { ModelDetails, ModelListItem, RunningModel } from "$lib/models/model-item"
+import type { Model, ModelDetails, ModelInfo, ModelListItem, RunningModel } from "$lib/models/model-item"
 import { invoke } from "@tauri-apps/api/core"
 
 interface RawModelListItem {
@@ -42,4 +42,8 @@ export async function listRunningModels(): Promise<RunningModel[]> {
       size_vram,
       expires_at: new Date(expires_at),
     } satisfies RunningModel)))
+}
+
+export async function getModel(name: string): Promise<ModelInfo> {
+  return invoke<ModelInfo>("get_model", { name })
 }
