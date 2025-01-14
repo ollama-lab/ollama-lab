@@ -11,7 +11,9 @@
 </script>
 
 <ModeWatcher defaultTheme="system" />
-<Toaster />
+<Toaster
+  closeButton
+/>
 
 <div class="flex flex-row w-dvw h-dvh">
   <AppBar />
