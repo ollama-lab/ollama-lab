@@ -11,7 +11,7 @@ pub fn get_ollama() -> Result<&'static Ollama, Error> {
         a
     } else {
         reset_ollama()?; 
-        API.get().unwrap()
+        API.get().unwrap_or_else(|| unreachable!())
     })
 }
 
