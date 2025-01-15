@@ -13,6 +13,7 @@
   import { listLocalModels } from "$lib/commands/models"
   import { toast } from "svelte-sonner"
   import { Badge } from "../ui/badge"
+  import { defaultModel } from "$lib/stores/models"
 
   dayjs.extend(relativeTime)
 
@@ -79,9 +80,11 @@
               <StatusDot status="success" />
             {/if}
 
-            <Badge variant={currentModel === name ? "secondary" : "default"}>
-              Default
-            </Badge>
+            {#if $defaultModel === name}
+              <Badge variant={currentModel === name ? "secondary" : "default"}>
+                Default
+              </Badge>
+            {/if}
           </div>
 
           <div class="flex items-center text-xs gap-1">

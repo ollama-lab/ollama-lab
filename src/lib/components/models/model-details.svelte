@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-  import type { Model, ModelInfo, RunningModel } from "$lib/models/model-item"
+  import type { ModelInfo, RunningModel } from "$lib/models/model-item"
   import { PlaceholderTitle } from "."
   import StatusDot from "../custom-ui/status-dot.svelte"
   import dayjs from "dayjs"
@@ -14,15 +14,21 @@
   import { Button } from "../ui/button"
   import { CopyIcon, TrashIcon } from "lucide-svelte"
   import { getModel } from "$lib/commands/models"
-  import CodeBlock from "../code-block/code-block.svelte"
   import ScrollArea from "../ui/scroll-area/scroll-area.svelte"
+  import Modelfile from "./model-details/modelfile.svelte"
+  import Details from "./model-details/details.svelte"
+  import Info from "./model-details/info.svelte"
+  import Parameters from "./model-details/parameters.svelte"
+  import Template from "./model-details/template.svelte"
+  import { defaultModel } from "$lib/stores/models"
+  import Countdown from "../custom-ui/countdown.svelte"
 
   dayjs.extend(relativeTime)
 
-  let { model, sessionExpiredAt = $bindable(), runningInfo }: {
+  let { model, runningInfo, onExpire }: {
     model?: string
-    sessionExpiredAt?: Date
     runningInfo?: RunningModel
+    onExpire?: () => void
   } = $props()
 
   let modelInfo = $state<ModelInfo | undefined>()
@@ -35,6 +41,8 @@
     }
   })
 
+  let expiresInSeconds = $state<number>(0)
+
   let tabValue = $state<string>("modelfile")
 </script>
 
@@ -44,9 +52,11 @@
       <div class="flex items-center gap-2">
         <h3 class="font-bold text-xl flex-grow">{model}</h3>
         <div class="flex gap-2 items-center">
-          <Button>
-            Set default
-          </Button>
+          {#if $defaultModel !== model}
+            <Button>
+              Set default
+            </Button>
+          {/if}
           <Button
             variant="outline"
             size="icon"
@@ -65,39 +75,58 @@
       </div>
       <div class="flex gap-2 items-center text-sm">
         <span class="flex items-center select-none">
-          <StatusDot status={sessionExpiredAt ? "success" : "disabled"} />
+          <StatusDot status={runningInfo ? "success" : "disabled"} />
           <span>
-            {#if sessionExpiredAt}
+            {#if runningInfo}
               Active
             {:else}
               Inactive
             {/if}
           </span>
         </span>
-        {#if sessionExpiredAt}
+        {#if runningInfo}
+          <hr class="bg-border h-full w-[2pt]" />
           <span
-            title={sessionExpiredAt.toLocaleString()}
+            title={runningInfo.toLocaleString()}
+            class="space-x-1"
           >
-            Expires in {getRemainingSeconds(sessionExpiredAt)} seconds
+            Session expires in
+            <Countdown bind:seconds={expiresInSeconds} expireAt={runningInfo.expires_at} {onExpire} />
+            second{expiresInSeconds !== 1 ? "s" : ""}
           </span>
         {/if}
       </div>
     </div>
 
     <div>
-      <Tabs bind:value={tabValue}>
-        <TabsList>
-          <TabsTrigger value="modelfile">Modelfile</TabsTrigger>
-          <TabsTrigger value="details">Details</TabsTrigger>
-        </TabsList>
-        <ScrollArea>
-          <TabsContent value="modelfile">
-            <CodeBlock lang="Modelfile">{modelInfo?.modelfile}</CodeBlock>
-          </TabsContent>
-          <TabsContent value="details">
-          </TabsContent>
-        </ScrollArea>
-      </Tabs>
+      {#if modelInfo}
+        <Tabs bind:value={tabValue}>
+          <TabsList>
+            <TabsTrigger value="modelfile">Modelfile</TabsTrigger>
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="info">Model Info</TabsTrigger>
+            <TabsTrigger value="params">Parameters</TabsTrigger>
+            <TabsTrigger value="template">Template</TabsTrigger>
+          </TabsList>
+          <ScrollArea>
+            <TabsContent value="modelfile">
+              <Modelfile value={modelInfo.modelfile} />
+            </TabsContent>
+            <TabsContent value="details">
+              <Details value={modelInfo.details} />
+            </TabsContent>
+            <TabsContent value="info">
+              <Info value={modelInfo.model_info} />
+            </TabsContent>
+            <TabsContent value="params">
+              <Parameters value={modelInfo.parameters} />
+            </TabsContent>
+            <TabsContent value="template">
+              <Template value={modelInfo.template} />
+            </TabsContent>
+          </ScrollArea>
+        </Tabs>
+      {/if}
     </div>
   </div>
 {:else}

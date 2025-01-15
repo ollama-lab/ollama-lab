@@ -26,6 +26,9 @@
     <ModelDetails
       model={currentModel}
       runningInfo={activeModels.find(({ name }) => name === currentModel)}
+      onExpire={() => {
+        activeModels = [...activeModels.filter(({ name }) => name !== currentModel)]
+      }}
     />
   </ResizablePane>
 </ResizablePaneGroup>

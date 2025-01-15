@@ -11,6 +11,7 @@ pub enum Error {
     Api(ollama_rest::errors::Error),
     DbQuery(sqlx::Error),
     Io(std::io::ErrorKind),
+    NoConnection,
     NoDataPath,
     Settings(settings::error::Error),
     StaticSync,
@@ -21,7 +22,6 @@ pub enum Error {
 impl Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let cache: Option<String>;
-
         write!(f, "{}", match self {
             Self::Api(err) => {
                 cache = Some(format!("{:?}", err));
@@ -50,6 +50,9 @@ impl Display for Error {
                 cache = Some(format!("{:?}", err));
                 cache.as_ref().unwrap().as_str()
             }
+            Self::NoConnection => {
+                "Ollama Lab is not connected to the app database."
+            },
         })
     }
 }

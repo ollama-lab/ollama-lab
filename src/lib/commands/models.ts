@@ -1,4 +1,4 @@
-import type { Model, ModelDetails, ModelInfo, ModelListItem, RunningModel } from "$lib/models/model-item"
+import type { ModelDetails, ModelInfo, ModelListItem, RunningModel } from "$lib/models/model-item"
 import { invoke } from "@tauri-apps/api/core"
 
 interface RawModelListItem {
@@ -46,4 +46,8 @@ export async function listRunningModels(): Promise<RunningModel[]> {
 
 export async function getModel(name: string): Promise<ModelInfo> {
   return invoke<ModelInfo>("get_model", { name })
+}
+
+export async function getDefaultModel(): Promise<string | undefined> {
+  return await invoke<string | undefined>("get_default_model");
 }

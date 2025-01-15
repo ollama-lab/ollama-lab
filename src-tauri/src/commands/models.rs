@@ -25,3 +25,27 @@ pub async fn get_model(state: State<'_, Arc<AppState>>, name: String) -> Result<
         verbose: None,
     }).await?)
 }
+
+#[tauri::command]
+pub async fn get_default_model(state: State<'_, Arc<AppState>>) -> Result<Option<String>, Error> {
+    let conn_op = state.conn.lock().await;
+    let conn = conn_op.as_ref().ok_or(Error::NoConnection)?;
+
+    let row: Option<(String,)> = match sqlx::query_as("SELECT model FROM default_models WHERE profile_id = $1")
+        .bind(state.profile)
+        .fetch_one(conn)
+        .await
+    {
+        Ok(data) => Some(data),
+        Err(err) => {
+            match err {
+                sqlx::Error::RowNotFound => {
+                    None
+                }
+                _ => Err(err)?,
+            }
+        }
+    };
+
+    Ok(row.map(|item| item.0))
+}
