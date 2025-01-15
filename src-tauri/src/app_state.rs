@@ -3,6 +3,6 @@ use sqlx::SqlitePool;
 use tokio::sync::Mutex;
 
 pub struct AppState {
-    pub conn: Mutex<SqlitePool>,
+    pub conn: Mutex<Option<SqlitePool>>,
     pub ollama: Ollama,
 }

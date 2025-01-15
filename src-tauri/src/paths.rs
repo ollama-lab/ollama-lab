@@ -19,7 +19,7 @@ pub(crate) fn local_data_dir() -> Option<PathBuf> {
     })
 }
 
-pub(crate) fn db_dir() -> Option<PathBuf> {
+pub(crate) fn db_path() -> Option<PathBuf> {
     local_data_dir().map(|mut dir| {
         dir.push(DB_NAME);
         dir

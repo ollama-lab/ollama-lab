@@ -1,10 +1,8 @@
 use std::sync::Arc;
 
 use app_state::AppState;
-use commands::models::{get_model, list_local_models, list_running_models};
+use commands::{init::initialize, models::{get_model, list_local_models, list_running_models}};
 use ollama_rest::Ollama;
-use paths::db_dir;
-use sqlx::SqlitePool;
 use tauri::Manager;
 use tokio::sync::Mutex;
 
@@ -20,22 +18,13 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             get_model,
+            initialize,
             list_local_models,
             list_running_models,
         ])
         .setup(|app| {
-            let (tx, rx) = std::sync::mpsc::channel();
-
-            let rt = tokio::runtime::Runtime::new().unwrap();
-            rt.spawn(async move {
-                // TODO: Handle errors
-                tx.send(SqlitePool::connect(db_dir().unwrap().to_str().unwrap()).await.unwrap()).unwrap();
-            });
-
-            let conn = rx.recv()?;
-
             app.manage(Arc::new(AppState{
-                conn: Mutex::new(conn),
+                conn: Mutex::new(None),
                 ollama: Ollama::default(),
             }));
 
