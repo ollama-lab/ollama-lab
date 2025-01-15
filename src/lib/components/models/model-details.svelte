@@ -14,8 +14,8 @@
   import { Button } from "../ui/button"
   import { CopyIcon, TrashIcon } from "lucide-svelte"
   import { getModel } from "$lib/commands/models"
-    import CodeBlock from "../code-block/code-block.svelte";
-    import ScrollArea from "../ui/scroll-area/scroll-area.svelte";
+  import CodeBlock from "../code-block/code-block.svelte"
+  import ScrollArea from "../ui/scroll-area/scroll-area.svelte"
 
   dayjs.extend(relativeTime)
 
@@ -28,12 +28,11 @@
   let modelInfo = $state<ModelInfo | undefined>()
 
   $effect(() => {
-    if (!model) {
-      modelInfo = undefined
-      return
-    }
+    modelInfo = undefined
 
-    getModel(model).then(result => modelInfo = result)
+    if (model) {
+      getModel(model).then(result => modelInfo = result)
+    }
   })
 
   let tabValue = $state<string>("modelfile")

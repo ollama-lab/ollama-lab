@@ -24,6 +24,7 @@
     "@sveltejs/kit": "^2.15.2",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tauri-apps/cli": "^2.2.4",
+    "@tauri-apps/plugin-clipboard-manager": "^2.2.0",
     "@types/autosize": "^4.0.3",
     "autoprefixer": "^10.4.20",
     "autosize": "^6.0.1",
