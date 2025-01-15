@@ -1,6 +1,7 @@
 use std::fmt::Display;
 
 use serde::{ser::SerializeStruct, Serialize};
+use sqlx::migrate::MigrateError;
 
 use crate::settings;
 
@@ -14,6 +15,7 @@ pub enum Error {
     Settings(settings::error::Error),
     StaticSync,
     Tauri(tauri::Error),
+    Migration(MigrateError),
 }
 
 impl Display for Error {
@@ -41,6 +43,10 @@ impl Display for Error {
                 cache.as_ref().unwrap().as_str()
             }
             Self::Tauri(err) => {
+                cache = Some(format!("{:?}", err));
+                cache.as_ref().unwrap().as_str()
+            }
+            Self::Migration(err) => {
                 cache = Some(format!("{:?}", err));
                 cache.as_ref().unwrap().as_str()
             }
@@ -88,5 +94,11 @@ impl From<sqlx::Error> for Error {
 impl From<tauri::Error> for Error {
     fn from(value: tauri::Error) -> Self {
         Self::Tauri(value)
+    }
+}
+
+impl From<MigrateError> for Error {
+    fn from(value: MigrateError) -> Self {
+        Self::Migration(value)
     }
 }
