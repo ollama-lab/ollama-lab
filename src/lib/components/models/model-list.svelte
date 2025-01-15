@@ -58,7 +58,7 @@
       currentModel = undefined
     }}
   >
-    <div class="flex flex-col gap-2 px-2">
+    <div class="flex flex-col gap-2 pl-2 pr-4">
       {#each models as { name, size, modified_at }, i (name)}
         <!-- svelte-ignore a11y_click_events_have_key_events  -->
         <div
