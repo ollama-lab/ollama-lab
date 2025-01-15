@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use app_state::AppState;
 use commands::models::{get_model, list_local_models, list_running_models};
 use ollama_rest::Ollama;
@@ -32,8 +34,8 @@ pub fn run() {
 
             let conn = rx.recv()?;
 
-            app.manage(Mutex::new(AppState{
-                conn,
+            app.manage(Arc::new(AppState{
+                conn: Mutex::new(conn),
                 ollama: Ollama::default(),
             }));
 
