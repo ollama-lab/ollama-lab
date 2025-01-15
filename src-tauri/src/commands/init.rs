@@ -28,7 +28,7 @@ pub async fn initialize(state: State<'_, Arc<AppState>>) -> Result<(), Error> {
                 .ok_or(Error::NoDataPath)?
         ).await?;
 
-        sqlx::migrate!("../migrations/")
+        sqlx::migrate!("./migrations/")
             .run(&conn)
             .await?;
 
