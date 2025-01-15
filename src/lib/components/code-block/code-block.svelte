@@ -3,7 +3,6 @@
   import { Card, CardContent, CardHeader } from "../ui/card"
   import { Button } from "../ui/button"
   import { ScrollArea } from "../ui/scroll-area"
-  import { writeText } from "@tauri-apps/plugin-clipboard-manager"
   import { CheckIcon, CopyIcon } from "lucide-svelte"
 
   let { lang, children }: {
@@ -40,7 +39,7 @@
       disabled={showCopied}
       onclick={() => {
         if (containerRef) {
-          writeText(containerRef.innerText)
+          navigator.clipboard.writeText(containerRef.innerText)
           showCopied = true
         }
       }}
