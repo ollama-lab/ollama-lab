@@ -81,7 +81,10 @@
             {/if}
 
             {#if $defaultModel === name}
-              <Badge variant={currentModel === name ? "secondary" : "default"}>
+              <Badge
+                variant={currentModel === name ? "secondary" : "default"}
+                title="Newly created sessions will use this model by default."
+              >
                 Default
               </Badge>
             {/if}

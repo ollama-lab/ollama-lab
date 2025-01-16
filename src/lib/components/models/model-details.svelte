@@ -22,6 +22,7 @@
   import { defaultModel } from "$lib/stores/models"
   import SetDefault from "./model-details/toolbar/set-default.svelte"
   import Status from "./model-details/status.svelte"
+  import { Badge } from "../ui/badge"
 
   dayjs.extend(relativeTime)
 
@@ -48,7 +49,13 @@
   <div class="flex flex-col h-full px-4 py-6 gap-4 overflow-y-scroll">
     <div class="border border-border px-4 py-3 rounded flex flex-col gap-3">
       <div class="flex items-center gap-2">
-        <h3 class="font-bold text-xl flex-grow">{model}</h3>
+        <h3 class="font-bold text-xl">{model}</h3>
+        {#if $defaultModel === model}
+          <Badge variant="outline">
+            Default
+          </Badge>
+        {/if}
+        <div class="flex-grow"></div>
         <div class="flex gap-2 items-center">
           {#if $defaultModel !== model}
             <SetDefault {model} />
