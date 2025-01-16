@@ -51,3 +51,7 @@ export async function getModel(name: string): Promise<ModelInfo> {
 export async function getDefaultModel(): Promise<string | undefined> {
   return await invoke<string | undefined>("get_default_model");
 }
+
+export async function setDefaultModel(newModel: string): Promise<void> {
+  return await invoke<void>("set_default_model", { newModel })
+}

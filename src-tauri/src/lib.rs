@@ -1,7 +1,10 @@
 use std::sync::Arc;
 
 use app_state::AppState;
-use commands::{init::initialize, models::{get_default_model, get_model, list_local_models, list_running_models}};
+use commands::{
+    init::initialize,
+    models::{get_default_model, get_model, list_local_models, list_running_models, set_default_model}
+};
 use ollama_rest::Ollama;
 use tauri::Manager;
 use tokio::sync::Mutex;
@@ -23,6 +26,7 @@ pub fn run() {
             initialize,
             list_local_models,
             list_running_models,
+            set_default_model,
         ])
         .setup(|app| {
             app.manage(Arc::new(AppState{

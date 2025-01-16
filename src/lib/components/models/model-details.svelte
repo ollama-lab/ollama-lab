@@ -13,7 +13,7 @@
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
   import { Button } from "../ui/button"
   import { CopyIcon, TrashIcon } from "lucide-svelte"
-  import { getModel } from "$lib/commands/models"
+  import { getModel, setDefaultModel } from "$lib/commands/models"
   import ScrollArea from "../ui/scroll-area/scroll-area.svelte"
   import Modelfile from "./model-details/modelfile.svelte"
   import Details from "./model-details/details.svelte"
@@ -22,6 +22,7 @@
   import Template from "./model-details/template.svelte"
   import { defaultModel } from "$lib/stores/models"
   import Countdown from "../custom-ui/countdown.svelte"
+  import { toast } from "svelte-sonner"
 
   dayjs.extend(relativeTime)
 
@@ -53,7 +54,18 @@
         <h3 class="font-bold text-xl flex-grow">{model}</h3>
         <div class="flex gap-2 items-center">
           {#if $defaultModel !== model}
-            <Button>
+            <Button
+              onclick={() => {
+                // Optimistic update
+                const prevModel = $defaultModel
+                $defaultModel = model
+                setDefaultModel(model)
+                  .catch((err) => {
+                    $defaultModel = prevModel
+                    toast.error(err)
+                  })
+              }}
+            >
               Set default
             </Button>
           {/if}
