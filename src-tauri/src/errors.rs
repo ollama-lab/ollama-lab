@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use serde::{ser::SerializeStruct, Serialize};
+use serde::Serialize;
 use sqlx::migrate::MigrateError;
 
 use crate::settings;
@@ -64,9 +64,7 @@ impl Serialize for Error {
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("CommandError", 1)?;
-        state.serialize_field("message", self.to_string().as_str())?;
-        state.end()
+        serializer.serialize_str(self.to_string().as_str())
     }
 }
 
