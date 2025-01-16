@@ -7,13 +7,12 @@
 <script lang="ts">
   import type { ModelInfo, RunningModel } from "$lib/models/model-item"
   import { PlaceholderTitle } from "."
-  import StatusDot from "../custom-ui/status-dot.svelte"
   import dayjs from "dayjs"
   import relativeTime from "dayjs/plugin/relativeTime"
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
   import { Button } from "../ui/button"
   import { CopyIcon, TrashIcon } from "lucide-svelte"
-  import { getModel, setDefaultModel } from "$lib/commands/models"
+  import { getModel } from "$lib/commands/models"
   import ScrollArea from "../ui/scroll-area/scroll-area.svelte"
   import Modelfile from "./model-details/modelfile.svelte"
   import Details from "./model-details/details.svelte"
@@ -21,8 +20,8 @@
   import Parameters from "./model-details/parameters.svelte"
   import Template from "./model-details/template.svelte"
   import { defaultModel } from "$lib/stores/models"
-  import Countdown from "../custom-ui/countdown.svelte"
-  import { toast } from "svelte-sonner"
+  import SetDefault from "./model-details/toolbar/set-default.svelte"
+  import Status from "./model-details/status.svelte"
 
   dayjs.extend(relativeTime)
 
@@ -42,8 +41,6 @@
     }
   })
 
-  let expiresInSeconds = $state<number>(0)
-
   let tabValue = $state<string>("modelfile")
 </script>
 
@@ -54,20 +51,7 @@
         <h3 class="font-bold text-xl flex-grow">{model}</h3>
         <div class="flex gap-2 items-center">
           {#if $defaultModel !== model}
-            <Button
-              onclick={() => {
-                // Optimistic update
-                const prevModel = $defaultModel
-                $defaultModel = model
-                setDefaultModel(model)
-                  .catch((err) => {
-                    $defaultModel = prevModel
-                    toast.error(err)
-                  })
-              }}
-            >
-              Set default
-            </Button>
+            <SetDefault {model} />
           {/if}
           <Button
             variant="outline"
@@ -85,29 +69,7 @@
           </Button>
         </div>
       </div>
-      <div class="flex gap-2 items-center text-sm">
-        <span class="flex items-center select-none">
-          <StatusDot status={runningInfo ? "success" : "disabled"} />
-          <span>
-            {#if runningInfo}
-              Active
-            {:else}
-              Inactive
-            {/if}
-          </span>
-        </span>
-        {#if runningInfo}
-          <hr class="bg-border h-full w-[2pt]" />
-          <span
-            title={runningInfo.toLocaleString()}
-            class="space-x-1"
-          >
-            Session expires in
-            <Countdown bind:seconds={expiresInSeconds} expireAt={runningInfo.expires_at} {onExpire} />
-            second{expiresInSeconds !== 1 ? "s" : ""}
-          </span>
-        {/if}
-      </div>
+      <Status {runningInfo} {onExpire} />
     </div>
 
     <div>
