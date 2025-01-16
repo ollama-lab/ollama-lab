@@ -26,6 +26,7 @@
 <ModeWatcher defaultTheme="system" />
 <Toaster
   closeButton
+  richColors
 />
 
 <AlertDialog open={!$frontendState.initialized}>
