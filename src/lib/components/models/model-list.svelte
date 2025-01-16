@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { CloudDownloadIcon } from "lucide-svelte"
-  import Button from "../ui/button/button.svelte"
   import { ScrollArea } from "../ui/scroll-area"
   import type { ModelListItem, RunningModel } from "$lib/models/model-item"
   import { cn } from "$lib/utils"
@@ -9,11 +7,15 @@
   import dayjs from "dayjs"
   import relativeTime from "dayjs/plugin/relativeTime"
   import { onMount } from "svelte"
-  import type { CommandError } from "$lib/models/errors"
   import { listLocalModels } from "$lib/commands/models"
   import { toast } from "svelte-sonner"
   import { Badge } from "../ui/badge"
   import { defaultModel } from "$lib/stores/models"
+  import PullModel from "./model-list/pull-model.svelte"
+  import Loading from "../custom-ui/loading.svelte"
+  import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
+  import { CircleAlertIcon, RefreshCwIcon } from "lucide-svelte"
+  import { Button } from "../ui/button"
 
   dayjs.extend(relativeTime)
 
@@ -27,14 +29,26 @@
 
   let models = $state<ModelListItem[]>([])
 
+  let modelFetchStatus = $state<"unfetched" | "fetching" | "error" | "fetched">("unfetched")
+
+  async function fetchModelList(): Promise<void> {
+    modelFetchStatus = "fetching"
+
+    await listLocalModels()
+      .then(result => {
+        models = result
+        modelFetchStatus = "fetched"
+      })
+      .catch((err) => {
+        toast.error(err)
+        modelFetchStatus = "error"
+      })
+  }
+
   onMount(() => {
     // TODO: Realtime update
 
-    listLocalModels()
-      .then(result => models = result)
-      .catch((err: CommandError) => {
-        toast.error(err.message)
-      })
+    fetchModelList()
   })
 </script>
 
@@ -43,14 +57,22 @@
     <h2 class="text-lg font-bold select-none flex-grow">Models</h2>
     <div class="flex-shrink-0">
       <Button
-        size="icon"
         variant="outline"
-        title="Pull model"
+        size="icon"
+        disabled={modelFetchStatus === "fetching"}
+        title={modelFetchStatus === "fetching" ? "Fetching..." : "Fetch model list"}
         onclick={() => {
+          listLocalModels()
+          toast.success("Model list updated.")
         }}
       >
-        <CloudDownloadIcon />
+        <RefreshCwIcon 
+          class={cn(
+            modelFetchStatus === "fetching" && "animate-spin",
+          )}
+        />
       </Button>
+      <PullModel />
     </div>
   </div>
   <ScrollArea
@@ -60,6 +82,18 @@
     }}
   >
     <div class="flex flex-col gap-2 pl-2 pr-4">
+      {#if modelFetchStatus === "fetching"}
+        <Loading content="Loading..." />
+      {/if}
+      {#if modelFetchStatus === "error"}
+        <Alert class="bg-destructive text-destructive-foreground border-destructive">
+          <CircleAlertIcon class="size-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            Failed to fetch the model list.
+          </AlertDescription>
+        </Alert>
+      {/if}
       {#each models as { name, size, modified_at }, i (name)}
         <!-- svelte-ignore a11y_click_events_have_key_events  -->
         <div
