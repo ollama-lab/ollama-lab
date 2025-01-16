@@ -5,7 +5,6 @@
   import StatusDot from "../custom-ui/status-dot.svelte"
   import { convert } from "convert"
   import dayjs from "dayjs"
-  import relativeTime from "dayjs/plugin/relativeTime"
   import { onMount } from "svelte"
   import { listLocalModels } from "$lib/commands/models"
   import { toast } from "svelte-sonner"
@@ -16,8 +15,7 @@
   import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
   import { CircleAlertIcon, RefreshCwIcon } from "lucide-svelte"
   import { Button } from "../ui/button"
-
-  dayjs.extend(relativeTime)
+  import RelativeTime from "../custom-ui/relative-time.svelte"
 
   let {
     currentModel = $bindable(),
@@ -127,10 +125,9 @@
           <div class="flex items-center text-xs gap-1">
             <span title={`${size.toLocaleString()} bytes`}>{convert(size, "bytes").to("best", "imperial").toString(2)}</span>
             <div class="flex-grow"></div>
-            <span
-              title={modified_at.toLocaleString()}
-            >
-              Modified {dayjs(modified_at).fromNow()}
+            <span class="flex gap-1">
+              Modified
+              <RelativeTime date={modified_at} />
             </span>
           </div>
         </div>
