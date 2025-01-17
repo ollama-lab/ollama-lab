@@ -1,17 +1,14 @@
 use std::sync::Arc;
 
-use ollama_rest::models::model::{
-    ModelCopyRequest,
-    ModelDeletionRequest,
-    ModelListResponse,
-    ModelShowRequest,
-    ModelShowResponse,
-    RunningModelResponse,
-    ModelSyncRequest
+use ollama_rest::{
+    futures::StreamExt,
+    models::model::{
+        ModelCopyRequest, ModelDeletionRequest, ModelListResponse, ModelShowRequest, ModelShowResponse, ModelSyncRequest, RunningModelResponse,
+    }
 };
-use tauri::State;
+use tauri::{ipc::Channel, State};
 
-use crate::{app_state::AppState, errors::Error};
+use crate::{app_state::AppState, errors::Error, events::ProgressEvent};
 
 #[tauri::command]
 pub async fn list_local_models(state: State<'_, Arc<AppState>>) -> Result<ModelListResponse, Error> {
@@ -97,17 +94,25 @@ pub async fn delete_model(state: State<'_, Arc<AppState>>, model: String) -> Res
 }
 
 #[tauri::command]
-pub async fn pull_model(state: State<'_, Arc<AppState>>, model: String) -> Result<(), Error> {
+pub async fn pull_model(state: State<'_, Arc<AppState>>, model: String, on_pull: Channel<ProgressEvent<'_>>) -> Result<(), Error> {
     let ollama = &state.ollama;
 
-    let stream = ollama.pull_model_streamed(&ModelSyncRequest{
+    let mut stream = ollama.pull_model_streamed(&ModelSyncRequest{
         name: model,
         stream: None,
         insecure: None,
     }).await?;
 
     while let Some(Ok(res)) = stream.next().await {
+        on_pull.send(ProgressEvent::InProgress{
+            id: "pull",
+            message: res.status.as_str(),
+            total: res.download_info.as_ref().map(|d| d.total),
+            completed: res.download_info.as_ref().and_then(|d| d.completed),
+        })?;
     }
+
+    on_pull.send(ProgressEvent::Success { id: "pull" })?;
 
     Ok(())
 }
