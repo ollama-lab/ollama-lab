@@ -23,6 +23,7 @@
   import SetDefault from "./model-details/toolbar/set-default.svelte"
   import Status from "./model-details/status.svelte"
   import { Badge } from "../ui/badge"
+    import DuplicateModel from "./model-details/toolbar/duplicate-model.svelte";
 
   dayjs.extend(relativeTime)
 
@@ -60,13 +61,7 @@
           {#if $defaultModel !== model}
             <SetDefault {model} />
           {/if}
-          <Button
-            variant="outline"
-            size="icon"
-            title="Copy"
-          >
-            <CopyIcon />
-          </Button>
+          <DuplicateModel {model} />
           <Button
             variant="destructive"
             size="icon"

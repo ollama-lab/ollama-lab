@@ -53,5 +53,13 @@ export async function getDefaultModel(): Promise<string | undefined> {
 }
 
 export async function setDefaultModel(newModel: string): Promise<void> {
-  return await invoke<void>("set_default_model", { newModel })
+  await invoke<void>("set_default_model", { newModel })
+}
+
+export async function copyModel(source: string, destination: string): Promise<void> {
+  await invoke<void>("copy_model", { source, destination })
+}
+
+export async function deleteModel(model: string): Promise<void> {
+  await invoke<void>("delete_model", { model })
 }

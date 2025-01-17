@@ -1,6 +1,14 @@
 use std::sync::Arc;
 
-use ollama_rest::models::model::{ModelListResponse, RunningModelResponse, ModelShowRequest, ModelShowResponse};
+use ollama_rest::models::model::{
+    ModelCopyRequest,
+    ModelDeletionRequest,
+    ModelListResponse,
+    ModelShowRequest,
+    ModelShowResponse,
+    RunningModelResponse,
+    ModelSyncRequest
+};
 use tauri::State;
 
 use crate::{app_state::AppState, errors::Error};
@@ -64,6 +72,42 @@ pub async fn set_default_model(state: State<'_, Arc<AppState>>, new_model: Strin
         .bind(new_model)
         .execute(conn)
         .await?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn copy_model(state: State<'_, Arc<AppState>>, source: String, destination: String) -> Result<(), Error> {
+    let ollama = &state.ollama;
+    
+    ollama.copy_model(&ModelCopyRequest{ source, destination })
+        .await?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn delete_model(state: State<'_, Arc<AppState>>, model: String) -> Result<(), Error> {
+    let ollama = &state.ollama;
+
+    ollama.delete_model(&ModelDeletionRequest{ name: model })
+        .await?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn pull_model(state: State<'_, Arc<AppState>>, model: String) -> Result<(), Error> {
+    let ollama = &state.ollama;
+
+    let stream = ollama.pull_model_streamed(&ModelSyncRequest{
+        name: model,
+        stream: None,
+        insecure: None,
+    }).await?;
+
+    while let Some(Ok(res)) = stream.next().await {
+    }
 
     Ok(())
 }
