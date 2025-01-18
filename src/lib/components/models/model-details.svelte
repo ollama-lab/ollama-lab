@@ -6,7 +6,6 @@
 
 <script lang="ts">
   import type { ModelInfo, RunningModel } from "$lib/models/model-item"
-  import { PlaceholderTitle } from "."
   import dayjs from "dayjs"
   import relativeTime from "dayjs/plugin/relativeTime"
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
@@ -23,6 +22,7 @@
   import { Badge } from "../ui/badge"
   import DuplicateModel from "./model-details/toolbar/duplicate-model.svelte"
   import DeleteModel from "./model-details/toolbar/delete-model.svelte"
+    import Marketplace from "./marketplace.svelte";
 
   dayjs.extend(relativeTime)
 
@@ -100,6 +100,6 @@
   </div>
 {:else}
   <div class="flex flex-col place-items-center place-content-center h-full">
-    <PlaceholderTitle />
+    <Marketplace />
   </div>
 {/if}
