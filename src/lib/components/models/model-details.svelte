@@ -43,7 +43,7 @@
     }
   })
 
-  let tabValue = $state<string>("modelfile")
+  let tabValue = $state<string>("details")
 </script>
 
 {#if model}
@@ -78,8 +78,8 @@
       {#if modelInfo}
         <Tabs bind:value={tabValue}>
           <TabsList>
-            <TabsTrigger value="modelfile">Modelfile</TabsTrigger>
             <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="modelfile">Modelfile</TabsTrigger>
             <TabsTrigger value="info">Model Info</TabsTrigger>
             <TabsTrigger value="params">Parameters</TabsTrigger>
             <TabsTrigger value="template">Template</TabsTrigger>
