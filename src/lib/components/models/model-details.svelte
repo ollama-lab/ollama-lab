@@ -11,7 +11,7 @@
   import relativeTime from "dayjs/plugin/relativeTime"
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
   import { Button } from "../ui/button"
-  import { CopyIcon, TrashIcon } from "lucide-svelte"
+  import { TrashIcon } from "lucide-svelte"
   import { getModel } from "$lib/commands/models"
   import ScrollArea from "../ui/scroll-area/scroll-area.svelte"
   import Modelfile from "./model-details/modelfile.svelte"
@@ -23,7 +23,7 @@
   import SetDefault from "./model-details/toolbar/set-default.svelte"
   import Status from "./model-details/status.svelte"
   import { Badge } from "../ui/badge"
-    import DuplicateModel from "./model-details/toolbar/duplicate-model.svelte";
+  import DuplicateModel from "./model-details/toolbar/duplicate-model.svelte"
 
   dayjs.extend(relativeTime)
 

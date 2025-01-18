@@ -9,16 +9,25 @@
   import { onMount } from "svelte"
   import { initialize } from "$lib/commands/init"
   import { frontendState } from "$lib/stores/app-state"
-  import { Loader2Icon } from "lucide-svelte"
+  import { CircleXIcon, Loader2Icon } from "lucide-svelte"
   import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "$lib/components/ui/alert-dialog"
+  import { defaultModel } from "$lib/stores/models"
 
   let { children } = $props()
 
-  onMount(() => {
+  let initError = $state<any>()
+
+  onMount(async () => {
     if (!$frontendState.initialized) {
-      initialize().then(() => {
-        $frontendState.initialized = true
-      })
+      try {
+        await initialize()
+        await defaultModel.reload()
+      } catch (err) {
+        initError = err
+        return
+      }
+
+      $frontendState.initialized = true
     }
   })
 </script>
@@ -33,11 +42,20 @@
   <AlertDialogContent>
     <AlertDialogHeader>
       <AlertDialogTitle class="flex gap-2 items-center">
-        <Loader2Icon class="animate-spin" />
-        Initializing...
+        {#if initError}
+          <CircleXIcon class="text-red-700 dark:text-red-400" />
+          <span class="text-red-700 dark:text-red-400">Initialization failed!</span>
+        {:else}
+          <Loader2Icon class="animate-spin" />
+          Initializing...
+        {/if}
       </AlertDialogTitle>
       <AlertDialogDescription>
-        Getting some important configurations done.
+        {#if initError}
+          {initError}
+        {:else}
+          Getting some important configurations done.
+        {/if}
       </AlertDialogDescription>
     </AlertDialogHeader>
   </AlertDialogContent>

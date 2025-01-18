@@ -10,12 +10,15 @@
   import { buttonVariants } from "$lib/components/ui/button"
   import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "$lib/components/ui/dialog"
   import { FormButton, FormControl, FormField } from "$lib/components/ui/form"
-    import { Input } from "$lib/components/ui/input";
+  import { Input } from "$lib/components/ui/input"
   import { cn } from "$lib/utils"
   import { CopyIcon } from "lucide-svelte"
+  import Loading from "$lib/components/custom-ui/loading.svelte"
   import { superForm } from "sveltekit-superforms"
   import { zod } from "sveltekit-superforms/adapters"
   import { z } from "zod"
+  import { copyModel } from "$lib/commands/models"
+  import { modelList } from "$lib/stores/model-list"
 
   let { model }: {
     model: string
@@ -23,9 +26,13 @@
 
   const form = superForm({ model: "" }, {
     validators: zod(modelDuplicationSchema),
+    onSubmit: async ({ formData }) => {
+      await copyModel(model, formData.get("model")?.toString() ?? "")
+      await modelList.reload()
+    }
   })
 
-  const { form: formData, tainted, isTainted } = form
+  const { form: formData, tainted, isTainted, submitting } = form
 </script>
 
 <Dialog>
@@ -43,27 +50,31 @@
       </DialogDescription>
     </DialogHeader>
 
-    <form class="flex flex-col gap-4">
-      <FormField {form} name="model">
-        <FormControl>
-          {#snippet children({ props })}
-            <Input
-              {...props}
-              bind:value={$formData.model}
-              placeholder="New model name"
-            />
-          {/snippet}
-        </FormControl>
-      </FormField>
+    {#if $submitting}
+      <Loading content="Proceeding..." />
+    {:else}
+      <form class="flex flex-col gap-4">
+        <FormField {form} name="model">
+          <FormControl>
+            {#snippet children({ props })}
+              <Input
+                {...props}
+                bind:value={$formData.model}
+                placeholder="New model name"
+              />
+            {/snippet}
+          </FormControl>
+        </FormField>
 
-      <DialogFooter>
-        <DialogClose class={cn(buttonVariants({ variant: "secondary" }))}>
-          Cancel
-        </DialogClose>
-        <FormButton disabled={!isTainted($tainted)}>
-          Proceed
-        </FormButton>
-      </DialogFooter>
-    </form>
+        <DialogFooter>
+          <DialogClose class={cn(buttonVariants({ variant: "secondary" }))}>
+            Cancel
+          </DialogClose>
+          <FormButton disabled={!isTainted($tainted)}>
+            Proceed
+          </FormButton>
+        </DialogFooter>
+      </form>
+    {/if}
   </DialogContent>
 </Dialog>
