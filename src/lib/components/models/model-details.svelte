@@ -10,8 +10,6 @@
   import dayjs from "dayjs"
   import relativeTime from "dayjs/plugin/relativeTime"
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
-  import { Button } from "../ui/button"
-  import { TrashIcon } from "lucide-svelte"
   import { getModel } from "$lib/commands/models"
   import ScrollArea from "../ui/scroll-area/scroll-area.svelte"
   import Modelfile from "./model-details/modelfile.svelte"
@@ -24,6 +22,7 @@
   import Status from "./model-details/status.svelte"
   import { Badge } from "../ui/badge"
   import DuplicateModel from "./model-details/toolbar/duplicate-model.svelte"
+  import DeleteModel from "./model-details/toolbar/delete-model.svelte"
 
   dayjs.extend(relativeTime)
 
@@ -62,13 +61,7 @@
             <SetDefault {model} />
           {/if}
           <DuplicateModel {model} />
-          <Button
-            variant="destructive"
-            size="icon"
-            title="Delete"
-          >
-            <TrashIcon />
-          </Button>
+          <DeleteModel {model} />
         </div>
       </div>
       <Status {runningInfo} {onExpire} />
