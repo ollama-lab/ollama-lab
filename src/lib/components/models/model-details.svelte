@@ -22,7 +22,7 @@
   import { Badge } from "../ui/badge"
   import DuplicateModel from "./model-details/toolbar/duplicate-model.svelte"
   import DeleteModel from "./model-details/toolbar/delete-model.svelte"
-  import Marketplace from "./marketplace.svelte"
+  import PlaceholderTitle from "./placeholder-title.svelte";
 
   dayjs.extend(relativeTime)
 
@@ -100,6 +100,6 @@
   </div>
 {:else}
   <div class="flex flex-col place-items-center place-content-center h-full">
-    <Marketplace />
+    <PlaceholderTitle />
   </div>
 {/if}
