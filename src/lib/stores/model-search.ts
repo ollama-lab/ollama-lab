@@ -1,7 +1,16 @@
 import { writable } from "svelte/store"
+import { z } from "zod"
 
 export const BASE_DOMAIN = "ollama.com"
 export const BASE_URL = `https://${BASE_DOMAIN}`
+
+export const searchEntrySchema = z.object({
+  q: z.string().trim(),
+  c: z.enum(["all", "embedding", "vision", "tools"]).default("all"),
+  o: z.enum(["popular", "newest"]).default("popular"),
+})
+
+export type SearchEntrySchema = typeof searchEntrySchema
 
 export type TagType = "category" | "parameter"
 
@@ -19,9 +28,9 @@ export interface SearchItem {
   updated: string
 }
 
-export type Category = "all" | "embedding" | "vision" | "tools"
+export type Category = typeof searchEntrySchema._type.c
 
-export type OrderedBy = "popular" | "newest"
+export type OrderedBy = typeof searchEntrySchema._type.o
 
 export interface SearchResult {
   keyword: string

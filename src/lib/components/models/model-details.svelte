@@ -22,7 +22,7 @@
   import { Badge } from "../ui/badge"
   import DuplicateModel from "./model-details/toolbar/duplicate-model.svelte"
   import DeleteModel from "./model-details/toolbar/delete-model.svelte"
-    import Marketplace from "./marketplace.svelte";
+  import Marketplace from "./marketplace.svelte"
 
   dayjs.extend(relativeTime)
 
