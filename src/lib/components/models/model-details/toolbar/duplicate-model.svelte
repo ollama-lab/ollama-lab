@@ -9,7 +9,7 @@
 <script lang="ts">
   import { buttonVariants } from "$lib/components/ui/button"
   import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "$lib/components/ui/dialog"
-  import { FormButton, FormControl, FormField } from "$lib/components/ui/form"
+  import { FormButton, FormControl, FormField, FormFieldErrors } from "$lib/components/ui/form"
   import { Input } from "$lib/components/ui/input"
   import { cn } from "$lib/utils"
   import { CopyIcon } from "lucide-svelte"
@@ -19,23 +19,38 @@
   import { z } from "zod"
   import { copyModel } from "$lib/commands/models"
   import { modelList } from "$lib/stores/model-list"
+  import { currentModel } from "$lib/stores/models"
+  import { toast } from "svelte-sonner"
 
   let { model }: {
     model: string
   } = $props()
 
+  let open = $state(false)
+
   const form = superForm({ model: "" }, {
     validators: zod(modelDuplicationSchema),
     onSubmit: async ({ formData }) => {
-      await copyModel(model, formData.get("model")?.toString() ?? "")
+      const newModelName = formData.get("model")?.toString()
+      if (!newModelName) {
+        return
+      }
+
+      await copyModel(model, newModelName)
       await modelList.reload()
+
+      const modelName = newModelName.split(":").length < 2 ? `${newModelName}:latest` : newModelName
+      currentModel.set(modelName)
+      open = false
+
+      toast.success(`Model copied to ${modelName}`)
     }
   })
 
-  const { form: formData, tainted, isTainted, submitting } = form
+  const { form: formData, tainted, isTainted, submitting, enhance } = form
 </script>
 
-<Dialog>
+<Dialog bind:open>
   <DialogTrigger
     class={cn(buttonVariants({ variant: "outline", size: "icon" }))}
     title="Duplicate model"
@@ -53,7 +68,7 @@
     {#if $submitting}
       <Loading content="Proceeding..." />
     {:else}
-      <form class="flex flex-col gap-4">
+      <form class="flex flex-col gap-4" method="POST" use:enhance>
         <FormField {form} name="model">
           <FormControl>
             {#snippet children({ props })}
@@ -62,6 +77,7 @@
                 bind:value={$formData.model}
                 placeholder="New model name"
               />
+              <FormFieldErrors />
             {/snippet}
           </FormControl>
         </FormField>
@@ -70,7 +86,10 @@
           <DialogClose class={cn(buttonVariants({ variant: "secondary" }))}>
             Cancel
           </DialogClose>
-          <FormButton disabled={!isTainted($tainted)}>
+          <FormButton
+            disabled={!isTainted($tainted)}
+            type="submit"
+          >
             Proceed
           </FormButton>
         </DialogFooter>
