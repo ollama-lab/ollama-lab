@@ -11,10 +11,13 @@
   onclick={() => {
     // Optimistic update
     const prevModel = $defaultModel
-    $defaultModel = model
+    defaultModel.set(model)
     setDefaultModel(model)
       .catch((err) => {
-        $defaultModel = prevModel
+        if (prevModel) {
+          defaultModel.set(prevModel)
+          return
+        }
         toast.error(err)
       })
   }}

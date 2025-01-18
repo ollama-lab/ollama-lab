@@ -53,7 +53,7 @@
   <ScrollArea
     class="flex-grow"
     onclick={() => {
-      $currentModel = undefined
+      currentModel.set(undefined)
     }}
   >
     <div class="flex flex-col gap-2 pl-2 pr-4">
@@ -79,7 +79,7 @@
           role="button"
           tabindex={i}
           onclick={(ev) => {
-            $currentModel = name
+            currentModel.set(name)
             ev.stopPropagation()
           }}
         >

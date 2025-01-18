@@ -2,7 +2,7 @@ import { listLocalModels } from "$lib/commands/models"
 import type { ModelListItem } from "$lib/models/model-item"
 import { toast } from "svelte-sonner"
 import { derived, writable } from "svelte/store"
-import { activeModels } from "./models"
+import { activeModels, defaultModel } from "./models"
 
 const internalStatus = writable<"unfetched" | "fetching" | "error" | "fetched">("unfetched")
 
@@ -26,5 +26,6 @@ export const modelList = {
       })
 
     await activeModels.reload()
+    await defaultModel.reload()
   },
 }
