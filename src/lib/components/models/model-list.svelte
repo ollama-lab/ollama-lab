@@ -60,7 +60,7 @@
         disabled={modelFetchStatus === "fetching"}
         title={modelFetchStatus === "fetching" ? "Fetching..." : "Fetch model list"}
         onclick={() => {
-          listLocalModels()
+          fetchModelList()
           toast.success("Model list updated.")
         }}
       >
