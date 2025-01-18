@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@tauri-apps/api": "^2.2.0",
-    "@tauri-apps/plugin-opener": "^2.2.4"
+    "@tauri-apps/plugin-opener": "~2"
   },
   "devDependencies": {
     "@fontsource-variable/figtree": "^5.1.2",
