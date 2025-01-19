@@ -81,9 +81,13 @@
       {#if modelInfo}
         <Tabs bind:value={tabValue}>
           <TabsList>
-            <TabsTrigger value="details">Details</TabsTrigger>
+            {#if modelInfo.details}
+              <TabsTrigger value="details">Details</TabsTrigger>
+            {/if}
             <TabsTrigger value="modelfile">Modelfile</TabsTrigger>
-            <TabsTrigger value="info">Model Info</TabsTrigger>
+            {#if modelInfo.model_info}
+              <TabsTrigger value="info">Model Info</TabsTrigger>
+            {/if}
             <TabsTrigger value="params">Parameters</TabsTrigger>
             <TabsTrigger value="template">Template</TabsTrigger>
           </TabsList>
@@ -91,12 +95,16 @@
             <TabsContent value="modelfile">
               <Modelfile value={modelInfo.modelfile} />
             </TabsContent>
-            <TabsContent value="details">
-              <Details value={modelInfo.details} />
-            </TabsContent>
-            <TabsContent value="info">
-              <Info value={modelInfo.model_info} />
-            </TabsContent>
+            {#if modelInfo.details}
+              <TabsContent value="details">
+                <Details value={modelInfo.details} />
+              </TabsContent>
+            {/if}
+            {#if modelInfo.model_info}
+              <TabsContent value="info">
+                <Info value={modelInfo.model_info} />
+              </TabsContent>
+            {/if}
             <TabsContent value="params">
               <Parameters value={modelInfo.parameters} />
             </TabsContent>

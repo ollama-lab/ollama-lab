@@ -21,11 +21,11 @@ export interface Model {
 }
 
 export interface ModelInfo {
-  modelfile: string
-  parameters: string
-  template: string
-  details: ModelDetails
-  model_info: { [key: string]: any }
+  modelfile?: string
+  parameters?: string
+  template?: string
+  details?: ModelDetails
+  model_info?: { [key: string]: any }
 }
 
 export interface RunningModel {
