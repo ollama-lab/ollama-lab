@@ -72,4 +72,8 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  kbd {
+    @apply bg-muted text-muted-foreground text-xs p-1 rounded-lg;
+  }
 }
