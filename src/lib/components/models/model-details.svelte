@@ -88,7 +88,9 @@
             {#if modelInfo.model_info}
               <TabsTrigger value="info">Model Info</TabsTrigger>
             {/if}
-            <TabsTrigger value="params">Parameters</TabsTrigger>
+            {#if modelInfo.parameters}
+              <TabsTrigger value="params">Parameters</TabsTrigger>
+            {/if}
             <TabsTrigger value="template">Template</TabsTrigger>
           </TabsList>
           <ScrollArea>

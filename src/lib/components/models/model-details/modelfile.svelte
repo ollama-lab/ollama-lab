@@ -4,4 +4,4 @@
   let { value }: { value?: string } = $props()
 </script>
 
-<CodeBlock lang="Modelfile">{value}</CodeBlock>
+<CodeBlock lang="Modelfile">{value?.trim()}</CodeBlock>

@@ -4,4 +4,4 @@
   let { value }: { value?: string } = $props()
 </script>
 
-<CodeBlock lang="plaintext">{value}</CodeBlock>
+<CodeBlock lang="plaintext">{value?.trim()}</CodeBlock>
