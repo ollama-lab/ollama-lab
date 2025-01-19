@@ -23,6 +23,8 @@
   import DuplicateModel from "./model-details/toolbar/duplicate-model.svelte"
   import DeleteModel from "./model-details/toolbar/delete-model.svelte"
   import PlaceholderTitle from "./placeholder-title.svelte";
+  import Loading from "../custom-ui/loading.svelte"
+  import { toast } from "svelte-sonner"
 
   dayjs.extend(relativeTime)
 
@@ -33,12 +35,16 @@
   } = $props()
 
   let modelInfo = $state<ModelInfo | undefined>()
+  let loading = $state(false)
 
   $effect(() => {
     modelInfo = undefined
 
     if (model) {
+      loading = true
       getModel(model).then(result => modelInfo = result)
+        .catch(err => toast.error(err))
+        .finally(() => loading = false)
     }
   })
 
@@ -68,6 +74,10 @@
     </div>
 
     <div>
+      {#if loading}
+        <Loading content="Loading..." />
+      {/if}
+
       {#if modelInfo}
         <Tabs bind:value={tabValue}>
           <TabsList>
