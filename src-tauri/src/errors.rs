@@ -22,38 +22,42 @@ pub enum Error {
 impl Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let cache: Option<String>;
-        write!(f, "{}", match self {
-            Self::Api(err) => {
-                cache = Some(format!("{:?}", err));
-                cache.as_ref().unwrap().as_str()
+        write!(
+            f,
+            "{}",
+            match self {
+                Self::Api(err) => {
+                    cache = Some(format!("{:?}", err));
+                    cache.as_ref().unwrap().as_str()
+                }
+                Self::Settings(err) => {
+                    cache = Some(format!("{:?}", err));
+                    cache.as_ref().unwrap().as_str()
+                }
+                Self::NoDataPath => "No data path",
+                Self::StaticSync => "Static syncing failed",
+                Self::AccessDenied => "Access denied",
+                Self::Io(err_kind) => {
+                    cache = Some(format!("{:?}", err_kind));
+                    cache.as_ref().unwrap().as_str()
+                }
+                Self::DbQuery(err) => {
+                    cache = Some(format!("{:?}", err));
+                    cache.as_ref().unwrap().as_str()
+                }
+                Self::Tauri(err) => {
+                    cache = Some(format!("{:?}", err));
+                    cache.as_ref().unwrap().as_str()
+                }
+                Self::Migration(err) => {
+                    cache = Some(format!("{:?}", err));
+                    cache.as_ref().unwrap().as_str()
+                }
+                Self::NoConnection => {
+                    "Ollama Lab is not connected to the app database."
+                }
             }
-            Self::Settings(err) => {
-                cache = Some(format!("{:?}", err));
-                cache.as_ref().unwrap().as_str()
-            }
-            Self::NoDataPath => "No data path",
-            Self::StaticSync => "Static syncing failed",
-            Self::AccessDenied => "Access denied",
-            Self::Io(err_kind) => {
-                cache = Some(format!("{:?}", err_kind));
-                cache.as_ref().unwrap().as_str()
-            }
-            Self::DbQuery(err) => {
-                cache = Some(format!("{:?}", err));
-                cache.as_ref().unwrap().as_str()
-            }
-            Self::Tauri(err) => {
-                cache = Some(format!("{:?}", err));
-                cache.as_ref().unwrap().as_str()
-            }
-            Self::Migration(err) => {
-                cache = Some(format!("{:?}", err));
-                cache.as_ref().unwrap().as_str()
-            }
-            Self::NoConnection => {
-                "Ollama Lab is not connected to the app database."
-            },
-        })
+        )
     }
 }
 

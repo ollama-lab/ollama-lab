@@ -12,9 +12,7 @@ pub enum ProgressEvent<'a> {
     },
 
     #[serde(rename_all = "camelCase")]
-    Success {
-        id: &'a str,
-    },
+    Success { id: &'a str },
 
     #[serde(rename_all = "camelCase")]
     Failure {

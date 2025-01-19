@@ -1,4 +1,9 @@
-use std::{fs::File, io::{Read, Write}, path::PathBuf, sync::{LazyLock, OnceLock}};
+use std::{
+    fs::File,
+    io::{Read, Write},
+    path::PathBuf,
+    sync::{LazyLock, OnceLock},
+};
 
 use error::Error;
 use serde::{Deserialize, Serialize};
@@ -75,16 +80,14 @@ impl Settings {
         } else {
             let loaded_settings = Settings::load()?;
 
-            CUR_SETTINGS.set(loaded_settings)
-                .map_err(|_| Error::Sync)?;
+            CUR_SETTINGS.set(loaded_settings).map_err(|_| Error::Sync)?;
 
             CUR_SETTINGS.get().unwrap()
         })
     }
 
     pub fn into_static(self) -> Result<(), Error> {
-        CUR_SETTINGS.set(self)
-            .map_err(|_| Error::Sync)?;
+        CUR_SETTINGS.set(self).map_err(|_| Error::Sync)?;
 
         Ok(())
     }

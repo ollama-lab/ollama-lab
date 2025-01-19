@@ -27,3 +27,5 @@ ollama-rest = "0.5"
 sqlx = { version = "^0.8.3", features = ["chrono", "sqlite", "runtime-tokio-rustls"] }
 dirs = "6"
 toml = "^0.8.19"
+tauri-plugin-http = "2"
+tauri-plugin-os = "2"

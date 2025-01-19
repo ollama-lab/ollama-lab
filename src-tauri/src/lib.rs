@@ -4,13 +4,8 @@ use app_state::AppState;
 use commands::{
     init::initialize,
     models::{
-        copy_model,
-        delete_model,
-        get_default_model,
-        get_model,
-        list_local_models,
-        list_running_models,
-        set_default_model,
+        copy_model, delete_model, get_default_model, get_model, list_local_models,
+        list_running_models, set_default_model,
     },
 };
 use ollama_rest::Ollama;
@@ -28,6 +23,8 @@ pub mod settings;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             copy_model,
@@ -40,7 +37,7 @@ pub fn run() {
             set_default_model,
         ])
         .setup(|app| {
-            app.manage(Arc::new(AppState{
+            app.manage(Arc::new(AppState {
                 conn: Mutex::new(None),
                 ollama: Ollama::default(),
                 // Default profile
