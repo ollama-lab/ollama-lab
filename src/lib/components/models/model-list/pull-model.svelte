@@ -3,11 +3,13 @@
   import { CommandDialog, CommandEmpty, CommandInput, CommandList } from "$lib/components/ui/command"
   import { CloudDownloadIcon } from "lucide-svelte"
   import Hints from "./pull-model/hints.svelte"
-  import { BASE_DOMAIN, type SearchResult } from "$lib/stores/model-search"
+  import { BASE_DOMAIN, BASE_URL, type SearchResult } from "$lib/stores/model-search"
   import Loading from "$lib/components/custom-ui/loading.svelte"
   import { toast } from "svelte-sonner"
   import { searchModel } from "$lib/search/model-search"
   import SearchResultSection from "./pull-model/search-result-section.svelte"
+  import { fly } from "svelte/transition"
+  import { openUrl } from "@tauri-apps/plugin-opener"
 
   let open = $state(false)
 
@@ -64,6 +66,18 @@
     bind:value={() => keyword, (newValue) => (keyword = newValue.trim())}
     disabled={searching}
     onkeydown={(ev) => {
+      if (ev.key === "End") {
+        ev.preventDefault()
+        const value = ev.currentTarget.value
+        ev.currentTarget.setSelectionRange(value.length, value.length)
+        return
+      }
+
+      if (ev.key === "Home") {
+        ev.preventDefault()
+        ev.currentTarget.setSelectionRange(0, 0)
+      }
+
       if (ev.key === "Enter") {
         ev.preventDefault()
 
@@ -75,6 +89,23 @@
       }
     }}
   />
+  <div class="flex">
+    <Button
+      variant="link"
+      size="sm"
+      class="text-xs flex gap-0"
+      onclick={async () => {
+        await openUrl(keyword.length > 0 ? `${BASE_URL}/search?` + new URLSearchParams({ q: keyword }) : BASE_URL)
+      }}
+    >
+      <span class="z-[1]">Visit {BASE_DOMAIN}</span>
+      {#if keyword.length > 0}
+        <span class="-ml-[1px]" transition:fly={{ x: -30, y: 0, duration: 300 }}>
+          &nbsp;with "{keyword}"
+        </span>
+      {/if}
+    </Button>
+  </div>
   <Hints searchEntered={keyword.length > 0} {isPullNext} />
   <CommandList>
     {#if searching}
