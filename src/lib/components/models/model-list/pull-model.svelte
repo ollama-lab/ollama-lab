@@ -62,7 +62,7 @@
   shouldFilter={false}
 >
   <CommandInput
-    placeholder={`Search model on ${BASE_DOMAIN}`}
+    placeholder={`Search models on ${BASE_DOMAIN}`}
     bind:value={() => keyword, (newValue) => (keyword = newValue.trim())}
     disabled={searching}
     onkeydown={(ev) => {
