@@ -22,9 +22,10 @@
   import { Badge } from "../ui/badge"
   import DuplicateModel from "./model-details/toolbar/duplicate-model.svelte"
   import DeleteModel from "./model-details/toolbar/delete-model.svelte"
-  import PlaceholderTitle from "./placeholder-title.svelte";
+  import PlaceholderTitle from "./placeholder-title.svelte"
   import Loading from "../custom-ui/loading.svelte"
   import { toast } from "svelte-sonner"
+  import { pullModelTasks } from "$lib/stores/pull-model"
 
   dayjs.extend(relativeTime)
 
@@ -37,10 +38,12 @@
   let modelInfo = $state<ModelInfo | undefined>()
   let loading = $state(false)
 
+  let downloadInfo = $derived(model ? $pullModelTasks[model] : undefined)
+
   $effect(() => {
     modelInfo = undefined
 
-    if (model) {
+    if (model && !downloadInfo) {
       loading = true
       getModel(model).then(result => modelInfo = result)
         .catch(err => toast.error(err))
@@ -66,11 +69,13 @@
           {#if $defaultModel !== model}
             <SetDefault {model} />
           {/if}
-          <DuplicateModel {model} />
-          <DeleteModel {model} />
+          {#if !downloadInfo}
+            <DuplicateModel {model} />
+            <DeleteModel {model} />
+          {/if}
         </div>
       </div>
-      <Status {runningInfo} {onExpire} />
+      <Status {runningInfo} {onExpire} {downloadInfo} />
     </div>
 
     <div>

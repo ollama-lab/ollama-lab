@@ -17,6 +17,30 @@ export const pullModelTasks = {
       return value
     })
   },
+  add(id: string, message: string) {
+    internalPullTasks.update((value) => {
+      if (!value[id]) {
+        value[id] = {
+          id,
+          type: "inProgress",
+          message,
+        }
+      }
+      return value
+    })
+  },
+  error(id: string, message: string) {
+    internalPullTasks.update((value) => {
+      if (value[id]) {
+        value[id] = {
+          id,
+          type: "failure",
+          message,
+        }
+      }
+      return value
+    })
+  },
   channel(model: string) {
     const chan = new Channel<ProgressEvent>()
     chan.onmessage = (msg) => {

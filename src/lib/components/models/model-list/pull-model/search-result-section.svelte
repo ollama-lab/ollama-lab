@@ -1,15 +1,13 @@
 <script lang="ts">
-  import { CommandGroup, CommandLinkItem } from "$lib/components/ui/command"
+  import { CommandGroup } from "$lib/components/ui/command"
   import type { SearchResult } from "$lib/stores/model-search"
   import SearchResultItem from "./search-result-item.svelte"
 
   let {
     searchResult,
-    isPullNext = false,
     onInitiatePull,
   }: {
     searchResult: SearchResult,
-    isPullNext?: boolean
     onInitiatePull?: (model: string) => void
   } = $props()
 </script>

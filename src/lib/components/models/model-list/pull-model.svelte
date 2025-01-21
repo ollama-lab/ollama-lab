@@ -12,6 +12,7 @@
   import { openUrl } from "@tauri-apps/plugin-opener"
   import { modelList } from "$lib/stores/model-list"
   import { pullModelTasks } from "$lib/stores/pull-model"
+  import { pullModel } from "$lib/commands/models"
 
   let open = $state(false)
 
@@ -22,7 +23,9 @@
 
   let isPullNext = $derived(searchResult !== undefined && keyword === searchResult.keyword)
 
-  function startPullModel(model: string) {
+  let selectedVariants = $state<{ [key: string]: string }>({})
+
+  async function startPullModel(model: string) {
     const downloadedAlready = $modelList.filter(({ name }) => name === model).length > 0
     if (downloadedAlready) {
       toast.error("Model already downloaded")
@@ -31,11 +34,21 @@
 
     const downloading = Object.keys($pullModelTasks).includes(model)
     if (downloading) {
-      toast.error("Model downloading")
+      toast.warning("Model downloading")
       return
     }
 
+    pullModelTasks.add(model, "Starting pulling...")
     open = false
+
+    try {
+      await pullModel(model)
+    } catch (err) {
+      pullModelTasks.error(model, `Error: ${err}`)
+      return
+    }
+
+    pullModelTasks.clear(model)
   }
 
   async function startSearchModels() {
@@ -100,7 +113,11 @@
         if (ev.ctrlKey) {
           startPullModel(keyword)
         } else {
-          startSearchModels()
+          if (isPullNext) {
+            startPullModel()
+          } else {
+            startSearchModels()
+          }
         }
       }
     }}
@@ -132,7 +149,6 @@
     {#if searchResult !== undefined}
       <SearchResultSection
         {searchResult}
-        {isPullNext}
         onInitiatePull={(model) => {
           startPullModel(model)
         }}

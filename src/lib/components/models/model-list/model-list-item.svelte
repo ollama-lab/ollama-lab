@@ -8,6 +8,7 @@
   import { Progress } from "$lib/components/ui/progress"
   import { Loader2Icon, TriangleAlertIcon, XIcon } from "lucide-svelte"
   import MicroButton from "$lib/components/custom-ui/micro-button.svelte"
+    import { pullModelTasks } from "$lib/stores/pull-model";
 
   let {
     name,
@@ -75,6 +76,7 @@
       {#if status === "failure"}
         <MicroButton
           title="Cancel"
+          onclick={() => pullModelTasks.clear(name)}
         >
           <XIcon class="size-4" />
         </MicroButton>
@@ -82,6 +84,16 @@
     </div>
 
     <div class="flex items-center text-xs gap-1">
+      {#if message}
+        <span class="truncate">{message}</span>
+      {/if}
+      {#if modifiedAt !== undefined}
+        <span class="flex gap-1">
+          Modified
+          <RelativeTime date={modifiedAt} />
+        </span>
+      {/if}
+      <div class="flex-grow"></div>
       {#if completedSize !== undefined}
         <span title={`${completedSize.toLocaleString()} bytes`}>
           {convert(completedSize, "bytes").to("best", "imperial").toString(2)}
@@ -95,20 +107,10 @@
           {convert(totalSize, "bytes").to("best", "imperial").toString(2)}
         </span>
       {/if}
-      <div class="flex-grow"></div>
-      {#if message}
-        <span class="truncate">{message}</span>
-      {/if}
-      {#if modifiedAt !== undefined}
-        <span class="flex gap-1">
-          Modified
-          <RelativeTime date={modifiedAt} />
-        </span>
-      {/if}
     </div>
   </div>
   <Progress
-    value={status === "inProgress" ? (completeProgress ? completedSize! / totalSize! : null) : undefined}
+    value={status === "inProgress" ? (completeProgress ? completedSize! / totalSize! * 100 : null) : undefined}
     class={cn(
       "h-1 rounded-none bg-transparent",
       selected && "invert",

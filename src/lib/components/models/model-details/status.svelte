@@ -1,11 +1,18 @@
 <script lang="ts">
   import Countdown from "$lib/components/custom-ui/countdown.svelte"
   import StatusDot from "$lib/components/custom-ui/status-dot.svelte"
+  import type { ProgressEvent } from "$lib/models/events/progress"
   import type { RunningModel } from "$lib/models/model-item"
+  import { Loader2Icon } from "lucide-svelte"
 
-  let { runningInfo, onExpire }: {
+  let {
+    runningInfo,
+    onExpire,
+    downloadInfo,
+  }: {
     runningInfo?: RunningModel
     onExpire?: () => void
+    downloadInfo?: ProgressEvent
   } = $props()
 
   let expiresInSeconds = $state<number>(0)
@@ -13,12 +20,25 @@
 
 <div class="flex gap-2 items-center text-sm">
   <span class="flex items-center select-none">
-    <StatusDot status={runningInfo ? "success" : "disabled"} />
+    {#if downloadInfo && downloadInfo.type === "inProgress"}
+      <Loader2Icon class="size-4 animate-spin mr-2" />
+    {:else}
+      <StatusDot status={downloadInfo?.type === "failure" ? "error" : runningInfo ? "success" : "disabled"} />
+    {/if}
     <span>
-      {#if runningInfo}
-        Active
+      {#if downloadInfo}
+        {#if downloadInfo.type === "inProgress"}
+          {downloadInfo.message}
+        {/if}
+        {#if downloadInfo.type === "failure"}
+          Error: {downloadInfo.message}
+        {/if}
       {:else}
-        Inactive
+        {#if runningInfo}
+          Active
+        {:else}
+          Inactive
+        {/if}
       {/if}
     </span>
   </span>
