@@ -13,7 +13,7 @@
     onInitiatePull,
   }: {
     item: SearchItem
-    onInitiatePull?: (model: string, downloadedAlready: boolean, downloading: boolean) => void
+    onInitiatePull?: (model: string) => void
   } = $props()
 
   let selected = $state<string>("latest")
@@ -21,6 +21,14 @@
 
   let downloadedAlready = $derived($modelList.filter(({ name }) => name === fullName).length > 0)
   let downloading = $derived(Object.keys($pullModelTasks).includes(fullName))
+
+  let downloadInitiated = $state(false)
+
+  $effect(() => {
+    if (downloading) {
+      downloadInitiated = false
+    }
+  })
 </script>
 
 <CommandLinkItem
@@ -61,13 +69,15 @@
           title={downloadedAlready ? "Model downloaded already" : "Pull model"}
           onclick={(ev) => {
             ev.stopPropagation()
-            onInitiatePull?.(fullName, downloadedAlready, downloading)
+            downloadInitiated = true
+            onInitiatePull?.(fullName)
           }}
           disabled={downloadedAlready}
         >
-          <CloudDownloadIcon class={cn("size-4", downloadedAlready && "text-muted-foreground")} />
-          {#if downloading}
+          {#if downloadInitiated || downloading}
             <Loader2Icon class="size-4 animate-spin" />
+          {:else}
+            <CloudDownloadIcon class={cn("size-4", downloadedAlready && "text-muted-foreground")} />
           {/if}
         </MicroButton>
       </div>

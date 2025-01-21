@@ -10,6 +10,8 @@
   import SearchResultSection from "./pull-model/search-result-section.svelte"
   import { fly } from "svelte/transition"
   import { openUrl } from "@tauri-apps/plugin-opener"
+  import { modelList } from "$lib/stores/model-list"
+  import { pullModelTasks } from "$lib/stores/pull-model"
 
   let open = $state(false)
 
@@ -21,6 +23,18 @@
   let isPullNext = $derived(searchResult !== undefined && keyword === searchResult.keyword)
 
   function startPullModel(model: string) {
+    const downloadedAlready = $modelList.filter(({ name }) => name === model).length > 0
+    if (downloadedAlready) {
+      toast.error("Model already downloaded")
+      return
+    }
+
+    const downloading = Object.keys($pullModelTasks).includes(model)
+    if (downloading) {
+      toast.error("Model downloading")
+      return
+    }
+
     open = false
   }
 
@@ -68,6 +82,7 @@
     onkeydown={(ev) => {
       if (ev.key === "End") {
         ev.preventDefault()
+        ev.stopPropagation()
         const value = ev.currentTarget.value
         ev.currentTarget.setSelectionRange(value.length, value.length)
         return
@@ -75,6 +90,7 @@
 
       if (ev.key === "Home") {
         ev.preventDefault()
+        ev.stopPropagation()
         ev.currentTarget.setSelectionRange(0, 0)
       }
 
