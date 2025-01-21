@@ -2,7 +2,9 @@
   import MicroButton from "$lib/components/custom-ui/micro-button.svelte"
   import TagBadge from "$lib/components/custom-ui/tag-badge.svelte"
   import { CommandLinkItem } from "$lib/components/ui/command"
+  import { modelList } from "$lib/stores/model-list"
   import type { SearchItem } from "$lib/stores/model-search"
+  import { pullModelTasks } from "$lib/stores/pull-model"
   import { cn } from "$lib/utils"
   import { CloudDownloadIcon, Loader2Icon } from "lucide-svelte"
 
@@ -11,10 +13,14 @@
     onInitiatePull,
   }: {
     item: SearchItem
-    onInitiatePull?: (model: string) => void
+    onInitiatePull?: (model: string, downloadedAlready: boolean, downloading: boolean) => void
   } = $props()
 
   let selected = $state<string>("latest")
+  let fullName = $derived(`${item.name}:${selected}`)
+
+  let downloadedAlready = $derived($modelList.filter(({ name }) => name === fullName).length > 0)
+  let downloading = $derived(Object.keys($pullModelTasks).includes(fullName))
 </script>
 
 <CommandLinkItem
@@ -52,13 +58,17 @@
       <div class="flex gap-2 lg:gap-4 place-content-end text-xs items-center">
         <span>Selected: {selected}</span>
         <MicroButton
-          title="Pull model"
+          title={downloadedAlready ? "Model downloaded already" : "Pull model"}
           onclick={(ev) => {
             ev.stopPropagation()
+            onInitiatePull?.(fullName, downloadedAlready, downloading)
           }}
+          disabled={downloadedAlready}
         >
-          <CloudDownloadIcon class="size-4" />
-          <Loader2Icon class="size-4 animate-spin" />
+          <CloudDownloadIcon class={cn("size-4", downloadedAlready && "text-muted-foreground")} />
+          {#if downloading}
+            <Loader2Icon class="size-4 animate-spin" />
+          {/if}
         </MicroButton>
       </div>
     </div>

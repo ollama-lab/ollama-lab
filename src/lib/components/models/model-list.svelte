@@ -1,23 +1,66 @@
+<script lang="ts" module>
+  export interface DisplayModelListItem {
+    name: string
+    status?: "inProgress" | "failure"
+    message?: string
+    completedSize?: number
+    totalSize?: number
+    modifiedAt?: Date
+  }
+</script>
+
 <script lang="ts">
   import { ScrollArea } from "../ui/scroll-area"
   import { cn } from "$lib/utils"
-  import StatusDot from "../custom-ui/status-dot.svelte"
-  import { convert } from "convert"
   import { onMount } from "svelte"
   import { toast } from "svelte-sonner"
-  import { Badge } from "../ui/badge"
-  import { activeModels, currentModel, defaultModel } from "$lib/stores/models"
   import { modelList, modelListStatus } from "$lib/stores/model-list"
   import PullModel from "./model-list/pull-model.svelte"
   import Loading from "../custom-ui/loading.svelte"
   import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
   import { CircleAlertIcon, RefreshCwIcon } from "lucide-svelte"
   import { Button } from "../ui/button"
-  import RelativeTime from "../custom-ui/relative-time.svelte"
+  import ModelListItem from "./model-list/model-list-item.svelte"
+  import { currentModel } from "$lib/stores/models"
+  import { pullModelTasks } from "$lib/stores/pull-model"
 
   onMount(() => {
     modelList.reload()
   })
+
+  let modelNameList = $derived($modelList.map(({ name }) => name))
+
+  let displayModelList = $derived<DisplayModelListItem[]>([
+    ...Object.entries($pullModelTasks)
+      .filter(([name,]) => !modelNameList.includes(name))
+      .map(([name, item]) => {
+        switch (item.type) {
+          case "inProgress":
+            return {
+              name,
+              status: "inProgress",
+              message: item.message,
+              completedSize: item.completed,
+              totalSize: item.total,
+            } satisfies DisplayModelListItem
+          case "failure":
+            return {
+              name,
+              message: item.message,
+              status: "failure",
+            } satisfies DisplayModelListItem
+          case "success":
+            return {
+              name,
+            } satisfies DisplayModelListItem
+        }
+      }),
+    ...$modelList.map((item) => ({
+      name: item.name,
+      totalSize: item.size,
+      modifiedAt: item.modified_at,
+    } satisfies DisplayModelListItem)),
+  ])
 </script>
 
 <div class="w-full h-full flex flex-col">
@@ -69,45 +112,8 @@
           </AlertDescription>
         </Alert>
       {/if}
-      {#each $modelList as { name, size, modified_at }, i (name)}
-        <!-- svelte-ignore a11y_click_events_have_key_events  -->
-        <div
-          class={cn(
-            "flex flex-col rounded cursor-pointer px-2 py-2 gap-2",
-            $currentModel === name ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground",
-          )}
-          role="button"
-          tabindex={i}
-          onclick={(ev) => {
-            currentModel.set(name)
-            ev.stopPropagation()
-          }}
-        >
-          <div class="flex items-center select-none gap-1">
-            <span class="font-bold">{name}</span>
-            {#if $activeModels.map(item => item.name).includes(name)}
-              <StatusDot status="success" />
-            {/if}
-
-            {#if $defaultModel === name}
-              <Badge
-                variant={$currentModel === name ? "secondary" : "default"}
-                title="Newly created sessions will use this model by default."
-              >
-                Default
-              </Badge>
-            {/if}
-          </div>
-
-          <div class="flex items-center text-xs gap-1">
-            <span title={`${size.toLocaleString()} bytes`}>{convert(size, "bytes").to("best", "imperial").toString(2)}</span>
-            <div class="flex-grow"></div>
-            <span class="flex gap-1">
-              Modified
-              <RelativeTime date={modified_at} />
-            </span>
-          </div>
-        </div>
+      {#each displayModelList as { name, message, status, completedSize, totalSize, modifiedAt }, index (name)}
+        <ModelListItem {name} {completedSize} {totalSize} {modifiedAt} {message} {status} {index} />
       {/each}
     </div>
   </ScrollArea>

@@ -1,4 +1,5 @@
 import type { ModelDetails, ModelInfo, ModelListItem, RunningModel } from "$lib/models/model-item"
+import { pullModelTasks } from "$lib/stores/pull-model"
 import { invoke } from "@tauri-apps/api/core"
 
 interface RawModelListItem {
@@ -62,4 +63,8 @@ export async function copyModel(source: string, destination: string): Promise<vo
 
 export async function deleteModel(model: string): Promise<void> {
   await invoke<void>("delete_model", { model })
+}
+
+export async function pullModel(model: string): Promise<void> {
+  await invoke<void>("pull_model", { model, onPull: pullModelTasks.channel(model) })
 }

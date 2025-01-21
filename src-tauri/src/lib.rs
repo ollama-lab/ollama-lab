@@ -5,7 +5,7 @@ use commands::{
     init::initialize,
     models::{
         copy_model, delete_model, get_default_model, get_model, list_local_models,
-        list_running_models, set_default_model,
+        list_running_models, pull_model, set_default_model,
     },
 };
 use ollama_rest::Ollama;
@@ -34,6 +34,7 @@ pub fn run() {
             initialize,
             list_local_models,
             list_running_models,
+            pull_model,
             set_default_model,
         ])
         .setup(|app| {

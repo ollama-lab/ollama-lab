@@ -7,11 +7,11 @@ export type ProgressEvent =
     completed?: number,
   }
   | {
-    event: "success",
+    type: "success",
     id: string,
   }
   | {
-    event: "failure",
+    type: "failure",
     id: string,
     message?: string,
   }

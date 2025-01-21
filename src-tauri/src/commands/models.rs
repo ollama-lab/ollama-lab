@@ -124,22 +124,24 @@ pub async fn pull_model(
 
     let mut stream = ollama
         .pull_model_streamed(&ModelSyncRequest {
-            name: model,
+            name: model.clone(),
             stream: None,
             insecure: None,
         })
         .await?;
 
+    let id = "pull";
+
     while let Some(Ok(res)) = stream.next().await {
         on_pull.send(ProgressEvent::InProgress {
-            id: "pull",
+            id,
             message: res.status.as_str(),
             total: res.download_info.as_ref().map(|d| d.total),
             completed: res.download_info.as_ref().and_then(|d| d.completed),
         })?;
     }
 
-    on_pull.send(ProgressEvent::Success { id: "pull" })?;
+    on_pull.send(ProgressEvent::Success { id })?;
 
     Ok(())
 }
