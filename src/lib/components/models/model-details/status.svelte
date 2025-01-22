@@ -29,11 +29,12 @@
       {#if downloadInfo}
         {#if downloadInfo.type === "inProgress"}
           {downloadInfo.message}
-        {/if}
-        {#if downloadInfo.type === "failure"}
+        {:else if downloadInfo.type === "failure"}
           Error: {downloadInfo.message}
         {/if}
-      {:else}
+      {/if}
+
+      {#if !downloadInfo || downloadInfo.type === "success"}
         {#if runningInfo}
           Active
         {:else}
@@ -42,6 +43,7 @@
       {/if}
     </span>
   </span>
+
   {#if runningInfo}
     <hr class="bg-border h-full w-[2pt]" />
     <span

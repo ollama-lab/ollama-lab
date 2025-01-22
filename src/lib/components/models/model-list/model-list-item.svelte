@@ -3,12 +3,12 @@
   import { activeModels, currentModel, defaultModel } from "$lib/stores/models"
   import StatusDot from "$lib/components/custom-ui/status-dot.svelte"
   import { Badge } from "$lib/components/ui/badge";
-  import { convert } from "convert"
   import RelativeTime from "$lib/components/custom-ui/relative-time.svelte"
   import { Progress } from "$lib/components/ui/progress"
   import { Loader2Icon, TriangleAlertIcon, XIcon } from "lucide-svelte"
   import MicroButton from "$lib/components/custom-ui/micro-button.svelte"
   import { pullModelTasks } from "$lib/stores/pull-model"
+  import ProgressSize from "$lib/components/custom-ui/progress-size.svelte"
 
   let {
     name,
@@ -94,19 +94,7 @@
         </span>
       {/if}
       <div class="flex-grow"></div>
-      {#if completedSize !== undefined}
-        <span title={`${completedSize.toLocaleString()} bytes`}>
-          {convert(completedSize, "bytes").to("best", "imperial").toString(2)}
-        </span>
-      {/if}
-      {#if completeProgress}
-        /
-      {/if}
-      {#if totalSize !== undefined}
-        <span title={`${totalSize.toLocaleString()} bytes`}>
-          {convert(totalSize, "bytes").to("best", "imperial").toString(2)}
-        </span>
-      {/if}
+      <ProgressSize {completedSize} {totalSize} />
     </div>
   </div>
   <Progress

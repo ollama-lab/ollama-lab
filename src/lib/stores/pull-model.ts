@@ -51,6 +51,7 @@ export const pullModelTasks = {
 
       if (msg.type === "success") {
         modelList.reload()
+        this.clear(model)
       }
     }
     

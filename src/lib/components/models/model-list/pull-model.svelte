@@ -38,7 +38,6 @@
     open = false
 
     return pullModel(model)
-      .then(() => pullModelTasks.clear(model))
       .catch(err => pullModelTasks.error(model, `Error: ${err}`))
   }
 

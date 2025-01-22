@@ -24,6 +24,8 @@
   import Loading from "../custom-ui/loading.svelte"
   import { toast } from "svelte-sonner"
   import { pullModelTasks } from "$lib/stores/pull-model"
+  import ProgressSize from "../custom-ui/progress-size.svelte"
+  import { Progress } from "../ui/progress"
 
   let { model, runningInfo, onExpire }: {
     model?: string
@@ -39,13 +41,17 @@
   $effect(() => {
     modelInfo = undefined
 
-    if (model && !downloadInfo) {
+    if (model && (!downloadInfo || downloadInfo.type === "success")) {
       loading = true
       getModel(model).then(result => modelInfo = result)
         .catch(err => toast.error(err))
         .finally(() => loading = false)
     }
   })
+
+$effect(() => {
+  console.log($pullModelTasks)
+})
 
   let tabValue = $state<string>("details")
 </script>
@@ -77,6 +83,16 @@
     <div>
       {#if loading}
         <Loading content="Loading..." />
+      {/if}
+
+      {#if downloadInfo && downloadInfo.type === "inProgress"}
+        <div class="flex text-sm gap-2 md:gap-4 items-center">
+          <Progress
+            value={downloadInfo.completed && downloadInfo.total ? downloadInfo.completed / downloadInfo.total * 100 : null}
+            class={"h-2 max-w-80"}
+          />
+          <ProgressSize completedSize={downloadInfo.completed ?? undefined} totalSize={downloadInfo.total ?? undefined} />
+        </div>
       {/if}
 
       {#if modelInfo}
