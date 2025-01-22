@@ -17,6 +17,7 @@ pub enum Error {
     StaticSync,
     Tauri(tauri::Error),
     Migration(MigrateError),
+    ChanSend,
 }
 
 impl Display for Error {
@@ -56,6 +57,9 @@ impl Display for Error {
                 Self::NoConnection => {
                     "Ollama Lab is not connected to the app database."
                 }
+                Self::ChanSend => {
+                    "Error occurred during channel sending."
+                },
             }
         )
     }
@@ -105,5 +109,11 @@ impl From<tauri::Error> for Error {
 impl From<MigrateError> for Error {
     fn from(value: MigrateError) -> Self {
         Self::Migration(value)
+    }
+}
+
+impl<T> From<tokio::sync::mpsc::error::SendError<T>> for Error {
+    fn from(_: tokio::sync::mpsc::error::SendError<T>) -> Self {
+        Self::ChanSend
     }
 }

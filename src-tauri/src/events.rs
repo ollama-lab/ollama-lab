@@ -19,6 +19,12 @@ pub enum ProgressEvent<'a> {
         id: &'a str,
         message: Option<&'a str>,
     },
+
+    #[serde(rename_all = "camelCase")]
+    Canceled {
+        id: &'a str,
+        message: Option<&'a str>,
+    },
 }
 
 #[derive(Clone, Serialize)]

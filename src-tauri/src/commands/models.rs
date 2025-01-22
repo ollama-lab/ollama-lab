@@ -5,7 +5,8 @@ use ollama_rest::{
         ModelShowResponse, ModelSyncRequest, RunningModelResponse,
     },
 };
-use tauri::{ipc::Channel, State};
+use tauri::{ipc::Channel, AppHandle, Listener, State};
+use tokio::sync::{mpsc, oneshot};
 
 use crate::{app_state::AppState, errors::Error, events::ProgressEvent};
 
@@ -114,23 +115,50 @@ pub async fn delete_model(state: State<'_, AppState>, model: String) -> Result<(
 
 #[tauri::command]
 pub async fn pull_model(
+    app: AppHandle,
     state: State<'_, AppState>,
     model: String,
     on_pull: Channel<ProgressEvent<'_>>,
 ) -> Result<(), Error> {
     let ollama = &state.ollama;
 
-    let mut stream = ollama
-        .pull_model_streamed(&ModelSyncRequest {
-            name: model.clone(),
-            stream: None,
-            insecure: None,
-        })
-        .await?;
+    let (cancel_tx, cancel_rx) = oneshot::channel();
+    let mut is_canceled = false;
+
+    let event_id = app.once(format!("cancel-pull/{}", model), |_| {
+        cancel_tx.send(()).unwrap();
+    });
+
+    let (tx, mut rx) = mpsc::channel(4);
 
     let id = "pull";
 
-    while let Some(Ok(res)) = stream.next().await {
+    tokio::select! {
+        Err(err) = async move {
+            let mut stream = ollama
+                .pull_model_streamed(&ModelSyncRequest {
+                    name: model.clone(),
+                    stream: None,
+                    insecure: None,
+                })
+                .await?;
+
+            while let Some(Ok(res)) = stream.next().await {
+                tx.send(res).await?;
+            }
+
+            Ok::<(), Error>(())
+        } => {
+            app.unlisten(event_id);
+            Err(err)?;
+        }
+
+        _ = cancel_rx => {
+            is_canceled = true;
+        }
+    }
+
+    while let Some(res) = rx.recv().await {
         on_pull.send(ProgressEvent::InProgress {
             id,
             message: res.status.as_str(),
@@ -139,7 +167,12 @@ pub async fn pull_model(
         })?;
     }
 
-    on_pull.send(ProgressEvent::Success { id })?;
+    on_pull.send(if is_canceled {
+        ProgressEvent::Canceled { id, message: Some("Canceled by user.") }
+    } else {
+        ProgressEvent::Success { id }
+    })?;
 
+    app.unlisten(event_id);
     Ok(())
 }
