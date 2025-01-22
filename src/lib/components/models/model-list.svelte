@@ -40,8 +40,8 @@
               name,
               status: "inProgress",
               message: item.message,
-              completedSize: item.completed,
-              totalSize: item.total,
+              completedSize: item.completed === null ? undefined : item.completed,
+              totalSize: item.total === null ? undefined : item.total,
             } satisfies DisplayModelListItem
           case "failure":
             return {

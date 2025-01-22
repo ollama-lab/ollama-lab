@@ -3,8 +3,8 @@ export type ProgressEvent =
     type: "inProgress",
     id: string,
     message: string,
-    total?: number,
-    completed?: number,
+    total?: number | null,
+    completed?: number | null,
   }
   | {
     type: "success",
