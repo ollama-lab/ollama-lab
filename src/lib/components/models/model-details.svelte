@@ -6,8 +6,6 @@
 
 <script lang="ts">
   import type { ModelInfo, RunningModel } from "$lib/models/model-item"
-  import dayjs from "dayjs"
-  import relativeTime from "dayjs/plugin/relativeTime"
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
   import { getModel } from "$lib/commands/models"
   import ScrollArea from "../ui/scroll-area/scroll-area.svelte"
@@ -26,8 +24,6 @@
   import Loading from "../custom-ui/loading.svelte"
   import { toast } from "svelte-sonner"
   import { pullModelTasks } from "$lib/stores/pull-model"
-
-  dayjs.extend(relativeTime)
 
   let { model, runningInfo, onExpire }: {
     model?: string
