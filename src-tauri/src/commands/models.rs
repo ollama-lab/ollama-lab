@@ -129,7 +129,7 @@ pub async fn pull_model(
         cancel_tx.send(()).unwrap();
     });
 
-    let (tx, mut rx) = mpsc::channel(4);
+    let (tx, mut rx) = mpsc::channel(16);
 
     let id = "pull";
 
@@ -167,12 +167,13 @@ pub async fn pull_model(
         })?;
     }
 
+    app.unlisten(event_id);
+
     on_pull.send(if is_canceled {
         ProgressEvent::Canceled { id, message: Some("Canceled by user.") }
     } else {
         ProgressEvent::Success { id }
     })?;
 
-    app.unlisten(event_id);
     Ok(())
 }
