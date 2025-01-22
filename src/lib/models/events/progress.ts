@@ -13,5 +13,10 @@ export type ProgressEvent =
   | {
     type: "failure",
     id: string,
-    message?: string,
+    message?: string | null,
+  }
+  | {
+    type: "canceled",
+    id: string
+    message?: string | null,
   }

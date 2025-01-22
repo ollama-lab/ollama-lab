@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use ollama_rest::{
     futures::StreamExt,
     models::model::{
@@ -8,7 +6,7 @@ use ollama_rest::{
     },
 };
 use tauri::{ipc::Channel, AppHandle, Listener, State};
-use tokio::sync::{mpsc, oneshot, Mutex};
+use tokio::sync::{mpsc, oneshot};
 
 use crate::{app_state::AppState, errors::Error, events::ProgressEvent, strings::ToEventString};
 
@@ -126,7 +124,6 @@ pub async fn pull_model(
     let ollama = &state.ollama;
 
     let (cancel_tx, cancel_rx) = oneshot::channel();
-    let is_canceled = Arc::new(Mutex::new(false));
 
     let event_id = app.once(format!("cancel-pull/{}", model.to_event_string()), |_| {
         cancel_tx.send(()).unwrap();
@@ -144,14 +141,16 @@ pub async fn pull_model(
         })
         .await?;
 
-    let is_canceled2 = is_canceled.clone();
     tokio::spawn(async move {
         let tx2 = tx.clone();
         if let Err(err) = async move {
+
+            let tx3 = tx2.clone();
+            let tx4 = tx2.clone();
             tokio::select! {
                 Err(err) = async move {
                     while let Some(Ok(res)) = stream.next().await {
-                        tx2.send(ProgressEvent::InProgress {
+                        tx3.send(ProgressEvent::InProgress {
                             id,
                             message: res.status,
                             total: res.download_info.as_ref().map(|d| d.total),
@@ -159,14 +158,15 @@ pub async fn pull_model(
                         }).await?;
                     }
 
+                    tx3.send(ProgressEvent::Success { id }).await?;
                     Ok::<(), Error>(())
                 } => {
                     Err(err)?;
                 }
 
                 _ = cancel_rx => {
-                    let mut value = is_canceled2.lock().await;
-                    *value = true;
+                    tx4.send(ProgressEvent::Canceled { id, message: Some("Canceled by user".to_string()) })
+                        .await?;
                 }
             }
 
@@ -180,16 +180,16 @@ pub async fn pull_model(
     });
 
     while let Some(info) = rx.recv().await {
+        match info {
+            ProgressEvent::InProgress { .. } => {}
+            _ => {
+                rx.close();
+            }
+        }
+
         on_pull.send(info)?;
     }
 
     app.unlisten(event_id);
-
-    on_pull.send(if *is_canceled.lock().await {
-        ProgressEvent::Canceled { id, message: Some("Canceled by user".to_string()) }
-    } else {
-        ProgressEvent::Success { id }
-    })?;
-
     Ok(())
 }

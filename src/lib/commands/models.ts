@@ -65,6 +65,6 @@ export async function deleteModel(model: string): Promise<void> {
   await invoke<void>("delete_model", { model })
 }
 
-export async function pullModel(model: string): Promise<void> {
-  await invoke<void>("pull_model", { model, onPull: pullModelTasks.channel(model) })
+export async function pullModel(model: string): Promise<ProgressEvent> {
+  return await invoke<ProgressEvent>("pull_model", { model, onPull: pullModelTasks.channel(model) })
 }

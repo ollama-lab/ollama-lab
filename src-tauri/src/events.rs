@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-#[derive(Clone, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub enum ProgressEvent<'a> {
     #[serde(rename_all = "camelCase")]

@@ -37,7 +37,7 @@
     pullModelTasks.add(model, "Starting pulling...")
     open = false
 
-    return pullModel(model)
+    await pullModel(model)
       .catch(err => pullModelTasks.error(model, `Error: ${err}`))
   }
 

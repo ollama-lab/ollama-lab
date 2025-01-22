@@ -7,8 +7,11 @@
   import { Progress } from "$lib/components/ui/progress"
   import { Loader2Icon, TriangleAlertIcon, XIcon } from "lucide-svelte"
   import MicroButton from "$lib/components/custom-ui/micro-button.svelte"
-  import { pullModelTasks } from "$lib/stores/pull-model"
   import ProgressSize from "$lib/components/custom-ui/progress-size.svelte"
+  import { pullModelTasks } from "$lib/stores/pull-model"
+  import { emit } from "@tauri-apps/api/event"
+  import { toEventString } from "$lib/utils/strings"
+  import { toast } from "svelte-sonner"
 
   let {
     name,
@@ -24,7 +27,7 @@
     totalSize?: number
     completedSize?: number
     modifiedAt?: Date
-    status?: "inProgress" | "failure"
+    status?: "inProgress" | "failure" | "canceled"
     index: number,
   } = $props()
 
@@ -73,10 +76,22 @@
       {/if}
 
       <div class="flex-grow"></div>
-      {#if status === "failure"}
+      {#if status}
         <MicroButton
-          title="Cancel"
-          onclick={() => pullModelTasks.clear(name)}
+          title={status === "canceled" ? "Remove" : "Cancel"}
+          onclick={() => {
+            if (status === "canceled" || status === "failure") {
+              pullModelTasks.clear(name)
+            } else {
+              const promise = emit(`cancel-pull/${toEventString(name)}`)
+
+              toast.promise(promise, {
+                loading: "Cancel request sent",
+                success: "Pulling task canceled",
+                error: (err) => `Error: ${err}`,
+              })
+            }
+          }}
         >
           <XIcon class="size-4" />
         </MicroButton>
