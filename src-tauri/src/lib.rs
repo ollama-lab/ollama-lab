@@ -17,6 +17,7 @@ pub mod events;
 pub mod models;
 pub mod paths;
 pub mod settings;
+pub mod strings;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
