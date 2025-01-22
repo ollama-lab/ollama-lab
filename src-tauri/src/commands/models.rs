@@ -10,7 +10,7 @@ use ollama_rest::{
 use tauri::{ipc::Channel, AppHandle, Listener, State};
 use tokio::sync::{mpsc, oneshot, Mutex};
 
-use crate::{app_state::AppState, errors::Error, events::ProgressEvent};
+use crate::{app_state::AppState, errors::Error, events::ProgressEvent, strings::ToEventString};
 
 #[tauri::command]
 pub async fn list_local_models(
@@ -128,7 +128,7 @@ pub async fn pull_model(
     let (cancel_tx, cancel_rx) = oneshot::channel();
     let is_canceled = Arc::new(Mutex::new(false));
 
-    let event_id = app.once(format!("cancel-pull/{}", model), |_| {
+    let event_id = app.once(format!("cancel-pull/{}", model.to_event_string()), |_| {
         cancel_tx.send(()).unwrap();
     });
 
