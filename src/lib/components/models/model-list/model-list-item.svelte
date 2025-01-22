@@ -8,7 +8,7 @@
   import { Progress } from "$lib/components/ui/progress"
   import { Loader2Icon, TriangleAlertIcon, XIcon } from "lucide-svelte"
   import MicroButton from "$lib/components/custom-ui/micro-button.svelte"
-    import { pullModelTasks } from "$lib/stores/pull-model";
+  import { pullModelTasks } from "$lib/stores/pull-model"
 
   let {
     name,

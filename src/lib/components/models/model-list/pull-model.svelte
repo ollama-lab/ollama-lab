@@ -21,10 +21,6 @@
   let searchResult = $state<SearchResult | undefined>()
   let searching = $state(false)
 
-  let isPullNext = $derived(searchResult !== undefined && keyword === searchResult.keyword)
-
-  let selectedVariants = $state<{ [key: string]: string }>({})
-
   async function startPullModel(model: string) {
     const downloadedAlready = $modelList.filter(({ name }) => name === model).length > 0
     if (downloadedAlready) {
@@ -41,14 +37,9 @@
     pullModelTasks.add(model, "Starting pulling...")
     open = false
 
-    try {
-      await pullModel(model)
-    } catch (err) {
-      pullModelTasks.error(model, `Error: ${err}`)
-      return
-    }
-
-    pullModelTasks.clear(model)
+    return pullModel(model)
+      .then(() => pullModelTasks.clear(model))
+      .catch(err => pullModelTasks.error(model, `Error: ${err}`))
   }
 
   async function startSearchModels() {
@@ -113,11 +104,7 @@
         if (ev.ctrlKey) {
           startPullModel(keyword)
         } else {
-          if (isPullNext) {
-            startPullModel()
-          } else {
-            startSearchModels()
-          }
+          startSearchModels()
         }
       }
     }}
@@ -139,7 +126,7 @@
       {/if}
     </Button>
   </div>
-  <Hints searchEntered={keyword.length > 0} {isPullNext} />
+  <Hints searchEntered={keyword.length > 0} />
   <CommandList>
     {#if searching}
       <div class="px-2 py-2 text-sm">
@@ -149,9 +136,7 @@
     {#if searchResult !== undefined}
       <SearchResultSection
         {searchResult}
-        onInitiatePull={(model) => {
-          startPullModel(model)
-        }}
+        onInitiatePull={startPullModel}
       />
     {/if}
     <CommandEmpty>No model found.</CommandEmpty>

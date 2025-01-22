@@ -4,10 +4,8 @@
 
   let {
     searchEntered = false,
-    isPullNext = false,
   }: {
     searchEntered?: boolean
-    isPullNext?: boolean
   } = $props()
 
   const os = platform()
@@ -17,15 +15,7 @@
   <div class="flex gap-2 md:gap-4 lg:gap-6 text-xs px-2 py-2" transition:fly={{ x: -100, y: 0, duration: 300 }}>
     <span class="flex gap-2 items-center">
       <span class="z-[1]"><kbd>Enter</kbd></span>
-      {#key `search-hint-initiated-${isPullNext}`}
-        <span in:fly={{ x: 40 * (isPullNext ? -1 : 1), y: 0, duration: 300 }}>
-          {#if isPullNext}
-            Pull selected
-          {:else}
-            Search
-          {/if}
-        </span>
-      {/key}
+      Search
     </span>
     <span class="flex gap-2 items-center">
       <span>
