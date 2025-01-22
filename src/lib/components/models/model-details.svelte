@@ -49,10 +49,6 @@
     }
   })
 
-$effect(() => {
-  console.log($pullModelTasks)
-})
-
   let tabValue = $state<string>("details")
 </script>
 
@@ -68,10 +64,10 @@ $effect(() => {
         {/if}
         <div class="flex-grow"></div>
         <div class="flex gap-2 items-center">
-          {#if $defaultModel !== model}
-            <SetDefault {model} />
-          {/if}
           {#if !downloadInfo}
+            {#if $defaultModel !== model}
+              <SetDefault {model} />
+            {/if}
             <DuplicateModel {model} />
             <DeleteModel {model} />
           {/if}
