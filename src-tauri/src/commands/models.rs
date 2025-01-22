@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use ollama_rest::{
     futures::StreamExt,
     models::model::{
@@ -6,9 +8,9 @@ use ollama_rest::{
     },
 };
 use tauri::{ipc::Channel, AppHandle, Listener, State};
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::{mpsc, oneshot, Mutex};
 
-use crate::{app_state::AppState, errors::Error, events::ProgressEvent, strings::ToEventString};
+use crate::{app_state::AppState, errors::Error, events::ProgressEvent};
 
 #[tauri::command]
 pub async fn list_local_models(
@@ -113,6 +115,7 @@ pub async fn delete_model(state: State<'_, AppState>, model: String) -> Result<(
     Ok(())
 }
 
+
 #[tauri::command]
 pub async fn pull_model(
     app: AppHandle,
@@ -123,54 +126,67 @@ pub async fn pull_model(
     let ollama = &state.ollama;
 
     let (cancel_tx, cancel_rx) = oneshot::channel();
-    let mut is_canceled = false;
+    let is_canceled = Arc::new(Mutex::new(false));
 
-    let event_id = app.once(format!("cancel-pull/{}", model.to_event_string()), move |_| {
+    let event_id = app.once(format!("cancel-pull/{}", model), |_| {
         cancel_tx.send(()).unwrap();
     });
 
-    let (tx, mut rx) = mpsc::channel(16);
+    let (tx, mut rx) = mpsc::channel(8);
 
     let id = "pull";
 
-    tokio::select! {
-        Err(err) = async move {
-            let mut stream = ollama
-                .pull_model_streamed(&ModelSyncRequest {
-                    name: model.clone(),
-                    stream: None,
-                    insecure: None,
-                })
-                .await?;
+    let mut stream = ollama
+        .pull_model_streamed(&ModelSyncRequest {
+            name: model.clone(),
+            stream: None,
+            insecure: None,
+        })
+        .await?;
 
-            while let Some(Ok(res)) = stream.next().await {
-                tx.send(res).await?;
+    let is_canceled2 = is_canceled.clone();
+    tokio::spawn(async move {
+        let tx2 = tx.clone();
+        if let Err(err) = async move {
+            tokio::select! {
+                Err(err) = async move {
+                    while let Some(Ok(res)) = stream.next().await {
+                        tx2.send(ProgressEvent::InProgress {
+                            id,
+                            message: res.status,
+                            total: res.download_info.as_ref().map(|d| d.total),
+                            completed: res.download_info.as_ref().and_then(|d| d.completed),
+                        }).await?;
+                    }
+
+                    Ok::<(), Error>(())
+                } => {
+                    Err(err)?;
+                }
+
+                _ = cancel_rx => {
+                    let mut value = is_canceled2.lock().await;
+                    *value = true;
+                }
             }
 
             Ok::<(), Error>(())
-        } => {
-            app.unlisten(event_id);
-            Err(err)?;
+        }.await {
+            _ = tx.send(ProgressEvent::Failure {
+                id,
+                message: Some(err.to_string()),
+            }).await;
         }
+    });
 
-        _ = cancel_rx => {
-            is_canceled = true;
-        }
-    }
-
-    while let Some(res) = rx.recv().await {
-        on_pull.send(ProgressEvent::InProgress {
-            id,
-            message: res.status.as_str(),
-            total: res.download_info.as_ref().map(|d| d.total),
-            completed: res.download_info.as_ref().and_then(|d| d.completed),
-        })?;
+    while let Some(info) = rx.recv().await {
+        on_pull.send(info)?;
     }
 
     app.unlisten(event_id);
 
-    on_pull.send(if is_canceled {
-        ProgressEvent::Canceled { id, message: Some("Canceled by user.") }
+    on_pull.send(if *is_canceled.lock().await {
+        ProgressEvent::Canceled { id, message: Some("Canceled by user".to_string()) }
     } else {
         ProgressEvent::Success { id }
     })?;

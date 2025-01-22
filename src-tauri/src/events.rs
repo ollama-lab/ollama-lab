@@ -6,7 +6,7 @@ pub enum ProgressEvent<'a> {
     #[serde(rename_all = "camelCase")]
     InProgress {
         id: &'a str,
-        message: &'a str,
+        message: String,
         total: Option<usize>,
         completed: Option<usize>,
     },
@@ -17,13 +17,13 @@ pub enum ProgressEvent<'a> {
     #[serde(rename_all = "camelCase")]
     Failure {
         id: &'a str,
-        message: Option<&'a str>,
+        message: Option<String>,
     },
 
     #[serde(rename_all = "camelCase")]
     Canceled {
         id: &'a str,
-        message: Option<&'a str>,
+        message: Option<String>,
     },
 }
 
