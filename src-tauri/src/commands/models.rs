@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use ollama_rest::{
     futures::StreamExt,
     models::model::{
@@ -13,7 +11,7 @@ use crate::{app_state::AppState, errors::Error, events::ProgressEvent};
 
 #[tauri::command]
 pub async fn list_local_models(
-    state: State<'_, Arc<AppState>>,
+    state: State<'_, AppState>,
 ) -> Result<ModelListResponse, Error> {
     let ollama = &state.ollama;
     Ok(ollama.local_models().await?)
@@ -21,7 +19,7 @@ pub async fn list_local_models(
 
 #[tauri::command]
 pub async fn list_running_models(
-    state: State<'_, Arc<AppState>>,
+    state: State<'_, AppState>,
 ) -> Result<RunningModelResponse, Error> {
     let ollama = &state.ollama;
     Ok(ollama.running_models().await?)
@@ -29,7 +27,7 @@ pub async fn list_running_models(
 
 #[tauri::command]
 pub async fn get_model(
-    state: State<'_, Arc<AppState>>,
+    state: State<'_, AppState>,
     name: String,
 ) -> Result<ModelShowResponse, Error> {
     let ollama = &state.ollama;
@@ -42,7 +40,7 @@ pub async fn get_model(
 }
 
 #[tauri::command]
-pub async fn get_default_model(state: State<'_, Arc<AppState>>) -> Result<Option<String>, Error> {
+pub async fn get_default_model(state: State<'_, AppState>) -> Result<Option<String>, Error> {
     let conn_op = state.conn.lock().await;
     let conn = conn_op.as_ref().ok_or(Error::NoConnection)?;
 
@@ -64,7 +62,7 @@ pub async fn get_default_model(state: State<'_, Arc<AppState>>) -> Result<Option
 
 #[tauri::command]
 pub async fn set_default_model(
-    state: State<'_, Arc<AppState>>,
+    state: State<'_, AppState>,
     new_model: String,
 ) -> Result<(), Error> {
     let profile_id = state.profile;
@@ -87,7 +85,7 @@ pub async fn set_default_model(
 
 #[tauri::command]
 pub async fn copy_model(
-    state: State<'_, Arc<AppState>>,
+    state: State<'_, AppState>,
     source: String,
     destination: String,
 ) -> Result<(), Error> {
@@ -104,7 +102,7 @@ pub async fn copy_model(
 }
 
 #[tauri::command]
-pub async fn delete_model(state: State<'_, Arc<AppState>>, model: String) -> Result<(), Error> {
+pub async fn delete_model(state: State<'_, AppState>, model: String) -> Result<(), Error> {
     let ollama = &state.ollama;
 
     ollama
@@ -116,7 +114,7 @@ pub async fn delete_model(state: State<'_, Arc<AppState>>, model: String) -> Res
 
 #[tauri::command]
 pub async fn pull_model(
-    state: State<'_, Arc<AppState>>,
+    state: State<'_, AppState>,
     model: String,
     on_pull: Channel<ProgressEvent<'_>>,
 ) -> Result<(), Error> {

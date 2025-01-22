@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use app_state::AppState;
 use commands::{
     init::initialize,
@@ -38,12 +36,12 @@ pub fn run() {
             set_default_model,
         ])
         .setup(|app| {
-            app.manage(Arc::new(AppState {
+            app.manage(AppState {
                 conn: Mutex::new(None),
                 ollama: Ollama::default(),
                 // Default profile
                 profile: 0,
-            }));
+            });
 
             Ok(())
         })

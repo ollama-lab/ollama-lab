@@ -1,4 +1,4 @@
-use std::{io::ErrorKind, ops::Deref, sync::Arc};
+use std::{io::ErrorKind, ops::Deref};
 
 use sqlx::SqlitePool;
 use tauri::State;
@@ -10,7 +10,7 @@ use crate::{
 };
 
 #[tauri::command]
-pub async fn initialize(state: State<'_, Arc<AppState>>) -> Result<(), Error> {
+pub async fn initialize(state: State<'_, AppState>) -> Result<(), Error> {
     let mut cur_conn = state.deref().conn.lock().await;
 
     if cur_conn.is_none() {
