@@ -32,3 +32,13 @@ pub enum ProgressEvent<'a> {
 pub struct TextStreamEvent<'a> {
     pub chunk: &'a str,
 }
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase", tag = "type")]
+pub enum StreamingResponseEvent {
+    #[serde(rename_all = "camelCase")]
+    NewSession {
+        id: i64,
+        date_created: i64,
+    },
+}

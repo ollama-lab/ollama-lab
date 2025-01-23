@@ -1,12 +1,11 @@
-use ollama_rest::chrono::{DateTime, Utc};
+use tauri::State;
 
-#[derive(Debug)]
-pub struct HistorialPrompt {
-    pub id: i64,
-    pub session_id: i64,
-    pub role: String,
-    pub content: String,
-    pub date_created: DateTime<Utc>,
-    pub date_edited: Option<DateTime<Utc>>,
-    pub model: Option<String>,
+use crate::{app_state::AppState, errors::Error, models::chat::IncomingUserPrompt};
+
+#[tauri::command]
+pub async fn submit_user_prompt(
+    state: State<'_, AppState>,
+    session_id: Option<i64>,
+    prompt: IncomingUserPrompt,
+) -> Result<(), Error> {
 }
