@@ -2,7 +2,6 @@
   import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "$lib/components/ui/dropdown-menu"
   import { EllipsisVerticalIcon } from "lucide-svelte"
   import DeletionDialog from "./operation-dropdown/deletion-dialog.svelte"
-  import DropdownMenuItem from "$lib/components/ui/dropdown-menu/dropdown-menu-item.svelte"
 
   let { sessionId }: { sessionId: number } = $props()
 </script>
@@ -15,6 +14,6 @@
     <EllipsisVerticalIcon class="size-4" />
   </DropdownMenuTrigger>
   <DropdownMenuContent>
-    <DeletionDialog />
+    <DeletionDialog {sessionId} />
   </DropdownMenuContent>
 </DropdownMenu>

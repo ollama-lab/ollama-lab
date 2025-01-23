@@ -1,7 +1,9 @@
 export interface Session {
   id: number
-  title: string
+  profileId: number
+  title: string | null
   dateCreated: Date
+  currentModel: string
 }
 
 export type Role = "system" | "assistant" | "user"
@@ -22,4 +24,14 @@ export interface ChatBubble {
 export interface ChatHistory {
   sessionId: number
   bubbles: ChatBubble[]
+}
+
+export type SessionRenameReturn = null | {
+  id: number
+  title: string | null
+}
+
+export type SessionCurrentModelReturn = null | {
+  id: number
+  currentModel: string | null
 }

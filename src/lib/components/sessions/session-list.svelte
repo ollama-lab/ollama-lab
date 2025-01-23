@@ -27,7 +27,7 @@
     <div class="flex flex-col gap-2 px-2">
       {#if $sessions}
         {#each $sessions as { id, title } (id)}
-          <SessionListItem sessionId={id} {title} />
+          <SessionListItem sessionId={id} title={title ?? "New Chat"} />
         {/each}
       {/if}
     </div>

@@ -1,12 +1,21 @@
 <script lang="ts">
+  import { deleteSession } from "$lib/commands/sessions"
+  import Loading from "$lib/components/custom-ui/loading.svelte"
   import { Button, buttonVariants } from "$lib/components/ui/button"
   import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "$lib/components/ui/dialog"
+  import { currentSessionId, sessions } from "$lib/stores/sessions"
   import { cn } from "$lib/utils"
   import { TrashIcon } from "lucide-svelte"
+  import { toast } from "svelte-sonner"
 
+  let { sessionId }: { sessionId: number } = $props()
+
+  let open = $state(false)
+
+  let proceeding = $state(false)
 </script>
 
-<Dialog>
+<Dialog bind:open>
   <DialogTrigger
     class={cn(
       "w-full flex gap-2 items-center text-red-600 dark:text-red-400 rounded px-1 py-1",
@@ -29,8 +38,26 @@
       <DialogClose class={buttonVariants({ variant: "secondary" })} autofocus>
         Cancel
       </DialogClose>
-      <Button variant="destructive">
-        Confirm
+      <Button
+        variant="destructive"
+        onclick={() => {
+          proceeding = true
+          deleteSession(sessionId)
+            .then(() => {
+              open = false
+              currentSessionId.update((value) => value === sessionId ? undefined : value)
+              toast.success("Session successfully deleted")
+              sessions.reload()
+            })
+            .catch((err) => toast.error(`Error: ${err}`))
+            .finally(() => proceeding = false)
+        }}
+      >
+        {#if proceeding}
+          <Loading content="Deleting..." />
+        {:else}
+          Confirm
+        {/if}
       </Button>
     </DialogFooter>
   </DialogContent>

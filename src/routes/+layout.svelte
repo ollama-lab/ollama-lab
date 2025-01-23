@@ -12,6 +12,7 @@
   import { CircleXIcon, Loader2Icon } from "lucide-svelte"
   import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "$lib/components/ui/alert-dialog"
   import { defaultModel } from "$lib/stores/models"
+  import { sessions } from "$lib/stores/sessions"
 
   let { children } = $props()
 
@@ -21,6 +22,7 @@
     if (!$frontendState.initialized) {
       try {
         await initialize()
+        await sessions.reload()
         await defaultModel.reload()
       } catch (err) {
         initError = err
