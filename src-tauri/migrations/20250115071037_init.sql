@@ -44,5 +44,5 @@ CREATE TABLE historial_prompts (
     content         TEXT NOT NULL,
     date_created    INTEGER NOT NULL DEFAULT (unixepoch()),
     date_edited     INTEGER,
-    model      TEXT
+    model           TEXT
 );
