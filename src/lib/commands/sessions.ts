@@ -11,12 +11,9 @@ interface InternalSession {
 
 export async function listSessions(): Promise<Session[]> {
   return await invoke<InternalSession[]>("list_sessions")
-    .then(sessions => sessions.map(({ id, profileId, title, dateCreated, currentModel }) => ({
-      id,
-      profileId,
-      title,
-      dateCreated: new Date(dateCreated),
-      currentModel,
+    .then(sessions => sessions.map((session) => ({
+      ...session,
+      dateCreated: new Date(session.dateCreated),
     } satisfies Session)))
 }
 
@@ -30,4 +27,12 @@ export async function renameSession(id: number, newName: string | null): Promise
 
 export async function setSessionModel(id: number, model: string): Promise<SessionCurrentModelReturn> {
   return await invoke<SessionCurrentModelReturn>("set_session_model", { id, model })
+}
+
+export async function createSession(currentModel: string): Promise<Session> {
+  return await invoke<InternalSession>("create_session", { currentModel })
+    .then((session) => ({
+      ...session,
+      dateCreated: new Date(session.dateCreated),
+    } satisfies Session))
 }

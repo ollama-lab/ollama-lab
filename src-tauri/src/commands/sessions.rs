@@ -106,3 +106,22 @@ pub async fn delete_session(state: State<'_, AppState>, id: i64) -> Result<Optio
 
     Ok(Some(id))
 }
+
+#[tauri::command]
+pub async fn create_session(state: State<'_, AppState>, current_model: String) -> Result<Session, Error> {
+    let profile_id = state.profile;
+    let conn_op = state.conn.lock().await;
+    let conn = conn_op.as_ref().ok_or(Error::NoConnection)?;
+
+    let session = sqlx::query_as::<_, Session>("\
+        INSERT INTO sessions (profile_id, current_model)
+        VALUES ($1, $2)
+        RETURNING id, profile_id, title, date_created, current_model;
+    ")
+        .bind(profile_id)
+        .bind(current_model)
+        .fetch_one(conn)
+        .await?;
+
+    Ok(session)
+}
