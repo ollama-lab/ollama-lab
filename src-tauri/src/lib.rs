@@ -5,6 +5,9 @@ use commands::{
         copy_model, delete_model, get_default_model, get_model, list_local_models,
         list_running_models, pull_model, set_default_model,
     },
+    sessions::{
+        list_sessions, rename_session, set_session_model, delete_session,
+    },
 };
 use ollama_rest::Ollama;
 use tauri::Manager;
@@ -35,6 +38,10 @@ pub fn run() {
             list_running_models,
             pull_model,
             set_default_model,
+            list_sessions,
+            rename_session,
+            set_session_model,
+            delete_session,
         ])
         .setup(|app| {
             app.manage(AppState {

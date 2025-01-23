@@ -32,7 +32,7 @@ CREATE TABLE sessions (
 );
 
 CREATE TABLE prompt_roles (
-    name            TEXT NOT NULL
+    name            TEXT NOT NULL PRIMARY KEY
 );
 
 INSERT INTO prompt_roles VALUES ('system'), ('user'), ('assistant'), ('tool');

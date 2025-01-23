@@ -1,7 +1,8 @@
 use ollama_rest::chrono::{DateTime, Utc};
 use serde::Serialize;
 
-#[derive(Debug, sqlx::FromRow)]
+#[derive(Debug, sqlx::FromRow, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Session {
     pub id: i64,
     pub profile_id: i64,
