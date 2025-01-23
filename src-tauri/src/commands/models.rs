@@ -143,39 +143,32 @@ pub async fn pull_model(
 
     tokio::spawn(async move {
         let tx2 = tx.clone();
-        if let Err(err) = async move {
+        let tx3 = tx.clone();
 
-            let tx3 = tx2.clone();
-            let tx4 = tx2.clone();
-            tokio::select! {
-                Err(err) = async move {
-                    while let Some(Ok(res)) = stream.next().await {
-                        tx3.send(ProgressEvent::InProgress {
-                            id,
-                            message: res.status,
-                            total: res.download_info.as_ref().map(|d| d.total),
-                            completed: res.download_info.as_ref().and_then(|d| d.completed),
-                        }).await?;
-                    }
-
-                    tx3.send(ProgressEvent::Success { id }).await?;
-                    Ok::<(), Error>(())
-                } => {
-                    Err(err)?;
+        tokio::select! {
+            Err(err) = async move {
+                while let Some(Ok(res)) = stream.next().await {
+                    tx2.send(ProgressEvent::InProgress {
+                        id,
+                        message: res.status,
+                        total: res.download_info.as_ref().map(|d| d.total),
+                        completed: res.download_info.as_ref().and_then(|d| d.completed),
+                    }).await?;
                 }
 
-                _ = cancel_rx => {
-                    tx4.send(ProgressEvent::Canceled { id, message: Some("Canceled by user".to_string()) })
-                        .await?;
-                }
+                tx2.send(ProgressEvent::Success { id }).await?;
+                Ok::<(), Error>(())
+            } => {
+                _ = tx.send(ProgressEvent::Failure {
+                    id,
+                    message: Some(err.to_string()),
+                }).await;
             }
 
-            Ok::<(), Error>(())
-        }.await {
-            _ = tx.send(ProgressEvent::Failure {
-                id,
-                message: Some(err.to_string()),
-            }).await;
+            _ = cancel_rx => {
+                _ = tx3.send(ProgressEvent::Canceled { id, message: Some("Canceled by user".to_string()) })
+                    .await;
+            }
         }
     });
 

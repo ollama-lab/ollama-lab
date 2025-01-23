@@ -27,18 +27,23 @@ pub enum ProgressEvent<'a> {
     },
 }
 
-#[derive(Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct TextStreamEvent<'a> {
-    pub chunk: &'a str,
-}
-
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase", tag = "type")]
-pub enum StreamingResponseEvent {
+pub enum StreamingResponseEvent<'a> {
     #[serde(rename_all = "camelCase")]
-    NewSession {
-        id: i64,
-        date_created: i64,
+    Text {
+        chunk: &'a str,
+    },
+
+    Done,
+
+    #[serde(rename_all = "camelCase")]
+    Failure {
+        message: Option<String>,
+    },
+
+    #[serde(rename_all = "camelCase")]
+    Canceled {
+        message: Option<String>,
     },
 }

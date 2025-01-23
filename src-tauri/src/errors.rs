@@ -18,6 +18,7 @@ pub enum Error {
     Tauri(tauri::Error),
     Migration(MigrateError),
     ChanSend,
+    NotExists,
 }
 
 impl Display for Error {
@@ -59,6 +60,9 @@ impl Display for Error {
                 }
                 Self::ChanSend => {
                     "Error occurred during channel sending."
+                },
+                Self::NotExists => {
+                    "Not exists"
                 },
             }
         )

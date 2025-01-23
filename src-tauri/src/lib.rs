@@ -7,6 +7,7 @@ use commands::{
     },
     sessions::{
         list_sessions, rename_session, set_session_model, delete_session,
+        create_session,
     },
 };
 use ollama_rest::Ollama;
@@ -42,6 +43,7 @@ pub fn run() {
             rename_session,
             set_session_model,
             delete_session,
+            create_session,
         ])
         .setup(|app| {
             app.manage(AppState {
