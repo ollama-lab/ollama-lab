@@ -45,20 +45,12 @@ pub async fn get_default_model(state: State<'_, AppState>) -> Result<Option<Stri
     let conn_op = state.conn.lock().await;
     let conn = conn_op.as_ref().ok_or(Error::NoConnection)?;
 
-    let row: Option<(String,)> =
-        match sqlx::query_as("SELECT model FROM default_models WHERE profile_id = $1")
-            .bind(state.profile)
-            .fetch_one(conn)
-            .await
-        {
-            Ok(data) => Some(data),
-            Err(err) => match err {
-                sqlx::Error::RowNotFound => None,
-                _ => Err(err)?,
-            },
-        };
+    let row = sqlx::query_as::<_, (String,)>("SELECT model FROM default_models WHERE profile_id = $1")
+        .bind(state.profile)
+        .fetch_optional(conn)
+        .await?;
 
-    Ok(row.map(|item| item.0))
+    Ok(row.map(|tuple| tuple.0))
 }
 
 #[tauri::command]
