@@ -22,13 +22,6 @@ pub struct IncomingUserPrompt {
 }
 
 #[derive(Debug, Serialize)]
-pub struct NewSessionReturn {
-    pub id: i64,
-    pub title: Option<String>,
-    pub date_created: DateTime<Utc>,
-}
-
-#[derive(Debug, Serialize)]
 pub struct ChatGenerationReturn {
     pub id: i64,
     pub date_created: DateTime<Utc>,
