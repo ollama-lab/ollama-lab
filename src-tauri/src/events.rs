@@ -29,10 +29,21 @@ pub enum ProgressEvent<'a> {
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase", tag = "type")]
-pub enum StreamingResponseEvent<'a> {
+pub enum StreamingResponseEvent {
+    #[serde(rename_all = "camelCase")]
+    UserPrompt {
+        id: i64,
+        timestamp: i64,
+    },
+
+    #[serde(rename_all = "camelCase")]
+    ResponseInfo {
+        id: i64,
+    },
+
     #[serde(rename_all = "camelCase")]
     Text {
-        chunk: &'a str,
+        chunk: String,
     },
 
     Done,

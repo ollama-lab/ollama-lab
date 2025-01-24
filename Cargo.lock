@@ -2832,9 +2832,9 @@ dependencies = [
 
 [[package]]
 name = "ollama-rest"
-version = "0.5.2"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98e225f2e124042d034af52c0d51d8fa640fe6ef34b8c4468d143670d73e7d76"
+checksum = "01bd09bd41240067521876aa34dec614ff07da722f0dddd89037a9265365200b"
 dependencies = [
  "chrono",
  "futures",

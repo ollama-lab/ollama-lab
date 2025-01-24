@@ -1,8 +1,14 @@
-use ollama_rest::{chrono::Utc, models::chat::ChatRequest};
+use ollama_rest::chrono::Utc;
 use tauri::{ipc::Channel, AppHandle, Listener, State};
 use tokio::sync::{mpsc, oneshot};
 
-use crate::{app_state::AppState, errors::Error, events::StreamingResponseEvent, models::chat::{Chat, ChatGenerationReturn, IncomingUserPrompt}};
+use crate::{
+    app_state::AppState,
+    errors::Error,
+    events::StreamingResponseEvent,
+    models::{chat::{ChatGenerationReturn, IncomingUserPrompt}, session::Session},
+    responses::llm_streams::stream_response,
+};
 
 #[tauri::command]
 pub async fn submit_user_prompt(
@@ -10,69 +16,66 @@ pub async fn submit_user_prompt(
     state: State<'_, AppState>,
     session_id: i64,
     prompt: IncomingUserPrompt,
-    on_stream: Channel<StreamingResponseEvent<'_>>,
+    on_stream: Channel<StreamingResponseEvent>,
 ) -> Result<ChatGenerationReturn, Error> {
     let ollama = &state.ollama;
     let profile_id = state.profile;
     let conn_op = state.conn.lock().await;
     let conn = conn_op.as_ref().ok_or(Error::NoConnection)?;
 
-    let session_count = sqlx::query_as::<_, (i64,)>("\
-        SELECT COUNT(*)
+    let session = sqlx::query_as::<_, Session>("\
+        SELECT id, profile_id, title, date_created, current_model
         FROM sessions
         WHERE id = $1 AND profile_id = $2;
     ")
         .bind(session_id).bind(profile_id)
-        .fetch_one(conn)
-        .await?;
+        .fetch_optional(conn)
+        .await?
+        .ok_or(Error::NotExists)?;
 
-    if session_count.0 < 1 {
-        return Err(Error::NotExists);
-    }
+    let mut tx = conn.begin().await?;
 
-    let chat_history = sqlx::query_as::<_, Chat>("\
-        SELECT id, session_id, role, content, completed, date_created, date_edited, model
-        FROM chats
-        WHERE session_id = $1 AND completed = TRUE 
-        ORDER BY date_created, id;
+    let prompt_ret = sqlx::query_as::<_, (i64, i64,)>("\
+        INSERT INTO chats (session_id, role, content)
+        VALUES ($1, 'user', $2)
+        RETURNING id, date_created;
     ")
-        .bind(session_id)
-        .fetch_all(conn)
+        .bind(session.id).bind(prompt.text)
+        .fetch_one(&mut *tx)
         .await?;
 
-    let (cancel_tx, cancel_rx) = oneshot::channel();
+    on_stream.send(StreamingResponseEvent::UserPrompt {
+        id: prompt_ret.0,
+        timestamp: prompt_ret.1,
+    })?;
 
-    app.once(format!("cancel-gen/{}", session_id), move |_| {
-        cancel_tx.send(()).unwrap();
-    });
+    let response_ret = sqlx::query_as::<_, (i64,)>("\
+        INSERT INTO chats (session_id, role, content, completed, model)
+        VALUES ($1, 'assistant', $2, FALSE, $3)
+        RETURNING id;
+    ")
+        .bind(session.id).bind("").bind(session.current_model.as_str())
+        .fetch_one(&mut *tx)
+        .await?;
+
+    on_stream.send(StreamingResponseEvent::ResponseInfo { id: response_ret.0 })?;
+
+    tx.commit().await?;
 
     // Text streaming channel
     let (tx, mut rx) = mpsc::channel(32);
 
-    let res = ollama.chat_streamed(ChatRequest{
-        // TODO:
+    let (cancel_tx, cancel_rx) = oneshot::channel();
+
+    let event_id = app.once(format!("cancel-gen/{}", response_ret.0), move |_| {
+        cancel_tx.send(()).unwrap();
     });
 
+    let ollama2 = ollama.clone();
+    let pool = conn.clone();
     tokio::spawn(async move {
-        let tx2 = tx.clone();
-        let tx3 = tx.clone();
-
-        tokio::select! {
-            Err(err) = async move {
-
-                Ok::<(), Error>(())
-            } => {
-                _ = tx.send(StreamingResponseEvent::Failure {
-                    message: Some(err.to_string()),
-                }).await;
-            }
-
-            _ = cancel_rx => {
-                _ = tx3.send(StreamingResponseEvent::Canceled {
-                    message: Some("Canceled by user.".to_string()),
-                }).await;
-            }
-        }
+        stream_response(ollama2, &pool, tx.clone(), response_ret.0, Some(cancel_rx), session.id, session.current_model.as_str())
+            .await.unwrap();
     });
 
     while let Some(event) = rx.recv().await {
@@ -86,8 +89,10 @@ pub async fn submit_user_prompt(
         on_stream.send(event)?;
     }
 
+    app.unlisten(event_id);
+
     Ok(ChatGenerationReturn {
-        id: 1,
+        id: response_ret.0,
         date_created: Utc::now(),
     })
 }
