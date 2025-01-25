@@ -31,7 +31,7 @@
     </DialogHeader>
 
     <div>
-      The session will be <b>permanently</b> removed.
+      The session and its chat history will be <b>permanently</b> deleted. This operation cannot be undone.
     </div>
 
     <DialogFooter>
