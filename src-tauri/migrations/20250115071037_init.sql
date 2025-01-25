@@ -46,5 +46,6 @@ CREATE TABLE chats (
     date_created    INTEGER NOT NULL DEFAULT (unixepoch()),
     date_edited     INTEGER,
     model           TEXT,
-    parent_id       INTEGER REFERENCES chats (id) ON DELETE CASCADE ON UPDATE CASCADE
+    parent_id       INTEGER REFERENCES chats (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    priority        INTEGER NOT NULL DEFAULT 0
 );
