@@ -1,6 +1,9 @@
 use app_state::AppState;
 use commands::{
     init::initialize,
+    chats::{
+        submit_user_prompt,
+    },
     models::{
         copy_model, delete_model, get_default_model, get_model, list_local_models,
         list_running_models, pull_model, set_default_model,
@@ -45,6 +48,7 @@ pub fn run() {
             set_session_model,
             delete_session,
             create_session,
+            submit_user_prompt,
         ])
         .setup(|app| {
             app.manage(AppState {

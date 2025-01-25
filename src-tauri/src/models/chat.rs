@@ -22,6 +22,7 @@ pub struct IncomingUserPrompt {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ChatGenerationReturn {
     pub id: i64,
     pub date_created: DateTime<Utc>,
