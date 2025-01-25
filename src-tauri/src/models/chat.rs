@@ -12,6 +12,7 @@ pub struct Chat {
     pub date_created: DateTime<Utc>,
     pub date_edited: Option<DateTime<Utc>>,
     pub model: Option<String>,
+    pub parent_id: Option<i64>,
 }
 
 #[derive(Debug, Deserialize)]

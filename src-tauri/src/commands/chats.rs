@@ -15,6 +15,7 @@ pub async fn submit_user_prompt(
     app: AppHandle,
     state: State<'_, AppState>,
     session_id: i64,
+    parent_id: Option<i64>,
     prompt: IncomingUserPrompt,
     on_stream: Channel<StreamingResponseEvent>,
 ) -> Result<ChatGenerationReturn, Error> {
@@ -35,12 +36,21 @@ pub async fn submit_user_prompt(
 
     let mut tx = conn.begin().await?;
 
+    sqlx::query("\
+        UPDATE chats
+        SET priority = 0
+        WHERE session_id = $1, parent_id = $2;
+    ")
+        .bind(session_id).bind(parent_id)
+        .execute(&mut *tx)
+        .await?;
+
     let prompt_ret = sqlx::query_as::<_, (i64, i64,)>("\
-        INSERT INTO chats (session_id, role, content)
-        VALUES ($1, 'user', $2)
+        INSERT INTO chats (session_id, role, content, parent_id)
+        VALUES ($1, 'user', $2, $3)
         RETURNING id, date_created;
     ")
-        .bind(session.id).bind(prompt.text)
+        .bind(session.id).bind(prompt.text).bind(parent_id)
         .fetch_one(&mut *tx)
         .await?;
 
@@ -95,4 +105,15 @@ pub async fn submit_user_prompt(
         id: response_ret.0,
         date_created: Utc::now(),
     })
+}
+
+#[tauri::command]
+pub async fn regenerate_response(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    session_id: i64,
+    parent_id: Option<i64>,
+    prompt: IncomingUserPrompt,
+    on_stream: Channel<StreamingResponseEvent>,
+) -> Result<ChatGenerationReturn, Error> {
 }

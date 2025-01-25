@@ -11,8 +11,9 @@ export async function submitUserPrompt(
   sessionId: number,
   prompt: IncomingUserPrompt,
   onStream: Channel<StreamingResponseEvent>,
+  parentId?: number,
 ): Promise<ChatGenerationReturn> {
-  return await invoke<InternalChatGenerationReturn>("submit_user_prompt", { sessionId, prompt, onStream })
+  return await invoke<InternalChatGenerationReturn>("submit_user_prompt", { sessionId, prompt, onStream, parentId })
     .then(({ id, dateCreated }) => ({
       id,
       dateCreated: new Date(dateCreated),
