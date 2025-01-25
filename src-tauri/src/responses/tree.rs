@@ -1,5 +1,5 @@
 use models::NewChildNode;
-use sqlx::{Connection, SqliteConnection};
+use sqlx::{pool::PoolConnection, Connection, Executor, Sqlite, SqliteConnection};
 
 use crate::{errors::Error, models::chat::Chat};
 
@@ -13,20 +13,19 @@ pub mod models;
 /// parent (i.e. previous prompt/generation).
 pub struct ChatTree {
     session_id: i64,
-    conn: SqliteConnection,
 }
 
 impl ChatTree {
     #[must_use]
-    pub fn new(session_id: i64, conn: SqliteConnection) -> Self {
-        Self{ session_id, conn }
+    pub fn new(session_id: i64) -> Self {
+        Self{ session_id }
     }
 
     pub fn session_id(&self) -> i64 {
         self.session_id
     }
 
-    pub async fn current_branch(&mut self) -> Result<Vec<Chat>, Error> {
+    pub async fn current_branch(&self, executor: impl Executor<'_, Database = Sqlite> + Clone) -> Result<Vec<Chat>, Error> {
         Ok(
             sqlx::query_as::<_, Chat>("\
                 WITH RECURSIVE rec_chats (id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority)
@@ -49,13 +48,18 @@ impl ChatTree {
                 FROM rec_chats;
             ")
                 .bind(self.session_id)
-                .fetch_all(&mut self.conn)
+                .fetch_all(executor)
                 .await?
         )
     }
 
-    pub async fn new_sibling(&mut self, chat_id: i64, new_content: Option<String>) -> Result<i64, Error> {
-        let mut tx = self.conn.begin().await?;
+    pub async fn new_sibling(
+        &self,
+        conn: &mut PoolConnection<Sqlite>,
+        chat_id: i64,
+        new_content: Option<String>
+    ) -> Result<i64, Error> {
+        let mut tx = conn.begin().await?;
 
         sqlx::query("\
             UPDATE chats
@@ -77,7 +81,7 @@ impl ChatTree {
             ) AS input_t (id, content)
             INNER JOIN chats c ON input_t.id = c.id
             WHERE c.session_id = $1
-            RETURNING id
+            RETURNING id;
         ")
             .bind(self.session_id).bind(chat_id).bind(new_content)
             .fetch_one(&mut *tx)
@@ -88,8 +92,13 @@ impl ChatTree {
         Ok(new_chat.0)
     }
 
-    pub async fn new_child(&mut self, chat_id: i64, create_info: NewChildNode) -> Result<i64, Error> {
-        let mut tx = self.conn.begin().await?;
+    pub async fn new_child(
+        &self,
+        conn: &mut PoolConnection<Sqlite>,
+        chat_id: i64,
+        create_info: NewChildNode
+    ) -> Result<i64, Error> {
+        let mut tx = conn.begin().await?;
 
         sqlx::query("\
             UPDATE chats
@@ -118,14 +127,14 @@ impl ChatTree {
         Ok(new_chat.0)
     }
 
-    pub async fn set_default(&mut self, chat_id: i64) -> Result<(), Error> {
+    pub async fn set_default(&mut self, executor: impl Executor<'_, Database = Sqlite> + Clone, chat_id: i64) -> Result<(), Error> {
         let affected = sqlx::query("\
             UPDATE chats
             SET = IF(id = $1, 1, 0)
             WHERE parent_id = (SELECT parent_id FROM chats WHERE id = $1);
         ")
             .bind(chat_id)
-            .execute(&mut self.conn)
+            .execute(executor)
             .await?
             .rows_affected();
 
@@ -134,13 +143,13 @@ impl ChatTree {
             .ok_or(Error::NotExists)
     }
 
-    pub async fn delete_session(mut self) -> Result<(), Error> {
+    pub async fn delete_session(self, executor: impl Executor<'_, Database = Sqlite> + Clone) -> Result<(), Error> {
         let affected = sqlx::query("\
             DELETE FROM sessions
             WHERE id = $1;
         ")
             .bind(self.session_id)
-            .execute(&mut self.conn)
+            .execute(executor)
             .await?
             .rows_affected();
 
@@ -149,13 +158,13 @@ impl ChatTree {
             .ok_or(Error::NotExists)
     }
 
-    pub async fn delete_tree(&mut self, chat_id: i64) -> Result<(), Error> {
+    pub async fn delete_tree(&mut self, executor: impl Executor<'_, Database = Sqlite> + Clone, chat_id: i64) -> Result<(), Error> {
         let affected = sqlx::query("\
             DELETE FROM chats
             WHERE session_id = $1 AND id = $2;
         ")
             .bind(self.session_id).bind(chat_id)
-            .execute(&mut self.conn)
+            .execute(executor)
             .await?
             .rows_affected();
 

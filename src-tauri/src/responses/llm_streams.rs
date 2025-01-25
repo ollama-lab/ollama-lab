@@ -6,7 +6,7 @@ use tokio::sync::{mpsc, oneshot, Mutex};
 
 use crate::{errors::Error, events::StreamingResponseEvent, models::chat::Chat};
 
-pub async fn stream_response<'e, 'c: 'e>(
+pub async fn stream_response<'c>(
     ollama: Ollama,
     sqlx_executor: impl Executor<'c, Database = Sqlite> + Clone,
     chan_sender: mpsc::Sender<StreamingResponseEvent>,
