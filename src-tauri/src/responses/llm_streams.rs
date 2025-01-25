@@ -1,8 +1,8 @@
-use std::str::FromStr;
+use std::{str::FromStr, sync::Arc};
 
 use ollama_rest::{chrono::Utc, futures::StreamExt, models::chat::{ChatRequest, Message, Role}, Ollama};
 use sqlx::{Executor, Sqlite};
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::{mpsc, oneshot, Mutex};
 
 use crate::{errors::Error, events::StreamingResponseEvent, models::chat::Chat};
 
@@ -48,9 +48,14 @@ pub async fn stream_response<'e, 'c: 'e>(
 
     let mut stream = ollama.chat_streamed(&req).await?;
 
+    let output_buf = Arc::new(Mutex::new(String::new()));
+    let output_buf2 = output_buf.clone();
+
+    let conn1 = sqlx_executor.clone();
+    let conn2 = sqlx_executor.clone();
+
     tokio::select! {
         Err(err) = async move {
-            let mut output_buf = String::new();
             let mut date_now = Utc::now().timestamp();
 
             while let Some(Ok(res)) = stream.next().await {
@@ -65,7 +70,7 @@ pub async fn stream_response<'e, 'c: 'e>(
                     .map(|msg| msg.content)
                     .unwrap_or_else(|| String::new());
 
-                output_buf.push_str(chunk.as_str());
+                output_buf.lock().await.push_str(chunk.as_str());
                 chan_sender.send(StreamingResponseEvent::Text { chunk }).await?;
             }
 
@@ -74,8 +79,8 @@ pub async fn stream_response<'e, 'c: 'e>(
                 SET date_created = $2, completed = TRUE, content = $3
                 WHERE id = $1;
             ")
-                .bind(response_id).bind(date_now).bind(output_buf)
-                .execute(sqlx_executor.clone())
+                .bind(response_id).bind(date_now).bind(output_buf.lock().await.as_str())
+                .execute(conn1)
                 .await?;
 
             Ok::<(), Error>(())
@@ -94,6 +99,17 @@ pub async fn stream_response<'e, 'c: 'e>(
             _ = tx2.send(StreamingResponseEvent::Canceled {
                 message: Some("Canceled by user.".to_string()),
             }).await;
+
+            _ = sqlx::query("\
+                UPDATE chats
+                SET date_created = $2, completed = FALSE, content = $3
+                WHERE id = $1;
+            ")
+                .bind(response_id)
+                .bind(Utc::now().timestamp())
+                .bind(output_buf2.lock().await.as_str())
+                .execute(conn2)
+                .await;
         }
     }
 
