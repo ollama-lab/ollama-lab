@@ -40,10 +40,11 @@ INSERT INTO chat_roles VALUES ('system'), ('user'), ('assistant'), ('tool');
 CREATE TABLE chats (
     id              INTEGER NOT NULL PRIMARY KEY,
     session_id      INTEGER NOT NULL REFERENCES sessions (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    role            TEXT NOT NULL DEFAULT 'system' REFERENCES prompt_roles (name) ON DELETE SET DEFAULT ON UPDATE CASCADE,
+    role            TEXT NOT NULL DEFAULT 'user' REFERENCES prompt_roles (name) ON DELETE SET DEFAULT ON UPDATE CASCADE,
     content         TEXT NOT NULL,
     completed       INTEGER NOT NULL DEFAULT 1,
     date_created    INTEGER NOT NULL DEFAULT (unixepoch()),
     date_edited     INTEGER,
-    model           TEXT
+    model           TEXT,
+    parent_id       INTEGER REFERENCES chats (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
