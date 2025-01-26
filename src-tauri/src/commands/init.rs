@@ -11,7 +11,7 @@ use crate::{
 
 #[tauri::command]
 pub async fn initialize(state: State<'_, AppState>) -> Result<(), Error> {
-    let mut cur_conn = state.conn.lock().await;
+    let mut cur_conn = state.conn_pool.lock().await;
 
     if cur_conn.is_none() {
         tokio::fs::create_dir_all(local_data_dir().ok_or(Error::NoDataPath)?).await?;
