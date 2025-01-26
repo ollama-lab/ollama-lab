@@ -4,8 +4,6 @@ import { writable } from "svelte/store"
 
 const internalSessions = writable<Session[] | undefined>()
 
-export const currentSessionId = writable<number | undefined>()
-
 export const sessions = {
   subscribe: internalSessions.subscribe,
   async reload() {

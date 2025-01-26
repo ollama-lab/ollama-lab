@@ -3,7 +3,8 @@
   import Loading from "$lib/components/custom-ui/loading.svelte"
   import { Button, buttonVariants } from "$lib/components/ui/button"
   import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "$lib/components/ui/dialog"
-  import { currentSessionId, sessions } from "$lib/stores/sessions"
+    import { chatHistory } from "$lib/stores/chats";
+  import { sessions } from "$lib/stores/sessions"
   import { cn } from "$lib/utils"
   import { TrashIcon } from "lucide-svelte"
   import { toast } from "svelte-sonner"
@@ -45,7 +46,11 @@
           deleteSession(sessionId)
             .then(() => {
               open = false
-              currentSessionId.update((value) => value === sessionId ? undefined : value)
+
+              if ($chatHistory?.session === sessionId) {
+                chatHistory.clear()
+              }
+
               toast.success("Session successfully deleted")
               sessions.reload()
             })

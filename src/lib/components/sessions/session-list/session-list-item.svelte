@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Input } from "$lib/components/ui/input";
-  import { currentSessionId } from "$lib/stores/sessions"
+  import { Input } from "$lib/components/ui/input"
+  import { chatHistory } from "$lib/stores/chats"
   import { cn } from "$lib/utils"
   import OperationDropdown from "./operation-dropdown.svelte"
 
@@ -18,9 +18,9 @@
 <div
   class={cn(
     "flex items-center px-3 py-2 rounded cursor-pointer min-h-12",
-    $currentSessionId === sessionId ? "bg-primary text-primary-foreground" : "hover:bg-secondary",
+    $chatHistory?.session === sessionId ? "bg-primary text-primary-foreground" : "hover:bg-secondary",
   )}
-  onclick={() => $currentSessionId = sessionId}
+  onclick={() => chatHistory.setSessionId(sessionId)}
   role="button"
   tabindex={sessionId}
   ondblclick={() => renameMode = true}

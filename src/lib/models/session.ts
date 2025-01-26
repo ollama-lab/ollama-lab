@@ -6,7 +6,7 @@ export interface Session {
   currentModel: string
 }
 
-export type Role = "system" | "assistant" | "user"
+export type Role = "system" | "assistant" | "user" | "tool"
 
 export type TransmissionStatus = "preparing" | "sending" | "sent" | "not sent"
 

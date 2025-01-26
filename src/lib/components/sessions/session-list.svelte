@@ -2,8 +2,9 @@
   import { PlusIcon } from "lucide-svelte"
   import Button from "../ui/button/button.svelte"
   import { ScrollArea } from "../ui/scroll-area"
-  import { currentSessionId, sessions } from "$lib/stores/sessions"
+  import { sessions } from "$lib/stores/sessions"
   import SessionListItem from "./session-list/session-list-item.svelte"
+  import { chatHistory } from "$lib/stores/chats"
 
 </script>
 
@@ -16,7 +17,7 @@
         variant="outline"
         title="New session"
         onclick={() => {
-          $currentSessionId = undefined
+          chatHistory.clear()
         }}
       >
         <PlusIcon />
