@@ -59,7 +59,7 @@ pub async fn stream_response<'c>(
             let mut date_now = Utc::now().timestamp();
 
             while let Some(Ok(res)) = stream.next().await {
-                date_now = res.created_at.to_utc().timestamp();
+                date_now = res.created_at.timestamp();
 
                 if res.done {
                     chan_sender.send(StreamingResponseEvent::Done).await?;

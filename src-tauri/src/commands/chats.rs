@@ -8,7 +8,7 @@ use crate::{
     app_state::AppState,
     errors::Error,
     events::StreamingResponseEvent,
-    models::{chat::{Chat, ChatGenerationReturn, IncomingUserPrompt}, session::Session},
+    models::{chat::{ChatGenerationReturn, IncomingUserPrompt}, session::Session},
     responses::{llm_streams::stream_response, tree::{models::NewChildNode, ChatTree}},
     utils::connections::CloneMutexContentAsync,
 };
@@ -19,7 +19,6 @@ pub async fn submit_user_prompt(
     state: State<'_, AppState>,
     session_id: i64,
     parent_id: Option<i64>,
-    model: String,
     prompt: IncomingUserPrompt,
     on_stream: Channel<StreamingResponseEvent>,
 ) -> Result<ChatGenerationReturn, Error> {
@@ -56,7 +55,7 @@ pub async fn submit_user_prompt(
     let response_ret = tree.new_child(&mut tx, Some(user_chat_ret.0), NewChildNode {
         content: String::new(),
         role: Role::Assistant,
-        model: Some(model),
+        model: Some(session.current_model.as_str()),
         completed: false,
     }).await?;
 
@@ -148,7 +147,7 @@ pub async fn regenerate_response(
 
             tree.new_child(&mut tx, Some(chat_id), NewChildNode{
                 role: Role::Assistant,
-                model: Some(first_sibling_chat.0),
+                model: Some(first_sibling_chat.0.as_str()),
                 content: String::new(),
                 completed: false,
             }).await.map(|ret| (ret.0,))

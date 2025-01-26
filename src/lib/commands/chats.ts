@@ -1,6 +1,6 @@
 import type { ChatGenerationReturn, IncomingUserPrompt } from "$lib/models/chat"
 import type { StreamingResponseEvent } from "$lib/models/events/text-streams"
-import { invoke, type Channel } from "@tauri-apps/api/core"
+import { Channel, invoke } from "@tauri-apps/api/core"
 
 interface InternalChatGenerationReturn {
   id: number
@@ -10,10 +10,56 @@ interface InternalChatGenerationReturn {
 export async function submitUserPrompt(
   sessionId: number,
   prompt: IncomingUserPrompt,
-  onStream: Channel<StreamingResponseEvent>,
   parentId?: number,
+  {
+    afterUserPromptSubmitted,
+    afterResponseCreated,
+    onStreamText,
+    onCompleteTextStreaming,
+    onFail,
+    onCancel,
+  }: {
+    afterUserPromptSubmitted?: (id: number, date: Date) => void
+    afterResponseCreated?: (id: number) => void
+    onStreamText?: (chunk: string) => void
+    onCompleteTextStreaming?: () => void
+    onFail?: (msg: string | null) => void
+    onCancel?: (msg: string | null) => void
+  } = {},
 ): Promise<ChatGenerationReturn> {
-  return await invoke<InternalChatGenerationReturn>("submit_user_prompt", { sessionId, prompt, onStream, parentId })
+  const textStreamChannel = new Channel<StreamingResponseEvent>()
+
+  textStreamChannel.onmessage = (ev) => {
+    switch (ev.type) {
+      case "userPrompt":
+        afterUserPromptSubmitted?.(ev.id, new Date(ev.timestamp))
+        break
+
+      case "responseInfo":
+        afterResponseCreated?.(ev.id)
+        break
+
+      case "text":
+        onStreamText?.(ev.chunk)
+        break
+
+      case "done":
+        onCompleteTextStreaming?.()
+        break
+
+      case "failure":
+        onFail?.(ev.message)
+        break
+
+      case "canceled":
+        onCancel?.(ev.message)
+        break
+    }
+  }
+
+  return await invoke<InternalChatGenerationReturn>("submit_user_prompt", {
+    sessionId, prompt, onStream: textStreamChannel, parentId,
+  })
     .then(({ id, dateCreated }) => ({
       id,
       dateCreated: new Date(dateCreated),
