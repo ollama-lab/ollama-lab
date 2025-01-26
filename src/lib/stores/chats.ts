@@ -35,9 +35,12 @@ export const chatHistory = {
     await this.setSessionId(null)
   },
   async submit() {
+    // TODO: Add submission logic
   },
   async regenerate() {
+    // TODO: Add regeneration logic
   },
   async switchBranch() {
+    // TODO: Add switch branch logic
   },
 }
