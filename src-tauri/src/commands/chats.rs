@@ -23,7 +23,7 @@ pub async fn submit_user_prompt(
 ) -> Result<ChatGenerationReturn, Error> {
     let ollama = &state.ollama;
     let profile_id = state.profile;
-    let pool = state.conn.clone_inside().await?;
+    let pool = state.conn_pool.clone_inside().await?;
 
     let session = sqlx::query_as::<_, Session>("\
         SELECT id, profile_id, title, date_created, current_model
