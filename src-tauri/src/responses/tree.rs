@@ -1,5 +1,5 @@
 use models::NewChildNode;
-use sqlx::{pool::PoolConnection, Connection, Executor, Sqlite, SqliteConnection};
+use sqlx::{pool::PoolConnection, Connection, Executor, Sqlite, Transaction,};
 
 use crate::{errors::Error, models::chat::Chat};
 
@@ -7,7 +7,7 @@ pub mod models;
 
 /// Abstraction of the chat history as a tree
 ///
-/// When user change a submitted prompt, a new branch is created
+/// When user changes an existing prompt, a new branch is created
 /// for storing the interactions based on the new version of prompt.
 /// The new prompt is a sibling node of the old one with the same
 /// parent (i.e. previous prompt/generation).
@@ -94,37 +94,33 @@ impl ChatTree {
 
     pub async fn new_child(
         &self,
-        conn: &mut PoolConnection<Sqlite>,
-        chat_id: i64,
+        tx: &mut Transaction<'_, Sqlite>,
+        parent_id: Option<i64>,
         create_info: NewChildNode
-    ) -> Result<i64, Error> {
-        let mut tx = conn.begin().await?;
-
+    ) -> Result<(i64, i64), Error> {
         sqlx::query("\
             UPDATE chats
             SET priority = 0
             WHERE session_id = $1 AND parent_id = $2;
         ")
-            .bind(self.session_id).bind(chat_id)
-            .execute(&mut *tx)
+            .bind(self.session_id).bind(parent_id)
+            .execute(&mut **tx)
             .await?;
 
-        let new_chat = sqlx::query_as::<_, (i64,)>("\
+        let ret = sqlx::query_as::<_, (i64, i64)>("\
             INSERT INTO chats (session_id, role, content, model, parent_id, priority)
             VALUES ($1, $2, $3, $4, $5, 1)
-            RETURNING id;
+            RETURNING id, date_created;
         ")
             .bind(self.session_id)
             .bind(create_info.role.to_string())
             .bind(create_info.content)
             .bind(create_info.model)
-            .bind(chat_id)
-            .fetch_one(&mut *tx)
+            .bind(parent_id)
+            .fetch_one(&mut **tx)
             .await?;
 
-        tx.commit().await?;
-
-        Ok(new_chat.0)
+        Ok(ret)
     }
 
     pub async fn set_default(&mut self, executor: impl Executor<'_, Database = Sqlite> + Clone, chat_id: i64) -> Result<(), Error> {

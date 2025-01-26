@@ -1,4 +1,4 @@
-use ollama_rest::chrono::Utc;
+use ollama_rest::{chrono::Utc, prelude::Role};
 use tauri::{ipc::Channel, AppHandle, Listener, State};
 use tokio::sync::{mpsc, oneshot};
 
@@ -7,7 +7,7 @@ use crate::{
     errors::Error,
     events::StreamingResponseEvent,
     models::{chat::{ChatGenerationReturn, IncomingUserPrompt}, session::Session},
-    responses::llm_streams::stream_response,
+    responses::{llm_streams::stream_response, tree::{models::NewChildNode, ChatTree}},
 };
 
 #[tauri::command]
@@ -16,6 +16,7 @@ pub async fn submit_user_prompt(
     state: State<'_, AppState>,
     session_id: i64,
     parent_id: Option<i64>,
+    model: String,
     prompt: IncomingUserPrompt,
     on_stream: Channel<StreamingResponseEvent>,
 ) -> Result<ChatGenerationReturn, Error> {
@@ -34,39 +35,28 @@ pub async fn submit_user_prompt(
         .await?
         .ok_or(Error::NotExists)?;
 
+    let tree = ChatTree::new(session_id);
+
     let mut tx = conn.begin().await?;
 
-    sqlx::query("\
-        UPDATE chats
-        SET priority = 0
-        WHERE session_id = $1, parent_id = $2;
-    ")
-        .bind(session_id).bind(parent_id)
-        .execute(&mut *tx)
-        .await?;
-
-    let prompt_ret = sqlx::query_as::<_, (i64, i64,)>("\
-        INSERT INTO chats (session_id, role, content, parent_id)
-        VALUES ($1, 'user', $2, $3)
-        RETURNING id, date_created;
-    ")
-        .bind(session.id).bind(prompt.text).bind(parent_id)
-        .fetch_one(&mut *tx)
-        .await?;
+    let user_chat_ret = tree.new_child(&mut tx, parent_id, NewChildNode{
+        model: None,
+        role: Role::User,
+        content: prompt.text,
+        completed: true,
+    }).await?;
 
     on_stream.send(StreamingResponseEvent::UserPrompt {
-        id: prompt_ret.0,
-        timestamp: prompt_ret.1,
+        id: user_chat_ret.0,
+        timestamp: user_chat_ret.1,
     })?;
 
-    let response_ret = sqlx::query_as::<_, (i64,)>("\
-        INSERT INTO chats (session_id, role, content, completed, model)
-        VALUES ($1, 'assistant', $2, FALSE, $3)
-        RETURNING id;
-    ")
-        .bind(session.id).bind("").bind(session.current_model.as_str())
-        .fetch_one(&mut *tx)
-        .await?;
+    let response_ret = tree.new_child(&mut tx, Some(user_chat_ret.0), NewChildNode {
+        content: String::new(),
+        role: Role::Assistant,
+        model: Some(model),
+        completed: false,
+    }).await?;
 
     on_stream.send(StreamingResponseEvent::ResponseInfo { id: response_ret.0 })?;
 
