@@ -116,4 +116,8 @@ pub async fn regenerate_response(
     prompt: IncomingUserPrompt,
     on_stream: Channel<StreamingResponseEvent>,
 ) -> Result<ChatGenerationReturn, Error> {
+    Ok(ChatGenerationReturn{
+        id: 0,
+        date_created: Utc::now(),
+    })
 }
