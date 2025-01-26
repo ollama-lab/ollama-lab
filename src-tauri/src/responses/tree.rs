@@ -1,5 +1,5 @@
 use models::NewChildNode;
-use sqlx::{pool::PoolConnection, Connection, Executor, Sqlite, Transaction,};
+use sqlx::{Executor, Sqlite, Transaction};
 
 use crate::{errors::Error, models::chat::Chat};
 
@@ -55,12 +55,10 @@ impl ChatTree {
 
     pub async fn new_sibling(
         &self,
-        conn: &mut PoolConnection<Sqlite>,
+        tx: &mut Transaction<'_, Sqlite>,
         chat_id: i64,
         new_content: Option<String>
     ) -> Result<i64, Error> {
-        let mut tx = conn.begin().await?;
-
         sqlx::query("\
             UPDATE chats
             SET priority = 0
@@ -70,7 +68,7 @@ impl ChatTree {
                 parent_id = (SELECT parent_id FROM chats WHERE id = $2);
         ")
             .bind(self.session_id).bind(chat_id)
-            .execute(&mut *tx)
+            .execute(&mut **tx)
             .await?;
 
         let new_chat = sqlx::query_as::<_, (i64,)>("\
@@ -84,10 +82,8 @@ impl ChatTree {
             RETURNING id;
         ")
             .bind(self.session_id).bind(chat_id).bind(new_content)
-            .fetch_one(&mut *tx)
+            .fetch_one(&mut **tx)
             .await?;
-
-        tx.commit().await?;
 
         Ok(new_chat.0)
     }
