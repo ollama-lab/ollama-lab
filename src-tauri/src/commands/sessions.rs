@@ -1,12 +1,16 @@
 use tauri::State;
 
-use crate::{app_state::AppState, errors::Error, models::session::{Session, SessionCurrentModelReturn, SessionNameReturn}};
+use crate::{
+    app_state::AppState,
+    errors::Error,
+    models::session::{Session, SessionCurrentModelReturn, SessionNameReturn},
+    utils::connections::ConvertMutexContentAsync
+};
 
 #[tauri::command]
 pub async fn list_sessions(state: State<'_, AppState>) -> Result<Vec<Session>, Error> {
     let profile_id = state.profile;
-    let conn_op = state.conn.lock().await;
-    let conn = conn_op.as_ref().ok_or(Error::NoConnection)?;
+    let mut conn = state.conn_pool.convert_to().await?;
 
     let sessions = sqlx::query_as::<_, Session>("\
         SELECT id, profile_id, title, date_created, current_model
@@ -15,7 +19,7 @@ pub async fn list_sessions(state: State<'_, AppState>) -> Result<Vec<Session>, E
         ORDER BY date_created DESC;
     ")
         .bind(profile_id)
-        .fetch_all(conn)
+        .fetch_all(&mut *conn)
         .await?;
 
     Ok(sessions)
@@ -28,8 +32,7 @@ pub async fn rename_session(
     new_name: Option<String>,
 ) -> Result<Option<SessionNameReturn>, Error> {
     let profile_id = state.profile;
-    let conn_op = state.conn.lock().await;
-    let conn = conn_op.as_ref().ok_or(Error::NoConnection)?;
+    let mut conn = state.conn_pool.convert_to().await?;
     
     let valid_new_name = new_name
         .as_ref()
@@ -42,7 +45,7 @@ pub async fn rename_session(
         WHERE id = $2 AND profile_id = $3;
     ")
         .bind(valid_new_name).bind(id).bind(profile_id)
-        .execute(conn)
+        .execute(&mut *conn)
         .await?;
 
     if result.rows_affected() < 1 {
@@ -62,8 +65,7 @@ pub async fn set_session_model(
     model: String,
 ) -> Result<Option<SessionCurrentModelReturn>, Error> {
     let profile_id = state.profile;
-    let conn_op = state.conn.lock().await;
-    let conn = conn_op.as_ref().ok_or(Error::NoConnection)?;
+    let mut conn = state.conn_pool.convert_to().await?;
 
     let valid_model = model.trim();
 
@@ -73,7 +75,7 @@ pub async fn set_session_model(
         WHERE id = $2 AND profile_id = $3;
     ")
         .bind(valid_model).bind(id).bind(profile_id)
-        .execute(conn)
+        .execute(&mut *conn)
         .await?;
 
     if result.rows_affected() < 1 {
@@ -89,15 +91,14 @@ pub async fn set_session_model(
 #[tauri::command]
 pub async fn delete_session(state: State<'_, AppState>, id: i64) -> Result<Option<i64>, Error> {
     let profile_id = state.profile;
-    let conn_op = state.conn.lock().await;
-    let conn = conn_op.as_ref().ok_or(Error::NoConnection)?;
+    let mut conn = state.conn_pool.convert_to().await?;
 
     let result = sqlx::query("\
         DELETE FROM sessions
         WHERE id = $1 AND profile_id = $2;
     ")
         .bind(id).bind(profile_id)
-        .execute(conn)
+        .execute(&mut *conn)
         .await?;
 
     if result.rows_affected() < 1 {
@@ -110,8 +111,7 @@ pub async fn delete_session(state: State<'_, AppState>, id: i64) -> Result<Optio
 #[tauri::command]
 pub async fn create_session(state: State<'_, AppState>, current_model: String) -> Result<Session, Error> {
     let profile_id = state.profile;
-    let conn_op = state.conn.lock().await;
-    let conn = conn_op.as_ref().ok_or(Error::NoConnection)?;
+    let mut conn = state.conn_pool.convert_to().await?;
 
     let session = sqlx::query_as::<_, Session>("\
         INSERT INTO sessions (profile_id, current_model)
@@ -120,7 +120,7 @@ pub async fn create_session(state: State<'_, AppState>, current_model: String) -
     ")
         .bind(profile_id)
         .bind(current_model)
-        .fetch_one(conn)
+        .fetch_one(&mut *conn)
         .await?;
 
     Ok(session)

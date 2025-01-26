@@ -8,7 +8,7 @@ use ollama_rest::{
 use tauri::{ipc::Channel, AppHandle, Listener, State};
 use tokio::sync::{mpsc, oneshot};
 
-use crate::{app_state::AppState, errors::Error, events::ProgressEvent, strings::ToEventString};
+use crate::{app_state::AppState, errors::Error, events::ProgressEvent, strings::ToEventString, utils::connections::ConvertMutexContentAsync};
 
 #[tauri::command]
 pub async fn list_local_models(
@@ -42,12 +42,11 @@ pub async fn get_model(
 
 #[tauri::command]
 pub async fn get_default_model(state: State<'_, AppState>) -> Result<Option<String>, Error> {
-    let conn_op = state.conn.lock().await;
-    let conn = conn_op.as_ref().ok_or(Error::NoConnection)?;
+    let mut conn = state.conn.convert_to().await?;
 
     let row = sqlx::query_as::<_, (String,)>("SELECT model FROM default_models WHERE profile_id = $1")
         .bind(state.profile)
-        .fetch_optional(conn)
+        .fetch_optional(&mut *conn)
         .await?;
 
     Ok(row.map(|tuple| tuple.0))
@@ -59,9 +58,7 @@ pub async fn set_default_model(
     new_model: String,
 ) -> Result<(), Error> {
     let profile_id = state.profile;
-
-    let conn_op = state.conn.lock().await;
-    let conn = conn_op.as_ref().ok_or(Error::NoConnection)?;
+    let mut conn = state.conn.convert_to().await?;
 
     sqlx::query(
         "INSERT INTO default_models (profile_id, model) VALUES ($1, $2) \
@@ -70,7 +67,7 @@ pub async fn set_default_model(
     )
     .bind(profile_id)
     .bind(new_model)
-    .execute(conn)
+    .execute(&mut *conn)
     .await?;
 
     Ok(())

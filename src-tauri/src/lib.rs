@@ -3,6 +3,7 @@ use commands::{
     init::initialize,
     chats::{
         submit_user_prompt,
+        regenerate_response,
     },
     models::{
         copy_model, delete_model, get_default_model, get_model, list_local_models,
@@ -26,6 +27,7 @@ pub mod paths;
 pub mod responses;
 pub mod settings;
 pub mod strings;
+pub mod utils;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -49,10 +51,11 @@ pub fn run() {
             delete_session,
             create_session,
             submit_user_prompt,
+            regenerate_response,
         ])
         .setup(|app| {
             app.manage(AppState {
-                conn: Mutex::new(None),
+                conn_pool: Mutex::new(None),
                 ollama: Ollama::default(),
                 // Default profile
                 profile: 0,

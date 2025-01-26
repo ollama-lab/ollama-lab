@@ -8,6 +8,7 @@ use crate::{
     events::StreamingResponseEvent,
     models::{chat::{ChatGenerationReturn, IncomingUserPrompt}, session::Session},
     responses::{llm_streams::stream_response, tree::{models::NewChildNode, ChatTree}},
+    utils::connections::CloneMutexContentAsync,
 };
 
 #[tauri::command]
@@ -22,8 +23,7 @@ pub async fn submit_user_prompt(
 ) -> Result<ChatGenerationReturn, Error> {
     let ollama = &state.ollama;
     let profile_id = state.profile;
-    let conn_op = state.conn.lock().await;
-    let conn = conn_op.as_ref().ok_or(Error::NoConnection)?;
+    let pool = state.conn.clone_inside().await?;
 
     let session = sqlx::query_as::<_, Session>("\
         SELECT id, profile_id, title, date_created, current_model
@@ -31,13 +31,13 @@ pub async fn submit_user_prompt(
         WHERE id = $1 AND profile_id = $2;
     ")
         .bind(session_id).bind(profile_id)
-        .fetch_optional(conn)
+        .fetch_optional(&pool)
         .await?
         .ok_or(Error::NotExists)?;
 
     let tree = ChatTree::new(session_id);
 
-    let mut tx = conn.begin().await?;
+    let mut tx = pool.begin().await?;
 
     let user_chat_ret = tree.new_child(&mut tx, parent_id, NewChildNode{
         model: None,
@@ -72,7 +72,6 @@ pub async fn submit_user_prompt(
     });
 
     let ollama2 = ollama.clone();
-    let pool = conn.clone();
     tokio::spawn(async move {
         stream_response(ollama2, &pool, tx.clone(), response_ret.0, Some(cancel_rx), session.id, session.current_model.as_str())
             .await.unwrap();
@@ -102,7 +101,7 @@ pub async fn regenerate_response(
     app: AppHandle,
     state: State<'_, AppState>,
     session_id: i64,
-    parent_id: Option<i64>,
+    chat_id: Option<i64>,
     prompt: IncomingUserPrompt,
     on_stream: Channel<StreamingResponseEvent>,
 ) -> Result<ChatGenerationReturn, Error> {
