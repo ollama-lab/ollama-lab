@@ -25,14 +25,14 @@ impl ChatTree {
         self.session_id
     }
 
-    pub async fn current_branch(&self, executor: impl Executor<'_, Database = Sqlite> + Clone) -> Result<Vec<Chat>, Error> {
+    pub async fn current_branch(&self, executor: impl Executor<'_, Database = Sqlite>, parent_id: Option<i64>) -> Result<Vec<Chat>, Error> {
         Ok(
             sqlx::query_as::<_, Chat>("\
                 WITH RECURSIVE rec_chats (id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority)
                 AS (
                     SELECT id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority
                     FROM chats
-                    WHERE session_id = $1 AND parent_id = NULL
+                    WHERE session_id = $1 AND parent_id = $2
                     ORDER BY priority DESC, date_created
                     LIMIT 1
                     UNION
@@ -47,7 +47,7 @@ impl ChatTree {
                 SELECT *
                 FROM rec_chats;
             ")
-                .bind(self.session_id)
+                .bind(self.session_id).bind(parent_id)
                 .fetch_all(executor)
                 .await?
         )
@@ -92,7 +92,7 @@ impl ChatTree {
         &self,
         tx: &mut Transaction<'_, Sqlite>,
         parent_id: Option<i64>,
-        create_info: NewChildNode
+        create_info: NewChildNode<'_>
     ) -> Result<(i64, i64), Error> {
         sqlx::query("\
             UPDATE chats
@@ -119,13 +119,13 @@ impl ChatTree {
         Ok(ret)
     }
 
-    pub async fn set_default(&mut self, executor: impl Executor<'_, Database = Sqlite> + Clone, chat_id: i64) -> Result<(), Error> {
+    pub async fn set_default(&self, executor: impl Executor<'_, Database = Sqlite>, chat_id: i64) -> Result<(), Error> {
         let affected = sqlx::query("\
             UPDATE chats
             SET = IF(id = $1, 1, 0)
-            WHERE parent_id = (SELECT parent_id FROM chats WHERE id = $1);
+            WHERE session_id = $2 AND parent_id = (SELECT parent_id FROM chats WHERE id = $1);
         ")
-            .bind(chat_id)
+            .bind(chat_id).bind(self.session_id)
             .execute(executor)
             .await?
             .rows_affected();
@@ -135,7 +135,7 @@ impl ChatTree {
             .ok_or(Error::NotExists)
     }
 
-    pub async fn delete_session(self, executor: impl Executor<'_, Database = Sqlite> + Clone) -> Result<(), Error> {
+    pub async fn delete_session(self, executor: impl Executor<'_, Database = Sqlite>) -> Result<(), Error> {
         let affected = sqlx::query("\
             DELETE FROM sessions
             WHERE id = $1;

@@ -13,6 +13,8 @@ use crate::{
     utils::connections::CloneMutexContentAsync,
 };
 
+pub mod chat_history;
+
 #[tauri::command]
 pub async fn submit_user_prompt(
     app: AppHandle,
