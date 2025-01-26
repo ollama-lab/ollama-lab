@@ -1,19 +1,4 @@
 use app_state::AppState;
-use commands::{
-    init::initialize,
-    chats::{
-        submit_user_prompt,
-        regenerate_response,
-    },
-    models::{
-        copy_model, delete_model, get_default_model, get_model, list_local_models,
-        list_running_models, pull_model, set_default_model,
-    },
-    sessions::{
-        list_sessions, rename_session, set_session_model, delete_session,
-        create_session,
-    },
-};
 use ollama_rest::Ollama;
 use tauri::Manager;
 use tokio::sync::Mutex;
@@ -36,22 +21,24 @@ pub fn run() {
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            copy_model,
-            delete_model,
-            get_default_model,
-            get_model,
-            initialize,
-            list_local_models,
-            list_running_models,
-            pull_model,
-            set_default_model,
-            list_sessions,
-            rename_session,
-            set_session_model,
-            delete_session,
-            create_session,
-            submit_user_prompt,
-            regenerate_response,
+            commands::models::copy_model,
+            commands::models::delete_model,
+            commands::models::get_default_model,
+            commands::models::get_model,
+            commands::init::initialize,
+            commands::models::list_local_models,
+            commands::models::list_running_models,
+            commands::models::pull_model,
+            commands::models::set_default_model,
+            commands::sessions::list_sessions,
+            commands::sessions::rename_session,
+            commands::sessions::set_session_model,
+            commands::sessions::delete_session,
+            commands::sessions::create_session,
+            commands::chats::submit_user_prompt,
+            commands::chats::regenerate_response,
+            commands::chats::chat_history::get_current_branch,
+            commands::chats::chat_history::switch_branch,
         ])
         .setup(|app| {
             app.manage(AppState {

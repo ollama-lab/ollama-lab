@@ -9,7 +9,7 @@ use crate::{
 };
 
 #[tauri::command]
-pub async fn get_current_chat_branch(state: State<'_, AppState>, session_id: i64) -> Result<Vec<Chat>, Error> {
+pub async fn get_current_branch(state: State<'_, AppState>, session_id: i64) -> Result<Vec<Chat>, Error> {
     let mut conn = state.conn_pool.convert_to().await?;
     let profile_id = state.profile;
 
