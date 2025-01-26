@@ -1,5 +1,6 @@
 use std::fmt::Display;
 
+use ollama_rest::models::errors::ParsingError;
 use serde::Serialize;
 use sqlx::migrate::MigrateError;
 
@@ -19,6 +20,7 @@ pub enum Error {
     Migration(MigrateError),
     ChanSend,
     NotExists,
+    InvalidRole,
 }
 
 impl Display for Error {
@@ -55,15 +57,10 @@ impl Display for Error {
                     cache = Some(format!("{:?}", err));
                     cache.as_ref().unwrap().as_str()
                 }
-                Self::NoConnection => {
-                    "Ollama Lab is not connected to the app database."
-                }
-                Self::ChanSend => {
-                    "Error occurred during channel sending."
-                },
-                Self::NotExists => {
-                    "Not exists"
-                },
+                Self::NoConnection => "Ollama Lab is not connected to the app database.",
+                Self::ChanSend => "Error occurred during channel sending.",
+                Self::NotExists => "Not exists",
+                Self::InvalidRole => "Invalid prompt role",
             }
         )
     }
@@ -119,5 +116,11 @@ impl From<MigrateError> for Error {
 impl<T> From<tokio::sync::mpsc::error::SendError<T>> for Error {
     fn from(_: tokio::sync::mpsc::error::SendError<T>) -> Self {
         Self::ChanSend
+    }
+}
+
+impl From<ParsingError> for Error {
+    fn from(_: ParsingError) -> Self {
+        Self::InvalidRole
     }
 }
