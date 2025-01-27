@@ -8,7 +8,6 @@
 </script>
 
 <table class="hint-table">
-  <caption>Hints</caption>
   <tbody>
     {#each Object.entries(keyHints) as [key, value] (key)}
       <tr>
