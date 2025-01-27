@@ -24,7 +24,7 @@ export interface PromptSubmissionEvents {
 export const chatHistory = {
   subscribe: internalChatHistory.subscribe,
   async reload(): Promise<void> {
-    let sessionId: number | undefined = undefined
+    let sessionId: number | undefined = get(internalChatHistory)?.session
 
     if (sessionId !== undefined) {
       internalChatHistory.update((value) => {
@@ -55,6 +55,7 @@ export const chatHistory = {
     }
   },
   async setSessionId(sessionId: number | null): Promise<void> {
+    console.log(sessionId)
     if (sessionId === null) {
       internalChatHistory.set(undefined)
       return

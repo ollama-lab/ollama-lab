@@ -49,6 +49,7 @@ export const selectedSessionModel = {
     if (s && ch) {
       await setSessionModel(ch.session, value)
       await sessions.reloadSession(ch.session)
+      candidateSessionModel.set(undefined)
     } else {
       candidateSessionModel.set(value)
     }

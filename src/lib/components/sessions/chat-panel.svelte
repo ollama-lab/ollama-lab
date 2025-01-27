@@ -3,7 +3,6 @@
   import ChatFeeds from "./chat-panel/chat-feeds.svelte"
   import PromptInput from "./chat-panel/prompt-input.svelte"
   import { ScrollArea } from "../ui/scroll-area"
-  import ChatHistoryLoadingAlert from "../custom-ui/chat-history-loading-alert.svelte"
 </script>
 
 <div class="flex flex-col w-full h-full">
@@ -15,5 +14,3 @@
     <PromptInput />
   </div>
 </div>
-
-<ChatHistoryLoadingAlert />

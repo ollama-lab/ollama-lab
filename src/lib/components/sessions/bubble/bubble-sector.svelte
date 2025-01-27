@@ -18,7 +18,7 @@
     )}
   >
     <div class="flex flex-col">
-      <div class="flex">
+      <div class="flex gap-2">
         {#if data.role === "assistant"}
           <Avatar>
             <AvatarFallback>O</AvatarFallback>
@@ -29,7 +29,15 @@
           class={cn(
             "flex flex-col",
             data.role === "user" && "items-end",
-          )}>
+          )}
+        >
+          <span class="text-xs font-bold">
+            {#if data.role === "assistant"}
+              {data.model}
+            {:else if data.role === "user"}
+              You
+            {/if}
+          </span>
           <Bubble {data} />
           <SectorFooter {data} />
         </div>

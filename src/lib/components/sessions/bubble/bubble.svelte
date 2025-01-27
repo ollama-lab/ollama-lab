@@ -27,8 +27,8 @@
 <div
   class={cn(
     "marked-area",
-    "px-5 py-2 rounded-2xl",
-    data.role === "user" && "bg-secondary text-secondary-foreground px-5 py-2 rounded-2xl",
+    "py-2",
+    data.role === "user" && "bg-secondary text-secondary-foreground px-5 rounded-2xl",
     data.role === "assistant" && data.status === "sending" && "has-type-block",
   )}
 >

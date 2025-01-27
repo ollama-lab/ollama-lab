@@ -27,26 +27,35 @@ impl ChatTree {
 
     pub async fn current_branch(&self, executor: impl Executor<'_, Database = Sqlite>, parent_id: Option<i64>) -> Result<Vec<Chat>, Error> {
         Ok(
-            sqlx::query_as::<_, Chat>("\
+            sqlx::query_as::<_, Chat>(r#"
                 WITH RECURSIVE rec_chats (id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority)
                 AS (
-                    SELECT id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority
-                    FROM chats
-                    WHERE session_id = $1 AND parent_id = $2
-                    ORDER BY priority DESC, date_created
-                    LIMIT 1
+                    SELECT *
+                    FROM (
+                        SELECT id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority
+                        FROM chats
+                        WHERE session_id = $1 AND ($2 IS NULL AND parent_id IS NULL OR parent_id = $2)
+                        ORDER BY priority DESC, date_created
+                        LIMIT 1
+                    )
                     UNION
                     SELECT
                         c1.id, c1.session_id, c1.role, c1.content, c1.completed, c1.date_created,
                         c1.date_edited, c1.model, c1.parent_id, c1.priority
                     FROM chats AS c1, rec_chats
-                    WHERE c1.session_id = $1, c1.parent_id = rec_chats.id
-                    ORDER BY c1.priority DESC, c1.date_created
-                    LIMIT 1
+                    WHERE c1.session_id = $1
+                        AND c1.parent_id = rec_chats.id
+                        AND c1.id IN (
+                            SELECT id FROM (
+                                SELECT c2.id, MAX(c2.priority)
+                                FROM chats AS c2
+                                GROUP BY c2.parent_id
+                            )
+                        )
                 )
                 SELECT *
                 FROM rec_chats;
-            ")
+            "#)
                 .bind(self.session_id).bind(parent_id)
                 .fetch_all(executor)
                 .await?

@@ -34,7 +34,7 @@ export async function submitUserPrompt(
   textStreamChannel.onmessage = (ev) => {
     switch (ev.type) {
       case "userPrompt":
-        afterUserPromptSubmitted?.(ev.id, new Date(ev.timestamp))
+        afterUserPromptSubmitted?.(ev.id, new Date(ev.timestamp * 1000))
         break
 
       case "responseInfo":
