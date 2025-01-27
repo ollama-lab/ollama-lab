@@ -16,8 +16,8 @@
   class="flex gap-2 px-4 h-full items-center"
   onclick={() => open = true}
 >
-  <span class="flex-grow truncate text-start w-28">{$selectedSessionModel}</span>
-  <ChevronsUpDownIcon class="size-5" />
+  <span class="flex-grow truncate text-start w-36 text-sm">{$selectedSessionModel}</span>
+  <ChevronsUpDownIcon class="size-4" />
 </button>
 
 <CommandDialog bind:open>
