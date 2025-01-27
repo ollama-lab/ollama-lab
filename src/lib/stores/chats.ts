@@ -55,7 +55,6 @@ export const chatHistory = {
     }
   },
   async setSessionId(sessionId: number | null): Promise<void> {
-    console.log(sessionId)
     if (sessionId === null) {
       internalChatHistory.set(undefined)
       return
