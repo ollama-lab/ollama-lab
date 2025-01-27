@@ -16,7 +16,10 @@ export const sessions = {
         if (sessions) {
           const index = sessions.findIndex(value => value.id === id)
           if (index < 0) {
-            return
+            return [
+              session,
+              ...sessions,
+            ]
           }
 
           sessions[index] = session
