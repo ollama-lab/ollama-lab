@@ -17,6 +17,14 @@ export async function listSessions(): Promise<Session[]> {
     } satisfies Session)))
 }
 
+export async function getSession(id: number): Promise<Session | null> {
+  return await invoke<InternalSession>("get_session", { id })
+    .then(session => ({
+      ...session,
+      dateCreated: new Date(session.dateCreated),
+    } satisfies Session))
+}
+
 export async function deleteSession(id: number): Promise<number | null> {
   return await invoke<number | null>("delete_session", { id })
 }

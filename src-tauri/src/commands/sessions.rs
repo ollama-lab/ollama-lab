@@ -26,6 +26,24 @@ pub async fn list_sessions(state: State<'_, AppState>) -> Result<Vec<Session>, E
 }
 
 #[tauri::command]
+pub async fn get_session(state: State<'_, AppState>, id: i64) -> Result<Option<Session>, Error> {
+    let profile_id = state.profile;
+    let mut conn = state.conn_pool.convert_to().await?;
+
+    let session = sqlx::query_as::<_, Session>("\
+        SELECT id, profile_id, title, date_created, current_model
+        FROM sessions
+        WHERE profile_id = $1 AND id = $2
+        ORDER BY date_created DESC;
+    ")
+        .bind(profile_id).bind(id)
+        .fetch_optional(&mut *conn)
+        .await?;
+
+    Ok(session)
+}
+
+#[tauri::command]
 pub async fn rename_session(
     state: State<'_, AppState>,
     id: i64,

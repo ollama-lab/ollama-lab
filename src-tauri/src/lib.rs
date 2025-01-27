@@ -31,6 +31,7 @@ pub fn run() {
             commands::models::pull_model,
             commands::models::set_default_model,
             commands::sessions::list_sessions,
+            commands::sessions::get_session,
             commands::sessions::rename_session,
             commands::sessions::set_session_model,
             commands::sessions::delete_session,
