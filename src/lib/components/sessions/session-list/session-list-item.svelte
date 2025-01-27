@@ -4,6 +4,7 @@
   import { cn } from "$lib/utils"
   import { toast } from "svelte-sonner"
   import OperationDropdown from "./operation-dropdown.svelte"
+  import { Loader2Icon } from "lucide-svelte"
 
   let { sessionId, title }: {
     sessionId: number
@@ -32,7 +33,7 @@
   tabindex={sessionId}
   ondblclick={() => renameMode = true}
 >
-  <div class="flex-grow select-none truncate text-sm">
+  <div class="flex-grow select-none truncate text-sm flex gap-2 items-center">
     {#if renameMode}
       <Input
         defaultvalue={title}
@@ -56,6 +57,9 @@
       />
     {:else}
       {optimisticTitle ?? title}
+      {#if $chatHistory?.session === sessionId && $chatHistory?.loading}
+        <Loader2Icon class="size-4 animate-spin" />
+      {/if}
     {/if}
   </div>
   <div class="flex-shrink-0 flex items-center">
