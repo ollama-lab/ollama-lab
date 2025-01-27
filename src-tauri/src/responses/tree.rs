@@ -25,7 +25,7 @@ impl ChatTree {
         self.session_id
     }
 
-    pub async fn current_branch(&self, executor: impl Executor<'_, Database = Sqlite>, parent_id: Option<i64>) -> Result<Vec<Chat>, Error> {
+    pub async fn current_branch(&self, executor: impl Executor<'_, Database = Sqlite>, parent_id: Option<i64>, completed_only: bool) -> Result<Vec<Chat>, Error> {
         Ok(
             sqlx::query_as::<_, Chat>(r#"
                 WITH RECURSIVE rec_chats (id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority)
@@ -34,7 +34,10 @@ impl ChatTree {
                     FROM (
                         SELECT id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority
                         FROM chats
-                        WHERE session_id = $1 AND ($2 IS NULL AND parent_id IS NULL OR parent_id = $2)
+                        WHERE
+                            session_id = $1
+                            AND ($2 IS NULL AND parent_id IS NULL OR parent_id = $2)
+                            AND ($3 IS NULL OR completed = $3)
                         ORDER BY priority DESC, date_created
                         LIMIT 1
                     )
@@ -52,11 +55,12 @@ impl ChatTree {
                                 GROUP BY c2.parent_id
                             )
                         )
+                        AND ($3 IS NULL OR c1.completed = $3)
                 )
                 SELECT *
                 FROM rec_chats;
             "#)
-                .bind(self.session_id).bind(parent_id)
+                .bind(self.session_id).bind(parent_id).bind(if completed_only { Some(true) } else { None })
                 .fetch_all(executor)
                 .await?
         )
@@ -66,7 +70,8 @@ impl ChatTree {
         &self,
         tx: &mut Transaction<'_, Sqlite>,
         chat_id: i64,
-        new_content: Option<String>
+        new_content: Option<String>,
+        completed: Option<bool>,
     ) -> Result<i64, Error> {
         sqlx::query("\
             UPDATE chats
@@ -81,8 +86,8 @@ impl ChatTree {
             .await?;
 
         let new_chat = sqlx::query_as::<_, (i64,)>("\
-            INSERT INTO chats (session_id, role, content, model, parent_id, priority)
-            SELECT c.session_id, c.role, IFNULL(input_t.content, c.content) AS content, c.model, c.parent_id, 1
+            INSERT INTO chats (session_id, role, content, model, parent_id, completed, priority)
+            SELECT c.session_id, c.role, IFNULL(input_t.content, c.content) AS content, c.model, c.parent_id, $4, 1
             FROM (
                 VALUES ($2, $3)
             ) AS input_t (id, content)
@@ -90,7 +95,10 @@ impl ChatTree {
             WHERE c.session_id = $1
             RETURNING id;
         ")
-            .bind(self.session_id).bind(chat_id).bind(new_content)
+            .bind(self.session_id)
+            .bind(chat_id)
+            .bind(new_content)
+            .bind(completed)
             .fetch_one(&mut **tx)
             .await?;
 
@@ -113,8 +121,8 @@ impl ChatTree {
             .await?;
 
         let ret = sqlx::query_as::<_, (i64, i64)>("\
-            INSERT INTO chats (session_id, role, content, model, parent_id, priority)
-            VALUES ($1, $2, $3, $4, $5, 1)
+            INSERT INTO chats (session_id, role, content, model, parent_id, completed, priority)
+            VALUES ($1, $2, $3, $4, $5, $6, 1)
             RETURNING id, date_created;
         ")
             .bind(self.session_id)
@@ -122,6 +130,7 @@ impl ChatTree {
             .bind(create_info.content)
             .bind(create_info.model)
             .bind(parent_id)
+            .bind(create_info.completed)
             .fetch_one(&mut **tx)
             .await?;
 

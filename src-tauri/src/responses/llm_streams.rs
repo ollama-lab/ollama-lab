@@ -4,7 +4,7 @@ use ollama_rest::{chrono::Utc, futures::StreamExt, models::chat::{ChatRequest, M
 use sqlx::{Executor, Sqlite};
 use tokio::sync::{mpsc, oneshot, Mutex};
 
-use crate::{errors::Error, events::StreamingResponseEvent, models::chat::Chat};
+use crate::{errors::Error, events::StreamingResponseEvent, responses::tree::ChatTree};
 
 pub async fn stream_response<'c>(
     ollama: Ollama,
@@ -18,15 +18,7 @@ pub async fn stream_response<'c>(
     let tx = chan_sender.clone();
     let tx2 = chan_sender.clone();
 
-    let chat_history = sqlx::query_as::<_, Chat>("\
-        SELECT id, session_id, role, content, completed, date_created, date_edited, parent_id, model
-        FROM chats
-        WHERE session_id = $1 AND completed = TRUE 
-        ORDER BY date_created, id;
-    ")
-        .bind(session_id)
-        .fetch_all(sqlx_executor.clone())
-        .await?;
+    let chat_history = ChatTree::new(session_id).current_branch(sqlx_executor.clone(), None, true).await?;
 
     let req = ChatRequest{
         model: current_model.to_string(),
@@ -51,8 +43,8 @@ pub async fn stream_response<'c>(
     let output_buf = Arc::new(Mutex::new(String::new()));
     let output_buf2 = output_buf.clone();
 
-    let conn1 = sqlx_executor.clone();
-    let conn2 = sqlx_executor.clone();
+    let (result_tx, mut result_rx) = mpsc::channel(2);
+    let result_tx2 = result_tx.clone();
 
     tokio::select! {
         Err(err) = async move {
@@ -70,18 +62,11 @@ pub async fn stream_response<'c>(
                     .map(|msg| msg.content)
                     .unwrap_or_else(|| String::new());
 
-                output_buf.lock().await.push_str(chunk.as_str());
+                output_buf2.lock().await.push_str(chunk.as_str());
                 chan_sender.send(StreamingResponseEvent::Text { chunk }).await?;
             }
 
-            sqlx::query("\
-                UPDATE chats
-                SET date_created = $2, completed = TRUE, content = $3
-                WHERE id = $1;
-            ")
-                .bind(response_id).bind(date_now).bind(output_buf.lock().await.as_str())
-                .execute(conn1)
-                .await?;
+            result_tx.send((date_now, true)).await?;
 
             Ok::<(), Error>(())
         } => {
@@ -101,18 +86,22 @@ pub async fn stream_response<'c>(
                     message: Some("Canceled by user.".to_string()),
                 }).await;
 
-                _ = sqlx::query("\
-                    UPDATE chats
-                    SET date_created = $2, completed = FALSE, content = $3
-                    WHERE id = $1;
-                ")
-                    .bind(response_id)
-                    .bind(Utc::now().timestamp())
-                    .bind(output_buf2.lock().await.as_str())
-                    .execute(conn2)
-                    .await;
+                result_tx2.send((Utc::now().timestamp(), true)).await?;
             }
         }
+    }
+
+    if let Some((date_now, completed)) = result_rx.recv().await {
+        sqlx::query("\
+            UPDATE chats
+            SET date_created = $2, completed = $3, content = $4
+            WHERE id = $1;
+        ")
+            .bind(response_id).bind(date_now).bind(completed).bind(output_buf.lock().await.as_str())
+            .execute(sqlx_executor.clone())
+            .await?;
+        
+        result_rx.close();
     }
 
     Ok(())

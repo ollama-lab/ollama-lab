@@ -155,7 +155,7 @@ pub async fn regenerate_response(
             }).await.map(|ret| (ret.0,))
         }
         Role::Assistant => {
-            tree.new_sibling(&mut tx, chat_id, None)
+            tree.new_sibling(&mut tx, chat_id, None, Some(false))
                 .await
                 .map(|ret| (ret,))
         }
