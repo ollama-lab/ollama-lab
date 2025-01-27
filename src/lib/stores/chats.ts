@@ -36,12 +36,22 @@ export const chatHistory = {
         return value
       })
 
-      const chats = await getCurrentBranch(sessionId)
-      internalChatHistory.set({
-        session: sessionId,
-        chats,
-        loading: false,
-      })
+      try {
+        const chats = await getCurrentBranch(sessionId)
+        internalChatHistory.set({
+          session: sessionId,
+          chats,
+          loading: false,
+        })
+      } catch (err) {
+        internalChatHistory.update((value) => {
+          if (value) {
+            value.loading = false
+          }
+          return value
+        })
+        throw err
+      }
     }
   },
   async setSessionId(sessionId: number | null): Promise<void> {
@@ -53,7 +63,7 @@ export const chatHistory = {
     internalChatHistory.set({
       session: sessionId,
       chats: [],
-      loading: true,
+      loading: false,
     })
 
     await this.reload()

@@ -2,6 +2,7 @@
   import { Input } from "$lib/components/ui/input"
   import { chatHistory } from "$lib/stores/chats"
   import { cn } from "$lib/utils"
+  import { toast } from "svelte-sonner"
   import OperationDropdown from "./operation-dropdown.svelte"
 
   let { sessionId, title }: {
@@ -20,7 +21,13 @@
     "flex items-center px-3 py-2 rounded cursor-pointer min-h-12",
     $chatHistory?.session === sessionId ? "bg-primary text-primary-foreground" : "hover:bg-secondary",
   )}
-  onclick={() => chatHistory.setSessionId(sessionId)}
+  onclick={() => {
+    try {
+      chatHistory.setSessionId(sessionId)
+    } catch (err) {
+      toast.error(`Error: ${err}`)
+    }
+  }}
   role="button"
   tabindex={sessionId}
   ondblclick={() => renameMode = true}

@@ -53,7 +53,10 @@
     }
 
     chatHistory.submit(promptObject, {
-      onRespond: () => status = "responding",
+      onRespond: () => {
+        status = "responding"
+        prompt = ""
+      },
     }).finally(() => status = undefined)
   }}
 >
@@ -67,7 +70,7 @@
       onkeypress={(ev) => {
         if (ev.key === "Enter" && !ev.shiftKey && !ev.ctrlKey) {
           ev.preventDefault()
-          form?.submit()
+          form?.requestSubmit()
         }
       }}
     ></textarea>
