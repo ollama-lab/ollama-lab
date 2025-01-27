@@ -43,7 +43,7 @@ pub async fn stream_response<'c>(
     let output_buf = Arc::new(Mutex::new(String::new()));
     let output_buf2 = output_buf.clone();
 
-    let (result_tx, mut result_rx) = mpsc::channel(2);
+    let (result_tx, mut result_rx) = mpsc::channel(1);
     let result_tx2 = result_tx.clone();
 
     tokio::select! {
