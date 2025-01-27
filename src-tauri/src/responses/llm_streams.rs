@@ -90,26 +90,28 @@ pub async fn stream_response<'c>(
             }).await;
         }
 
-        Some(_) = async move {
+        Some(res) = async move {
             match cancel_receiver {
                 Some(rx) => Some(rx.await),
                 None => None,
             }
         } => {
-            _ = tx2.send(StreamingResponseEvent::Canceled {
-                message: Some("Canceled by user.".to_string()),
-            }).await;
+            if let Ok(_) = res {
+                _ = tx2.send(StreamingResponseEvent::Canceled {
+                    message: Some("Canceled by user.".to_string()),
+                }).await;
 
-            _ = sqlx::query("\
-                UPDATE chats
-                SET date_created = $2, completed = FALSE, content = $3
-                WHERE id = $1;
-            ")
-                .bind(response_id)
-                .bind(Utc::now().timestamp())
-                .bind(output_buf2.lock().await.as_str())
-                .execute(conn2)
-                .await;
+                _ = sqlx::query("\
+                    UPDATE chats
+                    SET date_created = $2, completed = FALSE, content = $3
+                    WHERE id = $1;
+                ")
+                    .bind(response_id)
+                    .bind(Utc::now().timestamp())
+                    .bind(output_buf2.lock().await.as_str())
+                    .execute(conn2)
+                    .await;
+            }
         }
     }
 
