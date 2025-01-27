@@ -6,6 +6,8 @@
   import { BubbleSector } from "../bubble"
   import Hints from "./chat-feeds/hints.svelte"
 
+  let root = $state<HTMLDivElement | undefined>()
+
   $effect(() => {
     if (!$selectedSessionModel) {
       const fallback = $defaultModel ?? $modelList.at(0)?.name
@@ -14,9 +16,21 @@
       }
     }
   })
+
+  $effect(() => {
+    const chats = $chatHistory?.chats
+    const status = chats?.at(-1)?.status
+
+    if (status === "preparing" || status === "sending") {
+      if (root) {
+        root.scrollTo(0, root.scrollHeight)
+      }
+    }
+  })
 </script>
 
 <div
+  bind:this={root}
   class={cn(
     "flex flex-col",
     $chatHistory === undefined && "h-full place-content-center items-center",

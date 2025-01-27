@@ -1,9 +1,9 @@
 import { getCurrentBranch } from "$lib/commands/chat-history"
-import { submitUserPrompt, type PromptResponseEvents } from "$lib/commands/chats"
+import { submitUserPrompt } from "$lib/commands/chats"
 import type { ChatBubble } from "$lib/models/session"
 import { get, writable } from "svelte/store"
 import { selectedSessionModel } from "./models"
-import type { ChatGenerationReturn, IncomingUserPrompt } from "$lib/models/chat"
+import type { IncomingUserPrompt } from "$lib/models/chat"
 import { createSession } from "$lib/commands/sessions"
 import { sessions } from "./sessions"
 import { toast } from "svelte-sonner"
@@ -17,6 +17,7 @@ export interface ChatHistory {
 const internalChatHistory = writable<ChatHistory | undefined>()
 
 export interface PromptSubmissionEvents {
+  onRespond?: () => void
   onScrollDown?: () => void
 }
 
@@ -61,6 +62,7 @@ export const chatHistory = {
     await this.setSessionId(null)
   },
   async submit(prompt: IncomingUserPrompt, {
+    onRespond,
     onScrollDown,
   }: PromptSubmissionEvents = {}): Promise<void> {
     const model = get(selectedSessionModel)
@@ -118,6 +120,7 @@ export const chatHistory = {
             return ch
           })
 
+          onRespond?.()
           onScrollDown?.()
         }
       },

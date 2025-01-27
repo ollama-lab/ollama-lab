@@ -5,7 +5,7 @@
   import { selectedSessionModel } from "$lib/stores/models"
   import { toast } from "svelte-sonner"
   import { chatHistory } from "$lib/stores/chats"
-  import { IncomingUserPrompt } from "$lib/models/chat"
+  import type { IncomingUserPrompt } from "$lib/models/chat"
 
   let form = $state<HTMLFormElement | undefined>()
   let textEntry = $state<HTMLTextAreaElement | undefined>()
@@ -53,7 +53,7 @@
     }
 
     chatHistory.submit(promptObject, {
-
+      onRespond: () => status = "responding",
     }).finally(() => status = undefined)
   }}
 >
