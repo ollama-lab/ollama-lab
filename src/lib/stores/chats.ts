@@ -26,16 +26,16 @@ export const chatHistory = {
   async reload(): Promise<void> {
     let sessionId: number | undefined = undefined
 
-    internalChatHistory.update((value) => {
-      if (value && !value.loading) {
-        value.loading = true
-        sessionId = value.session
-      }
-
-      return value
-    })
-
     if (sessionId !== undefined) {
+      internalChatHistory.update((value) => {
+        if (value && !value.loading) {
+          value.loading = true
+          sessionId = value.session
+        }
+
+        return value
+      })
+
       const chats = await getCurrentBranch(sessionId)
       internalChatHistory.set({
         session: sessionId,

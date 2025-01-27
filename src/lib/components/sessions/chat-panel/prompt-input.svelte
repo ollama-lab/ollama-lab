@@ -49,7 +49,7 @@
     status = "submitting"
 
     const promptObject: IncomingUserPrompt = {
-      text: prompt,
+      text: prompt.trim(),
     }
 
     chatHistory.submit(promptObject, {
@@ -60,14 +60,14 @@
     <textarea
       bind:this={textEntry}
       name="prompt"
-      bind:value={() => prompt, (value) => prompt = value.trim()}
+      bind:value={prompt}
       class="w-full border-none outline-none resize-none bg-transparent max-h-72 mx-2 mt-1"
       placeholder="Enter your prompt here"
       required
       onkeypress={(ev) => {
         if (ev.key === "Enter" && !ev.shiftKey && !ev.ctrlKey) {
           ev.preventDefault()
-          form?.requestSubmit(ev.currentTarget)
+          form?.submit()
         }
       }}
     ></textarea>
