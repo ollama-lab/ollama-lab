@@ -1,16 +1,17 @@
 <script lang="ts">
   import { chatHistory } from "$lib/stores/chats"
+  import { modelList } from "$lib/stores/model-list"
+  import { defaultModel, selectedSessionModel } from "$lib/stores/models"
   import { cn } from "$lib/utils"
   import { BubbleSector } from "../bubble"
   import Hints from "./chat-feeds/hints.svelte"
 
-  let loaded = $state(false)
-
   $effect(() => {
-    if (!loaded) return
-
-    return () => {
-      loaded = false
+    if (!$selectedSessionModel) {
+      const fallback = $defaultModel ?? $modelList.at(0)?.name
+      if (fallback) {
+        selectedSessionModel.set(fallback)
+      }
     }
   })
 </script>

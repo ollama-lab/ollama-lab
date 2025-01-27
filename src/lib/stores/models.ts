@@ -35,7 +35,7 @@ const candidateSessionModel = writable<string | undefined>()
 const internalSelectedSessionModel = derived([candidateSessionModel, sessions, chatHistory], ([$csm, $s, $ch]) => {
   if ($s && $ch) {
     return $s.find(session => session.id === $ch.session)?.currentModel
-  } 
+  }
 
   return $csm
 })

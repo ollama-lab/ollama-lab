@@ -2,7 +2,7 @@
   import { z } from "zod"
 
   export const formSchema = z.object({
-    prompt: z.string().min(1),
+    prompt: z.string().min(1).trim(),
   })
 
   export type FormSchema = typeof formSchema
@@ -15,6 +15,8 @@
   import { ArrowUpIcon } from "lucide-svelte"
   import { superForm } from "sveltekit-superforms"
   import { zod } from "sveltekit-superforms/adapters"
+  import { selectedSessionModel } from "$lib/stores/models"
+  import { toast } from "svelte-sonner"
 
   let textEntry = $state<HTMLTextAreaElement | undefined>()
   let autosizeAttached = false
@@ -41,7 +43,14 @@
 
   const form = superForm({ prompt: "" }, {
     validators: zod(formSchema),
-    onSubmit({ validators }) {
+    onSubmit({ formData, cancel }) {
+      if ($selectedSessionModel) {
+      } else {
+        toast.error("No model selected")
+      }
+
+      // Hijack actual submission
+      cancel()
     },
   })
 
@@ -50,6 +59,8 @@
 
 <form
   class="bg-secondary text-secondary-foreground flex flex-col gap-2 px-3 py-3 mb-4 rounded-3xl"
+  method="POST"
+  use:enhance
 >
   <FormField {form} name="prompt">
     <FormControl>
