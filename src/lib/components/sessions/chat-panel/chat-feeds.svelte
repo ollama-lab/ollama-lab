@@ -28,7 +28,7 @@
       {/each}
     {/key}
   {:else}
-    <div class="text-center">
+    <div class="text-center space-y-4">
       <span class="select-none font-bold text-2xl">Hello there! 👋</span>
       <Hints />
     </div>
