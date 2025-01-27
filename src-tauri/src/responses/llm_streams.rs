@@ -19,7 +19,7 @@ pub async fn stream_response<'c>(
     let tx2 = chan_sender.clone();
 
     let chat_history = sqlx::query_as::<_, Chat>("\
-        SELECT id, session_id, role, content, completed, date_created, date_edited, model
+        SELECT id, session_id, role, content, completed, date_created, date_edited, parent_id, model
         FROM chats
         WHERE session_id = $1 AND completed = TRUE 
         ORDER BY date_created, id;
