@@ -7,10 +7,19 @@ interface InternalChatGenerationReturn {
   dateCreated: string
 }
 
+export interface PromptResponseEvents {
+  afterUserPromptSubmitted?: (id: number, date: Date) => void
+  afterResponseCreated?: (id: number) => void
+  onStreamText?: (chunk: string) => void
+  onCompleteTextStreaming?: () => void
+  onFail?: (msg: string | null) => void
+  onCancel?: (msg: string | null) => void
+}
+
 export async function submitUserPrompt(
   sessionId: number,
   prompt: IncomingUserPrompt,
-  parentId?: number,
+  parentId: number | null,
   {
     afterUserPromptSubmitted,
     afterResponseCreated,
@@ -18,14 +27,7 @@ export async function submitUserPrompt(
     onCompleteTextStreaming,
     onFail,
     onCancel,
-  }: {
-    afterUserPromptSubmitted?: (id: number, date: Date) => void
-    afterResponseCreated?: (id: number) => void
-    onStreamText?: (chunk: string) => void
-    onCompleteTextStreaming?: () => void
-    onFail?: (msg: string | null) => void
-    onCancel?: (msg: string | null) => void
-  } = {},
+  }: PromptResponseEvents = {},
 ): Promise<ChatGenerationReturn> {
   const textStreamChannel = new Channel<StreamingResponseEvent>()
 

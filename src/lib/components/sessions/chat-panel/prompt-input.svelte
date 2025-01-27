@@ -1,9 +1,11 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button"
   import autosize from "autosize"
-  import { ArrowUpIcon } from "lucide-svelte"
+  import { ArrowUpIcon, Loader2Icon } from "lucide-svelte"
   import { selectedSessionModel } from "$lib/stores/models"
   import { toast } from "svelte-sonner"
+  import { chatHistory } from "$lib/stores/chats"
+  import { IncomingUserPrompt } from "$lib/models/chat"
 
   let form = $state<HTMLFormElement | undefined>()
   let textEntry = $state<HTMLTextAreaElement | undefined>()
@@ -17,6 +19,8 @@
   }
 
   let prompt = $state("")
+
+  let status = $state<"submitting" | "responding" | undefined>()
 
   $effect(() => {
     const el = textEntry
@@ -38,7 +42,19 @@
   onsubmit={(ev) => {
     ev.preventDefault()
 
+    if (status || !$selectedSessionModel || prompt.length < 1) {
+      return
+    }
 
+    status = "submitting"
+
+    const promptObject: IncomingUserPrompt = {
+      text: prompt,
+    }
+
+    chatHistory.submit(promptObject, {
+
+    }).finally(() => status = undefined)
   }}
 >
     <textarea
@@ -65,9 +81,13 @@
         size="icon"
         class="rounded-full"
         type="submit"
-        disabled={prompt.length < 1 || !$selectedSessionModel}
+        disabled={!!status || prompt.length < 1 || !$selectedSessionModel}
       >
-        <ArrowUpIcon class="!size-6" />
+        {#if status === "submitting"}
+          <Loader2Icon class="!size-6 animate-spin" />
+        {:else}
+          <ArrowUpIcon class="!size-6" />
+        {/if}
       </Button>
     </div>
   </div>
