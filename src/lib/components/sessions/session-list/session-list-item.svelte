@@ -5,6 +5,8 @@
   import { toast } from "svelte-sonner"
   import OperationDropdown from "./operation-dropdown.svelte"
   import { Loader2Icon } from "lucide-svelte"
+  import { renameSession } from "$lib/commands/sessions"
+    import { sessions } from "$lib/stores/sessions";
 
   let { sessionId, title }: {
     sessionId: number
@@ -37,18 +39,31 @@
     {#if renameMode}
       <Input
         defaultvalue={title ?? ""}
-        onblur={(ev) => {
-          renameMode = false
+        onkeydown={(ev) => {
+          switch (ev.key) {
+            case "Enter":
+              if (!ev.ctrlKey && !ev.metaKey && !ev.altKey && !ev.shiftKey) {
+                ev.currentTarget.blur()
+              }
 
+              break
+
+            default:
+              break
+          }
+        }}
+        onblur={async (ev) => {
           const newTitle = ev.currentTarget.value.trim()
           if (newTitle.length < 1 || newTitle === title) {
             return
           }
 
+          renameMode = false
           optimisticTitle = title
 
           try {
-            // TODO: Logic
+            await renameSession(sessionId, newTitle)
+            await sessions.reloadSession(sessionId)
           } finally {
             optimisticTitle = undefined
           }
