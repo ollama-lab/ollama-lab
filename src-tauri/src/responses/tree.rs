@@ -79,7 +79,7 @@ impl ChatTree {
             WHERE
                 session_id = $1
                 AND
-                parent_id = (SELECT parent_id FROM chats WHERE id = $2);
+                parent_id IN (SELECT parent_id FROM chats WHERE id = $2);
         ")
             .bind(self.session_id).bind(chat_id)
             .execute(&mut **tx)
@@ -87,11 +87,11 @@ impl ChatTree {
 
         let new_chat = sqlx::query_as::<_, (i64,)>("\
             INSERT INTO chats (session_id, role, content, model, parent_id, completed, priority)
-            SELECT c.session_id, c.role, IFNULL(input_t.content, c.content) AS content, c.model, c.parent_id, $4, 1
+            SELECT c.session_id, c.role, IFNULL(input_t.column2, c.content) AS content, c.model, c.parent_id, $4, 1
             FROM (
                 VALUES ($2, $3)
-            ) AS input_t (id, content)
-            INNER JOIN chats c ON input_t.id = c.id
+            ) AS input_t
+            INNER JOIN chats c ON input_t.column1 = c.id
             WHERE c.session_id = $1
             RETURNING id;
         ")
