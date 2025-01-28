@@ -70,8 +70,9 @@ impl ChatTree {
         &self,
         tx: &mut Transaction<'_, Sqlite>,
         chat_id: i64,
-        new_content: Option<String>,
+        new_content: Option<&str>,
         completed: Option<bool>,
+        model: Option<&str>,
     ) -> Result<i64, Error> {
         sqlx::query("\
             UPDATE chats
@@ -87,18 +88,16 @@ impl ChatTree {
 
         let new_chat = sqlx::query_as::<_, (i64,)>("\
             INSERT INTO chats (session_id, role, content, model, parent_id, completed, priority)
-            SELECT c.session_id, c.role, IFNULL(input_t.column2, c.content) AS content, c.model, c.parent_id, $4, 1
-            FROM (
-                VALUES ($2, $3)
-            ) AS input_t
-            INNER JOIN chats c ON input_t.column1 = c.id
-            WHERE c.session_id = $1
+            SELECT session_id, role, IFNULL($3, content), IFNULL($5, model), parent_id, $4, 1
+            FROM chats
+            WHERE session_id = $1 AND id = $2
             RETURNING id;
         ")
             .bind(self.session_id)
             .bind(chat_id)
             .bind(new_content)
-            .bind(completed)
+            .bind(completed.unwrap_or(true))
+            .bind(model)
             .fetch_one(&mut **tx)
             .await?;
 
