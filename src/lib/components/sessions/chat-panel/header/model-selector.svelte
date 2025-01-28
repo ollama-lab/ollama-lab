@@ -1,5 +1,6 @@
 <script lang="ts">
   import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "$lib/components/ui/command";
+  import type { ModelListItem } from "$lib/models/model-item"
   import { modelList } from "$lib/stores/model-list"
   import { selectedSessionModel } from "$lib/stores/models"
   import { ChevronsUpDownIcon } from "lucide-svelte"
@@ -10,6 +11,13 @@
     await selectedSessionModel.set(model)
     open = false
   }
+
+  let groupedModelList = $derived($modelList.reduce((acc, cur) => {
+    const prefix = cur.name.split(":").at(0) ?? "Misc"
+
+    acc[prefix] = [...acc[prefix] ?? [], cur]
+    return acc
+  }, {} as { [key: string]: ModelListItem[] }))
 </script>
 
 <button
@@ -27,10 +35,12 @@
   />
   <CommandList>
     <CommandEmpty>No matched model found.</CommandEmpty>
-    <CommandGroup heading="Models">
-      {#each $modelList as { name } (name)}
-        <CommandItem onclick={() => internalSetSessionModel(name)}>{name}</CommandItem>
+      {#each Object.entries(groupedModelList) as [prefix, list] (prefix)}
+        <CommandGroup heading={prefix}>
+          {#each list as { name } (name)}
+            <CommandItem onclick={() => internalSetSessionModel(name)}>{name}</CommandItem>
+          {/each}
+        </CommandGroup>
       {/each}
-    </CommandGroup>
   </CommandList>
 </CommandDialog>
