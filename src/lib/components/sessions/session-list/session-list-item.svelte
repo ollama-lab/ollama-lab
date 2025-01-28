@@ -6,7 +6,7 @@
   import OperationDropdown from "./operation-dropdown.svelte"
   import { Loader2Icon } from "lucide-svelte"
   import { renameSession } from "$lib/commands/sessions"
-    import { sessions } from "$lib/stores/sessions";
+  import { sessions } from "$lib/stores/sessions"
 
   let { sessionId, title }: {
     sessionId: number
