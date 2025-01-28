@@ -31,26 +31,26 @@
 
 <nav class="flex flex-col border-r border-border px-1 py-1">
   <div class="flex-grow flex flex-col">
-    {#each tabs as { name, icon, href, activePattern, onClick }}
+    {#each tabs as { name, icon: Icon, href, activePattern, onClick }}
       <TabLink
         {href}
         {onClick}
         {name}
         active={activePattern?.test(page.url.pathname)}
       >
-        <svelte:component this={icon} />
+        <Icon />
       </TabLink>
     {/each}
   </div>
   <div class="flex-shrink-0 flex flex-col">
-    {#each footerTabs as { name, icon, href, activePattern, onClick }}
+    {#each footerTabs as { name, icon: Icon, href, activePattern, onClick }}
       <TabLink
         {href}
         {onClick}
         {name}
         active={activePattern?.test(page.url.pathname)}
       >
-        <svelte:component this={icon} />
+        <Icon />
       </TabLink>
     {/each}
   </div> 
