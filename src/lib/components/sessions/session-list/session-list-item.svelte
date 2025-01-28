@@ -53,12 +53,13 @@
           }
         }}
         onblur={async (ev) => {
+          renameMode = false
+
           const newTitle = ev.currentTarget.value.trim()
           if (newTitle.length < 1 || newTitle === title) {
             return
           }
 
-          renameMode = false
           optimisticTitle = title
 
           try {
