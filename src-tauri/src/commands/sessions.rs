@@ -127,17 +127,18 @@ pub async fn delete_session(state: State<'_, AppState>, id: i64) -> Result<Optio
 }
 
 #[tauri::command]
-pub async fn create_session(state: State<'_, AppState>, current_model: String) -> Result<Session, Error> {
+pub async fn create_session(state: State<'_, AppState>, current_model: String, title: Option<String>) -> Result<Session, Error> {
     let profile_id = state.profile;
     let mut conn = state.conn_pool.convert_to().await?;
 
-    let session = sqlx::query_as::<_, Session>("\
-        INSERT INTO sessions (profile_id, current_model)
-        VALUES ($1, $2)
+    let session = sqlx::query_as::<_, Session>(r#"
+        INSERT INTO sessions (profile_id, current_model, title)
+        VALUES ($1, $2, $3)
         RETURNING id, profile_id, title, date_created, current_model;
-    ")
+    "#)
         .bind(profile_id)
         .bind(current_model)
+        .bind(title)
         .fetch_one(&mut *conn)
         .await?;
 

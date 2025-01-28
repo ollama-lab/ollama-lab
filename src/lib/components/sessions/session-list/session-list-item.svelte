@@ -8,12 +8,12 @@
 
   let { sessionId, title }: {
     sessionId: number
-    title: string
+    title: string | null
   } = $props()
 
   let renameMode = $state<boolean>(false)
 
-  let optimisticTitle = $state<string | undefined>()
+  let optimisticTitle = $state<string | null>()
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events  -->
@@ -36,7 +36,7 @@
   <div class="flex-grow select-none truncate text-sm flex gap-2 items-center">
     {#if renameMode}
       <Input
-        defaultvalue={title}
+        defaultvalue={title ?? ""}
         onblur={(ev) => {
           renameMode = false
 
@@ -56,13 +56,15 @@
         class="text-foreground"
       />
     {:else}
-      {optimisticTitle ?? title}
+      {optimisticTitle ?? title ?? "New Chat"}
       {#if $chatHistory?.session === sessionId && $chatHistory?.loading}
         <Loader2Icon class="size-4 animate-spin" />
       {/if}
     {/if}
   </div>
-  <div class="flex-shrink-0 flex items-center">
-    <OperationDropdown {sessionId} />
-  </div>
+  {#if !renameMode}
+    <div class="flex-shrink-0 flex items-center">
+      <OperationDropdown {sessionId} onEdit={() => renameMode = true} />
+    </div>
+  {/if}
 </div>

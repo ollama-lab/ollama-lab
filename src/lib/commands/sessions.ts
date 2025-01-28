@@ -37,8 +37,8 @@ export async function setSessionModel(id: number, model: string): Promise<Sessio
   return await invoke<SessionCurrentModelReturn>("set_session_model", { id, model })
 }
 
-export async function createSession(currentModel: string): Promise<Session> {
-  return await invoke<InternalSession>("create_session", { currentModel })
+export async function createSession(currentModel: string, title?: string | null): Promise<Session> {
+  return await invoke<InternalSession>("create_session", { currentModel, title })
     .then((session) => ({
       ...session,
       dateCreated: new Date(session.dateCreated),

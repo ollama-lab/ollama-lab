@@ -3,7 +3,7 @@
   import Loading from "$lib/components/custom-ui/loading.svelte"
   import { Button, buttonVariants } from "$lib/components/ui/button"
   import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "$lib/components/ui/dialog"
-    import { chatHistory } from "$lib/stores/chats";
+  import { chatHistory } from "$lib/stores/chats"
   import { sessions } from "$lib/stores/sessions"
   import { cn } from "$lib/utils"
   import { TrashIcon } from "lucide-svelte"
