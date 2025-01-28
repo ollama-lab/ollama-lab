@@ -65,6 +65,8 @@
           try {
             await renameSession(sessionId, newTitle)
             await sessions.reloadSession(sessionId)
+          } catch (err) {
+            toast.error(`Error: ${err}`)
           } finally {
             optimisticTitle = undefined
           }
