@@ -4,11 +4,21 @@
   import PromptInput from "./chat-panel/prompt-input.svelte"
   import { ScrollArea } from "../ui/scroll-area"
   import RegenFooter from "./chat-panel/regen-footer.svelte"
+  import { setContext } from "svelte"
+
+  let feedsRoot = $state<HTMLElement | null>(null)
+
+  setContext("scroll-down", () => {
+    feedsRoot?.scrollTo(0, feedsRoot.scrollHeight)
+  })
 </script>
 
 <div class="flex flex-col w-full h-full">
   <Header />
-  <ScrollArea class="flex-grow px-2 py-2 w-full max-w-screen-lg mx-auto">
+  <ScrollArea
+    bind:ref={feedsRoot}
+    class="flex-grow px-2 py-2 w-full max-w-screen-lg mx-auto"
+  >
     <ChatFeeds />
 
     <RegenFooter />

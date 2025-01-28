@@ -5,7 +5,8 @@
   import SectorFooter from "./sector-footer.svelte"
   import Bubble from "./bubble.svelte"
   import { Avatar, AvatarFallback } from "$lib/components/ui/avatar"
-  import { TriangleAlertIcon } from "lucide-svelte"
+  import { SquarePenIcon, TriangleAlertIcon } from "lucide-svelte"
+  import { Button } from "$lib/components/ui/button"
 
   let { data }: { data: ChatBubble } = $props()
 </script>
@@ -13,7 +14,7 @@
 {#if data.role !== "system"}
   <div
     class={cn(
-      "flex py-1 gap-2 items-center",
+      "group/bubble-sector flex py-1 gap-2 items-center",
       data.role === "user" ? "place-content-end" : "place-content-start",
     )}
   >
@@ -23,6 +24,21 @@
           <Avatar>
             <AvatarFallback>O</AvatarFallback>
           </Avatar>
+        {/if}
+
+        {#if data.role === "user"}
+          <div class="flex items-center gap-2">
+            <Button
+              class={cn(
+                "opacity-0 group-hover/bubble-sector:opacity-100",
+              )}
+              variant="ghost"
+              size="icon"
+              title="Edit prompt"
+            >
+              <SquarePenIcon />
+            </Button>
+          </div>
         {/if}
 
         <div

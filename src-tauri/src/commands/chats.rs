@@ -76,7 +76,7 @@ pub async fn submit_user_prompt(
 
     let ollama2 = ollama.clone();
     tokio::spawn(async move {
-        stream_response(ollama2, &pool, tx.clone(), response_ret.0, Some(cancel_rx), session.id, session.current_model.as_str())
+        stream_response(&ollama2, &pool, tx.clone(), response_ret.0, Some(cancel_rx), session.id, session.current_model.as_str())
             .await.unwrap();
     });
 
@@ -105,6 +105,7 @@ pub async fn regenerate_response(
     state: State<'_, AppState>,
     session_id: i64,
     chat_id: i64,
+    model: Option<String>,
     on_stream: Channel<StreamingResponseEvent>,
 ) -> Result<ChatGenerationReturn, Error> {
     let ollama = &state.ollama;
@@ -164,6 +165,8 @@ pub async fn regenerate_response(
 
     tx.commit().await?;
 
+    on_stream.send(StreamingResponseEvent::ResponseInfo { id: response_ret.0 })?;
+
     let (cancel_tx, cancel_rx) = oneshot::channel();
 
     let event_id = app.once(format!("cancel-gen/{}", response_ret.0), move |_| {
@@ -173,8 +176,11 @@ pub async fn regenerate_response(
     let (tx, mut rx) = mpsc::channel(32);
 
     let ollama2 = ollama.clone();
+
+    let model_string = model.unwrap_or(session.current_model);
+
     tokio::spawn(async move {
-        stream_response(ollama2, &pool, tx.clone(), response_ret.0, Some(cancel_rx), session.id, session.current_model.as_str())
+        stream_response(&ollama2, &pool, tx.clone(), response_ret.0, Some(cancel_rx), session.id, model_string.as_str())
             .await.unwrap();
     });
 
@@ -192,7 +198,7 @@ pub async fn regenerate_response(
     app.unlisten(event_id);
 
     Ok(ChatGenerationReturn{
-        id: 0,
+        id: response_ret.0,
         date_created: Utc::now(),
     })
 }

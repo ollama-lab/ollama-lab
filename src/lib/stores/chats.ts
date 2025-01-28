@@ -1,5 +1,5 @@
 import { getCurrentBranch } from "$lib/commands/chat-history"
-import { submitUserPrompt } from "$lib/commands/chats"
+import { regenerateResponse, submitUserPrompt } from "$lib/commands/chats"
 import type { ChatBubble } from "$lib/models/session"
 import { get, writable } from "svelte/store"
 import { selectedSessionModel } from "./models"
@@ -115,26 +115,28 @@ export const chatHistory = {
         }
       },
       afterResponseCreated(id: number): void {
-        if (responseIndex < 0) {
-          internalChatHistory.update(ch => {
-            const length = ch?.chats.push({
-              id,
-              status: "preparing",
-              role: "assistant",
-              content: "",
-              model,
-            })
+        if (responseIndex >= 0) {
+          return
+        }
 
-            if (length !== undefined) {
-              responseIndex = length - 1
-            }
-
-            return ch
+        internalChatHistory.update(ch => {
+          const length = ch?.chats.push({
+            id,
+            status: "preparing",
+            role: "assistant",
+            content: "",
+            model,
           })
 
-          onRespond?.()
-          onScrollDown?.()
-        }
+          if (length !== undefined) {
+            responseIndex = length - 1
+          }
+
+          return ch
+        })
+
+        onRespond?.()
+        onScrollDown?.()
       },
       onStreamText(chunk: string): void {
         if (responseIndex < 0) {
@@ -154,6 +156,10 @@ export const chatHistory = {
         onScrollDown?.()
       },
       onCompleteTextStreaming(): void {
+        if (responseIndex < 0) {
+          return
+        }
+
         internalChatHistory.update(ch => {
           if (ch) {
             ch.chats[responseIndex].status = "sent"
@@ -162,6 +168,10 @@ export const chatHistory = {
         })
       },
       onFail(msg): void {
+        if (responseIndex < 0) {
+          return
+        }
+
         internalChatHistory.update(ch => {
           if (ch) {
             ch.chats[responseIndex].status = "not sent"
@@ -174,6 +184,10 @@ export const chatHistory = {
         }
       },
       onCancel(msg): void {
+        if (responseIndex < 0) {
+          return
+        }
+
         internalChatHistory.update(ch => {
           if (ch) {
             ch.chats[responseIndex].status = "not sent"
@@ -197,12 +211,114 @@ export const chatHistory = {
       return ch
     })
   },
-  async regenerate(prompt: IncomingUserPrompt, {
+  async regenerate(chatId: number, model?: string, {
+    onRespond,
     onScrollDown,
-  }: PromptSubmissionEvents = {}) {
-    // TODO: Add regeneration logic
+  }: PromptSubmissionEvents = {}): Promise<void> {
+    const ch = get(internalChatHistory)
+    if (!ch) {
+      return
+    }
+
+    let responseIndex = -1
+
+    await regenerateResponse(ch.session, chatId, model, {
+      afterResponseCreated(id): void {
+        if (responseIndex >= 0) {
+          return
+        }
+
+        internalChatHistory.update(ch => {
+          if (ch) {
+            const i = ch.chats.findIndex((value) => value.id === chatId)
+            if (i < 0) {
+              return ch
+            }
+
+            ch.chats = [
+              ...ch.chats.slice(0, i),
+              {
+                id,
+                content: "",
+                status: "preparing",
+                role: "assistant",
+                model,
+                hasOtherVersions: true,
+              },
+            ]
+
+            responseIndex = ch.chats.length - 1
+          }
+
+          return ch
+        })
+
+        onRespond?.()
+        onScrollDown?.()
+      },
+      onStreamText(chunk: string): void {
+        if (responseIndex < 0) {
+          return
+        }
+
+        internalChatHistory.update(ch => {
+          if (ch) {
+            let chat = ch.chats[responseIndex]
+            chat.content += chunk
+            chat.status = "sending"
+          }
+
+          return ch
+        })
+
+        onScrollDown?.()
+      },
+      onCompleteTextStreaming(): void {
+        if (responseIndex < 0) {
+          return
+        }
+
+        internalChatHistory.update(ch => {
+          if (ch) {
+            ch.chats[responseIndex].status = "sent"
+          }
+          return ch
+        })
+      },
+      onFail(msg): void {
+        if (responseIndex < 0) {
+          return
+        }
+
+        internalChatHistory.update(ch => {
+          if (ch) {
+            ch.chats[responseIndex].status = "not sent"
+          }
+          return ch
+        })
+        
+        if (msg) {
+          toast.error(msg)
+        }
+      },
+      onCancel(msg): void {
+        if (responseIndex < 0) {
+          return
+        }
+
+        internalChatHistory.update(ch => {
+          if (ch) {
+            ch.chats[responseIndex].status = "not sent"
+          }
+          return ch
+        })
+        
+        if (msg) {
+          toast.warning(msg)
+        }
+      },
+    })
   },
-  async switchBranch() {
-    // TODO: Add switch branch logic
+  async switchBranch(chatId: number) {
   },
 }

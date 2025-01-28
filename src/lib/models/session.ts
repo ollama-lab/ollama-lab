@@ -19,6 +19,8 @@ export interface ChatBubble {
   status: TransmissionStatus 
 
   model?: string
+
+  hasOtherVersions?: boolean
 }
 
 export interface ChatHistory {

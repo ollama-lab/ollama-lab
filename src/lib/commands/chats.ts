@@ -16,22 +16,17 @@ export interface PromptResponseEvents {
   onCancel?: (msg: string | null) => void
 }
 
-export async function submitUserPrompt(
-  sessionId: number,
-  prompt: IncomingUserPrompt,
-  parentId: number | null,
-  {
-    afterUserPromptSubmitted,
-    afterResponseCreated,
-    onStreamText,
-    onCompleteTextStreaming,
-    onFail,
-    onCancel,
-  }: PromptResponseEvents = {},
-): Promise<ChatGenerationReturn> {
-  const textStreamChannel = new Channel<StreamingResponseEvent>()
+function newTextStreamChannel({
+  afterUserPromptSubmitted,
+  afterResponseCreated,
+  onStreamText,
+  onCompleteTextStreaming,
+  onFail,
+  onCancel,
+}: PromptResponseEvents): Channel<StreamingResponseEvent> {
+  const channel = new Channel<StreamingResponseEvent>()
 
-  textStreamChannel.onmessage = (ev) => {
+  channel.onmessage = (ev) => {
     switch (ev.type) {
       case "userPrompt":
         afterUserPromptSubmitted?.(ev.id, new Date(ev.timestamp * 1000))
@@ -59,8 +54,32 @@ export async function submitUserPrompt(
     }
   }
 
+  return channel
+}
+
+export async function submitUserPrompt(
+  sessionId: number,
+  prompt: IncomingUserPrompt,
+  parentId: number | null,
+  events: PromptResponseEvents = {},
+): Promise<ChatGenerationReturn> {
   return await invoke<InternalChatGenerationReturn>("submit_user_prompt", {
-    sessionId, prompt, onStream: textStreamChannel, parentId,
+    sessionId, prompt, onStream: newTextStreamChannel(events), parentId,
+  })
+    .then(({ id, dateCreated }) => ({
+      id,
+      dateCreated: new Date(dateCreated),
+    }))
+}
+
+export async function regenerateResponse(
+  sessionId: number,
+  chatId: number,
+  model?: string,
+  events: PromptResponseEvents = {},
+): Promise<ChatGenerationReturn> {
+  return await invoke<InternalChatGenerationReturn>("regenerate_response", {
+    sessionId, chatId, model, onStream: newTextStreamChannel(events),
   })
     .then(({ id, dateCreated }) => ({
       id,
