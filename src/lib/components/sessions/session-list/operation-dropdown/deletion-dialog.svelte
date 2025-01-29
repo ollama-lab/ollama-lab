@@ -19,7 +19,7 @@
 <Dialog bind:open>
   <DialogTrigger
     class={cn(
-      "w-full flex gap-2 items-center text-red-600 dark:text-red-400 rounded px-1 py-1",
+      "w-full flex gap-2 items-center text-red-600 dark:text-red-400 rounded px-1 py-1 hover:bg-secondary",
     )}
   >
     <TrashIcon class="size-4" />

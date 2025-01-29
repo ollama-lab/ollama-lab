@@ -21,9 +21,9 @@
   >
     <EllipsisVerticalIcon class="size-4" />
   </DropdownMenuTrigger>
-  <DropdownMenuContent>
+  <DropdownMenuContent class="text-sm">
     <button
-      class="w-full flex gap-2 items-center rounded px-1 py-1"
+      class="w-full flex gap-2 items-center rounded px-1 py-1 hover:bg-secondary"
       onclick={() => {
         onEdit?.()
         open = false
