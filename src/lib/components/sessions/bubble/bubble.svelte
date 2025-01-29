@@ -33,8 +33,4 @@
   )}
 >
   {@html dataHTML}
-
-  {#if data.role === "assistant" && (data.status === "sending" || data.status === "preparing")}
-    <span>{"█"}</span>
-  {/if}
 </div>
