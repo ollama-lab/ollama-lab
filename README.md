@@ -2,11 +2,11 @@
 
 > Ollama Lab is currently under pre-alpha phase. The features are incomplete.
 
-| OS        | Status            |
-|-----------|-------------------|
-| Linux     | ☑️ Supported       |
-| MacOS     | ⚠️ Untested        |
-| Windows   | ⚠️ Untested        |
+| OS        | Status                              |
+|-----------|-------------------------------------|
+| Linux     | ☑️ Supported (source & binary)       |
+| MacOS     | ⚠️ Untested (source only)            |
+| Windows   | ⚠️ Untested (source only)            |
 
 Yet another (unofficial) [Ollama](https://github.com/ollama/ollama) GUI but based on [Svelte 5](https://svelte.dev/) and [Tauri](https://tauri.app).
 We make Ollama easy-to-use for everyone.
