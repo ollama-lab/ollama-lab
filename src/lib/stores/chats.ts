@@ -222,7 +222,7 @@ export const chatHistory = {
 
     let responseIndex = -1
 
-    await regenerateResponse(ch.session, chatId, model, {
+    const ret = await regenerateResponse(ch.session, chatId, model, {
       afterResponseCreated(id): void {
         if (responseIndex >= 0) {
           return
@@ -317,6 +317,16 @@ export const chatHistory = {
           toast.warning(msg)
         }
       },
+    })
+
+    internalChatHistory.update(ch => {
+      if (ch) {
+        let chat = ch.chats[responseIndex]
+        chat.status = "sent"
+        chat.dateSent = ret.dateCreated
+      }
+
+      return ch
     })
   },
   async switchBranch(chatId: number) {
