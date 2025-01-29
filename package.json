@@ -41,7 +41,7 @@
     "marked-highlight": "^2.2.1",
     "mode-watcher": "^0.5.1",
     "paneforge": "^1.0.0-next.2",
-    "svelte": "^5.19.3",
+    "svelte": "^5.19.4",
     "svelte-check": "^4.1.4",
     "svelte-sonner": "^0.3.28",
     "tailwind-merge": "^2.6.0",
