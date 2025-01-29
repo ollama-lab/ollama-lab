@@ -11,10 +11,10 @@
     data: ChatBubble,
   } = $props()
 
-  let modelCandidates = $derived([
+  let modelCandidates = $derived([...new Set([
     ...data.model ? [data.model] : [],
     ...$selectedSessionModel ? [$selectedSessionModel] : [],
-  ])
+  ])])
 
   let dropdownNeeded = $derived(modelCandidates.length > 1)
 
