@@ -7,6 +7,7 @@
   import { Avatar, AvatarFallback } from "$lib/components/ui/avatar"
   import { SquarePenIcon, TriangleAlertIcon } from "lucide-svelte"
   import { Button } from "$lib/components/ui/button"
+  import VersionPagination from "./version-pagination.svelte"
 
   let { data }: { data: ChatBubble } = $props()
 </script>
@@ -43,7 +44,7 @@
 
         <div
           class={cn(
-            "flex flex-col",
+            "flex flex-col gap-1",
             data.role === "user" && "items-end",
           )}
         >
@@ -55,6 +56,13 @@
             {/if}
           </span>
           <Bubble {data} />
+
+          {#if data.versions}
+            <div class="flex gap-2 items-center">
+              <VersionPagination versions={data.versions} current={data.id} />
+            </div>
+          {/if}
+
           <SectorFooter {data} />
         </div>
       </div>

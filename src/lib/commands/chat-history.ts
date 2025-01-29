@@ -29,7 +29,7 @@ export async function getCurrentBranch(sessionId: number): Promise<ChatBubble[]>
 }
 
 export async function switchBranch(targetChatId: number): Promise<ChatBubble[]> {
-  return await invoke<InternalChat[]>("get_current_branch", { targetChatId })
+  return await invoke<InternalChat[]>("switch_branch", { targetChatId })
     .then(chats => chats.map(({ id, role, content, completed, dateCreated, dateEdited, model, versions }) => ({
       id,
       role: role as Role,

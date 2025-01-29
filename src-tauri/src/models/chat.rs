@@ -116,7 +116,7 @@ impl<'c> IntoVecWithVersions<'c> for Vec<Chat> {
             if let Some(id_list) = version_map.get_mut(&parent) {
                 id_list.push(id);
             } else {
-                version_map.insert(parent, vec![id]).unwrap();
+                _ = version_map.insert(parent, vec![id]);
             }
         }
 

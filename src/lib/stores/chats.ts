@@ -1,4 +1,4 @@
-import { getCurrentBranch } from "$lib/commands/chat-history"
+import { getCurrentBranch, switchBranch } from "$lib/commands/chat-history"
 import { regenerateResponse, submitUserPrompt } from "$lib/commands/chats"
 import type { ChatBubble } from "$lib/models/session"
 import { get, writable } from "svelte/store"
@@ -334,5 +334,20 @@ export const chatHistory = {
     })
   },
   async switchBranch(chatId: number) {
+    const currentBranchFromCurrentNode = await switchBranch(chatId)
+
+    internalChatHistory.update(ch => {
+      if (ch) {
+        const index = ch.chats.findIndex(chat => chat.id === chatId)
+        if (index >= 0) {
+          ch.chats = [
+            ...ch.chats.slice(0, index),
+            ...currentBranchFromCurrentNode,
+          ]
+        }
+      }
+
+      return ch
+    })
   },
 }

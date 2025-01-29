@@ -139,7 +139,10 @@ impl ChatTree {
     pub async fn set_default(&self, executor: impl Executor<'_, Database = Sqlite>, chat_id: i64) -> Result<(), Error> {
         let affected = sqlx::query("\
             UPDATE chats
-            SET = IF(id = $1, 1, 0)
+            SET priority = CASE
+                WHEN id = $1 THEN 1
+                ELSE 0
+            END
             WHERE session_id = $2 AND parent_id = (SELECT parent_id FROM chats WHERE id = $1);
         ")
             .bind(chat_id).bind(self.session_id)
