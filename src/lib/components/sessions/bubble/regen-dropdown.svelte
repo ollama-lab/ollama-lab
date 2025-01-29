@@ -1,10 +1,9 @@
 <script lang="ts">
   import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "$lib/components/ui/dropdown-menu"
   import type { ChatBubble } from "$lib/models/session"
-  import { chatHistory } from "$lib/stores/chats"
   import { selectedSessionModel } from "$lib/stores/models"
+  import { regenerate } from "$lib/utils/regen"
   import { RefreshCwIcon } from "lucide-svelte"
-  import { get } from "svelte/store"
 
   let { data }: {
     data: ChatBubble,
@@ -16,15 +15,6 @@
   ])])
 
   let dropdownNeeded = $derived(modelCandidates.length > 1)
-
-  export async function regenerate(chatId: number, model?: string): Promise<void> {
-    const ch = get(chatHistory)
-    if (!ch) {
-      return
-    }
-
-    await chatHistory.regenerate(chatId, model)
-  }
 </script>
 
 {#key `regen-dropdown-${data.id}-${dropdownNeeded}`}
