@@ -106,6 +106,7 @@ export const chatHistory = {
               content: prompt.text,
               role: "user",
               dateSent: date,
+              versions: null,
             })
 
             return ch
@@ -126,6 +127,7 @@ export const chatHistory = {
             role: "assistant",
             content: "",
             model,
+            versions: null,
           })
 
           if (length !== undefined) {
@@ -235,6 +237,8 @@ export const chatHistory = {
               return ch
             }
 
+            const existingVersions = ch.chats[i].versions ?? []
+
             ch.chats = [
               ...ch.chats.slice(0, i),
               {
@@ -243,6 +247,7 @@ export const chatHistory = {
                 status: "preparing",
                 role: "assistant",
                 model,
+                versions: [...existingVersions, id],
               },
             ]
 
