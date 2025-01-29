@@ -3,6 +3,7 @@
   import { modelList } from "$lib/stores/model-list"
   import { defaultModel, selectedSessionModel } from "$lib/stores/models"
   import { cn } from "$lib/utils"
+  import { getContext } from "svelte"
   import { BubbleSector } from "../bubble"
   import Hints from "./chat-feeds/hints.svelte"
 
@@ -17,13 +18,15 @@
     }
   })
 
+  const scrollDownFn: ((height: number) => void) | undefined = getContext("scroll-down")
+
   $effect(() => {
     const chats = $chatHistory?.chats
     const status = chats?.at(-1)?.status
 
     if (status === "preparing" || status === "sending") {
       if (root) {
-        root.scrollTo(0, root.scrollHeight)
+        scrollDownFn?.(root.scrollHeight)
       }
     }
   })

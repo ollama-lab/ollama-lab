@@ -8,8 +8,8 @@
 
   let feedsRoot = $state<HTMLElement | null>(null)
 
-  setContext("scroll-down", () => {
-    feedsRoot?.scrollTo(0, feedsRoot.scrollHeight)
+  setContext("scroll-down", (height: number) => {
+    feedsRoot?.children.item(0)?.scrollTo(0, height)
   })
 </script>
 

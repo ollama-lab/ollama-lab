@@ -4,7 +4,6 @@
   import { chatHistory } from "$lib/stores/chats"
   import { selectedSessionModel } from "$lib/stores/models"
   import { RefreshCwIcon } from "lucide-svelte"
-  import { getContext } from "svelte"
   import { get } from "svelte/store"
 
   let { data }: {
@@ -18,17 +17,13 @@
 
   let dropdownNeeded = $derived(modelCandidates.length > 1)
 
-  const scrollDownFn = getContext<() => void | undefined>("scroll-down")
-
   export async function regenerate(chatId: number, model?: string): Promise<void> {
     const ch = get(chatHistory)
     if (!ch) {
       return
     }
 
-    await chatHistory.regenerate(chatId, model, {
-      onScrollDown: scrollDownFn,
-    })
+    await chatHistory.regenerate(chatId, model)
   }
 </script>
 

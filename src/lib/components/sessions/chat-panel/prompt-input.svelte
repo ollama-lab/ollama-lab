@@ -5,7 +5,6 @@
   import { selectedSessionModel } from "$lib/stores/models"
   import { chatHistory } from "$lib/stores/chats"
   import type { IncomingUserPrompt } from "$lib/models/chat"
-  import { getContext } from "svelte"
 
   let form = $state<HTMLFormElement | undefined>()
   let textEntry = $state<HTMLTextAreaElement | undefined>()
@@ -34,8 +33,6 @@
       }
     }
   })
-
-  const scrollDownFn = getContext<() => void | undefined>("scroll-down")
 </script>
 
 <form
@@ -59,7 +56,6 @@
         status = "responding"
         prompt = ""
       },
-      onScrollDown: scrollDownFn,
     }).finally(() => status = undefined)
   }}
 >
