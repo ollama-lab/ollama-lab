@@ -12,3 +12,11 @@ We make Ollama easy-to-use for everyone.
 - 🤖 Manage, install, and uninstall LLMs
 - 👩‍🍳 Easy to use. Designed for everyone, not exclusively for professionals.
 - 🈚 Free and open source! Everyone can use and change without any marketing concerns!
+
+## Operating systems
+
+| OS        | Status            |
+|-----------|-------------------|
+| Linux     | ☑️ Supported       |
+| MacOS     | ⚠️ Untested        |
+| Windows   | ⚠️ Untested        |
