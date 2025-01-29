@@ -14,6 +14,7 @@
 <script lang="ts">
   import type { ChatBubble } from "$lib/models/session"
   import { cn } from "$lib/utils"
+  import { Loading } from "$lib/components/ui/command"
 
   let { data }: { data: ChatBubble } = $props()
 
@@ -33,4 +34,7 @@
   )}
 >
   {@html dataHTML}
+  {#if data.status === "preparing"}
+    <Loading />
+  {/if}
 </div>
