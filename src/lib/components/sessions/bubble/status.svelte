@@ -13,7 +13,7 @@
       "not sent": "failed",
     },
     assistant: {
-      preparing: "processing",
+      preparing: "initializing",
       sending: "generating",
       sent: "generated",
       "not sent": "not completed",
@@ -21,10 +21,12 @@
   }
 </script>
 
-<span
-  class={cn(
-    "uppercase font-light",
-  )}
->
-  {text[role]?.[status]}
-</span>
+<div class="flex gap-1 items-center">
+  <span
+    class={cn(
+      "uppercase font-light",
+    )}
+  >
+    {text[role]?.[status]}
+  </span>
+</div>
