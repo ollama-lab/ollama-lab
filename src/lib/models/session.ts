@@ -20,7 +20,7 @@ export interface ChatBubble {
 
   model?: string
 
-  hasOtherVersions?: boolean
+  versions?: number[] | null
 }
 
 export interface ChatHistory {

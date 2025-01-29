@@ -243,7 +243,6 @@ export const chatHistory = {
                 status: "preparing",
                 role: "assistant",
                 model,
-                hasOtherVersions: true,
               },
             ]
 
