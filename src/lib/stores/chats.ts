@@ -334,11 +334,11 @@ export const chatHistory = {
     })
   },
   async switchBranch(chatId: number) {
-    const currentBranchFromCurrentNode = await switchBranch(chatId)
+    const [parentId, currentBranchFromCurrentNode] = await switchBranch(chatId)
 
     internalChatHistory.update(ch => {
       if (ch) {
-        const index = ch.chats.findIndex(chat => chat.id === chatId)
+        const index = parentId !== null ? ch.chats.findIndex(chat => chat.id === parentId) + 1 : 0
         if (index >= 0) {
           ch.chats = [
             ...ch.chats.slice(0, index),

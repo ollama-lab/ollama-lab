@@ -28,9 +28,9 @@ export async function getCurrentBranch(sessionId: number): Promise<ChatBubble[]>
     } satisfies ChatBubble)))
 }
 
-export async function switchBranch(targetChatId: number): Promise<ChatBubble[]> {
-  return await invoke<InternalChat[]>("switch_branch", { targetChatId })
-    .then(chats => chats.map(({ id, role, content, completed, dateCreated, dateEdited, model, versions }) => ({
+export async function switchBranch(targetChatId: number): Promise<[number | null, ChatBubble[]]> {
+  return await invoke<[number | null, InternalChat[]]>("switch_branch", { targetChatId })
+    .then(([parentId, chats]) => [parentId, chats.map(({ id, role, content, completed, dateCreated, dateEdited, model, versions }) => ({
       id,
       role: role as Role,
       content,
@@ -39,5 +39,5 @@ export async function switchBranch(targetChatId: number): Promise<ChatBubble[]> 
       dateEdited: dateEdited !== null ? new Date(dateEdited) : undefined,
       model: model ?? undefined,
       versions,
-    } satisfies ChatBubble)))
+    } satisfies ChatBubble))])
 }

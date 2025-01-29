@@ -29,7 +29,7 @@ pub async fn get_current_branch(state: State<'_, AppState>, session_id: i64) -> 
 }
 
 #[tauri::command]
-pub async fn switch_branch(state: State<'_, AppState>, target_chat_id: i64) -> Result<Vec<ChatWithVersions>, Error> {
+pub async fn switch_branch(state: State<'_, AppState>, target_chat_id: i64) -> Result<(Option<i64>, Vec<ChatWithVersions>), Error> {
     let mut conn = state.conn_pool.convert_to().await?;
     let profile_id = state.profile;
 
@@ -47,8 +47,11 @@ pub async fn switch_branch(state: State<'_, AppState>, target_chat_id: i64) -> R
     let tree = ChatTree::new(chat_info.1);
 
     tree.set_default(&mut *conn, chat_info.0).await?;
-    tree.current_branch(&mut *conn, chat_info.2, false)
-        .await?
-        .into_with_versions(&mut *conn)
-        .await
+    Ok((
+        chat_info.2,
+        tree.current_branch(&mut *conn, chat_info.2, false)
+            .await?
+            .into_with_versions(&mut *conn)
+            .await?,
+    ))
 }
