@@ -29,7 +29,7 @@ function newTextStreamChannel({
   channel.onmessage = (ev) => {
     switch (ev.type) {
       case "userPrompt":
-        afterUserPromptSubmitted?.(ev.id, new Date(ev.timestamp * 1000))
+        afterUserPromptSubmitted?.(ev.id, new Date(ev.timestamp))
         break
 
       case "responseInfo":
