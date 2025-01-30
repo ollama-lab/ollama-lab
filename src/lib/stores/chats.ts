@@ -7,6 +7,7 @@ import type { IncomingUserPrompt } from "$lib/models/chat"
 import { createSession } from "$lib/commands/sessions"
 import { sessions } from "./sessions"
 import { toast } from "svelte-sonner"
+import { convertResponseEvents } from "$lib/utils/chat-streams"
 
 export interface ChatHistory {
   session: number
@@ -92,116 +93,21 @@ export const chatHistory = {
     }
 
     const parentId = ch.chats.length < 1 ? null : ch.chats[ch.chats.length - 1].id
-    let userPromptSynced = false
 
-    let responseIndex = -1
+    let ctx = {
+      responseIndex: -1,
+    }
 
-    const ret = await submitUserPrompt(ch.session, prompt, parentId, {
-      afterUserPromptSubmitted(id: number, date: Date): void {
-        if (!userPromptSynced) {
-          internalChatHistory.update(ch => {
-            ch?.chats.push({
-              id,
-              status: "sent",
-              content: prompt.text,
-              role: "user",
-              dateSent: date,
-              versions: null,
-            })
-
-            return ch
-          })
-          userPromptSynced = true
-          onScrollDown?.()
-        }
-      },
-      afterResponseCreated(id: number): void {
-        if (responseIndex >= 0) {
-          return
-        }
-
-        internalChatHistory.update(ch => {
-          const length = ch?.chats.push({
-            id,
-            status: "preparing",
-            role: "assistant",
-            content: "",
-            model,
-            versions: null,
-          })
-
-          if (length !== undefined) {
-            responseIndex = length - 1
-          }
-
-          return ch
-        })
-
-        onRespond?.()
-        onScrollDown?.()
-      },
-      onStreamText(chunk: string): void {
-        if (responseIndex < 0) {
-          return
-        }
-
-        internalChatHistory.update(ch => {
-          if (ch) {
-            let chat = ch.chats[responseIndex]
-            chat.content += chunk
-            chat.status = "sending"
-          }
-
-          return ch
-        })
-
-        onScrollDown?.()
-      },
-      onCompleteTextStreaming(): void {
-        if (responseIndex < 0) {
-          return
-        }
-
-        internalChatHistory.update(ch => {
-          if (ch) {
-            ch.chats[responseIndex].status = "sent"
-          }
-          return ch
-        })
-      },
-      onFail(msg): void {
-        if (responseIndex < 0) {
-          return
-        }
-
-        internalChatHistory.update(ch => {
-          if (ch) {
-            ch.chats[responseIndex].status = "not sent"
-          }
-          return ch
-        })
-        
-        if (msg) {
-          toast.error(msg)
-        }
-      },
-      onCancel(_): void {
-        if (responseIndex < 0) {
-          return
-        }
-
-        internalChatHistory.update(ch => {
-          if (ch) {
-            ch.chats[responseIndex].status = "not sent"
-          }
-          return ch
-        })
-      },
-    })
+    const ret = await submitUserPrompt(
+      ch.session,
+      prompt,
+      parentId,
+      convertResponseEvents(ctx, internalChatHistory, model, prompt, { onRespond, onScrollDown }),
+    )
 
     internalChatHistory.update(ch => {
       if (ch) {
-        let chat = ch.chats[responseIndex]
+        let chat = ch.chats[ctx.responseIndex]
         chat.status = "sent"
         chat.dateSent = ret.dateCreated
       }
@@ -218,107 +124,20 @@ export const chatHistory = {
       return
     }
 
-    let responseIndex = -1
+    let ctx = {
+      responseIndex: -1,
+    }
 
-    const ret = await regenerateResponse(ch.session, chatId, model, {
-      afterResponseCreated(id): void {
-        if (responseIndex >= 0) {
-          return
-        }
-
-        internalChatHistory.update(ch => {
-          if (ch) {
-            const i = ch.chats.findIndex((value) => value.id === chatId)
-            if (i < 0) {
-              return ch
-            }
-
-            const chat = ch.chats[i]
-            const existingVersions = chat.versions ?? []
-
-            ch.chats = [
-              ...ch.chats.slice(0, i),
-              {
-                id,
-                content: "",
-                status: "preparing",
-                role: "assistant",
-                model: model ?? chat.model,
-                versions: [...existingVersions, id],
-              },
-            ]
-
-            responseIndex = ch.chats.length - 1
-          }
-
-          return ch
-        })
-
-        onRespond?.()
-        onScrollDown?.()
-      },
-      onStreamText(chunk: string): void {
-        if (responseIndex < 0) {
-          return
-        }
-
-        internalChatHistory.update(ch => {
-          if (ch) {
-            let chat = ch.chats[responseIndex]
-            chat.content += chunk
-            chat.status = "sending"
-          }
-
-          return ch
-        })
-
-        onScrollDown?.()
-      },
-      onCompleteTextStreaming(): void {
-        if (responseIndex < 0) {
-          return
-        }
-
-        internalChatHistory.update(ch => {
-          if (ch) {
-            ch.chats[responseIndex].status = "sent"
-          }
-          return ch
-        })
-      },
-      onFail(msg): void {
-        if (responseIndex < 0) {
-          return
-        }
-
-        internalChatHistory.update(ch => {
-          if (ch) {
-            ch.chats[responseIndex].status = "not sent"
-          }
-          return ch
-        })
-        
-        if (msg) {
-          toast.error(msg)
-        }
-      },
-      onCancel(_): void {
-        if (responseIndex < 0) {
-          return
-        }
-
-        internalChatHistory.update(ch => {
-          if (ch) {
-            ch.chats[responseIndex].status = "not sent"
-          }
-          return ch
-        })
-      },
-    })
+    const ret = await regenerateResponse(
+      ch.session,
+      chatId,
+      model,
+      convertResponseEvents(ctx, internalChatHistory, model, undefined, { onRespond, onScrollDown }),
+    )
 
     internalChatHistory.update(ch => {
       if (ch) {
-        let chat = ch.chats[responseIndex]
+        let chat = ch.chats[ctx.responseIndex]
         chat.status = "sent"
         chat.dateSent = ret.dateCreated
       }
