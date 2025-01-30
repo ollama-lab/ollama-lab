@@ -302,7 +302,7 @@ export const chatHistory = {
           toast.error(msg)
         }
       },
-      onCancel(msg): void {
+      onCancel(_): void {
         if (responseIndex < 0) {
           return
         }
@@ -313,10 +313,6 @@ export const chatHistory = {
           }
           return ch
         })
-        
-        if (msg) {
-          toast.warning(msg)
-        }
       },
     })
 
