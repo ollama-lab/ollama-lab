@@ -148,7 +148,7 @@ pub async fn stream_response<'c>(
         let trimmed_thoughts = thoughts_content_guard.as_str().trim();
         if !trimmed_thoughts.is_empty() {
             sqlx::query(r#"
-                INSERT INTO cot_thoughts (chat_id, content, thoughts_for_milli)
+                INSERT INTO cot_thoughts (chat_id, content, thought_for_milli)
                 VALUES ($1, $2, $3);
             "#)
                 .bind(response_id).bind(trimmed_thoughts).bind(thought_for.lock().await.take())

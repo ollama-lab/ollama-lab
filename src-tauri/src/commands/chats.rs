@@ -82,10 +82,13 @@ pub async fn submit_user_prompt(
 
     while let Some(event) = rx.recv().await {
         match event {
-            StreamingResponseEvent::Text { .. } => {}
-            _ => {
+            StreamingResponseEvent::Done
+                | StreamingResponseEvent::Failure { .. }
+                | StreamingResponseEvent::Canceled { .. } =>
+            {
                 rx.close();
             }
+            _ => {}
         }
 
         on_stream.send(event)?;
@@ -186,10 +189,13 @@ pub async fn regenerate_response(
 
     while let Some(event) = rx.recv().await {
         match event {
-            StreamingResponseEvent::Text { .. } => {}
-            _ => {
+            StreamingResponseEvent::Done
+                | StreamingResponseEvent::Failure { .. }
+                | StreamingResponseEvent::Canceled { .. } =>
+            {
                 rx.close();
             }
+            _ => {}
         }
 
         on_stream.send(event)?;
