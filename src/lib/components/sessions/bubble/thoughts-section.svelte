@@ -9,7 +9,7 @@
 
   let { data }: { data: ChatBubble } = $props()
   
-  let thoughtForString = $derived(data.thoughtFor ? convert(data.thoughtFor, "milliseconds").to("best").toString() : "some time")
+  let thoughtForString = $derived(data.thoughtFor ? convert(data.thoughtFor, "milliseconds").to("best").toString(3) : "some time")
 
   let open = $state(false)
 
@@ -25,14 +25,14 @@
 </script>
 
 {#if data.thinking}
-  <div class="flex items-center gap-2 text-sm" in:fly={{ x: -50, y: 0 }}>
+  <div class="flex items-center gap-2 text-sm text-muted-foreground" in:fly={{ x: -50, y: 0 }}>
     <Loader2Icon class="size-4 animate-spin duration-500" />
     Thinking...
   </div>
 {:else if data.thoughts}
   <div in:fly={{ x: -50, y: 0 }}>
     <Collapsible bind:open>
-      <div class="flex items-center gap-2 text-sm">
+      <div class="flex items-center gap-2 text-sm text-muted-foreground">
         <span>
           Thought for <span>{thoughtForString}</span>
         </span>
@@ -52,7 +52,7 @@
             <div
               {...props}
               class={cn(
-                "marked-area my-1 py-2 text-muted-foreground bg-muted/50 text-sm",
+                "marked-area my-1 pl-7 pr-2 py-2 text-muted-foreground bg-muted/50 text-sm rounded",
               )}
               transition:fly={{ x: 0, y: -20 }}
             >
