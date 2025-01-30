@@ -84,24 +84,24 @@ pub async fn stream_response<'c>(
 
                                 let mut tf = thought_for2.lock().await;
                                 *tf = Some(tf_milli);
-
-                                continue 'stream_loop;
                             }
                             _ => thoughts_buf2.lock().await.push_str(chunk.as_str()),
                         }
 
-                    } else {
-                        match chunk.as_str() {
-                            "<think>" => {
-                                chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
-                                thought_start_on = Some(res.created_at);
-                                continue 'stream_loop;
-                            }
-                            _ => output_buf2.lock().await.push_str(chunk.as_str()),
+                        continue 'stream_loop;
+                    }
+
+                    match chunk.as_str() {
+                        "<think>" => {
+                            chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
+                            thought_start_on = Some(res.created_at);
+                            continue 'stream_loop;
                         }
+                        _ => {}
                     }
                 }
 
+                output_buf2.lock().await.push_str(chunk.as_str());
                 chan_sender.send(StreamingResponseEvent::Text { chunk }).await?;
             }
 
