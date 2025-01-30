@@ -20,27 +20,21 @@ export function convertResponseEvents(
   { onScrollDown, onRespond }: PromptSubmissionEvents = {},
   { regenerateFor }: ConvertResponseEventsProps = {},
 ): PromptResponseEvents {
-  let onThink = false
-  let userPromptSynced = false
-
   return {
     afterUserPromptSubmitted: regenerateFor ? undefined : (id: number, date: Date): void => {
-      if (!userPromptSynced) {
-        internalChatHistory.update(ch => {
-          ch?.chats.push({
-            id,
-            status: "sent",
-            content: prompt?.text ?? "",
-            role: "user",
-            dateSent: date,
-            versions: null,
-          })
-
-          return ch
+      internalChatHistory.update(ch => {
+        ch?.chats.push({
+          id,
+          status: "sent",
+          content: prompt?.text ?? "",
+          role: "user",
+          dateSent: date,
+          versions: null,
         })
-        userPromptSynced = true
-        onScrollDown?.()
-      }
+
+        return ch
+      })
+      onScrollDown?.()
     },
     afterResponseCreated(id: number): void {
       if (context.responseIndex >= 0) {
@@ -101,7 +95,7 @@ export function convertResponseEvents(
       internalChatHistory.update(ch => {
         if (ch) {
           let chat = ch.chats[context.responseIndex]
-          if (onThink) {
+          if (ch.chats[context.responseIndex].thinking) {
             if (chat.thoughts) {
               chat.thoughts += chunk
             } else {
@@ -159,10 +153,19 @@ export function convertResponseEvents(
       })
     },
     onThoughtBegin(): void {
-      onThink = true
+      if (context.responseIndex < 0) {
+        return
+      }
+
+      internalChatHistory.update(ch => {
+        if (ch) {
+          ch.chats[context.responseIndex].thinking = true
+        }
+
+        return ch
+      })
     },
     onThoughtEnd(thoughtFor: number | null): void {
-      onThink = false
       if (context.responseIndex < 0) {
         return
       }
@@ -174,6 +177,7 @@ export function convertResponseEvents(
             const trimmedThoughts = chat.thoughts.trim()
             chat.thoughts = trimmedThoughts.length > 0 ? trimmedThoughts : null
           }
+          chat.thinking = false
           chat.thoughtFor = thoughtFor
         }
 

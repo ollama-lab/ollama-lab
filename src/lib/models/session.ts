@@ -22,6 +22,7 @@ export interface ChatBubble {
 
   versions?: number[] | null
 
+  thinking?: boolean
   thoughts?: string | null
   thoughtFor?: number | null
 }
