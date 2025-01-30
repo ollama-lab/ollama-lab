@@ -54,13 +54,13 @@ pub async fn stream_response<'c>(
 
     tokio::select! {
         Err(err) = async move {
-            let mut date_now = Utc::now().timestamp_millis();
+            let mut date_now = Utc::now().timestamp();
 
             let mut thought_start_on: Option<DateTime<Local>> = None;
             let mut thought_already = false;
 
             'stream_loop: while let Some(Ok(res)) = stream.next().await {
-                date_now = res.created_at.timestamp_millis();
+                date_now = res.created_at.timestamp();
 
                 if res.done {
                     chan_sender.send(StreamingResponseEvent::Done).await?;
@@ -113,7 +113,7 @@ pub async fn stream_response<'c>(
                 message: Some(err.to_string()),
             }).await;
 
-            result_tx2.send((Utc::now().timestamp_millis(), false)).await?;
+            result_tx2.send((Utc::now().timestamp(), false)).await?;
         }
 
         Some(res) = async move {
@@ -127,7 +127,7 @@ pub async fn stream_response<'c>(
                     message: Some("Canceled by user.".to_string()),
                 }).await;
 
-                result_tx2.send((Utc::now().timestamp_millis(), false)).await?;
+                result_tx2.send((Utc::now().timestamp(), false)).await?;
             }
         }
     }
