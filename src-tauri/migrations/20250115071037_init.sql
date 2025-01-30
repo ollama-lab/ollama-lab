@@ -2,7 +2,7 @@
 CREATE TABLE profiles (
     id              INTEGER NOT NULL PRIMARY KEY,
     name            TEXT NOT NULL,
-    date_created    INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec'))
+    date_created    INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec') * 1000)
 );
 
 -- Default profile
@@ -30,7 +30,7 @@ CREATE TABLE sessions (
     id              INTEGER NOT NULL PRIMARY KEY,
     profile_id      INTEGER NOT NULL REFERENCES profiles (id) ON DELETE CASCADE ON UPDATE CASCADE,
     title           TEXT,
-    date_created    INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec')),
+    date_created    INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec') * 1000),
     current_model   TEXT NOT NULL
 );
 
@@ -47,7 +47,7 @@ CREATE TABLE chats (
     role            TEXT NOT NULL DEFAULT 'user' REFERENCES chat_roles (name) ON DELETE SET DEFAULT ON UPDATE CASCADE,
     content         TEXT NOT NULL,
     completed       INTEGER NOT NULL DEFAULT 1,
-    date_created    INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec')),
+    date_created    INTEGER NOT NULL DEFAULT (unixepoch('now', 'subsec') * 1000),
     date_edited     INTEGER,
     parent_id       INTEGER REFERENCES chats (id) ON DELETE CASCADE ON UPDATE CASCADE,
     priority        INTEGER NOT NULL DEFAULT 0
