@@ -8,6 +8,7 @@
   import { SquarePenIcon, TriangleAlertIcon } from "lucide-svelte"
   import { Button } from "$lib/components/ui/button"
   import VersionPagination from "./version-pagination.svelte"
+  import ThoughtsSection from "./thoughts-section.svelte"
 
   let { data }: { data: ChatBubble } = $props()
 </script>
@@ -55,6 +56,7 @@
               You
             {/if}
           </span>
+          <ThoughtsSection {data} />
           <Bubble {data} />
 
           {#if data.versions}
