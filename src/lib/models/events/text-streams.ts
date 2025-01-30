@@ -13,6 +13,13 @@ export type StreamingResponseEvent =
     chunk: string
   }
   | {
+    type: "thoughtBegin"
+  }
+  | {
+    type: "thoughtEnd"
+    thoughtFor: number | null
+  }
+  | {
     type: "done"
   }
   | {

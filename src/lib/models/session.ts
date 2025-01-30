@@ -21,6 +21,9 @@ export interface ChatBubble {
   model?: string
 
   versions?: number[] | null
+
+  thoughts?: string | null
+  thoughtFor?: number | null
 }
 
 export interface ChatHistory {
