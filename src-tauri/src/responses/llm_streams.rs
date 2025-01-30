@@ -54,14 +54,12 @@ pub async fn stream_response<'c>(
 
     tokio::select! {
         Err(err) = async move {
-            let mut date_now = Utc::now().timestamp();
+            // None if it is in the first text chunk
+            let mut date_now = None::<i64>;
 
             let mut thought_start_on: Option<DateTime<Local>> = None;
-            let mut thought_already = false;
 
             while let Some(Ok(res)) = stream.next().await {
-                date_now = res.created_at.timestamp();
-
                 if res.done {
                     chan_sender.send(StreamingResponseEvent::Done).await?;
                     continue;
@@ -71,38 +69,39 @@ pub async fn stream_response<'c>(
                     .map(|msg| msg.content)
                     .unwrap_or_else(|| String::new());
 
-                if !thought_already {
-                    if let Some(start_on) = thought_start_on {
-                        match chunk.as_str() {
-                            "</think>" => {
-                                let tf_milli = res.created_at.timestamp_millis() - start_on.timestamp_millis();
-                                chan_sender.send(StreamingResponseEvent::ThoughtEnd{
-                                    thought_for: Some(tf_milli),
-                                }).await?;
-                                thought_start_on = None;
-                                thought_already = true;
+                if let Some(start_on) = thought_start_on {
+                    // Match closing tag (i.e. `</think>`)
+                    match chunk.as_str() {
+                        "</think>" => {
+                            let tf_milli = res.created_at.timestamp_millis() - start_on.timestamp_millis();
+                            chan_sender.send(StreamingResponseEvent::ThoughtEnd{
+                                thought_for: Some(tf_milli),
+                            }).await?;
+                            thought_start_on = None;
 
-                                let mut tf = thought_for2.lock().await;
-                                *tf = Some(tf_milli);
-                                continue;
-                            }
-                            _ => thoughts_buf2.lock().await.push_str(chunk.as_str()),
+                            let mut tf = thought_for2.lock().await;
+                            *tf = Some(tf_milli);
+                            continue;
                         }
-                    } else {
-                        match chunk.as_str() {
-                            "<think>" => {
-                                chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
-                                thought_start_on = Some(res.created_at);
-                                continue;
-                            }
-                            _ => output_buf2.lock().await.push_str(chunk.as_str()),
+                        _ => thoughts_buf2.lock().await.push_str(chunk.as_str()),
+                    }
+                } else if date_now.is_none() {
+                    // Match leading `<think>` tag
+                    match chunk.as_str() {
+                        "<think>" => {
+                            chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
+                            thought_start_on = Some(res.created_at);
+                            continue;
                         }
+                        _ => output_buf2.lock().await.push_str(chunk.as_str()),
                     }
                 } else {
                     output_buf2.lock().await.push_str(chunk.as_str());
                 }
 
                 chan_sender.send(StreamingResponseEvent::Text { chunk }).await?;
+
+                date_now = Some(res.created_at.timestamp());
             }
 
             result_tx.send((date_now, true)).await?;
@@ -113,7 +112,7 @@ pub async fn stream_response<'c>(
                 message: Some(err.to_string()),
             }).await;
 
-            result_tx2.send((Utc::now().timestamp(), false)).await?;
+            result_tx2.send((Some(Utc::now().timestamp()), false)).await?;
         }
 
         Some(res) = async move {
@@ -127,7 +126,7 @@ pub async fn stream_response<'c>(
                     message: Some("Canceled by user.".to_string()),
                 }).await;
 
-                result_tx2.send((Utc::now().timestamp(), false)).await?;
+                result_tx2.send((Some(Utc::now().timestamp()), false)).await?;
             }
         }
     }
