@@ -1,7 +1,7 @@
 import { getCurrentBranch, switchBranch } from "$lib/commands/chat-history"
 import { regenerateResponse, submitUserPrompt } from "$lib/commands/chats"
 import type { ChatBubble } from "$lib/models/session"
-import { get, writable } from "svelte/store"
+import { derived, get, writable } from "svelte/store"
 import { selectedSessionModel } from "./models"
 import type { IncomingUserPrompt } from "$lib/models/chat"
 import { createSession } from "$lib/commands/sessions"
@@ -185,7 +185,7 @@ export const chatHistory = {
           toast.error(msg)
         }
       },
-      onCancel(msg): void {
+      onCancel(_): void {
         if (responseIndex < 0) {
           return
         }
@@ -196,10 +196,6 @@ export const chatHistory = {
           }
           return ch
         })
-        
-        if (msg) {
-          toast.warning(msg)
-        }
       },
     })
 
@@ -351,3 +347,5 @@ export const chatHistory = {
     })
   },
 }
+
+export const lastChat = derived(chatHistory, ($ch) => $ch?.chats.at(-1))
