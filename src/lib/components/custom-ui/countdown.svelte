@@ -12,7 +12,7 @@
   }
 
   $effect(() => {
-    if (!expireTimerId) {
+    if (expireTimerId === undefined) {
       countdown()
       expireTimerId = setInterval(() => {
         if (seconds <= 0) {
@@ -22,7 +22,7 @@
         }
 
         countdown()
-      })
+      }, 1000)
     }
 
     return () => {
