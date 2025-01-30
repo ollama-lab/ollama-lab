@@ -73,6 +73,8 @@ pub async fn stream_response<'c>(
             _ = tx.send(StreamingResponseEvent::Failure {
                 message: Some(err.to_string()),
             }).await;
+
+            result_tx2.send((Utc::now().timestamp(), false)).await?;
         }
 
         Some(res) = async move {
@@ -86,12 +88,13 @@ pub async fn stream_response<'c>(
                     message: Some("Canceled by user.".to_string()),
                 }).await;
 
-                result_tx2.send((Utc::now().timestamp(), true)).await?;
+                result_tx2.send((Utc::now().timestamp(), false)).await?;
             }
         }
     }
 
     if let Some((date_now, completed)) = result_rx.recv().await {
+        dbg!(completed);
         sqlx::query("\
             UPDATE chats
             SET date_created = $2, completed = $3, content = $4

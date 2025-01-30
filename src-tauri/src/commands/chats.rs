@@ -70,7 +70,7 @@ pub async fn submit_user_prompt(
 
     let (cancel_tx, cancel_rx) = oneshot::channel();
 
-    let event_id = app.once(format!("cancel-gen/{}", response_ret.0), move |_| {
+    let event_id = app.once("cancel-gen", move |_| {
         cancel_tx.send(()).unwrap();
     });
 
@@ -169,7 +169,7 @@ pub async fn regenerate_response(
 
     let (cancel_tx, cancel_rx) = oneshot::channel();
 
-    let event_id = app.once(format!("cancel-gen/{}", response_ret.0), move |_| {
+    let event_id = app.once("cancel-gen", move |_| {
         cancel_tx.send(()).unwrap();
     });
 

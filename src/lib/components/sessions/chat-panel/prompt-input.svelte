@@ -5,6 +5,7 @@
   import { selectedSessionModel } from "$lib/stores/models"
   import { chatHistory } from "$lib/stores/chats"
   import type { IncomingUserPrompt } from "$lib/models/chat"
+  import { emit } from "@tauri-apps/api/event"
 
   let form = $state<HTMLFormElement | undefined>()
   let textEntry = $state<HTMLTextAreaElement | undefined>()
@@ -79,18 +80,33 @@
     </div>
 
     <div class="flex-shrink-0">
-      <Button
-        size="icon"
-        class="rounded-full"
-        type="submit"
-        disabled={!!status || prompt.length < 1 || !$selectedSessionModel}
-      >
-        {#if status === "submitting"}
-          <Loader2Icon class="!size-6 animate-spin" />
-        {:else}
-          <ArrowUpIcon class="!size-6" />
-        {/if}
-      </Button>
+      {#if status === "responding" || $chatHistory?.chats.at(-1)?.status === "sending"}
+        <Button
+          size="icon"
+          class="rounded-full"
+          type="button"
+          title="Stop"
+          onclick={async () => {
+            await emit("cancel-gen")
+          }}
+        >
+          <img src="/stop-solid.svg" alt="Stop" class="size-5" />
+        </Button>
+      {:else}
+        <Button
+          size="icon"
+          class="rounded-full"
+          type="submit"
+          disabled={!!status || prompt.length < 1 || !$selectedSessionModel}
+          title="Send prompt"
+        >
+          {#if status === "submitting"}
+            <Loader2Icon class="!size-6 animate-spin" />
+          {:else}
+            <ArrowUpIcon class="!size-6" />
+          {/if}
+        </Button>
+      {/if}
     </div>
   </div>
 </form>
