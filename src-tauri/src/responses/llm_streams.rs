@@ -1,14 +1,14 @@
 use std::{str::FromStr, sync::Arc};
 
 use ollama_rest::{chrono::{DateTime, Local, Utc}, futures::StreamExt, models::chat::{ChatRequest, Message, Role}, Ollama};
-use sqlx::{Pool, Sqlite};
+use sqlx::{pool::PoolConnection, Acquire, Sqlite};
 use tokio::sync::{mpsc, oneshot, Mutex};
 
 use crate::{errors::Error, events::StreamingResponseEvent, responses::tree::ChatTree};
 
 pub async fn stream_response<'c>(
     ollama: &Ollama,
-    conn_pool: &Pool<Sqlite>,
+    conn: &mut PoolConnection<Sqlite>,
     chan_sender: mpsc::Sender<StreamingResponseEvent>,
     response_id: i64,
     cancel_receiver: Option<oneshot::Receiver<()>>,
@@ -18,7 +18,7 @@ pub async fn stream_response<'c>(
     let tx = chan_sender.clone();
     let tx2 = chan_sender.clone();
 
-    let chat_history = ChatTree::new(session_id).current_branch(conn_pool, None, true).await?;
+    let chat_history = ChatTree::new(session_id).current_branch(&mut **conn, None, true).await?;
 
     let req = ChatRequest{
         model: current_model.to_string(),
@@ -84,6 +84,7 @@ pub async fn stream_response<'c>(
 
                                 let mut tf = thought_for2.lock().await;
                                 *tf = Some(tf_milli);
+                                continue;
                             }
                             _ => thoughts_buf2.lock().await.push_str(chunk.as_str()),
                         }
@@ -92,10 +93,13 @@ pub async fn stream_response<'c>(
                             "<think>" => {
                                 chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
                                 thought_start_on = Some(res.created_at);
+                                continue;
                             }
                             _ => output_buf2.lock().await.push_str(chunk.as_str()),
                         }
                     }
+                } else {
+                    output_buf2.lock().await.push_str(chunk.as_str());
                 }
 
                 chan_sender.send(StreamingResponseEvent::Text { chunk }).await?;
@@ -129,7 +133,7 @@ pub async fn stream_response<'c>(
     }
 
     if let Some((date_now, completed)) = result_rx.recv().await {
-        let mut transaction = conn_pool.begin().await?;
+        let mut transaction = conn.begin().await?;
 
         sqlx::query(r#"
             UPDATE chats
@@ -151,7 +155,6 @@ pub async fn stream_response<'c>(
                 .execute(&mut *transaction)
                 .await?;
         }
-        drop(thoughts_content_guard);
 
         transaction.commit().await?;
         result_rx.close();

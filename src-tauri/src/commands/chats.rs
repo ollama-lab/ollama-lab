@@ -75,8 +75,9 @@ pub async fn submit_user_prompt(
     });
 
     let ollama2 = ollama.clone();
+    let mut conn = pool.acquire().await?;
     tokio::spawn(async move {
-        stream_response(&ollama2, &pool, tx.clone(), response_ret.0, Some(cancel_rx), session.id, session.current_model.as_str())
+        stream_response(&ollama2, &mut conn, tx.clone(), response_ret.0, Some(cancel_rx), session.id, session.current_model.as_str())
             .await.unwrap();
     });
 
@@ -181,9 +182,11 @@ pub async fn regenerate_response(
     let ollama2 = ollama.clone();
 
     let model_string = model.unwrap_or(session.current_model);
+    
+    let mut conn = pool.acquire().await?;
 
     tokio::spawn(async move {
-        stream_response(&ollama2, &pool, tx.clone(), response_ret.0, Some(cancel_rx), session.id, model_string.as_str())
+        stream_response(&ollama2, &mut conn, tx.clone(), response_ret.0, Some(cancel_rx), session.id, model_string.as_str())
             .await.unwrap();
     });
 
