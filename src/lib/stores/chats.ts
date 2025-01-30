@@ -6,7 +6,6 @@ import { selectedSessionModel } from "./models"
 import type { IncomingUserPrompt } from "$lib/models/chat"
 import { createSession } from "$lib/commands/sessions"
 import { sessions } from "./sessions"
-import { toast } from "svelte-sonner"
 import { convertResponseEvents } from "$lib/utils/chat-streams"
 
 export interface ChatHistory {
