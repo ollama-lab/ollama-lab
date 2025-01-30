@@ -49,9 +49,13 @@ CREATE TABLE chats (
     completed       INTEGER NOT NULL DEFAULT 1,
     date_created    INTEGER NOT NULL DEFAULT (unixepoch()),
     date_edited     INTEGER,
-    model           TEXT,
     parent_id       INTEGER REFERENCES chats (id) ON DELETE CASCADE ON UPDATE CASCADE,
     priority        INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE chat_models (
+    chat_id         INTEGER NOT NULL PRIMARY KEY REFERENCES chats (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    model           TEXT NOT NULL
 );
 
 -- Thoughts (Chain-of-thoughts feature)
@@ -60,3 +64,22 @@ CREATE TABLE cot_thoughts (
     content             TEXT NOT NULL,
     thought_for_milli   INTEGER
 );
+
+CREATE VIEW v_complete_chats
+AS
+SELECT
+    c.id AS id,
+    c.session_id AS session_id,
+    c.role AS role,
+    c.content AS content,
+    c.completed AS completed,
+    c.date_created AS date_created,
+    c.date_edited AS date_edited,
+    c.parent_id AS parent_id,
+    c.priority AS priority,
+    cm.model AS model,
+    ct.content AS thoughts,
+    ct.thought_for_milli AS thought_for
+FROM chats c
+LEFT OUTER JOIN chat_models cm ON c.id = cm.chat_id
+LEFT OUTER JOIN cot_thoughts ct ON c.id = ct.chat_id;

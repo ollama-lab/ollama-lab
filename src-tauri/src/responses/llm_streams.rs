@@ -1,6 +1,6 @@
 use std::{str::FromStr, sync::Arc};
 
-use ollama_rest::{chrono::Utc, futures::StreamExt, models::chat::{ChatRequest, Message, Role}, Ollama};
+use ollama_rest::{chrono::{DateTime, Local, Utc}, futures::StreamExt, models::chat::{ChatRequest, Message, Role}, Ollama};
 use sqlx::{Executor, Sqlite};
 use tokio::sync::{mpsc, oneshot, Mutex};
 
@@ -43,6 +43,9 @@ pub async fn stream_response<'c>(
     let output_buf = Arc::new(Mutex::new(String::new()));
     let output_buf2 = output_buf.clone();
 
+    let thoughts_buf = Arc::new(Mutex::new(String::new()));
+    let thoughts_buf2 = thoughts_buf.clone();
+
     let (result_tx, mut result_rx) = mpsc::channel(1);
     let result_tx2 = result_tx.clone();
 
@@ -50,7 +53,9 @@ pub async fn stream_response<'c>(
         Err(err) = async move {
             let mut date_now = Utc::now().timestamp();
 
-            while let Some(Ok(res)) = stream.next().await {
+            let mut thought_start_on: Option<DateTime<Local>> = None;
+
+            'stream_loop: while let Some(Ok(res)) = stream.next().await {
                 date_now = res.created_at.timestamp();
 
                 if res.done {
@@ -62,7 +67,30 @@ pub async fn stream_response<'c>(
                     .map(|msg| msg.content)
                     .unwrap_or_else(|| String::new());
 
-                output_buf2.lock().await.push_str(chunk.as_str());
+                if let Some(start_on) = thought_start_on {
+                    match chunk.as_str() {
+                        "</think>" => {
+                            chan_sender.send(StreamingResponseEvent::ThoughtEnd{
+                                thought_for: Some(res.created_at.timestamp_millis() - start_on.timestamp_millis()),
+                            }).await?;
+                            thought_start_on = None;
+                            continue 'stream_loop;
+                        }
+                        _ => thoughts_buf2.lock().await.push_str(chunk.as_str()),
+                    }
+
+                } else {
+                    match chunk.as_str() {
+                        "<think>" => {
+                            chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
+                            thought_start_on = Some(res.created_at);
+                            continue 'stream_loop;
+                        }
+                        _ => output_buf2.lock().await.push_str(chunk.as_str()),
+                    }
+
+                }
+
                 chan_sender.send(StreamingResponseEvent::Text { chunk }).await?;
             }
 

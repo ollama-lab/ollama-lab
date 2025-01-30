@@ -18,6 +18,8 @@ pub struct Chat {
     pub date_edited: Option<DateTime<Utc>>,
     pub model: Option<String>,
     pub parent_id: Option<i64>,
+    pub thoughts: Option<String>,
+    pub thought_for: Option<i64>,
 }
 
 #[derive(Debug, Serialize)]
@@ -32,6 +34,8 @@ pub struct ChatWithVersions {
     pub date_edited: Option<DateTime<Utc>>,
     pub model: Option<String>,
     pub parent_id: Option<i64>,
+    pub thoughts: Option<String>,
+    pub thought_for: Option<i64>,
     pub versions: Option<Vec<i64>>,
 }
 
@@ -86,6 +90,8 @@ impl<'c> IntoVecWithVersions<'c> for Chat {
             date_edited: self.date_edited,
             model: self.model,
             parent_id: self.parent_id,
+            thoughts: self.thoughts,
+            thought_for: self.thought_for,
             versions: Some(versions),
         })
     }
@@ -132,6 +138,8 @@ impl<'c> IntoVecWithVersions<'c> for Vec<Chat> {
                     date_edited: item.date_edited,
                     model: item.model,
                     parent_id: item.parent_id,
+                    thoughts: item.thoughts,
+                    thought_for: item.thought_for,
                     versions: version_map.remove(&item.parent_id),
                 })
                 .collect()

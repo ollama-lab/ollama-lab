@@ -28,12 +28,17 @@ impl ChatTree {
     pub async fn current_branch(&self, executor: impl Executor<'_, Database = Sqlite>, parent_id: Option<i64>, completed_only: bool) -> Result<Vec<Chat>, Error> {
         Ok(
             sqlx::query_as::<_, Chat>(r#"
-                WITH RECURSIVE rec_chats (id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority)
+                WITH RECURSIVE rec_chats (
+                    id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority,
+                    thoughts, thought_for
+                )
                 AS (
                     SELECT *
                     FROM (
-                        SELECT id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority
-                        FROM chats
+                        SELECT
+                            id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority,
+                            thoughts, thought_for
+                        FROM v_complete_chats
                         WHERE
                             session_id = $1
                             AND ($2 IS NULL AND parent_id IS NULL OR parent_id = $2)
@@ -44,8 +49,8 @@ impl ChatTree {
                     UNION
                     SELECT
                         c1.id, c1.session_id, c1.role, c1.content, c1.completed, c1.date_created,
-                        c1.date_edited, c1.model, c1.parent_id, c1.priority
-                    FROM chats AS c1, rec_chats
+                        c1.date_edited, c1.model, c1.parent_id, c1.priority, c1.thoughts, c1.thought_for
+                    FROM v_complete_chats AS c1, rec_chats
                     WHERE c1.session_id = $1
                         AND c1.parent_id = rec_chats.id
                         AND c1.id IN (

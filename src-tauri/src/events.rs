@@ -46,6 +46,13 @@ pub enum StreamingResponseEvent {
         chunk: String,
     },
 
+    ThoughtBegin,
+
+    #[serde(rename_all = "camelCase")]
+    ThoughtEnd {
+        thought_for: Option<i64>,
+    },
+
     Done,
 
     #[serde(rename_all = "camelCase")]
