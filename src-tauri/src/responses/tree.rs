@@ -135,7 +135,7 @@ impl ChatTree {
 
         let ret = sqlx::query_as::<_, (i64, i64)>(r#"
             INSERT INTO chats (session_id, role, content, parent_id, completed, priority)
-            VALUES ($1, $2, $3, $4, $5, $6, 1)
+            VALUES ($1, $2, $3, $4, $5, 1)
             RETURNING id, date_created;
         "#)
             .bind(self.session_id)
