@@ -233,7 +233,8 @@ export const chatHistory = {
               return ch
             }
 
-            const existingVersions = ch.chats[i].versions ?? []
+            const chat = ch.chats[i]
+            const existingVersions = chat.versions ?? []
 
             ch.chats = [
               ...ch.chats.slice(0, i),
@@ -242,7 +243,7 @@ export const chatHistory = {
                 content: "",
                 status: "preparing",
                 role: "assistant",
-                model,
+                model: model ?? chat.model,
                 versions: [...existingVersions, id],
               },
             ]
