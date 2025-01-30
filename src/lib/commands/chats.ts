@@ -14,6 +14,8 @@ export interface PromptResponseEvents {
   onCompleteTextStreaming?: () => void
   onFail?: (msg: string | null) => void
   onCancel?: (msg: string | null) => void
+  onThoughtBegin?: () => void
+  onThoughtEnd?: (thoughtFor: number | null) => void
 }
 
 function newTextStreamChannel({
@@ -23,6 +25,8 @@ function newTextStreamChannel({
   onCompleteTextStreaming,
   onFail,
   onCancel,
+  onThoughtBegin,
+  onThoughtEnd,
 }: PromptResponseEvents): Channel<StreamingResponseEvent> {
   const channel = new Channel<StreamingResponseEvent>()
 
@@ -50,6 +54,17 @@ function newTextStreamChannel({
 
       case "canceled":
         onCancel?.(ev.message)
+        break
+
+      case "thoughtBegin":
+        onThoughtBegin?.()
+        break
+
+      case "thoughtEnd":
+        onThoughtEnd?.(ev.thoughtFor)
+        break
+
+      default:
         break
     }
   }
