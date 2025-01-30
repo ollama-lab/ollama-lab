@@ -1,13 +1,16 @@
+-- User profiles
 CREATE TABLE profiles (
     id              INTEGER NOT NULL PRIMARY KEY,
     name            TEXT NOT NULL,
     date_created    INTEGER NOT NULL DEFAULT (unixepoch())
 );
 
+-- Default profile
 INSERT INTO profiles (id, name)
 VALUES
 (0, 'default');
 
+-- Default models by profile
 CREATE TABLE default_models (
     profile_id      INTEGER NOT NULL
         PRIMARY KEY
@@ -37,6 +40,7 @@ CREATE TABLE chat_roles (
 
 INSERT INTO chat_roles VALUES ('system'), ('user'), ('assistant'), ('tool');
 
+-- Chat history
 CREATE TABLE chats (
     id              INTEGER NOT NULL PRIMARY KEY,
     session_id      INTEGER NOT NULL REFERENCES sessions (id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -48,4 +52,11 @@ CREATE TABLE chats (
     model           TEXT,
     parent_id       INTEGER REFERENCES chats (id) ON DELETE CASCADE ON UPDATE CASCADE,
     priority        INTEGER NOT NULL DEFAULT 0
+);
+
+-- Thoughts (Chain-of-thoughts feature)
+CREATE TABLE cot_thoughts (
+    chat_id             INTEGER NOT NULL PRIMARY KEY REFERENCES chats (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    content             TEXT NOT NULL,
+    thought_for_milli   INTEGER
 );
