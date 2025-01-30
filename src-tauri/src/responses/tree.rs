@@ -79,31 +79,40 @@ impl ChatTree {
         completed: Option<bool>,
         model: Option<&str>,
     ) -> Result<i64, Error> {
-        sqlx::query("\
+        sqlx::query(r#"
             UPDATE chats
             SET priority = 0
             WHERE
                 session_id = $1
                 AND
                 parent_id IN (SELECT parent_id FROM chats WHERE id = $2);
-        ")
+        "#)
             .bind(self.session_id).bind(chat_id)
             .execute(&mut **tx)
             .await?;
 
-        let new_chat = sqlx::query_as::<_, (i64,)>("\
-            INSERT INTO chats (session_id, role, content, model, parent_id, completed, priority)
-            SELECT session_id, role, IFNULL($3, content), IFNULL($5, model), parent_id, $4, 1
+        let new_chat = sqlx::query_as::<_, (i64,)>(r#"
+            INSERT INTO chats (session_id, role, content, parent_id, completed, priority)
+            SELECT session_id, role, IFNULL($3, content), parent_id, $4, 1
             FROM chats
             WHERE session_id = $1 AND id = $2
             RETURNING id;
-        ")
+        "#)
             .bind(self.session_id)
             .bind(chat_id)
             .bind(new_content)
             .bind(completed.unwrap_or(true))
-            .bind(model)
             .fetch_one(&mut **tx)
+            .await?;
+
+        sqlx::query(r#"
+            INSERT INTO chat_models (chat_id, model)
+            SELECT $1, IFNULL($3, model)
+            FROM chat_models
+            WHERE chat_id = $2;
+        "#)
+            .bind(new_chat.0).bind(chat_id).bind(model)
+            .execute(&mut **tx)
             .await?;
 
         Ok(new_chat.0)
@@ -115,28 +124,37 @@ impl ChatTree {
         parent_id: Option<i64>,
         create_info: NewChildNode<'_>
     ) -> Result<(i64, i64), Error> {
-        sqlx::query("\
+        sqlx::query(r#"
             UPDATE chats
             SET priority = 0
             WHERE session_id = $1 AND parent_id = $2;
-        ")
+        "#)
             .bind(self.session_id).bind(parent_id)
             .execute(&mut **tx)
             .await?;
 
-        let ret = sqlx::query_as::<_, (i64, i64)>("\
-            INSERT INTO chats (session_id, role, content, model, parent_id, completed, priority)
+        let ret = sqlx::query_as::<_, (i64, i64)>(r#"
+            INSERT INTO chats (session_id, role, content, parent_id, completed, priority)
             VALUES ($1, $2, $3, $4, $5, $6, 1)
             RETURNING id, date_created;
-        ")
+        "#)
             .bind(self.session_id)
             .bind(create_info.role.to_string())
             .bind(create_info.content)
-            .bind(create_info.model)
             .bind(parent_id)
             .bind(create_info.completed)
             .fetch_one(&mut **tx)
             .await?;
+
+        if let Some(model) = create_info.model {
+            sqlx::query(r#"
+                INSERT INTO chat_models (chat_id, model)
+                VALUES ($1, $2);
+            "#)
+                .bind(ret.0).bind(model)
+                .execute(&mut **tx)
+                .await?;
+        }
 
         Ok(ret)
     }
