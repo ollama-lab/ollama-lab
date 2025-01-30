@@ -159,7 +159,9 @@ export function convertResponseEvents(
 
       internalChatHistory.update(ch => {
         if (ch) {
-          ch.chats[context.responseIndex].thinking = true
+          let chat = ch.chats[context.responseIndex]
+          chat.thinking = true
+          chat.status = "sending"
         }
 
         return ch

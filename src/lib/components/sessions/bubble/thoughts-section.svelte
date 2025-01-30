@@ -16,21 +16,17 @@
   let dataHTML = $state("")
 
   $effect(() => {
-    if (data.thoughts) {
-      parseMarkdown(data.thoughts).then(html => dataHTML = html)
-    } else {
-      data.thoughts = ""
-    }
+    parseMarkdown(data.thoughts ?? "").then(html => dataHTML = html)
   })
 </script>
 
 {#if data.thinking}
-  <div class="flex items-center gap-2 text-sm text-muted-foreground" in:fly={{ x: -50, y: 0 }}>
+  <div class="flex items-center gap-2 text-sm text-muted-foreground -z-[1]" in:fly={{ x: -25, y: 0 }}>
     <Loader2Icon class="size-4 animate-spin duration-500" />
     Thinking...
   </div>
 {:else if data.thoughts}
-  <div in:fly={{ x: -50, y: 0 }}>
+  <div in:fly={{ x: -25, y: 0 }}>
     <Collapsible bind:open>
       <div class="flex items-center gap-2 text-sm text-muted-foreground">
         <span>
