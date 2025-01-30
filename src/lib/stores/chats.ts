@@ -131,7 +131,9 @@ export const chatHistory = {
       ch.session,
       chatId,
       model,
-      convertResponseEvents(ctx, internalChatHistory, model, undefined, { onRespond, onScrollDown }),
+      convertResponseEvents(ctx, internalChatHistory, model, undefined, { onRespond, onScrollDown }, {
+        regenerateFor: chatId,
+      }),
     )
 
     internalChatHistory.update(ch => {
