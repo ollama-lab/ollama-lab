@@ -96,11 +96,7 @@ export function convertResponseEvents(
         if (ch) {
           let chat = ch.chats[context.responseIndex]
           if (ch.chats[context.responseIndex].thinking) {
-            if (chat.thoughts) {
-              chat.thoughts += chunk
-            } else {
-              chat.thoughts = chunk
-            }
+            chat.thoughts = (chat.thoughts ?? "") + chunk
           } else {
             chat.content += chunk
           }

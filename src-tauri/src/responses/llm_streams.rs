@@ -59,7 +59,7 @@ pub async fn stream_response<'c>(
             let mut thought_start_on: Option<DateTime<Local>> = None;
             let mut thought_already = false;
 
-            'stream_loop: while let Some(Ok(res)) = stream.next().await {
+            while let Some(Ok(res)) = stream.next().await {
                 date_now = res.created_at.timestamp();
 
                 if res.done {
@@ -87,21 +87,17 @@ pub async fn stream_response<'c>(
                             }
                             _ => thoughts_buf2.lock().await.push_str(chunk.as_str()),
                         }
-
-                        continue 'stream_loop;
-                    }
-
-                    match chunk.as_str() {
-                        "<think>" => {
-                            chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
-                            thought_start_on = Some(res.created_at);
-                            continue 'stream_loop;
+                    } else {
+                        match chunk.as_str() {
+                            "<think>" => {
+                                chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
+                                thought_start_on = Some(res.created_at);
+                            }
+                            _ => output_buf2.lock().await.push_str(chunk.as_str()),
                         }
-                        _ => {}
                     }
                 }
 
-                output_buf2.lock().await.push_str(chunk.as_str());
                 chan_sender.send(StreamingResponseEvent::Text { chunk }).await?;
             }
 

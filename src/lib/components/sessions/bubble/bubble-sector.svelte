@@ -56,7 +56,9 @@
               You
             {/if}
           </span>
-          <ThoughtsSection {data} />
+          {#if data.role === "assistant"}
+            <ThoughtsSection {data} />
+          {/if}
           <Bubble {data} />
 
           {#if data.versions}
