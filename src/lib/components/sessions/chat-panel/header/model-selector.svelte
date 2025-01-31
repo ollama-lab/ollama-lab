@@ -4,6 +4,7 @@
   import { modelList } from "$lib/stores/model-list"
   import { selectedSessionModel } from "$lib/stores/models"
   import { ChevronsUpDownIcon } from "lucide-svelte"
+    import { toast } from "svelte-sonner";
 
   let open = $state(false)
 
@@ -22,6 +23,9 @@
   $effect(() => {
     if (open) {
       modelList.init()
+        .catch(err => {
+          toast.error(`${err}`)
+        })
     }
   })
 </script>

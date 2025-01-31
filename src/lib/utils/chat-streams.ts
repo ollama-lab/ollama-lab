@@ -102,7 +102,7 @@ export function convertResponseEvents(
           let chat = ch.chats.at(context.responseIndex)
 
           if (!chat || currentChatId !== chat.id) {
-            emit(`cancel-gen/${currentChatId}`)
+            emit("cancel-gen")
             return ch
           }
 
@@ -126,10 +126,15 @@ export function convertResponseEvents(
 
       internalChatHistory.update(ch => {
         if (ch) {
-          ch.chats[context.responseIndex].status = "sent"
+          let chat = ch.chats.at(context.responseIndex)
+          if (chat && chat.id === currentChatId) {
+            chat.status = "sent"
+          }
         }
         return ch
       })
+
+      currentChatId = undefined
     },
     onFail(msg): void {
       if (context.responseIndex < 0) {
@@ -138,10 +143,15 @@ export function convertResponseEvents(
 
       internalChatHistory.update(ch => {
         if (ch) {
-          ch.chats[context.responseIndex].status = "not sent"
+          let chat = ch.chats[context.responseIndex]
+          if (chat && chat.id === currentChatId) {
+            chat.status = "not sent"
+          }
         }
         return ch
       })
+
+      currentChatId = undefined
       
       if (msg) {
         toast.error(msg)
@@ -154,10 +164,15 @@ export function convertResponseEvents(
 
       internalChatHistory.update(ch => {
         if (ch) {
-          ch.chats[context.responseIndex].status = "not sent"
+          let chat = ch.chats[context.responseIndex]
+          if (chat && chat.id === currentChatId) {
+            chat.status = "not sent"
+          }
         }
         return ch
       })
+
+      currentChatId = undefined
     },
     onThoughtBegin(): void {
       if (context.responseIndex < 0) {
@@ -166,9 +181,11 @@ export function convertResponseEvents(
 
       internalChatHistory.update(ch => {
         if (ch) {
-          let chat = ch.chats[context.responseIndex]
-          chat.thinking = true
-          chat.status = "sending"
+          let chat = ch.chats.at(context.responseIndex)
+          if (chat && chat.id === currentChatId) {
+            chat.thinking = true
+            chat.status = "sending"
+          }
         }
 
         return ch
@@ -181,13 +198,15 @@ export function convertResponseEvents(
 
       internalChatHistory.update(ch => {
         if (ch) {
-          let chat = ch.chats[context.responseIndex]
-          if (chat.thoughts) {
-            const trimmedThoughts = chat.thoughts.trim()
-            chat.thoughts = trimmedThoughts.length > 0 ? trimmedThoughts : null
+          let chat = ch.chats.at(context.responseIndex)
+          if (chat && chat.id === currentChatId) {
+            if (chat.thoughts) {
+              const trimmedThoughts = chat.thoughts.trim()
+              chat.thoughts = trimmedThoughts.length > 0 ? trimmedThoughts : null
+            }
+            chat.thinking = false
+            chat.thoughtFor = thoughtFor
           }
-          chat.thinking = false
-          chat.thoughtFor = thoughtFor
         }
 
         return ch
