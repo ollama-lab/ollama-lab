@@ -133,6 +133,9 @@ pub async fn stream_response<'c>(
 
     if let Some((date_now, completed)) = result_rx.recv().await {
         let mut transaction = conn.begin().await?;
+        dbg!(&transaction);
+        dbg!(&date_now);
+        dbg!(completed);
 
         sqlx::query(r#"
             UPDATE chats
