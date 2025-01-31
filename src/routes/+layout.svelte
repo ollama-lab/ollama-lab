@@ -13,7 +13,6 @@
   import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "$lib/components/ui/alert-dialog"
   import { defaultModel } from "$lib/stores/models"
   import { sessions } from "$lib/stores/sessions"
-  import { modelList } from "$lib/stores/model-list"
 
   let { children } = $props()
 
@@ -25,7 +24,6 @@
         await initialize()
         await sessions.reload()
         await defaultModel.reload()
-        await modelList.reload()
       } catch (err) {
         initError = err
         return

@@ -18,6 +18,12 @@
     acc[prefix] = [...acc[prefix] ?? [], cur]
     return acc
   }, {} as { [key: string]: ModelListItem[] }))
+
+  $effect(() => {
+    if (open) {
+      modelList.init()
+    }
+  })
 </script>
 
 <button
