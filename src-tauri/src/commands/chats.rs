@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use ollama_rest::{chrono::Utc, prelude::Role};
+use ollama_rest::{chrono::Utc, models::chat::Role};
 use tauri::{ipc::Channel, AppHandle, Listener, State};
 use tokio::sync::{mpsc, oneshot};
 
