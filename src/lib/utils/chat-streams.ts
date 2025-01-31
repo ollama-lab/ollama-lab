@@ -1,6 +1,7 @@
 import type { PromptResponseEvents } from "$lib/commands/chats"
 import type { IncomingUserPrompt } from "$lib/models/chat"
 import type { ChatHistory, PromptSubmissionEvents } from "$lib/stores/chats"
+import { emit } from "@tauri-apps/api/event"
 import { toast } from "svelte-sonner"
 import type { Writable } from "svelte/store"
 
@@ -20,6 +21,8 @@ export function convertResponseEvents(
   { onScrollDown, onRespond }: PromptSubmissionEvents = {},
   { regenerateFor }: ConvertResponseEventsProps = {},
 ): PromptResponseEvents {
+  let currentChatId: number | undefined = undefined
+
   return {
     afterUserPromptSubmitted: regenerateFor ? undefined : (id: number, date: Date): void => {
       internalChatHistory.update(ch => {
@@ -40,6 +43,8 @@ export function convertResponseEvents(
       if (context.responseIndex >= 0) {
         return
       }
+
+      currentChatId = id
 
       internalChatHistory.update(ch => {
         if (ch) {
@@ -94,7 +99,13 @@ export function convertResponseEvents(
 
       internalChatHistory.update(ch => {
         if (ch) {
-          let chat = ch.chats[context.responseIndex]
+          let chat = ch.chats.at(context.responseIndex)
+
+          if (!chat || currentChatId !== chat.id) {
+            emit(`cancel-gen/${currentChatId}`)
+            return ch
+          }
+
           if (ch.chats[context.responseIndex].thinking) {
             chat.thoughts = (chat.thoughts ?? "") + chunk
           } else {
