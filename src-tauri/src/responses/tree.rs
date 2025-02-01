@@ -41,7 +41,7 @@ impl ChatTree {
                         FROM v_complete_chats
                         WHERE
                             session_id = $1
-                            AND ($2 IS NULL AND parent_id IS NULL OR parent_id = $2)
+                            AND parent_id IS $2
                             AND ($3 IS NULL OR completed = $3)
                         ORDER BY priority DESC, date_created
                         LIMIT 1
@@ -127,7 +127,7 @@ impl ChatTree {
         sqlx::query(r#"
             UPDATE chats
             SET priority = 0
-            WHERE session_id = $1 AND parent_id = $2;
+            WHERE session_id = $1 AND parent_id IS $2;
         "#)
             .bind(self.session_id).bind(parent_id)
             .execute(&mut **tx)
@@ -166,7 +166,7 @@ impl ChatTree {
                 WHEN id = $1 THEN 1
                 ELSE 0
             END
-            WHERE session_id = $2 AND parent_id = (SELECT parent_id FROM chats WHERE id = $1);
+            WHERE session_id = $2 AND parent_id IS (SELECT parent_id FROM chats WHERE id = $1);
         ")
             .bind(chat_id).bind(self.session_id)
             .execute(executor)

@@ -69,7 +69,7 @@ impl<'c> IntoVecWithVersions<'c> for Chat {
             SELECT id
             FROM chats
             WHERE
-                parent_id = (SELECT parent_id FROM chats WHERE id = $1)
+                parent_id IS (SELECT parent_id FROM chats WHERE id = $1)
                 AND session_id = $2;
         "#)
             .bind(self.id)
