@@ -5,12 +5,15 @@
   import SectorFooter from "./sector-footer.svelte"
   import Bubble from "./bubble.svelte"
   import { Avatar, AvatarFallback } from "$lib/components/ui/avatar"
-  import { SquarePenIcon, TriangleAlertIcon } from "lucide-svelte"
-  import { Button } from "$lib/components/ui/button"
+  import { TriangleAlertIcon } from "lucide-svelte"
   import VersionPagination from "./version-pagination.svelte"
   import ThoughtsSection from "./thoughts-section.svelte"
+  import BubbleEditor from "./bubble-editor.svelte"
+  import { chatHistory } from "$lib/stores/chats"
 
   let { data }: { data: ChatBubble } = $props()
+
+  let editingMode = $state(false)
 </script>
 
 {#if data.role !== "system"}
@@ -20,32 +23,17 @@
       data.role === "user" ? "place-content-end" : "place-content-start",
     )}
   >
-    <div class="flex flex-col">
-      <div class="flex gap-2">
+    <div class="flex flex-col w-full">
+      <div class="flex gap-2 w-full">
         {#if data.role === "assistant"}
           <Avatar>
             <AvatarFallback>O</AvatarFallback>
           </Avatar>
         {/if}
 
-        {#if data.role === "user"}
-          <div class="flex items-center gap-2">
-            <Button
-              class={cn(
-                "opacity-0 group-hover/bubble-sector:opacity-100",
-              )}
-              variant="ghost"
-              size="icon"
-              title="Edit prompt"
-            >
-              <SquarePenIcon />
-            </Button>
-          </div>
-        {/if}
-
         <div
           class={cn(
-            "flex flex-col gap-1",
+            "flex flex-col gap-1 w-full",
             data.role === "user" && "items-end",
           )}
         >
@@ -59,7 +47,25 @@
           {#if data.role === "assistant"}
             <ThoughtsSection {data} />
           {/if}
-          <Bubble {data} />
+          {#if editingMode}
+            <BubbleEditor
+              defaultValue={data.content}
+              onCancel={() => {
+                editingMode = false
+              }}
+              onSubmit={(newValue) => {
+                chatHistory.editPrompt({
+                  text: newValue,
+                }, data.id, {
+                  onRespond() {
+                    editingMode = false
+                  },
+                })
+              }}
+            />
+          {:else}
+            <Bubble {data} />
+          {/if}
 
           {#if data.versions}
             <div class="flex gap-2 items-center">
@@ -67,7 +73,7 @@
             </div>
           {/if}
 
-          <SectorFooter {data} />
+          <SectorFooter {data} bind:editingMode />
         </div>
       </div>
     </div>

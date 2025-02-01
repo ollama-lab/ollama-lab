@@ -163,6 +163,50 @@ export const chatHistory = {
       return ch
     })
   },
+  async editPrompt(prompt: IncomingUserPrompt, chatId: number, {
+    onRespond,
+    onScrollDown,
+  }: PromptSubmissionEvents = {}) {
+    const model = get(selectedSessionModel)
+    if (!model) {
+      throw new Error("No model selected.")
+    }
+
+    let ch = get(internalChatHistory)
+    if (!ch) {
+      throw new Error("No chat history")
+    }
+
+    const curIndex = ch.chats.findIndex(value => value.id === chatId)
+    if (curIndex < 0) {
+      throw new Error("Original chat not found")
+    }
+
+    const parentId = curIndex === 0 ? null : ch.chats[curIndex - 1].id
+
+    let ctx = {
+      responseIndex: -1,
+    }
+
+    const ret = await submitUserPrompt(
+      ch.session,
+      prompt,
+      parentId,
+      convertResponseEvents(ctx, internalChatHistory, model, prompt, { onRespond, onScrollDown }, {
+        regenerateFor: ch.chats[curIndex].id,
+      }),
+    )
+
+    internalChatHistory.update(ch => {
+      if (ch) {
+        let chat = ch.chats[ctx.responseIndex]
+        chat.status = "sent"
+        chat.dateSent = ret.dateCreated
+      }
+
+      return ch
+    })
+  },
 }
 
 export const lastChat = derived(chatHistory, ($ch) => $ch?.chats.at(-1))

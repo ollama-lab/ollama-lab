@@ -24,16 +24,41 @@ export function convertResponseEvents(
   let currentChatId: number | undefined = undefined
 
   return {
-    afterUserPromptSubmitted: regenerateFor ? undefined : (id: number, date: Date): void => {
+    afterUserPromptSubmitted(id: number, date: Date): void {
       internalChatHistory.update(ch => {
-        ch?.chats.push({
-          id,
-          status: "sent",
-          content: prompt?.text ?? "",
-          role: "user",
-          dateSent: date,
-          versions: null,
-        })
+        if (!ch) {
+          return ch
+        }
+
+        if (regenerateFor !== undefined) {
+          const chatIndex = ch.chats.findIndex(value => value.id === regenerateFor)
+          if (chatIndex >= 0) {
+            const chat = ch.chats[chatIndex]
+
+            ch.chats = [
+              ...ch.chats.slice(0, chatIndex),
+              {
+                id,
+                status: "sent",
+                content: prompt?.text ?? "",
+                role: "user",
+                dateSent: date,
+                versions: chat.versions ? [...chat.versions, id] : null,
+              },
+            ]
+          }
+          
+          regenerateFor = undefined
+        } else {
+          ch.chats.push({
+            id,
+            status: "sent",
+            content: prompt?.text ?? "",
+            role: "user",
+            dateSent: date,
+            versions: null,
+          })
+        }
 
         return ch
       })
@@ -48,7 +73,7 @@ export function convertResponseEvents(
 
       internalChatHistory.update(ch => {
         if (ch) {
-          if (regenerateFor) {
+          if (regenerateFor !== undefined) {
             const i = ch.chats.findIndex((value) => value.id === regenerateFor)
             if (i < 0) {
               return ch
