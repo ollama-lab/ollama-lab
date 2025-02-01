@@ -43,7 +43,7 @@ export function convertResponseEvents(
                 content: prompt?.text ?? "",
                 role: "user",
                 dateSent: date,
-                versions: chat.versions ? [...chat.versions, id] : null,
+                versions: chat.versions ? [...chat.versions, id] : [id],
               },
             ]
           }
