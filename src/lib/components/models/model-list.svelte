@@ -106,7 +106,7 @@
       currentModel.set(undefined)
     }}
   >
-    <div class="flex flex-col gap-2 pl-2 pr-4">
+    <div class="flex flex-col gap-2 px-2">
       {#if $modelListStatus === "fetching"}
         <Loading content="Loading..." />
       {/if}
