@@ -10,7 +10,6 @@
 </script>
 
 <script lang="ts">
-  import { ScrollArea } from "../ui/scroll-area"
   import { cn } from "$lib/utils"
   import { onMount } from "svelte"
   import { toast } from "svelte-sonner"
@@ -93,8 +92,10 @@
       <PullModel />
     </div>
   </div>
-  <ScrollArea
-    class="flex-grow"
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <!-- svelte-ignore a11y_click_events_have_key_events  -->
+  <div
+    class="flex-grow overflow-y-scroll"
     onclick={() => {
       currentModel.set(undefined)
     }}
@@ -116,5 +117,5 @@
         <ModelListItem {name} {completedSize} {totalSize} {modifiedAt} {message} {status} {index} />
       {/each}
     </div>
-  </ScrollArea>
+  </div>
 </div>

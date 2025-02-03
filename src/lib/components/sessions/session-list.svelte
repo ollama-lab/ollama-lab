@@ -1,7 +1,6 @@
 <script lang="ts">
   import { PlusIcon } from "lucide-svelte"
   import Button from "../ui/button/button.svelte"
-  import { ScrollArea } from "../ui/scroll-area"
   import { sessions } from "$lib/stores/sessions"
   import SessionListItem from "./session-list/session-list-item.svelte"
   import { chatHistory } from "$lib/stores/chats"
@@ -9,7 +8,7 @@
 </script>
 
 <div class="w-full h-full flex flex-col">
-  <div class="py-4 px-3 flex-shrink-0 flex place-items-center">
+  <div class="sticky py-4 px-3 flex-shrink-0 flex place-items-center bg-background/50 backdrop-blur-lg">
     <h2 class="text-lg font-bold select-none flex-grow">Sessions</h2>
     <div class="flex-shrink-0">
       <Button
@@ -24,7 +23,7 @@
       </Button>
     </div>
   </div>
-  <ScrollArea class="flex-grow">
+  <div class="flex-grow overflow-y-scroll">
     <div class="flex flex-col gap-2 px-2">
       {#if $sessions}
         {#each $sessions as { id, title } (id)}
@@ -32,5 +31,5 @@
         {/each}
       {/if}
     </div>
-  </ScrollArea>
+  </div>
 </div>

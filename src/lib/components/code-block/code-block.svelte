@@ -2,7 +2,6 @@
   import type { Snippet } from "svelte"
   import { Card, CardContent, CardHeader } from "../ui/card"
   import { Button } from "../ui/button"
-  import { ScrollArea } from "../ui/scroll-area"
   import { CheckIcon, CopyIcon } from "lucide-svelte"
 
   let { lang, children }: {
@@ -53,12 +52,12 @@
     </Button>
   </CardHeader>
   <CardContent>
-    <ScrollArea>
+    <div class="overflow-y-scroll">
       <pre class="whitespace-pre-wrap break-all">
         <code bind:this={containerRef}>
           {@render children?.()}
         </code>
       </pre>
-    </ScrollArea>
+    </div>
   </CardContent>
 </Card>

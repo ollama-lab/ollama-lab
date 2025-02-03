@@ -8,7 +8,6 @@
   import type { ModelInfo, RunningModel } from "$lib/models/model-item"
   import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
   import { getModel } from "$lib/commands/models"
-  import ScrollArea from "../ui/scroll-area/scroll-area.svelte"
   import Modelfile from "./model-details/modelfile.svelte"
   import Details from "./model-details/details.svelte"
   import Info from "./model-details/info.svelte"
@@ -106,7 +105,7 @@
             {/if}
             <TabsTrigger value="template">Template</TabsTrigger>
           </TabsList>
-          <ScrollArea>
+          <div class="overflow-y-scroll">
             <TabsContent value="modelfile">
               <Modelfile value={modelInfo.modelfile} />
             </TabsContent>
@@ -126,7 +125,7 @@
             <TabsContent value="template">
               <Template value={modelInfo.template} />
             </TabsContent>
-          </ScrollArea>
+          </div>
         </Tabs>
       {/if}
     </div>
