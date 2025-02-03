@@ -45,12 +45,18 @@
           case "failure":
             return {
               name,
-              message: item.message,
+              message: item.message ?? undefined,
               status: "failure",
             } satisfies DisplayModelListItem
           case "success":
             return {
               name,
+            } satisfies DisplayModelListItem
+          case "canceled":
+            return {
+              name,
+              status: "failure",
+              message: item.message ?? undefined,
             } satisfies DisplayModelListItem
         }
       }),
