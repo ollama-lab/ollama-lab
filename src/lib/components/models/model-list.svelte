@@ -63,7 +63,7 @@
 </script>
 
 <div class="w-full h-full flex flex-col">
-  <div class="py-4 px-3 flex-shrink-0 flex place-items-center">
+  <div class="sticky py-4 px-3 flex-shrink-0 flex place-items-center backdrop-blur-lg bg-background/50">
     <h2 class="text-lg font-bold select-none flex-grow">Models</h2>
     <div class="flex-shrink-0">
       <Button
