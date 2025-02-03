@@ -3,6 +3,6 @@
 
 </script>
 
-<div class="border-b border-border h-12 flex items-center">
+<div class="sticky border-b border-border h-12 flex items-center backdrop-blur-lg bg-background/50">
   <ModelSelector />
 </div>

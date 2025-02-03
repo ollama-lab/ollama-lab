@@ -35,7 +35,7 @@
 <div
   bind:this={root}
   class={cn(
-    "flex flex-col pr-2",
+    "flex flex-col",
     $chatHistory === undefined && "h-full place-content-center items-center",
   )}
 >
