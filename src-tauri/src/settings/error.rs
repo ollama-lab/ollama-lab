@@ -1,5 +1,6 @@
-use std::fmt::Debug;
+use std::fmt::{Debug, Display};
 
+#[derive(Debug)]
 pub enum Error {
     Io(std::io::ErrorKind),
     NoValidConfigPath,
@@ -8,7 +9,7 @@ pub enum Error {
     TomlParsing(toml::de::Error),
 }
 
-impl Debug for Error {
+impl Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let cache: Option<String>;
 
@@ -34,6 +35,8 @@ impl Debug for Error {
         )
     }
 }
+
+impl std::error::Error for Error {}
 
 impl From<std::io::Error> for Error {
     fn from(value: std::io::Error) -> Self {

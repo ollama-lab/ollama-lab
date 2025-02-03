@@ -1,5 +1,10 @@
+use std::path::PathBuf;
+
 use app_state::AppState;
+use errors::Error;
 use ollama_rest::Ollama;
+use paths::local_config_dir;
+use settings::Settings;
 use tauri::Manager;
 use tokio::sync::Mutex;
 
@@ -42,11 +47,21 @@ pub fn run() {
             commands::chats::chat_history::switch_branch,
         ])
         .setup(|app| {
+            let config_path = local_config_dir().map(|mut dir| {
+                dir.push("default.settings.toml");
+                dir
+            })
+            .ok_or(Error::Settings(settings::error::Error::NoValidConfigPath))?;
+
+            let settings = Settings::load(&config_path)?;
+
             app.manage(AppState {
                 conn_pool: Mutex::new(None),
                 ollama: Ollama::default(),
                 // Default profile
                 profile: 0,
+                config_path,
+                settings: Mutex::new(settings),
             });
 
             Ok(())
