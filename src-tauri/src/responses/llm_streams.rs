@@ -1,14 +1,14 @@
 use std::{str::FromStr, sync::Arc};
 
 use ollama_rest::{chrono::{DateTime, Local, Utc}, futures::StreamExt, models::chat::{ChatRequest, Message, Role}, Ollama};
-use sqlx::{pool::PoolConnection, Acquire, Sqlite};
+use sqlx::{Pool, Sqlite};
 use tokio::sync::{mpsc, oneshot, Mutex};
 
 use crate::{errors::Error, events::StreamingResponseEvent, responses::tree::ChatTree};
 
 pub async fn stream_response<'c>(
     ollama: &Ollama,
-    conn: &mut PoolConnection<Sqlite>,
+    pool: &Pool<Sqlite>,
     chan_sender: mpsc::Sender<StreamingResponseEvent>,
     response_id: i64,
     cancel_receiver: Option<oneshot::Receiver<()>>,
@@ -18,7 +18,7 @@ pub async fn stream_response<'c>(
     let tx = chan_sender.clone();
     let tx2 = chan_sender.clone();
 
-    let chat_history = ChatTree::new(session_id).current_branch(&mut **conn, None, true).await?;
+    let chat_history = ChatTree::new(session_id).current_branch(pool, None, true).await?;
 
     let req = ChatRequest{
         model: current_model.to_string(),
@@ -108,9 +108,9 @@ pub async fn stream_response<'c>(
 
             Ok::<(), Error>(())
         } => {
-            _ = tx.send(StreamingResponseEvent::Failure {
+            tx.send(StreamingResponseEvent::Failure {
                 message: Some(err.to_string()),
-            }).await;
+            }).await?;
 
             result_tx2.send((Some(Utc::now().timestamp()), false)).await?;
         }
@@ -122,9 +122,9 @@ pub async fn stream_response<'c>(
             }
         } => {
             if let Ok(_) = res {
-                _ = tx2.send(StreamingResponseEvent::Canceled {
+                tx2.send(StreamingResponseEvent::Canceled {
                     message: Some("Canceled by user.".to_string()),
-                }).await;
+                }).await?;
 
                 result_tx2.send((Some(Utc::now().timestamp()), false)).await?;
             }
@@ -132,7 +132,7 @@ pub async fn stream_response<'c>(
     }
 
     if let Some((date_now, completed)) = result_rx.recv().await {
-        let mut transaction = conn.begin().await?;
+        let mut transaction = pool.begin().await?;
         dbg!(&transaction);
         dbg!(&date_now);
         dbg!(completed);
