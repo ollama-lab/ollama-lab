@@ -23,7 +23,7 @@
     "@fontsource-variable/figtree": "^5.1.2",
     "@fontsource-variable/inter": "^5.1.1",
     "@sveltejs/adapter-static": "^3.0.8",
-    "@sveltejs/kit": "^2.16.1",
+    "@sveltejs/kit": "^2.17.1",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tauri-apps/cli": "^2.2.7",
     "@types/autosize": "^4.0.3",
