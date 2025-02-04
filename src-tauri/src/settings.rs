@@ -1,4 +1,4 @@
-use std::{fs::File, io::{Read, Write}, path::Path};
+use std::{fs::{create_dir_all, File}, io::{Read, Write}, path::Path};
 
 use appearance::AppearanceSettings;
 use error::Error;
@@ -33,6 +33,10 @@ impl Settings {
     }
 
     pub fn save(&self, path: impl AsRef<Path>) -> Result<(), Error> {
+        if let Some(parent) = path.as_ref().parent() {
+            create_dir_all(&parent)?;
+        }
+
         File::create(path)
             .map_err(|err| Error::Io(err.kind()))
             .and_then(|mut file| {
