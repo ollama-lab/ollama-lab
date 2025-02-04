@@ -36,7 +36,7 @@
     "formsnap": "^2.0.0",
     "highlight.js": "^11.11.1",
     "isomorphic-dompurify": "^2.21.0",
-    "lucide-svelte": "^0.473.0",
+    "lucide-svelte": "^0.474.0",
     "marked": "^15.0.6",
     "marked-highlight": "^2.2.1",
     "mode-watcher": "^0.5.1",

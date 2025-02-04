@@ -10,6 +10,7 @@ pub struct AppearanceSettings {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub enum ColorMode {
     System,
     Light,

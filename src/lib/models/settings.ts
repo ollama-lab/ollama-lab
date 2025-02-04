@@ -1,5 +1,7 @@
+export type ColorMode = "system" | "light" | "dark"
+
 export interface AppearanceSettings {
-  "color-mode": "system" | "light" | "dark"
+  "color-mode": ColorMode
   light: string | null
   dark: string | null
 }
