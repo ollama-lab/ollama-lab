@@ -9,7 +9,7 @@ pub mod appearance;
 pub mod error;
 pub mod ollama;
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Settings {
     pub appearance: AppearanceSettings,

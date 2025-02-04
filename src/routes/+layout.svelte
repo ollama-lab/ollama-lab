@@ -7,12 +7,10 @@
   import AppBar from "$lib/components/app-bar.svelte"
   import { Toaster } from "$lib/components/ui/sonner"
   import { onMount } from "svelte"
-  import { initialize } from "$lib/commands/init"
   import { frontendState } from "$lib/stores/app-state"
   import { CircleXIcon, Loader2Icon } from "lucide-svelte"
   import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from "$lib/components/ui/alert-dialog"
-  import { defaultModel } from "$lib/stores/models"
-  import { sessions } from "$lib/stores/sessions"
+  import { initialize } from "$lib/utils/init"
 
   let { children } = $props()
 
@@ -22,19 +20,15 @@
     if (!$frontendState.initialized) {
       try {
         await initialize()
-        await sessions.reload()
-        await defaultModel.reload()
       } catch (err) {
         initError = err
         return
       }
-
-      $frontendState.initialized = true
     }
   })
 </script>
 
-<ModeWatcher defaultTheme="system" />
+<ModeWatcher defaultMode="system" />
 <Toaster
   closeButton
   richColors

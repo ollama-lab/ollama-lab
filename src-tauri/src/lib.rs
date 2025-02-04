@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::str::FromStr;
 
 use app_state::AppState;
 use errors::Error;
@@ -45,6 +45,9 @@ pub fn run() {
             commands::chats::regenerate_response,
             commands::chats::chat_history::get_current_branch,
             commands::chats::chat_history::switch_branch,
+            commands::settings::get_settings,
+            commands::settings::set_settings,
+            commands::settings::default_settings,
         ])
         .setup(|app| {
             let config_path = local_config_dir().map(|mut dir| {
@@ -55,10 +58,17 @@ pub fn run() {
 
             let settings = Settings::load(&config_path)?;
 
+            let ollama = if let Some(ref uri) = settings.ollama.uri {
+                Ollama::from_str(uri.as_str())?
+            } else {
+                Ollama::default()
+            };
+
             app.manage(AppState {
                 conn_pool: Mutex::new(None),
-                ollama: Ollama::default(),
+                ollama,
                 // Default profile
+                // TODO: Multi-profile
                 profile: 0,
                 config_path,
                 settings: Mutex::new(settings),
