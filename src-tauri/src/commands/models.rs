@@ -8,12 +8,13 @@ use ollama_rest::{
 use tauri::{ipc::Channel, AppHandle, Listener, State};
 use tokio::sync::{mpsc, oneshot};
 
-use crate::{app_state::AppState, errors::Error, events::ProgressEvent, strings::ToEventString, utils::connections::ConvertMutexContentAsync};
+use crate::{
+    app_state::AppState, errors::Error, events::ProgressEvent, strings::ToEventString,
+    utils::connections::ConvertMutexContentAsync,
+};
 
 #[tauri::command]
-pub async fn list_local_models(
-    state: State<'_, AppState>,
-) -> Result<ModelListResponse, Error> {
+pub async fn list_local_models(state: State<'_, AppState>) -> Result<ModelListResponse, Error> {
     let ollama = &state.ollama;
     Ok(ollama.local_models().await?)
 }
@@ -44,19 +45,17 @@ pub async fn get_model(
 pub async fn get_default_model(state: State<'_, AppState>) -> Result<Option<String>, Error> {
     let mut conn = state.conn_pool.convert_to().await?;
 
-    let row = sqlx::query_as::<_, (String,)>("SELECT model FROM default_models WHERE profile_id = $1")
-        .bind(state.profile)
-        .fetch_optional(&mut *conn)
-        .await?;
+    let row =
+        sqlx::query_as::<_, (String,)>("SELECT model FROM default_models WHERE profile_id = $1")
+            .bind(state.profile)
+            .fetch_optional(&mut *conn)
+            .await?;
 
     Ok(row.map(|tuple| tuple.0))
 }
 
 #[tauri::command]
-pub async fn set_default_model(
-    state: State<'_, AppState>,
-    new_model: String,
-) -> Result<(), Error> {
+pub async fn set_default_model(state: State<'_, AppState>, new_model: String) -> Result<(), Error> {
     let profile_id = state.profile;
     let mut conn = state.conn_pool.convert_to().await?;
 
@@ -101,7 +100,6 @@ pub async fn delete_model(state: State<'_, AppState>, model: String) -> Result<(
 
     Ok(())
 }
-
 
 #[tauri::command]
 pub async fn pull_model(

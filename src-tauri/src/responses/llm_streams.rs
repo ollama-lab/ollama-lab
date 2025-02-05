@@ -1,6 +1,11 @@
 use std::{str::FromStr, sync::Arc};
 
-use ollama_rest::{chrono::{DateTime, Local, Utc}, futures::StreamExt, models::chat::{ChatRequest, Message, Role}, Ollama};
+use ollama_rest::{
+    chrono::{DateTime, Local, Utc},
+    futures::StreamExt,
+    models::chat::{ChatRequest, Message, Role},
+    Ollama,
+};
 use sqlx::{Pool, Sqlite};
 use tokio::sync::{mpsc, oneshot, Mutex};
 
@@ -18,9 +23,11 @@ pub async fn stream_response(
     let tx = chan_sender.clone();
     let tx2 = chan_sender.clone();
 
-    let chat_history = ChatTree::new(session_id).current_branch(pool, None, true).await?;
+    let chat_history = ChatTree::new(session_id)
+        .current_branch(pool, None, true)
+        .await?;
 
-    let req = ChatRequest{
+    let req = ChatRequest {
         model: current_model.to_string(),
         stream: None,
         format: None,
@@ -29,7 +36,7 @@ pub async fn stream_response(
         options: None,
         messages: chat_history
             .into_iter()
-            .map(|item| Message{
+            .map(|item| Message {
                 role: Role::from_str(item.role.as_str()).unwrap(),
                 content: item.content,
                 images: None,
@@ -137,25 +144,34 @@ pub async fn stream_response(
         dbg!(&date_now);
         dbg!(completed);
 
-        sqlx::query(r#"
+        sqlx::query(
+            r#"
             UPDATE chats
             SET date_created = $2, completed = $3, content = $4
             WHERE id = $1;
-        "#)
-            .bind(response_id).bind(date_now).bind(completed).bind(output_buf.lock().await.as_str())
-            .execute(&mut *transaction)
-            .await?;
+        "#,
+        )
+        .bind(response_id)
+        .bind(date_now)
+        .bind(completed)
+        .bind(output_buf.lock().await.as_str())
+        .execute(&mut *transaction)
+        .await?;
 
         let thoughts_content_guard = thoughts_buf.lock().await;
         let trimmed_thoughts = thoughts_content_guard.as_str().trim();
         if !trimmed_thoughts.is_empty() {
-            sqlx::query(r#"
+            sqlx::query(
+                r#"
                 INSERT INTO cot_thoughts (chat_id, content, thought_for_milli)
                 VALUES ($1, $2, $3);
-            "#)
-                .bind(response_id).bind(trimmed_thoughts).bind(thought_for.lock().await.take())
-                .execute(&mut *transaction)
-                .await?;
+            "#,
+            )
+            .bind(response_id)
+            .bind(trimmed_thoughts)
+            .bind(thought_for.lock().await.take())
+            .execute(&mut *transaction)
+            .await?;
         }
 
         transaction.commit().await?;

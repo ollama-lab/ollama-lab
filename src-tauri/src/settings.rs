@@ -1,4 +1,8 @@
-use std::{fs::{create_dir_all, File}, io::{Read, Write}, path::Path};
+use std::{
+    fs::{create_dir_all, File},
+    io::{Read, Write},
+    path::Path,
+};
 
 use appearance::AppearanceSettings;
 use error::Error;

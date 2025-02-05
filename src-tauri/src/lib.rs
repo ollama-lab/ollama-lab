@@ -22,6 +22,7 @@ pub mod utils;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_opener::init())
@@ -50,11 +51,12 @@ pub fn run() {
             commands::settings::default_settings,
         ])
         .setup(|app| {
-            let config_path = local_config_dir().map(|mut dir| {
-                dir.push("default.settings.toml");
-                dir
-            })
-            .ok_or(Error::Settings(settings::error::Error::NoValidConfigPath))?;
+            let config_path = local_config_dir()
+                .map(|mut dir| {
+                    dir.push("default.settings.toml");
+                    dir
+                })
+                .ok_or(Error::Settings(settings::error::Error::NoValidConfigPath))?;
 
             let settings = Settings::load(&config_path)?;
 

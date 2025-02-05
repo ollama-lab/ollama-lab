@@ -18,14 +18,19 @@ pub struct ChatTree {
 impl ChatTree {
     #[must_use]
     pub fn new(session_id: i64) -> Self {
-        Self{ session_id }
+        Self { session_id }
     }
 
     pub fn session_id(&self) -> i64 {
         self.session_id
     }
 
-    pub async fn current_branch(&self, executor: impl Executor<'_, Database = Sqlite>, parent_id: Option<i64>, completed_only: bool) -> Result<Vec<Chat>, Error> {
+    pub async fn current_branch(
+        &self,
+        executor: impl Executor<'_, Database = Sqlite>,
+        parent_id: Option<i64>,
+        completed_only: bool,
+    ) -> Result<Vec<Chat>, Error> {
         Ok(
             sqlx::query_as::<_, Chat>(r#"
                 WITH RECURSIVE rec_chats (
@@ -79,41 +84,50 @@ impl ChatTree {
         completed: Option<bool>,
         model: Option<&str>,
     ) -> Result<i64, Error> {
-        sqlx::query(r#"
+        sqlx::query(
+            r#"
             UPDATE chats
             SET priority = 0
             WHERE
                 session_id = $1
                 AND
                 parent_id IN (SELECT parent_id FROM chats WHERE id = $2);
-        "#)
-            .bind(self.session_id).bind(chat_id)
-            .execute(&mut **tx)
-            .await?;
+        "#,
+        )
+        .bind(self.session_id)
+        .bind(chat_id)
+        .execute(&mut **tx)
+        .await?;
 
-        let new_chat = sqlx::query_as::<_, (i64,)>(r#"
+        let new_chat = sqlx::query_as::<_, (i64,)>(
+            r#"
             INSERT INTO chats (session_id, role, content, parent_id, completed, priority)
             SELECT session_id, role, IFNULL($3, content), parent_id, $4, 1
             FROM chats
             WHERE session_id = $1 AND id = $2
             RETURNING id;
-        "#)
-            .bind(self.session_id)
-            .bind(chat_id)
-            .bind(new_content)
-            .bind(completed.unwrap_or(true))
-            .fetch_one(&mut **tx)
-            .await?;
+        "#,
+        )
+        .bind(self.session_id)
+        .bind(chat_id)
+        .bind(new_content)
+        .bind(completed.unwrap_or(true))
+        .fetch_one(&mut **tx)
+        .await?;
 
-        sqlx::query(r#"
+        sqlx::query(
+            r#"
             INSERT INTO chat_models (chat_id, model)
             SELECT $1, IFNULL($3, model)
             FROM chat_models
             WHERE chat_id = $2;
-        "#)
-            .bind(new_chat.0).bind(chat_id).bind(model)
-            .execute(&mut **tx)
-            .await?;
+        "#,
+        )
+        .bind(new_chat.0)
+        .bind(chat_id)
+        .bind(model)
+        .execute(&mut **tx)
+        .await?;
 
         Ok(new_chat.0)
     }
@@ -122,89 +136,110 @@ impl ChatTree {
         &self,
         tx: &mut Transaction<'_, Sqlite>,
         parent_id: Option<i64>,
-        create_info: NewChildNode<'_>
+        create_info: NewChildNode<'_>,
     ) -> Result<(i64, i64), Error> {
-        sqlx::query(r#"
+        sqlx::query(
+            r#"
             UPDATE chats
             SET priority = 0
             WHERE session_id = $1 AND parent_id IS $2;
-        "#)
-            .bind(self.session_id).bind(parent_id)
-            .execute(&mut **tx)
-            .await?;
+        "#,
+        )
+        .bind(self.session_id)
+        .bind(parent_id)
+        .execute(&mut **tx)
+        .await?;
 
-        let ret = sqlx::query_as::<_, (i64, i64)>(r#"
+        let ret = sqlx::query_as::<_, (i64, i64)>(
+            r#"
             INSERT INTO chats (session_id, role, content, parent_id, completed, priority)
             VALUES ($1, $2, $3, $4, $5, 1)
             RETURNING id, date_created;
-        "#)
-            .bind(self.session_id)
-            .bind(create_info.role.to_string())
-            .bind(create_info.content)
-            .bind(parent_id)
-            .bind(create_info.completed)
-            .fetch_one(&mut **tx)
-            .await?;
+        "#,
+        )
+        .bind(self.session_id)
+        .bind(create_info.role.to_string())
+        .bind(create_info.content)
+        .bind(parent_id)
+        .bind(create_info.completed)
+        .fetch_one(&mut **tx)
+        .await?;
 
         if let Some(model) = create_info.model {
-            sqlx::query(r#"
+            sqlx::query(
+                r#"
                 INSERT INTO chat_models (chat_id, model)
                 VALUES ($1, $2);
-            "#)
-                .bind(ret.0).bind(model)
-                .execute(&mut **tx)
-                .await?;
+            "#,
+            )
+            .bind(ret.0)
+            .bind(model)
+            .execute(&mut **tx)
+            .await?;
         }
 
         Ok(ret)
     }
 
-    pub async fn set_default(&self, executor: impl Executor<'_, Database = Sqlite>, chat_id: i64) -> Result<(), Error> {
-        let affected = sqlx::query("\
+    pub async fn set_default(
+        &self,
+        executor: impl Executor<'_, Database = Sqlite>,
+        chat_id: i64,
+    ) -> Result<(), Error> {
+        let affected = sqlx::query(
+            "\
             UPDATE chats
             SET priority = CASE
                 WHEN id = $1 THEN 1
                 ELSE 0
             END
             WHERE session_id = $2 AND parent_id IS (SELECT parent_id FROM chats WHERE id = $1);
-        ")
-            .bind(chat_id).bind(self.session_id)
-            .execute(executor)
-            .await?
-            .rows_affected();
+        ",
+        )
+        .bind(chat_id)
+        .bind(self.session_id)
+        .execute(executor)
+        .await?
+        .rows_affected();
 
-        (affected > 0)
-            .then_some(())
-            .ok_or(Error::NotExists)
+        (affected > 0).then_some(()).ok_or(Error::NotExists)
     }
 
-    pub async fn delete_session(self, executor: impl Executor<'_, Database = Sqlite>) -> Result<(), Error> {
-        let affected = sqlx::query("\
+    pub async fn delete_session(
+        self,
+        executor: impl Executor<'_, Database = Sqlite>,
+    ) -> Result<(), Error> {
+        let affected = sqlx::query(
+            "\
             DELETE FROM sessions
             WHERE id = $1;
-        ")
-            .bind(self.session_id)
-            .execute(executor)
-            .await?
-            .rows_affected();
+        ",
+        )
+        .bind(self.session_id)
+        .execute(executor)
+        .await?
+        .rows_affected();
 
-        (affected > 0)
-            .then_some(())
-            .ok_or(Error::NotExists)
+        (affected > 0).then_some(()).ok_or(Error::NotExists)
     }
 
-    pub async fn delete_tree(&mut self, executor: impl Executor<'_, Database = Sqlite> + Clone, chat_id: i64) -> Result<(), Error> {
-        let affected = sqlx::query("\
+    pub async fn delete_tree(
+        &mut self,
+        executor: impl Executor<'_, Database = Sqlite> + Clone,
+        chat_id: i64,
+    ) -> Result<(), Error> {
+        let affected = sqlx::query(
+            "\
             DELETE FROM chats
             WHERE session_id = $1 AND id = $2;
-        ")
-            .bind(self.session_id).bind(chat_id)
-            .execute(executor)
-            .await?
-            .rows_affected();
+        ",
+        )
+        .bind(self.session_id)
+        .bind(chat_id)
+        .execute(executor)
+        .await?
+        .rows_affected();
 
-        (affected > 0)
-            .then_some(())
-            .ok_or(Error::NotExists)
+        (affected > 0).then_some(()).ok_or(Error::NotExists)
     }
 }
