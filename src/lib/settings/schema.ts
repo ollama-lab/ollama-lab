@@ -1,5 +1,5 @@
 export type TypeDetail =
-  | {
+  | ({
     type: "enum",
     values: string[],
     default?: string,
@@ -18,6 +18,9 @@ export type TypeDetail =
     min?: number,
     max?: number,
     default?: number,
+  })
+  & {
+    needsRestart?: boolean,
   }
 
 export const settingsSchema: { [key: string]: { [key: string]: TypeDetail } } = {
@@ -25,7 +28,7 @@ export const settingsSchema: { [key: string]: { [key: string]: TypeDetail } } = 
     "color-mode": {
       type: "enum",
       values: ["system", "light", "dark"],
-      default: "System",
+      default: "system",
     },
     //light: {
     //  type: "enum",
@@ -42,6 +45,7 @@ export const settingsSchema: { [key: string]: { [key: string]: TypeDetail } } = 
     uri: {
       type: "string",
       default: "http://localhost:11434",
+      needsRestart: true,
     },
   },
 }

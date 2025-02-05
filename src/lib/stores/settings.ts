@@ -10,23 +10,33 @@ export const settings = {
   async reload() {
     const settings = await getSettings()
     internalSettings.set(settings)
-    setMode(settings.appearance["color-mode"])
+    this.postSetup()
   },
   async set(newSettings: Settings) {
     internalSettings.set(await setSettings(newSettings))
+    this.postSetup()
   },
   async update(updater: Updater<Settings>) {
     await this.set(updater(get(internalSettings)))
+    this.postSetup()
   },
   get<T>(key: string, subkey: string): T {
     // @ts-expect-error
-    return get(internalSettings)[key][subkey]
+    return get(internalSettings)?.[key][subkey]
   },
   setItem<T>(key: string, subkey: string, value: T): void {
-    internalSettings.update(v => {
-      // @ts-expect-error
-      v[key][subkey] = value
+    this.update(v => {
+      if (v) {
+        // @ts-expect-error
+        v[key][subkey] = value
+      }
       return v 
     })
   },
+  postSetup() {
+    const settings = get(internalSettings)
+    setMode(settings.appearance["color-mode"])
+  },
 }
+
+export const restartVotes = writable<Map<string, any>>(new Map())
