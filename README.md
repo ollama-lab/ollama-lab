@@ -2,6 +2,8 @@
 
 > Ollama Lab is currently under pre-alpha phase. Expect bugs and incomplete features.
 
+![Ollama Lab prealpha demo](https://i.imgur.com/mzcc5Ck.gif)
+
 | OS        | Status                              |
 |-----------|-------------------------------------|
 | Linux     | ☑️ Supported (source & binary)       |
