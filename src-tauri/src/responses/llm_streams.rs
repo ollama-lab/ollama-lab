@@ -56,8 +56,9 @@ pub async fn stream_response(
     let thought_for = Arc::new(Mutex::new(None::<i64>));
     let thought_for2 = thought_for.clone();
 
-    let (result_tx, mut result_rx) = mpsc::channel(1);
-    let result_tx2 = result_tx.clone();
+    let final_date_now = Arc::new(Mutex::new(None::<(i64, bool)>));
+    let final_date_now2 = final_date_now.clone();
+    let final_date_now3 = final_date_now.clone();
 
     tokio::select! {
         Err(err) = async move {
@@ -106,12 +107,13 @@ pub async fn stream_response(
                     output_buf2.lock().await.push_str(chunk.as_str());
                 }
 
-                chan_sender.send(StreamingResponseEvent::Text { chunk }).await?;
-
                 date_now = Some(res.created_at.timestamp());
+                chan_sender.send(StreamingResponseEvent::Text { chunk }).await?;
             }
 
-            result_tx.send((date_now, true)).await?;
+            if let Some(date_now) = date_now {
+                *final_date_now2.lock().await = Some((date_now, true));
+            }
 
             Ok::<(), Error>(())
         } => {
@@ -119,7 +121,7 @@ pub async fn stream_response(
                 message: Some(err.to_string()),
             }).await?;
 
-            result_tx2.send((Some(Utc::now().timestamp()), false)).await?;
+            *final_date_now3.lock().await = Some((Utc::now().timestamp(), false));
         }
 
         Some(res) = async move {
@@ -133,52 +135,45 @@ pub async fn stream_response(
                     message: Some("Canceled by user.".to_string()),
                 }).await?;
 
-                result_tx2.send((Some(Utc::now().timestamp()), false)).await?;
+                *final_date_now3.lock().await = Some((Utc::now().timestamp(), false));
             }
         }
     }
 
-    dbg!("Start listening");
-    if let Some((date_now, completed)) = result_rx.recv().await {
-        let mut transaction = pool.begin().await?;
-        dbg!(&transaction);
-        dbg!(&date_now);
-        dbg!(completed);
+    let (date_now, completed) = final_date_now.lock().await.unwrap_or_else(|| (Utc::now().timestamp(), true));
+    let mut transaction = pool.begin().await?;
 
+    sqlx::query(
+        r#"
+        UPDATE chats
+        SET date_created = $2, completed = $3, content = $4
+        WHERE id = $1;
+    "#,
+    )
+    .bind(response_id)
+    .bind(date_now)
+    .bind(completed)
+    .bind(output_buf.lock().await.as_str())
+    .execute(&mut *transaction)
+    .await?;
+
+    let thoughts_content_guard = thoughts_buf.lock().await;
+    let trimmed_thoughts = thoughts_content_guard.as_str().trim();
+    if !trimmed_thoughts.is_empty() {
         sqlx::query(
             r#"
-            UPDATE chats
-            SET date_created = $2, completed = $3, content = $4
-            WHERE id = $1;
+            INSERT INTO cot_thoughts (chat_id, content, thought_for_milli)
+            VALUES ($1, $2, $3);
         "#,
         )
         .bind(response_id)
-        .bind(date_now)
-        .bind(completed)
-        .bind(output_buf.lock().await.as_str())
+        .bind(trimmed_thoughts)
+        .bind(thought_for.lock().await.take())
         .execute(&mut *transaction)
         .await?;
-
-        let thoughts_content_guard = thoughts_buf.lock().await;
-        let trimmed_thoughts = thoughts_content_guard.as_str().trim();
-        if !trimmed_thoughts.is_empty() {
-            sqlx::query(
-                r#"
-                INSERT INTO cot_thoughts (chat_id, content, thought_for_milli)
-                VALUES ($1, $2, $3);
-            "#,
-            )
-            .bind(response_id)
-            .bind(trimmed_thoughts)
-            .bind(thought_for.lock().await.take())
-            .execute(&mut *transaction)
-            .await?;
-        }
-
-        transaction.commit().await?;
-        result_rx.close();
     }
-    dbg!("Finished");
+
+    transaction.commit().await?;
 
     Ok(())
 }
