@@ -28,7 +28,7 @@
       <div class="flex gap-2 w-full">
         {#if data.role === "assistant"}
           <Avatar>
-            <AvatarImage src="/ollama.svg" alt="Ollama logo" class="dark:invert p-1 pb-0" />
+            <AvatarImage src="/ollama.svg" alt="Ollama logo" class="bg-white p-1 pb-0" />
           </Avatar>
         {/if}
 
