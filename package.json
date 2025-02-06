@@ -18,7 +18,7 @@
     "@tauri-apps/plugin-http": "~2.2.0",
     "@tauri-apps/plugin-opener": "~2.2.5",
     "@tauri-apps/plugin-os": "~2.2.0",
-    "@tauri-apps/plugin-process": "~2"
+    "@tauri-apps/plugin-process": "~2.2.0"
   },
   "devDependencies": {
     "@fontsource-variable/figtree": "^5.1.2",
@@ -30,7 +30,7 @@
     "@types/autosize": "^4.0.3",
     "autoprefixer": "^10.4.20",
     "autosize": "^6.0.1",
-    "bits-ui": "^1.0.0-next.85",
+    "bits-ui": "^1.0.0-next.86",
     "clsx": "^2.1.1",
     "convert": "^5.7.0",
     "dayjs": "^1.11.13",
@@ -42,14 +42,14 @@
     "marked-highlight": "^2.2.1",
     "mode-watcher": "^0.5.1",
     "paneforge": "^1.0.0-next.2",
-    "svelte": "^5.19.7",
+    "svelte": "^5.19.8",
     "svelte-check": "^4.1.4",
     "svelte-sonner": "^0.3.28",
     "tailwind-merge": "^2.6.0",
     "tailwind-variants": "^0.3.1",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
-    "vite": "^6.0.11"
+    "vite": "^6.1.0"
   },
   "peerDependencies": {
     "typescript": "latest"
