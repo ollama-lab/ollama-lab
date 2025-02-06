@@ -31,7 +31,21 @@ impl Display for Error {
             "{}",
             match self {
                 Self::Api(err) => {
-                    cache = Some(format!("{:?}", err));
+                    match err {
+                        ollama_rest::errors::Error::ClientCreation(reqwest_err) => {
+                            let url = reqwest_err.url();
+                            cache = Some(
+                                format!(
+                                    "Failed to connect to the Ollama server at {}. Is the Ollama server running?",
+                                    url.map(|url| url.as_str()).unwrap_or("unknown address"),
+                                )
+                            );
+                        },
+                        _ => {
+                            cache = Some(format!("{:?}", err));
+                        }
+                    }
+
                     cache.as_ref().unwrap().as_str()
                 }
                 Self::Settings(err) => {
