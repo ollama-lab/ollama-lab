@@ -41,7 +41,7 @@
 <form
   bind:this={form}
   class={cn(
-    "border border-secondary text-secondary-foreground flex flex-col gap-2 px-3 pt-0 pb-3 rounded-t-3xl overflow-hidden",
+    "border border-secondary text-secondary-foreground bg-background flex flex-col gap-2 px-3 pt-0 pb-3 rounded-t-3xl overflow-hidden",
     "transition-[margin]",
   )}
   style={`margin-bottom: -${$hidePromptBar ? (form?.clientHeight ?? 0) - 16 : 0}px`}
