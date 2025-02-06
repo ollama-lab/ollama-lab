@@ -2,7 +2,7 @@
 
 > Ollama Lab is currently under pre-alpha phase. Expect bugs and incomplete features.
 
-![Ollama Lab prealpha demo](https://i.imgur.com/mzcc5Ck.gif)
+![Ollama Lab prealpha demo](https://i.imgur.com/tk2uFX0.gif)
 
 | OS        | Status                              |
 |-----------|-------------------------------------|
