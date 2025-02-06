@@ -10,6 +10,7 @@
   import ThoughtsSection from "./thoughts-section.svelte"
   import BubbleEditor from "./bubble-editor.svelte"
   import { chatHistory } from "$lib/stores/chats"
+    import AvatarImage from "$lib/components/ui/avatar/avatar-image.svelte";
 
   let { data }: { data: ChatBubble } = $props()
 
@@ -27,7 +28,7 @@
       <div class="flex gap-2 w-full">
         {#if data.role === "assistant"}
           <Avatar>
-            <AvatarFallback>O</AvatarFallback>
+            <AvatarImage src="/ollama.svg" alt="Ollama logo" class="dark:invert p-1 pb-0" />
           </Avatar>
         {/if}
 
