@@ -41,10 +41,10 @@
 <form
   bind:this={form}
   class={cn(
-    "border border-secondary text-secondary-foreground flex flex-col gap-2 px-3 pt-0 pb-3 mb-0 rounded-t-3xl overflow-hidden",
+    "border border-secondary text-secondary-foreground flex flex-col gap-2 px-3 pt-0 pb-3 rounded-t-3xl overflow-hidden",
     "transition-[margin]",
-    $hidePromptBar && "-mb-28",
   )}
+  style={`margin-bottom: -${$hidePromptBar ? (form?.clientHeight ?? 0) - 16 : 0}px`}
   onsubmit={(ev) => {
     ev.preventDefault()
 
