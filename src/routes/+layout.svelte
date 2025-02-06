@@ -32,6 +32,7 @@
 <Toaster
   closeButton
   richColors
+  class="font-sans"
 />
 
 <AlertDialog open={!$frontendState.initialized}>
