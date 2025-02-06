@@ -138,6 +138,7 @@ pub async fn stream_response(
         }
     }
 
+    dbg!("Start listening");
     if let Some((date_now, completed)) = result_rx.recv().await {
         let mut transaction = pool.begin().await?;
         dbg!(&transaction);
@@ -177,6 +178,7 @@ pub async fn stream_response(
         transaction.commit().await?;
         result_rx.close();
     }
+    dbg!("Finished");
 
     Ok(())
 }
