@@ -1,11 +1,13 @@
 <script lang="ts">
   import { Button } from "$lib/components/ui/button"
   import autosize from "autosize"
-  import { ArrowUpIcon, Loader2Icon } from "lucide-svelte"
+  import { ArrowUpIcon, ChevronDownIcon, Loader2Icon } from "lucide-svelte"
   import { selectedSessionModel } from "$lib/stores/models"
   import { chatHistory } from "$lib/stores/chats"
   import type { IncomingUserPrompt } from "$lib/models/chat"
   import { emit } from "@tauri-apps/api/event"
+  import { cn } from "$lib/utils"
+  import { hidePromptBar } from "$lib/stores/prompt-input"
 
   let form = $state<HTMLFormElement | undefined>()
   let textEntry = $state<HTMLTextAreaElement | undefined>()
@@ -38,7 +40,11 @@
 
 <form
   bind:this={form}
-  class="bg-secondary text-secondary-foreground flex flex-col gap-2 px-3 py-3 mb-4 rounded-3xl"
+  class={cn(
+    "border border-secondary text-secondary-foreground flex flex-col gap-2 px-3 pt-0 pb-3 mb-0 rounded-t-3xl overflow-hidden",
+    "transition-[margin]",
+    $hidePromptBar && "-mb-28",
+  )}
   onsubmit={(ev) => {
     ev.preventDefault()
 
@@ -60,20 +66,34 @@
     }).finally(() => status = undefined)
   }}
 >
-    <textarea
-      bind:this={textEntry}
-      name="prompt"
-      bind:value={prompt}
-      class="w-full border-none outline-none resize-none bg-transparent max-h-72 mx-2 mt-1"
-      placeholder="Enter your prompt here"
-      required
-      onkeypress={(ev) => {
-        if (ev.key === "Enter" && !ev.shiftKey && !ev.ctrlKey) {
-          ev.preventDefault()
-          form?.requestSubmit()
-        }
-      }}
-    ></textarea>
+  <Button
+    variant="ghost"
+    class="h-4 rounded-none -mx-3 my-0"
+    onclick={() => {
+      hidePromptBar.update(value => !value)
+    }}
+    title={$hidePromptBar ? "Expand prompt bar" : "Hide prompt bar"}
+  >
+    <ChevronDownIcon class={cn(
+      "size-2 transition",
+      $hidePromptBar && "-rotate-180",
+    )} />
+  </Button>
+
+  <textarea
+    bind:this={textEntry}
+    name="prompt"
+    bind:value={prompt}
+    class="w-full border-none outline-none resize-none bg-transparent max-h-72 mx-2"
+    placeholder="Enter your prompt here"
+    required
+    onkeypress={(ev) => {
+      if (ev.key === "Enter" && !ev.shiftKey && !ev.ctrlKey) {
+        ev.preventDefault()
+        form?.requestSubmit()
+      }
+    }}
+  ></textarea>
 
   <div class="flex">
     <div class="flex-grow flex">

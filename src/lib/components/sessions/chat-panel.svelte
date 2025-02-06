@@ -13,7 +13,7 @@
   </div>
   <RegenFooter />
 
-  <div class="sticky max-w-screen-lg w-full mx-auto">
+  <div class="max-w-screen-lg w-full mx-auto">
     <PromptInput />
   </div>
 </div>
