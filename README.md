@@ -1,6 +1,6 @@
 # Ollama Lab 😮🦙⚗️
 
-> Ollama Lab is currently under pre-alpha phase. Expect bugs and incomplete features.
+> Ollama Lab is currently under beta phase. Expect bugs and incomplete features.
 
 ![Ollama Lab prealpha demo](https://i.imgur.com/tk2uFX0.gif)
 
