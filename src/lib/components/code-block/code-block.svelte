@@ -14,8 +14,7 @@
   let showCopied = $state(false)
   let timerId: number | undefined = undefined
 
-  $effect(() => {
-    if (showCopied) {
+  $effect(() => { if (showCopied) {
       clearTimeout(timerId)
       timerId = setTimeout(() => {
         showCopied = false
@@ -31,7 +30,7 @@
 
 <Card>
   <CardHeader class="flex flex-row items-center">
-    <span>{lang}</span>
+    <span class="text-xs">{lang}</span>
     <span class="flex-grow"></span>
     <Button
       variant="outline"
@@ -53,11 +52,7 @@
   </CardHeader>
   <CardContent>
     <div class="overflow-y-scroll">
-      <pre class="whitespace-pre-wrap break-all">
-        <code bind:this={containerRef}>
-          {@render children?.()}
-        </code>
-      </pre>
+      <pre class="whitespace-pre-wrap break-all text-sm"><code bind:this={containerRef}>{@render children?.()}</code></pre>
     </div>
   </CardContent>
 </Card>
