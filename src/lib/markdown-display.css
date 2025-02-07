@@ -38,10 +38,34 @@
   @apply text-sm italic;
 }
 
+.marked-area .code-container {
+  @apply overflow-x-hidden;
+}
+
+.marked-area pre {
+  @apply overflow-x-auto;
+}
+
 .marked-area code {
-  @apply text-sm;
+  @apply text-sm whitespace-pre;
 }
 
 .marked-area .katex {
   @apply space-x-3;
+}
+
+.marked-area .codeblock {
+  @apply flex flex-col gap-0 rounded overflow-x-clip;
+}
+
+.marked-area .codeblock > .header {
+  @apply flex items-center bg-secondary px-3 text-secondary-foreground;
+}
+
+.marked-area .codeblock > .header > .code-lang {
+  @apply flex-grow text-xs;
+}
+
+.marked-area .codeblock > .header > .toolbar > button.copy {
+  @apply p-1 rounded hover:bg-zinc-400 hover:dark:bg-zinc-700;
 }
