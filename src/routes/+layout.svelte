@@ -1,7 +1,5 @@
 <script lang="ts">
-  import "@fontsource-variable/figtree"
   import "@fontsource-variable/inter"
-  import "@fontsource-variable/fira-code"
   import '../app.css'
   import "$lib/markdown-display.css"
   import { mode, ModeWatcher } from "mode-watcher"

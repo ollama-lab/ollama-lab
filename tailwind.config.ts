@@ -68,7 +68,6 @@ const config: Config = {
 			},
 			fontFamily: {
 				sans: ["Inter Variable", ...fontFamily.sans],
-                mono: ["Fira Code Variable", ...fontFamily.mono],
 			},
 			keyframes: {
 				"accordion-down": {
