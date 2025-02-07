@@ -5,7 +5,7 @@
 Install:
 
 - [Rust](https://rust-lang.org) and [Cargo](https://crates.io/)
-- [Bun](https://bun.sh)
+- [Bun](https://bun.sh) 1.2+
 - libSQLite
 - cargo-tauri (optional)
 
