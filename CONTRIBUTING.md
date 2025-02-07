@@ -1,6 +1,6 @@
-# Develop Ollama Lab
+## Develop
 
-## Prerequisites
+### Prerequisites
 
 Install:
 
@@ -14,7 +14,7 @@ If you use Linux, you should also install:
 - GTK 3
 - WebKit2GTK 4.1
 
-## Prepare
+### Prepare
 
 Run in the project directory:
 
@@ -22,7 +22,7 @@ Run in the project directory:
 bun install
 ```
 
-## Debug
+### Debug
 
 Run in the project directory:
 
@@ -36,7 +36,7 @@ If you use cargo-tauri, you can also run:
 cargo tauri dev
 ```
 
-## Build
+### Build
 
 ```bash
 bun run tauri build
@@ -44,7 +44,7 @@ bun run tauri build
 cargo tauri build
 ```
 
-## Clean up
+### Clean up
 
 It is recommended to clean up the compiled target at the end of the day of debugging, since it can easily grow up to 9+ GiB.
 
