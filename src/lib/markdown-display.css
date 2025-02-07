@@ -59,7 +59,7 @@
 }
 
 .marked-area .codeblock > .header {
-  @apply flex items-center bg-secondary px-3 text-secondary-foreground;
+  @apply flex items-center bg-secondary px-3 py-1 text-secondary-foreground;
 }
 
 .marked-area .codeblock > .header > .code-lang {
