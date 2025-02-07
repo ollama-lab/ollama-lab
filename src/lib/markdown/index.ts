@@ -6,11 +6,9 @@ import markedKatex from "marked-katex-extension"
 
 marked.use(
   markedHighlight({
-    emptyLangClass: "hljs",
-    langPrefix: "hljs language-",
     highlight(code, lang, _info) {
       return hljs.highlight(code, {
-        language: hljs.getLanguage(lang)?.name ?? "plaintext",
+        language: hljs.getLanguage(lang) ? lang : "plaintext",
         ignoreIllegals: true,
       }).value
     },
@@ -29,10 +27,11 @@ const renderer = new marked.Renderer({
 renderer.code = ({ text, lang }) => {
   const codeClass = lang ? `hljs language-${lang}` : "hljs"
 
+  const langInfo = lang ? hljs.getLanguage(lang) : undefined
   return `
     <div class="codeblock">
       <div class="header">
-        <span class="code-lang">${lang}</span>
+        <span class="code-lang">${langInfo?.name}</span>
         <div class="toolbar">
         </div>
       </div>

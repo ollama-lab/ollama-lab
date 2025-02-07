@@ -4,13 +4,13 @@
   import Loading from "$lib/components/custom-ui/loading.svelte"
   import SectorFooter from "./sector-footer.svelte"
   import Bubble from "./bubble.svelte"
-  import { Avatar, AvatarFallback } from "$lib/components/ui/avatar"
+  import { Avatar } from "$lib/components/ui/avatar"
   import { TriangleAlertIcon } from "lucide-svelte"
   import VersionPagination from "./version-pagination.svelte"
   import ThoughtsSection from "./thoughts-section.svelte"
   import BubbleEditor from "./bubble-editor.svelte"
   import { chatHistory } from "$lib/stores/chats"
-    import AvatarImage from "$lib/components/ui/avatar/avatar-image.svelte";
+  import AvatarImage from "$lib/components/ui/avatar/avatar-image.svelte"
 
   let { data }: { data: ChatBubble } = $props()
 
