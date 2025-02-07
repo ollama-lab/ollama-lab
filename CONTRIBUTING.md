@@ -1,3 +1,5 @@
+# Contribute to Ollama Lab
+
 ## Develop
 
 ### Prerequisites
@@ -51,3 +53,13 @@ It is recommended to clean up the compiled target at the end of the day of debug
 ```bash
 cargo clean
 ```
+
+## Contribution
+
+### Branches
+
+- `main`: Trunk; Development code merged here.
+- `stable`: Stable; Current released version.
+- `test/*`: Preview versions.
+- `legacy`: Reserved for the old Ollama Lab.
+- Other: Dev branches for certain tasks.
