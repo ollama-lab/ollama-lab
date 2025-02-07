@@ -1,11 +1,11 @@
 <script lang="ts">
   import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "$lib/components/ui/collapsible"
+  import { parseMarkdown } from "$lib/markdown"
   import type { ChatBubble } from "$lib/models/session"
   import { cn } from "$lib/utils"
   import convert from "convert"
   import { ChevronDownIcon, Loader2Icon } from "lucide-svelte"
   import { fly } from "svelte/transition"
-  import { parseMarkdown } from "./bubble.svelte"
 
   let { data }: { data: ChatBubble } = $props()
   

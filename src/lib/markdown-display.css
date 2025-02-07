@@ -37,3 +37,11 @@
 .marked-area h6 {
   @apply text-sm italic;
 }
+
+.marked-area code {
+  @apply text-sm;
+}
+
+.marked-area .katex {
+  @apply space-x-3;
+}

@@ -1,20 +1,8 @@
-<script lang="ts" module>
-  import DOMPurify from "isomorphic-dompurify"
-  import { marked } from "marked"
-
-  export async function parseMarkdown(markdown: string): Promise<string> {
-    return DOMPurify.sanitize(await marked.parse(markdown, {
-      silent: true,
-      async: true,
-      gfm: true,
-    }))
-  }
-</script>
-
 <script lang="ts">
   import type { ChatBubble } from "$lib/models/session"
   import { cn } from "$lib/utils"
   import { Loading } from "$lib/components/ui/command"
+  import { parseMarkdown } from "$lib/markdown"
 
   let { data }: { data: ChatBubble } = $props()
 
