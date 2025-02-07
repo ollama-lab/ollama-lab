@@ -31,7 +31,7 @@ renderer.code = ({ text, lang }) => {
   return `
     <div class="codeblock">
       <div class="header">
-        <span class="code-lang">${langInfo?.name}</span>
+        <span class="code-lang">${langInfo?.name ?? lang}</span>
         <div class="toolbar">
         </div>
       </div>
