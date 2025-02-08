@@ -5,6 +5,8 @@
   import { parseMarkdown } from "$lib/markdown"
 
   let { data }: { data: ChatBubble } = $props()
+
+  let content = $derived(data.content)
 </script>
 
 <div
@@ -15,8 +17,8 @@
     data.role === "assistant" && data.status === "sending" && "has-type-block",
   )}
 >
-  {#await parseMarkdown(data.content) then content}
-    {@html content}
+  {#await parseMarkdown(content) then genHtml}
+    {@html genHtml}
   {/await}
   {#if data.status === "preparing"}
     <Loading />

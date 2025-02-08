@@ -8,6 +8,8 @@
   import { fly } from "svelte/transition"
 
   let { data }: { data: ChatBubble } = $props()
+
+  let content = $derived(data.content)
   
   let thoughtForString = $derived(data.thoughtFor ? convert(data.thoughtFor, "milliseconds").to("best").toString(3) : "some time")
 
@@ -48,8 +50,8 @@
               )}
               transition:fly={{ x: 0, y: -20 }}
             >
-              {#await parseMarkdown(data.thoughts ?? "") then content}
-                {@html content}
+              {#await parseMarkdown(content) then genHtml}
+                {@html genHtml}
               {/await}
             </div>
           {/if}
