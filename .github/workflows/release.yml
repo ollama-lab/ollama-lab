@@ -51,6 +51,7 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NO_STRIP: true
         with:
           tagName: v__VERSION__
           releaseName: "Ollama Lab v__VERSION__"
