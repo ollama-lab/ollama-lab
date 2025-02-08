@@ -12,12 +12,6 @@
   let thoughtForString = $derived(data.thoughtFor ? convert(data.thoughtFor, "milliseconds").to("best").toString(3) : "some time")
 
   let open = $state(false)
-
-  let dataHTML = $state("")
-
-  $effect(() => {
-    parseMarkdown(data.thoughts ?? "").then(html => dataHTML = html)
-  })
 </script>
 
 {#if data.thoughts || data.thinking}
@@ -54,7 +48,9 @@
               )}
               transition:fly={{ x: 0, y: -20 }}
             >
-              {@html dataHTML}
+              {#await parseMarkdown(data.thoughts ?? "") then content}
+                {@html content}
+              {/await}
             </div>
           {/if}
         {/snippet}
