@@ -9,6 +9,8 @@
   import { frontendState } from "$lib/stores/app-state"
   import { initialize } from "$lib/utils/init"
   import InitAlert from "$lib/components/init-alert.svelte"
+  import darkTheme from "highlight.js/styles/tokyo-night-dark.min.css?raw"
+  import lightTheme from "highlight.js/styles/tokyo-night-dark.min.css?raw"
 
   let { children } = $props()
 
@@ -27,14 +29,13 @@
 
   $effect(() => {
     document.querySelector("#hljs-link")?.remove()
-    const el = document.createElement("link")
+    const el = document.createElement("style")
     el.id = "hljs-link"
-    el.rel = "stylesheet"
 
     if ($mode === "dark") {
-      el.href = "node_modules/highlight.js/styles/tokyo-night-dark.min.css"
+      el.innerText = darkTheme
     } else {
-      el.href = "node_modules/highlight.js/styles/atom-one-light.min.css"
+      el.innerText = lightTheme
     }
 
     document.head.append(el)
