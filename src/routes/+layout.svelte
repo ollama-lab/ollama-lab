@@ -10,7 +10,7 @@
   import { initialize } from "$lib/utils/init"
   import InitAlert from "$lib/components/init-alert.svelte"
   import darkTheme from "highlight.js/styles/tokyo-night-dark.min.css?raw"
-  import lightTheme from "highlight.js/styles/tokyo-night-dark.min.css?raw"
+  import lightTheme from "highlight.js/styles/atom-one-light.min.css?raw"
 
   let { children } = $props()
 
