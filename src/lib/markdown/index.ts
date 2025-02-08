@@ -28,16 +28,14 @@ renderer.code = ({ text, lang }) => {
   const codeClass = lang ? `hljs language-${lang}` : "hljs"
 
   const langInfo = lang ? hljs.getLanguage(lang) : undefined
-  return `
-    <div class="codeblock">
-      <div class="header">
-        <span class="code-lang">${langInfo?.name ?? lang}</span>
-        <div class="toolbar">
-        </div>
-      </div>
-      <pre class="code-container"><code class="${codeClass}">${text}</code></pre>
-    </div>
-  `
+  return `<div class="codeblock">` +
+      `<div class="header">` +
+        `<span class="code-lang">${langInfo?.name ?? lang}</span>` +
+        `<div class="toolbar">` +
+        `</div>` +
+      `</div>` +
+      `<pre class="code-container"><code class="${codeClass}">${text}</code></pre>` +
+    `</div>`
 }
 
 export async function parseMarkdown(markdown: string): Promise<string> {
