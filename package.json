@@ -2,6 +2,7 @@
   "name": "ollama-lab",
   "version": "0.1.0-dev.0",
   "description": "Ollama client",
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite dev",
