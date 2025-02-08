@@ -54,7 +54,7 @@ jobs:
         with:
           tagName: v__VERSION__
           releaseName: "Ollama Lab v__VERSION__"
-          releaseBody: "## Change Log (to be added)"
+          releaseBody: ""
           releaseDraft: true
           prerelease: ${{ github.ref_name != 'stable' }}
           args: ${{ matrix.args }}
