@@ -8,7 +8,9 @@
 |-----------|-------------------------------------|
 | Linux     | ☑️ Supported (source & binary)       |
 | MacOS     | ⚠️ Untested (source & binary)        |
-| Windows   | ⚠️ Untested (source & binary)        |
+| Windows   | ☑️ Supported* (source & binary)        |
+
+> * v0.1.0 on Windows 11 23H2
 
 Yet another (unofficial) [Ollama](https://github.com/ollama/ollama) GUI but based on [Tauri](https://tauri.app) and [Svelte 5](https://svelte.dev/).
 We make Ollama easy-to-use for everyone.
