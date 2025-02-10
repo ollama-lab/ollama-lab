@@ -59,3 +59,4 @@ jobs:
           releaseDraft: true
           prerelease: ${{ github.ref_name != 'stable' }}
           args: ${{ matrix.args }}
+          tauriScript: bun run tauri

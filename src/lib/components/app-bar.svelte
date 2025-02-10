@@ -9,7 +9,7 @@
       name: "Sessions",
       icon: BotMessageSquareIcon,
       href: "/",
-      activePattern: /^\/$/,
+      activePattern: /^\/?$/,
     },
     {
       name: "Models",
