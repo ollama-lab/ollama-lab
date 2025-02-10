@@ -17,7 +17,7 @@
         "@types/autosize": "^4.0.3",
         "autoprefixer": "^10.4.20",
         "autosize": "^6.0.1",
-        "bits-ui": "^1.0.0-next.89",
+        "bits-ui": "^1.0.0-next.90",
         "clsx": "^2.1.1",
         "convert": "^5.7.0",
         "dayjs": "^1.11.13",
@@ -469,7 +469,7 @@
 
     "magic-string": ["magic-string@0.30.17", "", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.0" } }, "sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA=="],
 
-    "marked": ["marked@15.0.6", "", { "bin": { "marked": "bin/marked.js" } }, "sha512-Y07CUOE+HQXbVDCGl3LXggqJDbXDP2pArc2C1N1RRMN0ONiShoSsIInMd5Gsxupe7fKLpgimTV+HOJ9r7bA+pg=="],
+    "marked": ["marked@15.0.7", "", { "bin": { "marked": "bin/marked.js" } }, "sha512-dgLIeKGLx5FwziAnsk4ONoGwHwGPJzselimvlVskE9XLN4Orv9u2VA3GWw/lYUqjfA0rUT/6fqKwfZJapP9BEg=="],
 
     "marked-highlight": ["marked-highlight@2.2.1", "", { "peerDependencies": { "marked": ">=4 <16" } }, "sha512-SiCIeEiQbs9TxGwle9/OwbOejHCZsohQRaNTY2u8euEXYt2rYUFoiImUirThU3Gd/o6Q1gHGtH9qloHlbJpNIA=="],
 

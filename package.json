@@ -36,7 +36,7 @@
     "highlight.js": "^11.11.1",
     "isomorphic-dompurify": "^2.21.0",
     "lucide-svelte": "^0.474.0",
-    "marked": "^15.0.6",
+    "marked": "^15.0.7",
     "marked-highlight": "^2.2.1",
     "marked-katex-extension": "^5.1.4",
     "mode-watcher": "^0.5.1",
