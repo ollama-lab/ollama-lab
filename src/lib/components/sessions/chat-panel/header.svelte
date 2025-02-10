@@ -4,5 +4,10 @@
 </script>
 
 <div class="sticky border-b border-border h-12 flex items-center backdrop-blur-lg bg-background/50">
-  <ModelSelector />
+  <div class="flex-grow flex gap-2">
+    <ModelSelector />
+  </div>
+
+  <div class="px-2">
+  </div>
 </div>
