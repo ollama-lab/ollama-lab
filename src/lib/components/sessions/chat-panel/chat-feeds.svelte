@@ -8,6 +8,10 @@
 
   let root = $state<HTMLDivElement | undefined>()
 
+  let { autoScroll = $bindable() }: {
+    autoScroll: boolean
+  } = $props()
+
   $effect(() => {
     if (!$selectedSessionModel) {
       const fallback = $defaultModel ?? $modelList.at(0)?.name
@@ -22,7 +26,7 @@
     const status = chats?.at(-1)?.status
 
     if (status === "preparing" || status === "sending") {
-      if (root) {
+      if (root && autoScroll) {
         root.parentElement?.scrollTo(0, root.scrollHeight)
       }
     }
@@ -32,9 +36,23 @@
 <div
   bind:this={root}
   class={cn(
-    "flex flex-col",
+    "flex flex-col flex-wrap text-wrap",
     $chatHistory === undefined && "h-full place-content-center items-center",
   )}
+  onwheel={(ev) => {
+    if (root) {
+      if (ev.deltaY < 0) {
+        autoScroll = false
+      } else {
+        const scrollArea = ev.currentTarget.parentElement
+        if (scrollArea) {
+          if (ev.currentTarget.scrollHeight - scrollArea.scrollTop - scrollArea.clientHeight <= 0) {
+            autoScroll = true
+          }
+        }
+      }
+    }
+  }}
 >
   {#if $chatHistory !== undefined}
     {#key `chat-history-session-${$chatHistory.session}`}

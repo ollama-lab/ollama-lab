@@ -1,10 +1,11 @@
 <script lang="ts">
+  import { Button } from "$lib/components/ui/button"
   import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "$lib/components/ui/command";
   import type { ModelListItem } from "$lib/models/model-item"
   import { modelList } from "$lib/stores/model-list"
   import { selectedSessionModel } from "$lib/stores/models"
   import { ChevronsUpDownIcon } from "lucide-svelte"
-    import { toast } from "svelte-sonner";
+  import { toast } from "svelte-sonner"
 
   let open = $state(false)
 

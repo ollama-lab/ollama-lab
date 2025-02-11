@@ -47,7 +47,7 @@
 }
 
 .marked-area code {
-  @apply text-sm whitespace-pre;
+  @apply text-sm whitespace-pre text-wrap;
 }
 
 .marked-area .katex {

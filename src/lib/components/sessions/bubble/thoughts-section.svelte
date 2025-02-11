@@ -9,7 +9,7 @@
 
   let { data }: { data: ChatBubble } = $props()
 
-  let content = $derived(data.content)
+  let content = $derived(data.thoughts ?? "")
   
   let thoughtForString = $derived(data.thoughtFor ? convert(data.thoughtFor, "milliseconds").to("best").toString(3) : "some time")
 
