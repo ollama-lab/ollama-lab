@@ -2,7 +2,7 @@
 
 > Ollama Lab is currently under beta phase. Expect bugs and incomplete features.
 
-![Ollama Lab prealpha demo](https://i.imgur.com/tk2uFX0.gif)
+![ollama-lab-demo](https://github.com/user-attachments/assets/e3b9ca15-d372-4a99-b44c-056bb8313541)
 
 | OS        | Status                              |
 |-----------|-------------------------------------|
