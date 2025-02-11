@@ -42,6 +42,11 @@ pub enum StreamingResponseEvent {
     },
 
     #[serde(rename_all = "camelCase")]
+    SystemPrompt {
+        text: String,
+    },
+
+    #[serde(rename_all = "camelCase")]
     Text {
         chunk: String,
     },

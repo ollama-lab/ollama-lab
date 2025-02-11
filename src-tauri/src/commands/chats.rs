@@ -16,7 +16,7 @@ use crate::{
         llm_streams::stream_response,
         tree::{models::NewChildNode, ChatTree},
     },
-    utils::connections::CloneMutexContentAsync,
+    utils::{connections::CloneMutexContentAsync, system_prompt::SystemPromptOperator},
 };
 
 pub mod chat_history;
@@ -41,15 +41,39 @@ pub async fn submit_user_prompt(
         WHERE id = $1 AND profile_id = $2;
     "#,
     )
-    .bind(session_id)
-    .bind(profile_id)
-    .fetch_optional(&pool)
-    .await?
-    .ok_or(Error::NotExists)?;
+        .bind(session_id)
+        .bind(profile_id)
+        .fetch_optional(&pool)
+        .await?
+        .ok_or(Error::NotExists)?;
 
     let tree = ChatTree::new(session_id);
 
     let mut tx = pool.begin().await?;
+
+    let mut parent_id = parent_id;
+
+    if prompt.use_system_prompt.unwrap_or(false) && parent_id.is_none() {
+        let content = SystemPromptOperator::new(profile_id, session.current_model.as_str())
+            .get(&mut *tx)
+            .await?;
+
+        if let Some(content) = content {
+            let system_prompt_ret = tree
+                .new_child(&mut tx, None, NewChildNode {
+                    content: content.as_str(),
+                    role: Role::System,
+                    model: None,
+                    completed: true,
+                })
+                .await?;
+
+            parent_id = Some(system_prompt_ret.0);
+            on_stream.send(StreamingResponseEvent::SystemPrompt {
+                text: content,
+            })?;
+        }
+    }
 
     let user_chat_ret = tree
         .new_child(
@@ -58,7 +82,7 @@ pub async fn submit_user_prompt(
             NewChildNode {
                 model: None,
                 role: Role::User,
-                content: prompt.text,
+                content: prompt.text.as_str(),
                 completed: true,
             },
         )
@@ -74,7 +98,7 @@ pub async fn submit_user_prompt(
             &mut tx,
             Some(user_chat_ret.0),
             NewChildNode {
-                content: String::new(),
+                content: "",
                 role: Role::Assistant,
                 model: Some(session.current_model.as_str()),
                 completed: false,
@@ -195,7 +219,7 @@ pub async fn regenerate_response(
                 NewChildNode {
                     role: Role::Assistant,
                     model: Some(first_sibling_chat.0.as_str()),
-                    content: String::new(),
+                    content: "",
                     completed: false,
                 },
             )
