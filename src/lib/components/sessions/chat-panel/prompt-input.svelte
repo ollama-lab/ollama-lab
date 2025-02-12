@@ -110,7 +110,7 @@
             await emit("cancel-gen")
           }}
         >
-          <img src="/stop-solid.svg" alt="Stop" class="size-5" />
+          <img src="/stop-solid.svg" alt="Stop" class="size-5 invert dark:invert-0" />
         </Button>
       {:else}
         <Button

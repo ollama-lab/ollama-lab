@@ -3,7 +3,7 @@
 
 </script>
 
-<div class="sticky border-b border-border h-12 flex items-center backdrop-blur-lg bg-background/50">
+<div class="sticky flex-shrink-0 border-b border-border h-12 flex items-center backdrop-blur-lg bg-background/50">
   <div class="flex-grow flex gap-2">
     <ModelSelector />
   </div>
