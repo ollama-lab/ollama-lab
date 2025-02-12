@@ -7,7 +7,7 @@
 | OS        | Status                              |
 |-----------|-------------------------------------|
 | Linux     | ☑️ Supported (source & binary)       |
-| MacOS     | ⚠️ Untested (source & binary)        |
+| MacOS     | ☑️ Supported (source & binary)        |
 | Windows   | ☑️ Supported (source & binary)        |
 
 Yet another (unofficial) [Ollama](https://github.com/ollama/ollama) GUI but based on [Tauri](https://tauri.app) and [Svelte 5](https://svelte.dev/).
