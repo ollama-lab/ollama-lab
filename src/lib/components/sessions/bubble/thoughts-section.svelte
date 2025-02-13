@@ -11,7 +11,13 @@
 
   let content = $derived(data.thoughts ?? "")
   
-  let thoughtForString = $derived(data.thoughtFor ? convert(data.thoughtFor, "milliseconds").to("best").toString(3) : "some time")
+  let thoughtForString = $derived(
+    data.thoughtFor
+      ? convert(data.thoughtFor, "milliseconds")
+        .to("best")
+        .toString(data.thoughtFor <= 1000 ? 0 : data.thoughtFor < 60_000 ? 3 : 2)
+      : "some time"
+  )
 
   let open = $state(false)
 </script>
