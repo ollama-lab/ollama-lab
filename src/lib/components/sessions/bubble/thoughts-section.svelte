@@ -52,7 +52,7 @@
             <div
               {...props}
               class={cn(
-                "marked-area my-1 pr-2 py-2 text-muted-foreground bg-muted/50 text-sm rounded",
+                "marked-area my-1 px-2 md:px-3 py-2 text-muted-foreground bg-muted/50 text-sm rounded",
               )}
               transition:fly={{ x: 0, y: -20 }}
             >
