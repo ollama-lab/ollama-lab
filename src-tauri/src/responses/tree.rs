@@ -132,11 +132,16 @@ impl ChatTree {
         Ok(new_chat.0)
     }
 
+    /// Create new child
+    ///
+    /// ## Returns
+    ///
+    /// (i64, i64): (node id, timestamp)
     pub async fn new_child(
         &self,
         tx: &mut Transaction<'_, Sqlite>,
         parent_id: Option<i64>,
-        create_info: NewChildNode<'_>,
+        create_info: NewChildNode<'_, '_>,
     ) -> Result<(i64, i64), Error> {
         sqlx::query(
             r#"

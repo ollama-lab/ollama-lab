@@ -10,6 +10,7 @@ interface InternalChatGenerationReturn {
 export interface PromptResponseEvents {
   afterUserPromptSubmitted?: (id: number, date: Date) => void
   afterResponseCreated?: (id: number) => void
+  afterSystemPromptCreated?: (id: number, text: string) => void
   onStreamText?: (chunk: string) => void
   onCompleteTextStreaming?: () => void
   onFail?: (msg: string | null) => void
@@ -21,6 +22,7 @@ export interface PromptResponseEvents {
 function newTextStreamChannel({
   afterUserPromptSubmitted,
   afterResponseCreated,
+  afterSystemPromptCreated,
   onStreamText,
   onCompleteTextStreaming,
   onFail,
@@ -38,6 +40,10 @@ function newTextStreamChannel({
 
       case "responseInfo":
         afterResponseCreated?.(ev.id)
+        break
+
+      case "systemPrompt":
+        afterSystemPromptCreated?.(ev.id, ev.text)
         break
 
       case "text":

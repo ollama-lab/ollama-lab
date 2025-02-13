@@ -11,13 +11,14 @@
   import BubbleEditor from "./bubble-editor.svelte"
   import { chatHistory } from "$lib/stores/chats"
   import AvatarImage from "$lib/components/ui/avatar/avatar-image.svelte"
+  import SystemPromptBlock from "./system-prompt-block.svelte"
 
   let { data }: { data: ChatBubble } = $props()
 
   let editingMode = $state(false)
 </script>
 
-{#if data.role !== "system"}
+{#if data.role === "user" || data.role === "assistant"}
   <div
     class={cn(
       "group/bubble-sector flex py-1 gap-2 items-center",
@@ -87,4 +88,6 @@
       {/if}
     {/if}
   </div>
+{:else if data.role === "system"}
+  <SystemPromptBlock content={data.content} />
 {/if}

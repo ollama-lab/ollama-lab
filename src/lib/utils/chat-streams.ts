@@ -117,6 +117,20 @@ export function convertResponseEvents(
       onRespond?.()
       onScrollDown?.()
     },
+    afterSystemPromptCreated(id: number, text: string): void {
+      internalChatHistory.update((value) => {
+        if (value) {
+          value.chats.push({
+            id,
+            content: text,
+            role: "system",
+            status: "sent",
+          })
+        }
+
+        return value
+      })
+    },
     onStreamText(chunk: string): void {
       if (context.responseIndex < 0) {
         return

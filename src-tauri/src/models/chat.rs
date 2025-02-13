@@ -44,6 +44,7 @@ pub struct ChatWithVersions {
 pub struct IncomingUserPrompt {
     pub text: String,
     pub image_path: Option<Vec<String>>,
+    pub use_system_prompt: Option<bool>,
 }
 
 #[derive(Debug, Serialize)]

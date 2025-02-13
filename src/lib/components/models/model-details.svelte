@@ -25,6 +25,7 @@
   import { pullModelTasks } from "$lib/stores/pull-model"
   import ProgressSize from "../custom-ui/progress-size.svelte"
   import { Progress } from "../ui/progress"
+  import SystemPrompt from "./model-details/system-prompt.svelte"
 
   let { model, runningInfo, onExpire }: {
     model?: string
@@ -104,6 +105,7 @@
               <TabsTrigger value="params">Parameters</TabsTrigger>
             {/if}
             <TabsTrigger value="template">Template</TabsTrigger>
+            <TabsTrigger value="system-prompt">System Prompt</TabsTrigger>
           </TabsList>
           <div class="overflow-y-scroll">
             <TabsContent value="modelfile">
@@ -124,6 +126,9 @@
             </TabsContent>
             <TabsContent value="template">
               <Template value={modelInfo.template} />
+            </TabsContent>
+            <TabsContent value="system-prompt">
+              <SystemPrompt {model} />
             </TabsContent>
           </div>
         </Tabs>

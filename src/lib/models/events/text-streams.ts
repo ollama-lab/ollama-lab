@@ -9,6 +9,11 @@ export type StreamingResponseEvent =
     id: number
   }
   | {
+    type: "systemPrompt"
+    id: number
+    text: string
+  }
+  | {
     type: "text"
     chunk: string
   }

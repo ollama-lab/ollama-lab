@@ -55,3 +55,5 @@ export const selectedSessionModel = {
     }
   },
 }
+
+export const usingSystemPrompt = writable(true)
