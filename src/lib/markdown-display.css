@@ -14,6 +14,10 @@
   list-style-type: circle;
 }
 
+.marked-area :is(ul, ol) {
+  @apply ml-6;
+}
+
 .marked-area h1 {
   @apply text-2xl font-bold border-b;
 }
