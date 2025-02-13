@@ -2,12 +2,13 @@
   import { Button } from "$lib/components/ui/button"
   import autosize from "autosize"
   import { ArrowUpIcon, ChevronDownIcon, Loader2Icon } from "lucide-svelte"
-  import { selectedSessionModel } from "$lib/stores/models"
+  import { selectedSessionModel, usingSystemPrompt } from "$lib/stores/models"
   import { chatHistory } from "$lib/stores/chats"
   import type { IncomingUserPrompt } from "$lib/models/chat"
   import { emit } from "@tauri-apps/api/event"
   import { cn } from "$lib/utils"
   import { hidePromptBar } from "$lib/stores/prompt-input"
+  import { get } from "svelte/store"
 
   let form = $state<HTMLFormElement | undefined>()
   let textEntry = $state<HTMLTextAreaElement | undefined>()
@@ -56,6 +57,7 @@
 
     const promptObject: IncomingUserPrompt = {
       text: prompt.trim(),
+      useSystemPrompt: get(usingSystemPrompt),
     }
 
     chatHistory.submit(promptObject, {

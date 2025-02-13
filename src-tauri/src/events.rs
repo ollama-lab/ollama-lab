@@ -43,6 +43,7 @@ pub enum StreamingResponseEvent {
 
     #[serde(rename_all = "camelCase")]
     SystemPrompt {
+        id: i64,
         text: String,
     },
 

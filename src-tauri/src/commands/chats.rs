@@ -70,6 +70,7 @@ pub async fn submit_user_prompt(
 
             parent_id = Some(system_prompt_ret.0);
             on_stream.send(StreamingResponseEvent::SystemPrompt {
+                id: system_prompt_ret.0,
                 text: content,
             })?;
         }

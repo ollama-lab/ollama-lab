@@ -128,7 +128,7 @@
               <Template value={modelInfo.template} />
             </TabsContent>
             <TabsContent value="system-prompt">
-              <SystemPrompt />
+              <SystemPrompt {model} />
             </TabsContent>
           </div>
         </Tabs>
