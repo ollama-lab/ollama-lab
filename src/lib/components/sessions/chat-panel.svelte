@@ -10,7 +10,7 @@
 <div class="flex flex-col w-full h-full">
   <Header />
 
-  <div class="flex-grow px-4 py-2 w-full max-w-screen-lg mx-auto overflow-y-scroll">
+  <div class="flex-grow px-4 py-2 w-full overflow-y-scroll">
     <ChatFeeds bind:autoScroll={scrolledToBottom} />
   </div>
 

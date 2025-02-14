@@ -36,7 +36,7 @@
 <div
   bind:this={root}
   class={cn(
-    "flex flex-col flex-wrap text-wrap",
+    "flex flex-col flex-wrap text-wrap max-w-screen-lg mx-auto",
     $chatHistory === undefined && "h-full place-content-center items-center",
   )}
   onwheel={(ev) => {
