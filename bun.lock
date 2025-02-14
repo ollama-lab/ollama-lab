@@ -17,7 +17,7 @@
         "@types/autosize": "^4.0.3",
         "autoprefixer": "^10.4.20",
         "autosize": "^6.0.1",
-        "bits-ui": "^1.0.0-next.95",
+        "bits-ui": "^1.1.0",
         "clsx": "^2.1.1",
         "convert": "^5.7.0",
         "dayjs": "^1.11.13",
@@ -30,7 +30,7 @@
         "marked-katex-extension": "^5.1.4",
         "mode-watcher": "^0.5.1",
         "paneforge": "^1.0.0-next.2",
-        "svelte": "^5.19.10",
+        "svelte": "^5.20.0",
         "svelte-check": "^4.1.4",
         "svelte-sonner": "^0.3.28",
         "tailwind-merge": "^2.6.0",
@@ -517,7 +517,7 @@
 
     "package-json-from-dist": ["package-json-from-dist@1.0.1", "", {}, "sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw=="],
 
-    "paneforge": ["paneforge@1.0.0-next.2", "", { "dependencies": { "svelte-toolbelt": "^0.4.2" }, "peerDependencies": { "svelte": "^5.11.0" } }, "sha512-Z3XJDcy6qO4RsP24hKPxfFgJaZeH9ORFaudIoRIcgT3eG9ryxVr4B06zPEOzkgsWVtqLDBUr/5jzHcyf1Csuiw=="],
+    "paneforge": ["paneforge@1.0.0-next.3", "", { "dependencies": { "svelte-toolbelt": "^0.4.2" }, "peerDependencies": { "svelte": "^5.11.0" } }, "sha512-he/IlhHhugS8L0MLNEjzdY8EuKio5vu2FOzkzonQv8jgfRuukAMaDkEMXWhgkTgfqV++kE2adc353NG8wsnH5w=="],
 
     "parse5": ["parse5@7.2.1", "", { "dependencies": { "entities": "^4.5.0" } }, "sha512-BuBYQYlv1ckiPdQi/ohiivi9Sagc9JG+Ozs0r7b/0iK3sKmrb0b9FdWdBbOdx6hBCM/F9Ir82ofnBhtZOjCRPQ=="],
 
