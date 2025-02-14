@@ -29,7 +29,7 @@
         "marked-highlight": "^2.2.1",
         "marked-katex-extension": "^5.1.4",
         "mode-watcher": "^0.5.1",
-        "paneforge": "^1.0.0-next.2",
+        "paneforge": "^1.0.0-next.3",
         "svelte": "^5.20.0",
         "svelte-check": "^4.1.4",
         "svelte-sonner": "^0.3.28",
