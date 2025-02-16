@@ -17,7 +17,7 @@
   "devDependencies": {
     "@fontsource-variable/inter": "^5.1.1",
     "@sveltejs/adapter-static": "^3.0.8",
-    "@sveltejs/kit": "^2.17.1",
+    "@sveltejs/kit": "^2.17.2",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tauri-apps/api": "^2.2.0",
     "@tauri-apps/cli": "^2.2.7",
@@ -41,7 +41,7 @@
     "marked-katex-extension": "^5.1.4",
     "mode-watcher": "^0.5.1",
     "paneforge": "^1.0.0-next.3",
-    "svelte": "^5.20.0",
+    "svelte": "^5.20.1",
     "svelte-check": "^4.1.4",
     "svelte-sonner": "^0.3.28",
     "tailwind-merge": "^2.6.0",
