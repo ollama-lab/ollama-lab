@@ -43,7 +43,7 @@
   <TableBody>
     {#each DETAIL_ENTRIES as { name, valueFn }}
       <TableRow>
-        <TableCell class="max-w-10 font-semibold">{name}</TableCell>
+        <TableCell class="w-44 font-semibold">{name}</TableCell>
         <TableCell>{valueFn(value)}</TableCell>
       </TableRow>
     {/each}
