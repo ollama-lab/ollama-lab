@@ -43,7 +43,7 @@ pub struct ChatWithVersions {
 #[serde(rename_all = "camelCase")]
 pub struct IncomingUserPrompt {
     pub text: String,
-    pub image_path: Option<Vec<String>>,
+    pub image_paths: Option<Vec<String>>,
     pub use_system_prompt: Option<bool>,
 }
 

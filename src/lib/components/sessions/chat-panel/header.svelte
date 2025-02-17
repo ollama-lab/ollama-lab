@@ -4,19 +4,11 @@
   import { Switch } from "$lib/components/ui/switch"
   import { chatHistory } from "$lib/stores/chats"
   import { frontendState } from "$lib/stores/app-state"
-  import { selectedSessionModel, usingSystemPrompt } from "$lib/stores/models"
+  import { selectedSessionModel } from "$lib/stores/models"
   import { getModelSystemPrompt } from "$lib/commands/system-prompts"
+  import { inputPrompt } from "$lib/stores/prompt-input"
+  import { Loading } from "$lib/components/ui/command"
 
-  let systemPrompt = $state<string | null>("")
-
-  $effect(() => {
-    if ($frontendState.initialized && !$chatHistory && $selectedSessionModel) {
-      getModelSystemPrompt($selectedSessionModel)
-        .then(res => systemPrompt = res)
-    } else {
-      systemPrompt = null
-    }
-  })
 </script>
 
 <div class="sticky flex-shrink-0 border-b border-border h-12 flex items-center backdrop-blur-lg bg-background/50">
@@ -25,11 +17,23 @@
   </div>
 
   <div class="px-2">
-    {#if systemPrompt}
-      <div class="flex items-center gap-2 md:mr-4">
-        <Switch id="use-system-prompt" bind:checked={() => $usingSystemPrompt, value => usingSystemPrompt.set(value)} />
-        <Label for="use-system-prompt">Use system prompt</Label>
-      </div>
+    {#if $frontendState.initialized && !$chatHistory && $selectedSessionModel}
+      {#await getModelSystemPrompt($selectedSessionModel)}
+        <Loading />
+      {:then systemPrompt}
+        {#if systemPrompt}
+          <div class="flex items-center gap-2 md:mr-4">
+            <Switch
+              id="use-system-prompt"
+              bind:checked={() => $inputPrompt.useSystemPrompt, (value) => inputPrompt.update(o => {
+                o.useSystemPrompt = value
+                return o
+              })}
+            />
+            <Label for="use-system-prompt">Use system prompt</Label>
+          </div>
+        {/if}
+      {/await}
     {/if}
   </div>
 </div>

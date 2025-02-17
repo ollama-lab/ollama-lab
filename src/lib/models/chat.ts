@@ -5,6 +5,6 @@ export interface ChatGenerationReturn {
 
 export interface IncomingUserPrompt {
   text: string
-  imagePath?: string[]
+  imagePaths?: string[]
   useSystemPrompt?: boolean
 }

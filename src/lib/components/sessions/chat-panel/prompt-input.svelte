@@ -2,12 +2,11 @@
   import { Button } from "$lib/components/ui/button"
   import autosize from "autosize"
   import { ArrowUpIcon, ChevronDownIcon, Loader2Icon } from "lucide-svelte"
-  import { selectedSessionModel, usingSystemPrompt } from "$lib/stores/models"
+  import { selectedSessionModel } from "$lib/stores/models"
   import { chatHistory } from "$lib/stores/chats"
-  import type { IncomingUserPrompt } from "$lib/models/chat"
   import { emit } from "@tauri-apps/api/event"
   import { cn } from "$lib/utils"
-  import { hidePromptBar } from "$lib/stores/prompt-input"
+  import { hidePromptBar, inputPrompt } from "$lib/stores/prompt-input"
   import { get } from "svelte/store"
   import Toolbar from "./prompt-input/toolbar.svelte"
 
@@ -22,17 +21,15 @@
     }
   }
 
-  let prompt = $state("")
-
   let status = $state<"submitting" | "responding" | undefined>()
 
   $effect(() => {
     const el = textEntry
-    el?.addEventListener("focus", attachAutosize)
+    el?.addEventListener("load", attachAutosize)
 
     return () => {
       if (el) {
-        el.removeEventListener("focus", attachAutosize)
+        el.removeEventListener("load", attachAutosize)
         autosize.destroy(el)
         autosizeAttached = false
       }
@@ -56,15 +53,10 @@
 
     status = "submitting"
 
-    const promptObject: IncomingUserPrompt = {
-      text: prompt.trim(),
-      useSystemPrompt: get(usingSystemPrompt),
-    }
-
-    chatHistory.submit(promptObject, {
+    chatHistory.submit(get(inputPrompt), {
       onRespond: () => {
         status = "responding"
-        prompt = ""
+        inputPrompt.set({ text: "" })
       },
     }).finally(() => status = undefined)
   }}
@@ -86,7 +78,10 @@
   <textarea
     bind:this={textEntry}
     name="prompt"
-    bind:value={prompt}
+    bind:value={() => $inputPrompt.text, (v) => inputPrompt.update(o => {
+      o.text = v
+      return o
+    })}
     class="w-full border-none outline-none resize-none bg-transparent max-h-72 mx-2"
     placeholder="Enter your prompt here"
     required
