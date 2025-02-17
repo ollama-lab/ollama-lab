@@ -41,11 +41,11 @@ pub async fn submit_user_prompt(
         WHERE id = $1 AND profile_id = $2;
     "#,
     )
-        .bind(session_id)
-        .bind(profile_id)
-        .fetch_optional(&pool)
-        .await?
-        .ok_or(Error::NotExists)?;
+    .bind(session_id)
+    .bind(profile_id)
+    .fetch_optional(&pool)
+    .await?
+    .ok_or(Error::NotExists)?;
 
     let tree = ChatTree::new(session_id);
 
@@ -60,12 +60,16 @@ pub async fn submit_user_prompt(
 
         if let Some(content) = content {
             let system_prompt_ret = tree
-                .new_child(&mut tx, None, NewChildNode {
-                    content: content.as_str(),
-                    role: Role::System,
-                    model: None,
-                    completed: true,
-                })
+                .new_child(
+                    &mut tx,
+                    None,
+                    NewChildNode {
+                        content: content.as_str(),
+                        role: Role::System,
+                        model: None,
+                        completed: true,
+                    },
+                )
                 .await?;
 
             parent_id = Some(system_prompt_ret.0);

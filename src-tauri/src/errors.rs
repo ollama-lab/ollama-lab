@@ -40,7 +40,7 @@ impl Display for Error {
                                     url.map(|url| url.as_str()).unwrap_or("unknown address"),
                                 )
                             );
-                        },
+                        }
                         _ => {
                             cache = Some(format!("{:?}", err));
                         }

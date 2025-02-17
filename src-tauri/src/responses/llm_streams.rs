@@ -140,7 +140,10 @@ pub async fn stream_response(
         }
     }
 
-    let (date_now, completed) = final_date_now.lock().await.unwrap_or_else(|| (Utc::now().timestamp(), true));
+    let (date_now, completed) = final_date_now
+        .lock()
+        .await
+        .unwrap_or_else(|| (Utc::now().timestamp(), true));
     let mut transaction = pool.begin().await?;
 
     sqlx::query(
