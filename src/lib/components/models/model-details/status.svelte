@@ -44,7 +44,7 @@
     </span>
   </span>
 
-  {#if runningInfo}
+  {#if runningInfo && expiresInSeconds >= 0}
     <hr class="bg-border h-full w-[2pt]" />
     <span
       title={runningInfo.toLocaleString()}

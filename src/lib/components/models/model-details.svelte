@@ -13,7 +13,7 @@
   import Info from "./model-details/info.svelte"
   import Parameters from "./model-details/parameters.svelte"
   import Template from "./model-details/template.svelte"
-  import { defaultModel } from "$lib/stores/models"
+  import { activeModels, defaultModel } from "$lib/stores/models"
   import SetDefault from "./model-details/toolbar/set-default.svelte"
   import Status from "./model-details/status.svelte"
   import { Badge } from "../ui/badge"
@@ -25,6 +25,7 @@
   import { pullModelTasks } from "$lib/stores/pull-model"
   import ProgressSize from "../custom-ui/progress-size.svelte"
   import { Progress } from "../ui/progress"
+  import { onMount } from "svelte"
 
   let { model, runningInfo, onExpire }: {
     model?: string
@@ -46,6 +47,10 @@
         .catch(err => toast.error(err))
         .finally(() => loading = false)
     }
+  })
+
+  onMount(() => {
+    activeModels.reload()
   })
 
   let tabValue = $state<string>("details")
