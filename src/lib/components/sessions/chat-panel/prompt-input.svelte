@@ -9,6 +9,7 @@
   import { cn } from "$lib/utils"
   import { hidePromptBar } from "$lib/stores/prompt-input"
   import { get } from "svelte/store"
+  import Toolbar from "./prompt-input/toolbar.svelte"
 
   let form = $state<HTMLFormElement | undefined>()
   let textEntry = $state<HTMLTextAreaElement | undefined>()
@@ -42,7 +43,7 @@
 <form
   bind:this={form}
   class={cn(
-    "border border-secondary text-secondary-foreground bg-background flex flex-col gap-2 px-3 pt-0 pb-3 rounded-t-3xl overflow-hidden",
+    "border border-secondary text-secondary-foreground bg-background flex flex-col gap-2 px-3 pt-0 pb-2 rounded-t-3xl overflow-hidden",
     "transition-[margin]",
   )}
   style={`margin-bottom: -${$hidePromptBar ? (form?.clientHeight ?? 0) - 16 : 0}px`}
@@ -99,6 +100,7 @@
 
   <div class="flex">
     <div class="flex-grow flex">
+      <Toolbar />
     </div>
 
     <div class="flex-shrink-0">
