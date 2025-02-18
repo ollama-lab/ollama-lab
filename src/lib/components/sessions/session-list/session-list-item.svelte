@@ -15,6 +15,7 @@
 
   let renameMode = $state<boolean>(false)
 
+  let displayTitle = $derived(title?.split("\n").at(0))
   let optimisticTitle = $state<string | null>()
 </script>
 
@@ -38,8 +39,7 @@
   <div class="flex-grow select-none truncate text-sm flex gap-2 items-center">
     {#if renameMode}
       <Input
-        defaultvalue={title ?? ""}
-        onkeydown={(ev) => {
+        defaultvalue={title ?? ""} onkeydown={(ev) => {
           switch (ev.key) {
             case "Enter":
               if (!ev.ctrlKey && !ev.metaKey && !ev.altKey && !ev.shiftKey) {
@@ -74,7 +74,7 @@
         class="text-foreground"
       />
     {:else}
-      {optimisticTitle ?? title ?? "New Chat"}
+      <div class="w-full truncate">{optimisticTitle ?? displayTitle ?? "New Chat"}</div>
       {#if $chatHistory?.session === sessionId && $chatHistory?.loading}
         <Loader2Icon class="size-4 animate-spin" />
       {/if}
