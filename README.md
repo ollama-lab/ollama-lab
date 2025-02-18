@@ -14,11 +14,11 @@ We make Ollama easy-to-use for everyone.
 
 ## Install
 
-### Installers
+### Use installers
 
 Find out an installer for your system on our [release page](https://github.com/chardoncs/ollama-lab/releases).
 
-### Package managers
+### Use package managers
 
 #### Arch Linux
 
