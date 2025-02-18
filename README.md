@@ -33,3 +33,8 @@ yay -S ollama-lab
 # OR paru
 paru -S ollama-lab
 ```
+
+> [!NOTE]
+>
+> It is recommended to run `yay/paru -Scc` to clean up the space after using `ollama-lab`,
+> because the build files may take several GiBs on your disks.
