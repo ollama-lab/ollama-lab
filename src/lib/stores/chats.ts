@@ -84,7 +84,7 @@ export const chatHistory = {
     if (!ch) {
       // TODO: Add settings option for default session name: 1) no name, 2) first prompt, 3) generated after first response
       // Currently it is `first prompt`
-      const session = await createSession(model, prompt.text)
+      const session = await createSession(model, prompt.text.split("\n").at(0))
       await sessions.reloadSession(session.id)
       await chatHistory.setSessionId(session.id)
 
