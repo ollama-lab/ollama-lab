@@ -1,36 +1,43 @@
+import DOMPurify from "isomorphic-dompurify"
+import { marked } from "marked"
 import hljs from "highlight.js"
-import MarkdownIt from "markdown-it"
-import mdKatex from "@vscode/markdown-it-katex"
-import "katex/dist/katex.min.css"
+import { markedHighlight } from "marked-highlight"
+import markedKatex from "marked-katex-extension"
 
-const md = MarkdownIt({
-  html: false,
-  linkify: true,
-  highlight(src, lang) {
-    const codeClass = lang ? `hljs language-${lang}` : "hljs"
-
-    const langInfo = lang ? hljs.getLanguage(lang) : undefined
-
-    const text = langInfo ? (
-      hljs.highlight(src, {
-        language: lang,
+marked.use(
+  markedHighlight({
+    highlight(code, lang, _info) {
+      return hljs.highlight(code, {
+        language: hljs.getLanguage(lang) ? lang : "plaintext",
         ignoreIllegals: true,
       }).value
-    ) : src
+    },
+  }),
+  markedKatex({
+    throwOnError: false,
+  }),
+)
 
-    return `<div class="codeblock">` +
-        `<div class="header font-sans">` +
-          `<span class="code-lang">${langInfo?.name ?? lang}</span>` +
-          `<div class="toolbar">` +
-          `</div>` +
-        `</div>` +
-        `<pre class="code-container"><code class="${codeClass}">${text}</code></pre>` +
-      `</div>`
-  },
+const renderer = new marked.Renderer({
+  silent: true,
+  async: true,
+  gfm: true,
 })
 
-md.use(mdKatex)
+renderer.code = ({ text, lang }) => {
+  const codeClass = lang ? `hljs language-${lang}` : "hljs"
 
-export function parseMarkdown(markdown: string): string {
-  return md.render(markdown)
+  const langInfo = lang ? hljs.getLanguage(lang) : undefined
+  return `<div class="codeblock">` +
+      `<div class="header">` +
+        `<span class="code-lang">${langInfo?.name ?? lang}</span>` +
+        `<div class="toolbar">` +
+        `</div>` +
+      `</div>` +
+      `<pre class="code-container"><code class="${codeClass}">${text}</code></pre>` +
+    `</div>`
+}
+
+export async function parseMarkdown(markdown: string): Promise<string> {
+  return DOMPurify.sanitize(await marked.parse(markdown, { renderer }))
 }

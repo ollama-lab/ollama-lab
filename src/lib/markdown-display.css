@@ -1,79 +1,75 @@
-@tailwind components;
+.marked-area {
+  @apply space-y-4;
+}
 
-@layer components {
-  .marked-area {
-    @apply space-y-4;
-  }
+.marked-area > ul {
+  @apply list-disc space-y-2;
+}
 
-  .marked-area > ul {
-    @apply list-disc space-y-2;
-  }
+.marked-area ol {
+  @apply list-decimal space-y-2;
+}
 
-  .marked-area ol {
-    @apply list-decimal space-y-2;
-  }
+.marked-area > :is(ul, ol) ul {
+  list-style-type: circle;
+}
 
-  .marked-area > :is(ul, ol) ul {
-    list-style-type: circle;
-  }
+.marked-area :is(ul, ol) {
+  @apply ml-6;
+}
 
-  .marked-area :is(ul, ol) {
-    @apply ml-6;
-  }
+.marked-area h1 {
+  @apply text-2xl font-bold border-b;
+}
 
-  .marked-area h1 {
-    @apply text-2xl font-bold border-b;
-  }
+.marked-area h2 {
+  @apply text-xl font-bold;
+}
 
-  .marked-area h2 {
-    @apply text-xl font-bold;
-  }
+.marked-area h3 {
+  @apply text-lg font-bold;
+}
 
-  .marked-area h3 {
-    @apply text-lg font-bold;
-  }
+.marked-area h4 {
+  @apply font-bold;
+}
 
-  .marked-area h4 {
-    @apply font-bold;
-  }
+.marked-area h5 {
+  @apply text-sm font-bold;
+}
 
-  .marked-area h5 {
-    @apply text-sm font-bold;
-  }
+.marked-area h6 {
+  @apply text-sm italic;
+}
 
-  .marked-area h6 {
-    @apply text-sm italic;
-  }
+.marked-area .code-container {
+  @apply overflow-x-hidden;
+}
 
-  .marked-area .code-container {
-    @apply overflow-x-hidden;
-  }
+.marked-area pre {
+  @apply overflow-x-auto;
+}
 
-  .marked-area pre {
-    @apply overflow-x-auto;
-  }
+.marked-area code {
+  @apply text-sm whitespace-pre text-wrap;
+}
 
-  .marked-area code {
-    @apply text-sm whitespace-pre text-wrap;
-  }
+.marked-area .katex {
+  @apply space-x-3;
+}
 
-  .marked-area .katex {
-    @apply space-x-3;
-  }
+.marked-area .codeblock {
+  @apply flex flex-col gap-0 rounded overflow-x-clip;
+}
 
-  .marked-area .codeblock {
-    @apply flex flex-col gap-0 rounded overflow-x-clip;
-  }
+.marked-area .codeblock > .header {
+  @apply flex items-center bg-secondary px-3 py-1 text-secondary-foreground;
+}
 
-  .marked-area .codeblock > .header {
-    @apply flex items-center bg-secondary px-3 py-1 text-secondary-foreground;
-  }
+.marked-area .codeblock > .header > .code-lang {
+  @apply flex-grow text-xs;
+}
 
-  .marked-area .codeblock > .header > .code-lang {
-    @apply flex-grow text-xs;
-  }
-
-  .marked-area .codeblock > .header > .toolbar > button.copy {
-    @apply p-1 rounded hover:bg-zinc-400 hover:dark:bg-zinc-700;
-  }
+.marked-area .codeblock > .header > .toolbar > button.copy {
+  @apply p-1 rounded hover:bg-zinc-400 hover:dark:bg-zinc-700;
 }

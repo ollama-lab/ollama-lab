@@ -16,7 +16,9 @@
     data.role === "assistant" && data.status === "sending" && "has-type-block",
   )}
 >
-  {@html parseMarkdown(content)}
+  {#await parseMarkdown(content) then genHtml}
+    {@html genHtml}
+  {/await}
   {#if data.status === "preparing"}
     <Loading />
   {/if}
