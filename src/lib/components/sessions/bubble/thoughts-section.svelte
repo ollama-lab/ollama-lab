@@ -56,9 +56,7 @@
               )}
               transition:fly={{ x: 0, y: -20 }}
             >
-              {#await parseMarkdown(content) then genHtml}
-                {@html genHtml}
-              {/await}
+              {@html parseMarkdown(content) }
             </div>
           {/if}
         {/snippet}

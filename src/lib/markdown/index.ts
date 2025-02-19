@@ -1,43 +1,36 @@
-import DOMPurify from "isomorphic-dompurify"
-import { marked } from "marked"
 import hljs from "highlight.js"
-import { markedHighlight } from "marked-highlight"
-import markedKatex from "marked-katex-extension"
+import MarkdownIt from "markdown-it"
+import mdKatex from "@vscode/markdown-it-katex"
+import "katex/dist/katex.min.css"
 
-marked.use(
-  markedHighlight({
-    highlight(code, lang, _info) {
-      return hljs.highlight(code, {
-        language: hljs.getLanguage(lang) ? lang : "plaintext",
+const md = MarkdownIt({
+  html: false,
+  linkify: true,
+  highlight(src, lang) {
+    const codeClass = lang ? `hljs language-${lang}` : "hljs"
+
+    const langInfo = lang ? hljs.getLanguage(lang) : undefined
+
+    const text = langInfo ? (
+      hljs.highlight(src, {
+        language: lang,
         ignoreIllegals: true,
       }).value
-    },
-  }),
-  markedKatex({
-    throwOnError: false,
-  }),
-)
+    ) : src
 
-const renderer = new marked.Renderer({
-  silent: true,
-  async: true,
-  gfm: true,
+    return `<div class="codeblock">` +
+        `<div class="header font-sans">` +
+          `<span class="code-lang">${langInfo?.name ?? lang}</span>` +
+          `<div class="toolbar">` +
+          `</div>` +
+        `</div>` +
+        `<pre class="code-container"><code class="${codeClass}">${text}</code></pre>` +
+      `</div>`
+  },
 })
 
-renderer.code = ({ text, lang }) => {
-  const codeClass = lang ? `hljs language-${lang}` : "hljs"
+md.use(mdKatex)
 
-  const langInfo = lang ? hljs.getLanguage(lang) : undefined
-  return `<div class="codeblock">` +
-      `<div class="header">` +
-        `<span class="code-lang">${langInfo?.name ?? lang}</span>` +
-        `<div class="toolbar">` +
-        `</div>` +
-      `</div>` +
-      `<pre class="code-container"><code class="${codeClass}">${text}</code></pre>` +
-    `</div>`
-}
-
-export async function parseMarkdown(markdown: string): Promise<string> {
-  return DOMPurify.sanitize(await marked.parse(markdown, { renderer }))
+export function parseMarkdown(markdown: string): string {
+  return md.render(markdown)
 }
