@@ -3,11 +3,13 @@
   import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "$lib/components/ui/dialog"
   import { cn } from "$lib/utils"
   import { launchPromptImageSelector } from "$lib/utils/add-images"
-    import { openUrl } from "@tauri-apps/plugin-opener";
+  import { openUrl } from "@tauri-apps/plugin-opener"
   import { HardDriveIcon, ImagesIcon } from "lucide-svelte"
+
+  let open = $state(false)
 </script>
 
-<Dialog>
+<Dialog bind:open>
   <DialogTrigger
     class={cn(buttonVariants({ variant: "outline", size: "icon" }))}
     type="button"
@@ -37,7 +39,10 @@
     <div class="flex flex-col gap-2">
       <Button
         variant="outline"
-        onclick={() => launchPromptImageSelector()}
+        onclick={async () => {
+          await launchPromptImageSelector()
+          open = false
+        }}
       >
         <HardDriveIcon />
         From this device 
