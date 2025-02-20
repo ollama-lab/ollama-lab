@@ -7,6 +7,14 @@
 
   onMount(() => {
     activeModels.reload()
+
+    const timerId = setInterval(() => {
+      activeModels.reload()
+    }, 10_000)
+
+    return () => {
+      clearInterval(timerId)
+    }
   })
 </script>
 
