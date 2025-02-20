@@ -2977,6 +2977,7 @@ dependencies = [
 name = "ollama-lab"
 version = "0.1.0-dev.0"
 dependencies = [
+ "base64 0.22.1",
  "clap",
  "dirs 6.0.0",
  "ollama-rest",
