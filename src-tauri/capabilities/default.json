@@ -21,6 +21,7 @@
     },
     "os:default",
     "process:default",
-    "dialog:default"
+    "dialog:default",
+    "fs:default"
   ]
 }
