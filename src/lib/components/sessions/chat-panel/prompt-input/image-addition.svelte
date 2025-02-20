@@ -8,7 +8,7 @@
 
 <Dialog>
   <DialogTrigger
-    class={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
+    class={cn(buttonVariants({ variant: "outline", size: "icon" }))}
     type="button"
     title="Add images"
   >

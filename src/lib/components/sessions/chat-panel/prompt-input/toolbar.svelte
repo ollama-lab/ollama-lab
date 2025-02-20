@@ -3,6 +3,6 @@
 
 </script>
 
-<div class="flex gap-2">
+<div class="flex gap-2 px-1">
   <ImageAddition />
 </div>
