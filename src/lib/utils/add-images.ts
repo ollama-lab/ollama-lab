@@ -1,3 +1,4 @@
+import { inputPrompt } from "$lib/stores/prompt-input"
 import { open as openDialog } from "@tauri-apps/plugin-dialog"
 
 export async function launchPromptImageSelector() {
@@ -15,5 +16,14 @@ export async function launchPromptImageSelector() {
   })
 
   if (files && files.length > 0) {
+    inputPrompt.update((item) => {
+      if (!item.imagePaths) {
+        item.imagePaths = files
+      } else {
+        item.imagePaths.push(...files)
+      }
+
+      return item
+    })
   }
 }
