@@ -1,4 +1,5 @@
 pub mod chats;
+pub mod images;
 pub mod init;
 pub mod models;
 pub mod sessions;

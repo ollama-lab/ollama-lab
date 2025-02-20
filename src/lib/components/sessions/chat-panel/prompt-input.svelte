@@ -9,6 +9,7 @@
   import { hidePromptBar, inputPrompt } from "$lib/stores/prompt-input"
   import { get } from "svelte/store"
   import Toolbar from "./prompt-input/toolbar.svelte"
+  import ImagePreview from "./prompt-input/image-preview.svelte"
 
   let form = $state<HTMLFormElement | undefined>()
   let textEntry = $state<HTMLTextAreaElement | undefined>()
@@ -74,6 +75,10 @@
       $hidePromptBar && "-rotate-180",
     )} />
   </Button>
+
+  {#if $inputPrompt.imagePaths}
+    <ImagePreview paths={$inputPrompt.imagePaths} />
+  {/if}
 
   <textarea
     bind:this={textEntry}
