@@ -3,6 +3,7 @@
   import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "$lib/components/ui/dialog"
   import { cn } from "$lib/utils"
   import { launchPromptImageSelector } from "$lib/utils/add-images"
+    import { openUrl } from "@tauri-apps/plugin-opener";
   import { HardDriveIcon, ImagesIcon } from "lucide-svelte"
 </script>
 
@@ -19,7 +20,17 @@
     <DialogHeader>
       <DialogTitle>Select image source</DialogTitle>
       <DialogDescription>
-        NOTE: Only <b>multimodal</b> models can read images.
+        <p>NOTE: Only <b>multimodal</b> models can read images.</p>
+        <p>
+          <button
+            class="hover:underline text-blue-500"
+            onclick={async () => {
+              await openUrl("https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)#Multimodality")
+            }}
+          >
+            What is a multimodal model?
+          </button>
+        </p>
       </DialogDescription>
     </DialogHeader>
 
