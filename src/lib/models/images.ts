@@ -1,5 +1,5 @@
 export interface ImagePreview {
   path: string
-  format: string
+  mime: string
   base64: string
 }
