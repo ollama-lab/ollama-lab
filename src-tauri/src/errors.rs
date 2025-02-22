@@ -1,5 +1,6 @@
 use std::fmt::Display;
 
+use image::ImageError;
 use ollama_rest::models::errors::ParsingError;
 use serde::Serialize;
 use sqlx::migrate::MigrateError;
@@ -21,6 +22,8 @@ pub enum Error {
     ChanSend,
     NotExists,
     InvalidRole,
+    Image(ImageError),
+    Message(String),
 }
 
 impl Display for Error {
@@ -75,6 +78,11 @@ impl Display for Error {
                 Self::ChanSend => "Error occurred during channel sending.",
                 Self::NotExists => "Not exists",
                 Self::InvalidRole => "Invalid prompt role",
+                Self::Image(err) => {
+                    cache = Some(format!("{:?}", err));
+                    cache.as_ref().unwrap().as_str()
+                }
+                Self::Message(msg) => msg,
             }
         )
     }
@@ -136,5 +144,24 @@ impl<T> From<tokio::sync::mpsc::error::SendError<T>> for Error {
 impl From<ParsingError> for Error {
     fn from(_: ParsingError) -> Self {
         Self::InvalidRole
+    }
+}
+
+impl From<ImageError> for Error {
+    fn from(value: ImageError) -> Self {
+        Self::Image(value)
+    }
+}
+
+impl From<String> for Error {
+    fn from(value: String) -> Self {
+        Self::Message(value)
+    }
+}
+                
+
+impl From<&str> for Error {
+    fn from(value: &str) -> Self {
+        Self::Message(value.to_string())
     }
 }
