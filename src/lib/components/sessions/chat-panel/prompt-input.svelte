@@ -77,7 +77,10 @@
   </Button>
 
   {#if $inputPrompt.imagePaths}
-    <ImagePreview paths={$inputPrompt.imagePaths} />
+    <ImagePreview paths={$inputPrompt.imagePaths} onDelete={(i) => inputPrompt.update(item => {
+      item.imagePaths?.splice(i, 1)
+      return item
+    })} />
   {/if}
 
   <textarea
