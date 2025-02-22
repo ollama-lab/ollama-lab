@@ -10,6 +10,7 @@
   import { get } from "svelte/store"
   import Toolbar from "./prompt-input/toolbar.svelte"
   import ImagePreview from "./prompt-input/image-preview.svelte"
+    import { imageCache } from "$lib/stores/images";
 
   let form = $state<HTMLFormElement | undefined>()
   let textEntry = $state<HTMLTextAreaElement | undefined>()
@@ -78,7 +79,10 @@
 
   {#if $inputPrompt.imagePaths}
     <ImagePreview paths={$inputPrompt.imagePaths} onDelete={(i) => inputPrompt.update(item => {
-      item.imagePaths?.splice(i, 1)
+      const path = item.imagePaths?.splice(i, 1).at(0)
+      if (path) {
+        imageCache.delete(path)
+      }
       return item
     })} />
   {/if}
