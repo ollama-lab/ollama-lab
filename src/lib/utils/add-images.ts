@@ -17,10 +17,17 @@ export async function launchPromptImageSelector() {
 
   if (files && files.length > 0) {
     inputPrompt.update((item) => {
+      const fileSet = new Set(files)
+
       if (!item.imagePaths) {
-        item.imagePaths = files
+        item.imagePaths = Array.from(fileSet)
       } else {
-        item.imagePaths.push(...files)
+        const existingFileSet = new Set(item.imagePaths)
+        for (const file of fileSet) {
+          existingFileSet.add(file)
+        }
+
+        item.imagePaths = Array.from(existingFileSet)
       }
 
       return item

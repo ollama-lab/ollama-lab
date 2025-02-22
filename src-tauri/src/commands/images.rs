@@ -10,7 +10,7 @@ use crate::{
 };
 
 #[tauri::command]
-pub fn get_compressed_image_base64(path: String) -> Result<Base64ImageReturn, Error> {
+pub async fn get_compressed_image_base64(path: String) -> Result<Base64ImageReturn, Error> {
     let path = Path::new(path.as_str());
     let format = path
         .extension()
@@ -31,7 +31,7 @@ pub fn get_compressed_image_base64(path: String) -> Result<Base64ImageReturn, Er
 }
 
 #[tauri::command]
-pub fn get_thumbnail_base64(path: String) -> Result<Base64ImageReturn, Error> {
+pub async fn get_thumbnail_base64(path: String) -> Result<Base64ImageReturn, Error> {
     let content = get_compressed_image(&path, THUMBNAIL_SIZE)?
         .to_formatted_bytes(ImageFormat::Png)?
         .to_base64();
