@@ -57,6 +57,6 @@ jobs:
           releaseName: "Ollama Lab v__VERSION__"
           releaseBody: ""
           releaseDraft: true
-          prerelease: ${{ github.ref_name != 'stable' }}
+          prerelease: ${{ startsWith(github.ref_name, 'test') }}
           args: ${{ matrix.args }}
           tauriScript: bun run tauri

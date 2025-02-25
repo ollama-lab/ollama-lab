@@ -25,7 +25,7 @@
           <div class="flex items-center gap-2 md:mr-4">
             <Switch
               id="use-system-prompt"
-              bind:checked={() => $inputPrompt.useSystemPrompt, (value) => inputPrompt.update(o => {
+              bind:checked={() => $inputPrompt.useSystemPrompt ?? false, (value) => inputPrompt.update(o => {
                 o.useSystemPrompt = value
                 return o
               })}
