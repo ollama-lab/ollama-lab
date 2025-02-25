@@ -11,8 +11,8 @@ pub async fn get_chat_image(
 ) -> Result<Option<ImageReturn>, Error> {
     Ok(
         match sqlx::query_as::<_, ImageEntry>(r#"
-            SELECT id, chat_id, path, blob, mime
-            FROM prompt_images 
+            SELECT id, chat_id, origin, image
+            FROM prompt_images
             WHERE id = $1;
         "#)
             .bind(image_id)
@@ -31,7 +31,7 @@ pub async fn get_chat_images(
     resize_to: Option<(u32, u32)>,
 ) -> Result<Vec<ImageReturn>, Error> {
     let entries = sqlx::query_as::<_, ImageEntry>(r#"
-        SELECT id, chat_id, path, blob, mime
+        SELECT id, chat_id, origin, image
         FROM prompt_images 
         WHERE chat_id = $1;
     "#)

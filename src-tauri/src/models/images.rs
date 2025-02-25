@@ -1,6 +1,6 @@
 use std::io::Cursor;
 
-use image::{imageops::FilterType, ImageBuffer, ImageFormat, ImageReader};
+use image::{imageops::FilterType, ImageFormat, ImageReader};
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 
