@@ -21,7 +21,6 @@ macro_rules! gen_chat_models {
         #[serde(rename_all = "camelCase")]
         pub struct MountedChat {
             $(pub $field: $type,)*
-            pub image_count: u32,
             pub versions: Option<Vec<i64>>,
         }
     };
@@ -32,6 +31,7 @@ gen_chat_models! [
     session_id: i64,
     role: String,
     content: String,
+    image_count: Option<i32>,
     completed: bool,
     date_created: DateTime<Utc>,
     date_edited: Option<DateTime<Utc>>,
@@ -91,22 +91,12 @@ impl<'c> MountChatInfo<'c> for Chat {
         .map(|tuple| tuple.0)
         .collect();
 
-        let image_count = sqlx::query_as::<_, (u32,)>(r#"
-            SELECT COUNT(*)
-            FROM prompt_images
-            WHERE chat_id = $1
-        "#)
-            .bind(self.id)
-            .fetch_one(&mut **conn)
-            .await?
-            .0;
-
         Ok(MountedChat {
             id: self.id,
             session_id: self.session_id,
             role: self.role,
             content: self.content,
-            image_count,
+            image_count: self.image_count,
             completed: self.completed,
             date_created: self.date_created,
             date_edited: self.date_edited,
@@ -153,22 +143,6 @@ impl<'c> MountChatInfo<'c> for Vec<Chat> {
             }
         }
 
-        let mut image_count_map = HashMap::new();
-
-        for chat in self.iter() {
-            let image_count = sqlx::query_as::<_, (u32,)>(r#"
-                SELECT COUNT(*) 
-                FROM prompt_image_paths
-                WHERE chat_id = $1;
-            "#)
-                .bind(chat.id)
-                .fetch_one(&mut **conn)
-                .await?
-                .0;
-
-            image_count_map.insert(chat.id, image_count);
-        }
-
         Ok(self
             .into_iter()
             .map(|item| MountedChat {
@@ -176,7 +150,7 @@ impl<'c> MountChatInfo<'c> for Vec<Chat> {
                 session_id: item.session_id,
                 role: item.role,
                 content: item.content,
-                image_count: image_count_map.remove(&item.id).unwrap_or(0),
+                image_count: item.image_count,
                 completed: item.completed,
                 date_created: item.date_created,
                 date_edited: item.date_edited,
