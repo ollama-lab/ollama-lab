@@ -1,6 +1,6 @@
 {
   "name": "ollama-lab",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Ollama client",
   "private": true,
   "type": "module",
