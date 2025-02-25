@@ -32,12 +32,14 @@ pub async fn stream_response(
     let mut conn = pool.acquire().await?;
 
     for chat_id in chat_history.iter().map(|chat| chat.id) {
-        let images = get_chat_images(&mut conn, chat_id, None).await?
+        let images: Vec<String> = get_chat_images(&mut conn, chat_id, None).await?
             .into_iter()
             .map(|item| item.base64)
             .collect();
 
-        image_map.insert(chat_id, images);
+        if !images.is_empty() {
+            image_map.insert(chat_id, images);
+        }
     }
 
     let req = ChatRequest {
