@@ -59,7 +59,7 @@ cargo clean
 ### Branches
 
 - `main`: Trunk; Development code merged here.
-- `stable`: Stable; Current released version.
+- `stable/*`: Stable; Released versions.
 - `test/*`: Preview versions.
 - `legacy`: Reserved for the old Ollama Lab.
 - Other: Dev branches for certain tasks.
