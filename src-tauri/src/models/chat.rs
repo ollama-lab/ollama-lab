@@ -2,7 +2,7 @@ use std::{collections::HashMap, future::Future};
 
 use ollama_rest::chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{pool::PoolConnection, Executor, Sqlite};
+use sqlx::{pool::PoolConnection, Sqlite};
 
 use crate::errors::Error;
 
