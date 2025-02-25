@@ -31,14 +31,18 @@ pub async fn stream_response(
 
     let mut conn = pool.acquire().await?;
 
-    for chat_id in chat_history.iter().map(|chat| chat.id) {
-        let images: Vec<String> = get_chat_images(&mut conn, chat_id, None).await?
+    for chat in chat_history.iter() {
+        if chat.image_count.unwrap_or(0) < 1 {
+            continue;
+        }
+
+        let images: Vec<String> = get_chat_images(&mut conn, chat.id, None).await?
             .into_iter()
             .map(|item| item.base64)
             .collect();
 
         if !images.is_empty() {
-            image_map.insert(chat_id, images);
+            image_map.insert(chat.id, images);
         }
     }
 
