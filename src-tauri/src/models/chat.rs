@@ -2,7 +2,7 @@ use std::{collections::HashMap, future::Future};
 
 use ollama_rest::chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{Executor, Sqlite};
+use sqlx::{pool::PoolConnection, Executor, Sqlite};
 
 use crate::errors::Error;
 
@@ -24,11 +24,12 @@ pub struct Chat {
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct ChatWithVersions {
+pub struct MountedChat {
     pub id: i64,
     pub session_id: i64,
     pub role: String,
     pub content: String,
+    pub image_paths: Option<Vec<String>>,
     pub completed: bool,
     pub date_created: DateTime<Utc>,
     pub date_edited: Option<DateTime<Utc>>,
@@ -54,24 +55,24 @@ pub struct ChatGenerationReturn {
     pub date_created: DateTime<Utc>,
 }
 
-pub trait IntoVecWithVersions<'c> {
+pub trait MountChatInfo<'c> {
     type Output;
     type Err;
 
-    fn into_with_versions(
+    fn mount_info(
         self,
-        executor: impl Executor<'c, Database = Sqlite>,
+        conn: &mut PoolConnection<Sqlite>,
     ) -> impl Future<Output = Result<Self::Output, Self::Err>>;
 }
 
-impl<'c> IntoVecWithVersions<'c> for Chat {
-    type Output = ChatWithVersions;
+impl<'c> MountChatInfo<'c> for Chat {
+    type Output = MountedChat;
     type Err = Error;
 
-    async fn into_with_versions(
+    async fn mount_info(
         self,
-        executor: impl Executor<'c, Database = Sqlite>,
-    ) -> Result<ChatWithVersions, Error> {
+        conn: &mut PoolConnection<Sqlite>,
+    ) -> Result<MountedChat, Error> {
         let versions: Vec<i64> = sqlx::query_as::<_, (i64,)>(
             r#"
             SELECT id
@@ -83,17 +84,30 @@ impl<'c> IntoVecWithVersions<'c> for Chat {
         )
         .bind(self.id)
         .bind(self.session_id)
-        .fetch_all(executor)
+        .fetch_all(&mut **conn)
         .await?
         .into_iter()
         .map(|tuple| tuple.0)
         .collect();
 
-        Ok(ChatWithVersions {
+        let image_paths: Vec<String> = sqlx::query_as::<_, (String,)>(r#"
+            SELECT image_path
+            FROM prompt_image_paths
+            WHERE chat_id = $1;
+        "#)
+            .bind(self.id)
+            .fetch_all(&mut **conn)
+            .await?
+            .into_iter()
+            .map(|tuple| tuple.0)
+            .collect();
+
+        Ok(MountedChat {
             id: self.id,
             session_id: self.session_id,
             role: self.role,
             content: self.content,
+            image_paths: if image_paths.is_empty() { None } else { Some(image_paths) },
             completed: self.completed,
             date_created: self.date_created,
             date_edited: self.date_edited,
@@ -106,13 +120,13 @@ impl<'c> IntoVecWithVersions<'c> for Chat {
     }
 }
 
-impl<'c> IntoVecWithVersions<'c> for Vec<Chat> {
-    type Output = Vec<ChatWithVersions>;
+impl<'c> MountChatInfo<'c> for Vec<Chat> {
+    type Output = Vec<MountedChat>;
     type Err = Error;
 
-    async fn into_with_versions(
+    async fn mount_info(
         self,
-        executor: impl Executor<'c, Database = Sqlite>,
+        conn: &mut PoolConnection<Sqlite>,
     ) -> Result<Self::Output, Self::Err> {
         if self.is_empty() {
             return Ok(Vec::new());
@@ -129,7 +143,7 @@ impl<'c> IntoVecWithVersions<'c> for Vec<Chat> {
         "#,
         )
         .bind(self.first().unwrap().session_id)
-        .fetch_all(executor)
+        .fetch_all(&mut **conn)
         .await?;
 
         for (parent, id) in belong_pairs.into_iter() {
@@ -140,13 +154,32 @@ impl<'c> IntoVecWithVersions<'c> for Vec<Chat> {
             }
         }
 
+        let mut image_map = HashMap::new();
+
+        for chat in self.iter() {
+            let image_paths: Vec<String> = sqlx::query_as::<_, (String,)>(r#"
+                SELECT image_path
+                FROM prompt_image_paths
+                WHERE chat_id = $1;
+            "#)
+                .bind(chat.id)
+                .fetch_all(&mut **conn)
+                .await?
+                .into_iter()
+                .map(|tuple| tuple.0)
+                .collect();
+
+            image_map.insert(chat.id, image_paths);
+        }
+
         Ok(self
             .into_iter()
-            .map(|item| ChatWithVersions {
+            .map(|item| MountedChat {
                 id: item.id,
                 session_id: item.session_id,
                 role: item.role,
                 content: item.content,
+                image_paths: image_map.remove(&item.id),
                 completed: item.completed,
                 date_created: item.date_created,
                 date_edited: item.date_edited,

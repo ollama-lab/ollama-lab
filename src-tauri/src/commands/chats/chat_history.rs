@@ -3,7 +3,7 @@ use tauri::State;
 use crate::{
     app_state::AppState,
     errors::Error,
-    models::chat::{ChatWithVersions, IntoVecWithVersions},
+    models::chat::{MountedChat, MountChatInfo},
     responses::tree::ChatTree,
     utils::connections::ConvertMutexContentAsync,
 };
@@ -12,7 +12,7 @@ use crate::{
 pub async fn get_current_branch(
     state: State<'_, AppState>,
     session_id: i64,
-) -> Result<Vec<ChatWithVersions>, Error> {
+) -> Result<Vec<MountedChat>, Error> {
     let mut conn = state.conn_pool.convert_to().await?;
     let profile_id = state.profile;
 
@@ -30,7 +30,7 @@ pub async fn get_current_branch(
     ChatTree::new(session.0)
         .current_branch(&mut *conn, None, false)
         .await?
-        .into_with_versions(&mut *conn)
+        .mount_info(&mut *conn)
         .await
 }
 
@@ -38,7 +38,7 @@ pub async fn get_current_branch(
 pub async fn switch_branch(
     state: State<'_, AppState>,
     target_chat_id: i64,
-) -> Result<(Option<i64>, Vec<ChatWithVersions>), Error> {
+) -> Result<(Option<i64>, Vec<MountedChat>), Error> {
     let mut conn = state.conn_pool.convert_to().await?;
     let profile_id = state.profile;
 
@@ -63,7 +63,7 @@ pub async fn switch_branch(
         chat_info.2,
         tree.current_branch(&mut *conn, chat_info.2, false)
             .await?
-            .into_with_versions(&mut *conn)
+            .mount_info(&mut *conn)
             .await?,
     ))
 }
