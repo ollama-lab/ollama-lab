@@ -11,9 +11,9 @@ pub fn get_compressed_image(
     path: impl AsRef<Path>,
     max_size: (u32, u32),
 ) -> Result<DynamicImage, Error> {
-    let img = ImageReader::open(path)?.decode()?;
-
-    Ok(img.resize(max_size.0, max_size.1, FilterType::Nearest))
+    Ok(ImageReader::open(path)?
+        .decode()?
+        .resize(max_size.0, max_size.1, FilterType::Lanczos3))
 }
 
 pub trait ToFormattedBytes {
