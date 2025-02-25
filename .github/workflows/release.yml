@@ -3,7 +3,7 @@ name: "Release Tauri app"
 on:
   push:
     branches:
-      - stable
+      - stable/*
       - test/*
 
 jobs:
