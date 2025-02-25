@@ -3344,7 +3344,7 @@ dependencies = [
 
 [[package]]
 name = "ollama-lab"
-version = "0.1.0-dev.0"
+version = "0.3.0-dev.0"
 dependencies = [
  "base64 0.22.1",
  "clap",
