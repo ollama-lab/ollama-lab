@@ -147,8 +147,9 @@ pub async fn submit_user_prompt(
             session.id,
             session.current_model.as_str(),
         )
-        .await
-        .unwrap();
+        .await?;
+
+        Ok::<(), Error>(())
     });
 
     while let Some(event) = rx.recv().await {
@@ -283,8 +284,9 @@ pub async fn regenerate_response(
             session.id,
             model_string.as_str(),
         )
-        .await
-        .unwrap();
+        .await?;
+
+        Ok::<(), Error>(())
     });
 
     while let Some(event) = rx.recv().await {
