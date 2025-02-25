@@ -9,7 +9,7 @@ use ollama_rest::{
 use sqlx::{Pool, Sqlite};
 use tokio::sync::{mpsc, oneshot, Mutex};
 
-use crate::{errors::Error, events::StreamingResponseEvent, responses::tree::ChatTree};
+use crate::{errors::Error, events::StreamingResponseEvent, responses::tree::ChatTree, utils::images::get_chat_images};
 
 pub async fn stream_response(
     ollama: &Ollama,
@@ -29,20 +29,15 @@ pub async fn stream_response(
 
     let mut image_map: HashMap<i64, Vec<String>> = HashMap::new();
 
+    let mut conn = pool.acquire().await?;
+
     for chat_id in chat_history.iter().map(|chat| chat.id) {
-        let image_paths: Vec<String> = sqlx::query_as::<_, (String,)>(r#"
-            SELECT image_path
-            FROM prompt_image_paths
-            WHERE chat_id = $1;
-        "#)
-            .bind(chat_id)
-            .fetch_all(pool)
-            .await?
+        let images = get_chat_images(&mut conn, chat_id, None).await?
             .into_iter()
-            .map(|tuple| tuple.0)
+            .map(|item| item.base64)
             .collect();
 
-        image_map.insert(chat_id, image_paths);
+        image_map.insert(chat_id, images);
     }
 
     let req = ChatRequest {
