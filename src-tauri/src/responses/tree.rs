@@ -1,7 +1,7 @@
 use models::NewChildNode;
 use sqlx::{Executor, Sqlite, Transaction};
 
-use crate::{errors::Error, image::{get_compressed_image, MODEL_IMAGE_SIZE}, models::chat::Chat};
+use crate::{errors::Error, image::{get_compressed_image, MODEL_IMAGE_SIZE}, models::chat::Chat, utils::images::save_image};
 
 pub mod models;
 
@@ -185,13 +185,13 @@ impl ChatTree {
 
         if let Some(images) = create_info.images {
             for image_path in images.into_iter() {
-                let image = get_compressed_image(image_path, MODEL_IMAGE_SIZE)?.into_bytes();
+                let dest = save_image(image_path)?;
 
                 sqlx::query(r#"
-                    INSERT INTO prompt_images (chat_id, origin, image)
+                    INSERT INTO prompt_images (chat_id, origin, path)
                     VALUES ($1, $2, $3);
                 "#)
-                    .bind(ret.0).bind(image_path).bind(image)
+                    .bind(ret.0).bind(image_path).bind(dest)
                     .execute(&mut **tx)
                     .await?;
             }
