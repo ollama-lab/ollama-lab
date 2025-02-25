@@ -6,39 +6,40 @@ use sqlx::{pool::PoolConnection, Sqlite};
 
 use crate::errors::Error;
 
-#[derive(Debug, sqlx::FromRow, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Chat {
-    pub id: i64,
-    pub session_id: i64,
-    pub role: String,
-    pub content: String,
-    pub completed: bool,
-    pub date_created: DateTime<Utc>,
-    pub date_edited: Option<DateTime<Utc>>,
-    pub model: Option<String>,
-    pub parent_id: Option<i64>,
-    pub thoughts: Option<String>,
-    pub thought_for: Option<i64>,
+macro_rules! gen_chat_models {
+    [
+        $($field:ident: $type:ty),*
+        $(,)?
+    ] => {
+        #[derive(Debug, sqlx::FromRow, Serialize)]
+        #[serde(rename_all = "camelCase")]
+        pub struct Chat {
+            $(pub $field: $type,)*
+        }
+
+        #[derive(Debug, Serialize)]
+        #[serde(rename_all = "camelCase")]
+        pub struct MountedChat {
+            $(pub $field: $type,)*
+            pub image_count: u32,
+            pub versions: Option<Vec<i64>>,
+        }
+    };
 }
 
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct MountedChat {
-    pub id: i64,
-    pub session_id: i64,
-    pub role: String,
-    pub content: String,
-    pub image_count: u32,
-    pub completed: bool,
-    pub date_created: DateTime<Utc>,
-    pub date_edited: Option<DateTime<Utc>>,
-    pub model: Option<String>,
-    pub parent_id: Option<i64>,
-    pub thoughts: Option<String>,
-    pub thought_for: Option<i64>,
-    pub versions: Option<Vec<i64>>,
-}
+gen_chat_models! [
+    id: i64,
+    session_id: i64,
+    role: String,
+    content: String,
+    completed: bool,
+    date_created: DateTime<Utc>,
+    date_edited: Option<DateTime<Utc>>,
+    model: Option<String>,
+    parent_id: Option<i64>,
+    thoughts: Option<String>,
+    thought_for: Option<i64>,
+];
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
