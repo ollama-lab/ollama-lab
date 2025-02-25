@@ -30,7 +30,7 @@ pub async fn get_current_branch(
     ChatTree::new(session.0)
         .current_branch(&mut *conn, None, false)
         .await?
-        .mount_info(&mut *conn)
+        .mount_info(&mut conn)
         .await
 }
 
@@ -63,7 +63,7 @@ pub async fn switch_branch(
         chat_info.2,
         tree.current_branch(&mut *conn, chat_info.2, false)
             .await?
-            .mount_info(&mut *conn)
+            .mount_info(&mut conn)
             .await?,
     ))
 }
