@@ -28,11 +28,11 @@ pub enum ImageReturn<'a> {
     },
 }
 
-impl ImageReturn<'_> {
+impl<'a> ImageReturn<'a> {
     pub fn new_optional(
         path: Option<&PathBuf>,
         blob: Option<Vec<u8>>,
-        mime: Option<&'static str>,
+        mime: Option<&'a str>,
     ) -> Option<Self> {
         let mime = mime.or_else(|| {
             path.as_ref().and_then(|p|
