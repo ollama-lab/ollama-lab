@@ -13,26 +13,26 @@ pub struct Base64ImageReturn {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", tag = "type")]
-pub enum ImageReturn {
+pub enum ImageReturn<'a> {
     #[serde(rename_all = "camelCase")]
     Reference {
         path: String,
-        mime: String,
+        mime: &'a str,
     },
 
     #[serde(rename_all = "camelCase")]
     Embedded {
         original_path: Option<String>,
         blob: Vec<u8>,
-        mime: String,
+        mime: &'a str,
     },
 }
 
-impl ImageReturn {
+impl ImageReturn<'_> {
     pub fn new_optional(
-        path: Option<PathBuf>,
+        path: Option<&PathBuf>,
         blob: Option<Vec<u8>>,
-        mime: Option<String>,
+        mime: Option<&'static str>,
     ) -> Option<Self> {
         let mime = mime.or_else(|| {
             path.as_ref().and_then(|p|
@@ -40,7 +40,7 @@ impl ImageReturn {
                     .and_then(|oss| oss.to_str())
                     .and_then(|p|
                         ImageFormat::from_extension(p)
-                            .map(|ext| ext.to_mime_type().to_string())
+                            .map(|ext| ext.to_mime_type())
                     )
             )
         });
