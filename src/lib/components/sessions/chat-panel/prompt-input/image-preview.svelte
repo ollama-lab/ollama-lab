@@ -18,7 +18,7 @@
     <div>
       <div
         class={cn(
-          "group relative flex flex-col gap-1 overflow-auto cursor-pointer border border-border px-1 py-1",
+          "group relative flex flex-col gap-1 overflow-auto cursor-pointer border border-border px-1 py-1 min-w-40",
         )}
       >
         <div class="max-h-[200px]">
