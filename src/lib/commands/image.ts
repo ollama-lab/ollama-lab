@@ -1,4 +1,4 @@
-import type { ImagePreview } from "$lib/models/images"
+import type { ImagePreview, ImageReturn } from "$lib/models/images"
 import { imageCache } from "$lib/stores/images"
 import { invoke } from "@tauri-apps/api/core"
 
@@ -20,4 +20,8 @@ export async function getThumbnailBase64(path: string, cached: boolean = true): 
   }
 
   return result
+}
+
+export async function getImagesByChatId(chatId: number): Promise<ImageReturn> {
+  return await invoke<ImageReturn>("get_images_by_chat_id", { chatId });
 }

@@ -46,6 +46,11 @@
               You
             {/if}
           </span>
+          {#if data.imageCount > 0}
+            <div class="bg-secondary border border-border text-xl flex items-center place-content-center w-28 h-28">
+              +{data.imageCount}
+            </div>
+          {/if}
           {#if data.role === "assistant"}
             <ThoughtsSection {data} />
           {/if}

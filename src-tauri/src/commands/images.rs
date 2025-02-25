@@ -1,12 +1,10 @@
 use std::path::Path;
 
 use image::ImageFormat;
+use tauri::State;
 
 use crate::{
-    encoding::ToBase64,
-    errors::Error,
-    image::{get_compressed_image, ToFormattedBytes, MODEL_IMAGE_SIZE, THUMBNAIL_SIZE},
-    models::images::Base64ImageReturn,
+    app_state::AppState, encoding::ToBase64, errors::Error, image::{get_compressed_image, ToFormattedBytes, MODEL_IMAGE_SIZE, THUMBNAIL_SIZE}, models::images::{Base64ImageReturn, ImageReturn}, utils::{connections::ConvertMutexContentAsync, images::get_chat_images}
 };
 
 #[tauri::command]
@@ -41,4 +39,14 @@ pub async fn get_thumbnail_base64(path: String) -> Result<Base64ImageReturn, Err
         mime: Some(ImageFormat::Png.to_mime_type().to_string()),
         base64: content,
     })
+}
+
+#[tauri::command]
+pub async fn get_images_by_chat_id(
+    state: State<'_, AppState>,
+    chat_id: i64,
+) -> Result<Vec<ImageReturn>, Error> {
+    let mut conn = state.conn_pool.convert_to().await?;
+
+    Ok(get_chat_images(&mut conn, chat_id, Some(THUMBNAIL_SIZE)).await?)
 }

@@ -56,6 +56,7 @@ pub fn run() {
             commands::system_prompts::set_model_system_prompt,
             commands::images::get_compressed_image_base64,
             commands::images::get_thumbnail_base64,
+            commands::images::get_images_by_chat_id,
         ])
         .setup(|app| {
             let config_path = local_config_dir()
