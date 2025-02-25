@@ -6,11 +6,11 @@
   import { chatHistory } from "$lib/stores/chats"
   import { emit } from "@tauri-apps/api/event"
   import { cn } from "$lib/utils"
-  import { hidePromptBar, inputPrompt } from "$lib/stores/prompt-input"
+  import { hidePromptBar, inputPrompt, isSubmittable } from "$lib/stores/prompt-input"
   import { get } from "svelte/store"
   import Toolbar from "./prompt-input/toolbar.svelte"
   import ImagePreview from "./prompt-input/image-preview.svelte"
-    import { imageCache } from "$lib/stores/images";
+  import { imageCache } from "$lib/stores/images"
 
   let form = $state<HTMLFormElement | undefined>()
   let textEntry = $state<HTMLTextAreaElement | undefined>()
@@ -49,7 +49,7 @@
   onsubmit={(ev) => {
     ev.preventDefault()
 
-    if (status || !$selectedSessionModel || prompt.length < 1) {
+    if (status || !get(isSubmittable)) {
       return
     }
 
@@ -128,7 +128,7 @@
           size="icon"
           class="rounded-full"
           type="submit"
-          disabled={!!status || prompt.length < 1 || !$selectedSessionModel}
+          disabled={!!status || !$isSubmittable}
           title="Send prompt"
         >
           {#if status === "submitting"}

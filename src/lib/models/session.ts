@@ -14,6 +14,7 @@ export interface ChatBubble {
   id: number
   role: Role
   content: string
+  imageCount: number
   dateSent?: Date
   dateEdited?: Date
   status: TransmissionStatus 
