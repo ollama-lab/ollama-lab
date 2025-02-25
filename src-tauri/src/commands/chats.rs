@@ -41,11 +41,11 @@ pub async fn submit_user_prompt(
         WHERE id = $1 AND profile_id = $2;
     "#,
     )
-        .bind(session_id)
-        .bind(profile_id)
-        .fetch_optional(&pool)
-        .await?
-        .ok_or(Error::NotExists)?;
+    .bind(session_id)
+    .bind(profile_id)
+    .fetch_optional(&pool)
+    .await?
+    .ok_or(Error::NotExists)?;
 
     let tree = ChatTree::new(session_id);
 
@@ -60,12 +60,17 @@ pub async fn submit_user_prompt(
 
         if let Some(content) = content {
             let system_prompt_ret = tree
-                .new_child(&mut tx, None, NewChildNode {
-                    content: content.as_str(),
-                    role: Role::System,
-                    model: None,
-                    completed: true,
-                })
+                .new_child(
+                    &mut tx,
+                    None,
+                    NewChildNode {
+                        content: content.as_str(),
+                        role: Role::System,
+                        model: None,
+                        completed: true,
+                        images: None,
+                    },
+                )
                 .await?;
 
             parent_id = Some(system_prompt_ret.0);
@@ -76,6 +81,14 @@ pub async fn submit_user_prompt(
         }
     }
 
+    let image_ref_paths = prompt.image_paths
+        .as_ref()
+        .and_then(|path_list| Some(
+            path_list.iter()
+                .map(|s| s.as_str())
+                .collect::<Vec<&str>>()
+        ));
+
     let user_chat_ret = tree
         .new_child(
             &mut tx,
@@ -85,12 +98,14 @@ pub async fn submit_user_prompt(
                 role: Role::User,
                 content: prompt.text.as_str(),
                 completed: true,
+                images: image_ref_paths.as_ref().map(|inner| inner.as_slice()),
             },
         )
         .await?;
 
     on_stream.send(StreamingResponseEvent::UserPrompt {
         id: user_chat_ret.0,
+        images: prompt.image_paths,
         timestamp: user_chat_ret.1,
     })?;
 
@@ -103,6 +118,7 @@ pub async fn submit_user_prompt(
                 role: Role::Assistant,
                 model: Some(session.current_model.as_str()),
                 completed: false,
+                images: None,
             },
         )
         .await?;
@@ -222,6 +238,7 @@ pub async fn regenerate_response(
                     model: Some(first_sibling_chat.0.as_str()),
                     content: "",
                     completed: false,
+                    images: None,
                 },
             )
             .await

@@ -2,48 +2,50 @@ use std::{collections::HashMap, future::Future};
 
 use ollama_rest::chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::{Executor, Sqlite};
+use sqlx::{pool::PoolConnection, Sqlite};
 
 use crate::errors::Error;
 
-#[derive(Debug, sqlx::FromRow, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Chat {
-    pub id: i64,
-    pub session_id: i64,
-    pub role: String,
-    pub content: String,
-    pub completed: bool,
-    pub date_created: DateTime<Utc>,
-    pub date_edited: Option<DateTime<Utc>>,
-    pub model: Option<String>,
-    pub parent_id: Option<i64>,
-    pub thoughts: Option<String>,
-    pub thought_for: Option<i64>,
+macro_rules! gen_chat_models {
+    [
+        $($field:ident: $type:ty),*
+        $(,)?
+    ] => {
+        #[derive(Debug, sqlx::FromRow, Serialize)]
+        #[serde(rename_all = "camelCase")]
+        pub struct Chat {
+            $(pub $field: $type,)*
+        }
+
+        #[derive(Debug, Serialize)]
+        #[serde(rename_all = "camelCase")]
+        pub struct MountedChat {
+            $(pub $field: $type,)*
+            pub versions: Option<Vec<i64>>,
+        }
+    };
 }
 
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ChatWithVersions {
-    pub id: i64,
-    pub session_id: i64,
-    pub role: String,
-    pub content: String,
-    pub completed: bool,
-    pub date_created: DateTime<Utc>,
-    pub date_edited: Option<DateTime<Utc>>,
-    pub model: Option<String>,
-    pub parent_id: Option<i64>,
-    pub thoughts: Option<String>,
-    pub thought_for: Option<i64>,
-    pub versions: Option<Vec<i64>>,
-}
+gen_chat_models! [
+    id: i64,
+    session_id: i64,
+    role: String,
+    content: String,
+    image_count: Option<i32>,
+    completed: bool,
+    date_created: DateTime<Utc>,
+    date_edited: Option<DateTime<Utc>>,
+    model: Option<String>,
+    parent_id: Option<i64>,
+    thoughts: Option<String>,
+    thought_for: Option<i64>,
+];
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct IncomingUserPrompt {
     pub text: String,
-    pub image_path: Option<Vec<String>>,
+    pub image_paths: Option<Vec<String>>,
     pub use_system_prompt: Option<bool>,
 }
 
@@ -54,24 +56,24 @@ pub struct ChatGenerationReturn {
     pub date_created: DateTime<Utc>,
 }
 
-pub trait IntoVecWithVersions<'c> {
+pub trait MountChatInfo<'c> {
     type Output;
     type Err;
 
-    fn into_with_versions(
+    fn mount_info(
         self,
-        executor: impl Executor<'c, Database = Sqlite>,
+        conn: &mut PoolConnection<Sqlite>,
     ) -> impl Future<Output = Result<Self::Output, Self::Err>>;
 }
 
-impl<'c> IntoVecWithVersions<'c> for Chat {
-    type Output = ChatWithVersions;
+impl<'c> MountChatInfo<'c> for Chat {
+    type Output = MountedChat;
     type Err = Error;
 
-    async fn into_with_versions(
+    async fn mount_info(
         self,
-        executor: impl Executor<'c, Database = Sqlite>,
-    ) -> Result<ChatWithVersions, Error> {
+        conn: &mut PoolConnection<Sqlite>,
+    ) -> Result<MountedChat, Error> {
         let versions: Vec<i64> = sqlx::query_as::<_, (i64,)>(
             r#"
             SELECT id
@@ -83,17 +85,18 @@ impl<'c> IntoVecWithVersions<'c> for Chat {
         )
         .bind(self.id)
         .bind(self.session_id)
-        .fetch_all(executor)
+        .fetch_all(&mut **conn)
         .await?
         .into_iter()
         .map(|tuple| tuple.0)
         .collect();
 
-        Ok(ChatWithVersions {
+        Ok(MountedChat {
             id: self.id,
             session_id: self.session_id,
             role: self.role,
             content: self.content,
+            image_count: self.image_count,
             completed: self.completed,
             date_created: self.date_created,
             date_edited: self.date_edited,
@@ -106,13 +109,13 @@ impl<'c> IntoVecWithVersions<'c> for Chat {
     }
 }
 
-impl<'c> IntoVecWithVersions<'c> for Vec<Chat> {
-    type Output = Vec<ChatWithVersions>;
+impl<'c> MountChatInfo<'c> for Vec<Chat> {
+    type Output = Vec<MountedChat>;
     type Err = Error;
 
-    async fn into_with_versions(
+    async fn mount_info(
         self,
-        executor: impl Executor<'c, Database = Sqlite>,
+        conn: &mut PoolConnection<Sqlite>,
     ) -> Result<Self::Output, Self::Err> {
         if self.is_empty() {
             return Ok(Vec::new());
@@ -129,7 +132,7 @@ impl<'c> IntoVecWithVersions<'c> for Vec<Chat> {
         "#,
         )
         .bind(self.first().unwrap().session_id)
-        .fetch_all(executor)
+        .fetch_all(&mut **conn)
         .await?;
 
         for (parent, id) in belong_pairs.into_iter() {
@@ -142,11 +145,12 @@ impl<'c> IntoVecWithVersions<'c> for Vec<Chat> {
 
         Ok(self
             .into_iter()
-            .map(|item| ChatWithVersions {
+            .map(|item| MountedChat {
                 id: item.id,
                 session_id: item.session_id,
                 role: item.role,
                 content: item.content,
+                image_count: item.image_count,
                 completed: item.completed,
                 date_created: item.date_created,
                 date_edited: item.date_edited,

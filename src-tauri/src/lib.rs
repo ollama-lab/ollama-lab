@@ -10,8 +10,10 @@ use tokio::sync::Mutex;
 
 pub mod app_state;
 pub mod commands;
+pub mod encoding;
 pub mod errors;
 pub mod events;
+pub mod image;
 pub mod models;
 pub mod paths;
 pub mod responses;
@@ -22,6 +24,7 @@ pub mod utils;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_http::init())
@@ -51,6 +54,9 @@ pub fn run() {
             commands::settings::default_settings,
             commands::system_prompts::get_model_system_prompt,
             commands::system_prompts::set_model_system_prompt,
+            commands::images::get_compressed_image_base64,
+            commands::images::get_thumbnail_base64,
+            commands::images::get_images_by_chat_id,
         ])
         .setup(|app| {
             let config_path = local_config_dir()

@@ -1,4 +1,4 @@
-use std::{str::FromStr, sync::Arc};
+use std::{collections::HashMap, str::FromStr, sync::Arc};
 
 use ollama_rest::{
     chrono::{DateTime, Local, Utc},
@@ -9,7 +9,7 @@ use ollama_rest::{
 use sqlx::{Pool, Sqlite};
 use tokio::sync::{mpsc, oneshot, Mutex};
 
-use crate::{errors::Error, events::StreamingResponseEvent, responses::tree::ChatTree};
+use crate::{errors::Error, events::StreamingResponseEvent, responses::tree::ChatTree, utils::images::get_chat_images};
 
 pub async fn stream_response(
     ollama: &Ollama,
@@ -27,6 +27,25 @@ pub async fn stream_response(
         .current_branch(pool, None, true)
         .await?;
 
+    let mut image_map: HashMap<i64, Vec<String>> = HashMap::new();
+
+    let mut conn = pool.acquire().await?;
+
+    for chat in chat_history.iter() {
+        if chat.image_count.unwrap_or(0) < 1 {
+            continue;
+        }
+
+        let images: Vec<String> = get_chat_images(&mut conn, chat.id, None).await?
+            .into_iter()
+            .map(|item| item.base64)
+            .collect();
+
+        if !images.is_empty() {
+            image_map.insert(chat.id, images);
+        }
+    }
+
     let req = ChatRequest {
         model: current_model.to_string(),
         stream: None,
@@ -39,7 +58,7 @@ pub async fn stream_response(
             .map(|item| Message {
                 role: Role::from_str(item.role.as_str()).unwrap(),
                 content: item.content,
-                images: None,
+                images: image_map.remove(&item.id),
                 tool_calls: None,
             })
             .collect(),
@@ -140,7 +159,10 @@ pub async fn stream_response(
         }
     }
 
-    let (date_now, completed) = final_date_now.lock().await.unwrap_or_else(|| (Utc::now().timestamp(), true));
+    let (date_now, completed) = final_date_now
+        .lock()
+        .await
+        .unwrap_or_else(|| (Utc::now().timestamp(), true));
     let mut transaction = pool.begin().await?;
 
     sqlx::query(

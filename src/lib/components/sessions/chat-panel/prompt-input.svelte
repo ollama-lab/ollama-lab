@@ -2,13 +2,15 @@
   import { Button } from "$lib/components/ui/button"
   import autosize from "autosize"
   import { ArrowUpIcon, ChevronDownIcon, Loader2Icon } from "lucide-svelte"
-  import { selectedSessionModel, usingSystemPrompt } from "$lib/stores/models"
+  import { selectedSessionModel } from "$lib/stores/models"
   import { chatHistory } from "$lib/stores/chats"
-  import type { IncomingUserPrompt } from "$lib/models/chat"
   import { emit } from "@tauri-apps/api/event"
   import { cn } from "$lib/utils"
-  import { hidePromptBar } from "$lib/stores/prompt-input"
+  import { hidePromptBar, inputPrompt, isSubmittable } from "$lib/stores/prompt-input"
   import { get } from "svelte/store"
+  import Toolbar from "./prompt-input/toolbar.svelte"
+  import ImagePreview from "./prompt-input/image-preview.svelte"
+  import { imageCache } from "$lib/stores/images"
 
   let form = $state<HTMLFormElement | undefined>()
   let textEntry = $state<HTMLTextAreaElement | undefined>()
@@ -21,17 +23,15 @@
     }
   }
 
-  let prompt = $state("")
-
   let status = $state<"submitting" | "responding" | undefined>()
 
   $effect(() => {
     const el = textEntry
-    el?.addEventListener("focus", attachAutosize)
+    el?.addEventListener("load", attachAutosize)
 
     return () => {
       if (el) {
-        el.removeEventListener("focus", attachAutosize)
+        el.removeEventListener("load", attachAutosize)
         autosize.destroy(el)
         autosizeAttached = false
       }
@@ -42,28 +42,23 @@
 <form
   bind:this={form}
   class={cn(
-    "border border-secondary text-secondary-foreground bg-background flex flex-col gap-2 px-3 pt-0 pb-3 rounded-t-3xl overflow-hidden",
+    "border border-secondary text-secondary-foreground bg-background flex flex-col gap-2 px-3 pt-0 pb-2 rounded-t-3xl overflow-hidden",
     "transition-[margin]",
   )}
   style={`margin-bottom: -${$hidePromptBar ? (form?.clientHeight ?? 0) - 16 : 0}px`}
   onsubmit={(ev) => {
     ev.preventDefault()
 
-    if (status || !$selectedSessionModel || prompt.length < 1) {
+    if (status || !get(isSubmittable)) {
       return
     }
 
     status = "submitting"
 
-    const promptObject: IncomingUserPrompt = {
-      text: prompt.trim(),
-      useSystemPrompt: get(usingSystemPrompt),
-    }
-
-    chatHistory.submit(promptObject, {
+    chatHistory.submit(get(inputPrompt), {
       onRespond: () => {
         status = "responding"
-        prompt = ""
+        inputPrompt.set({ text: "" })
       },
     }).finally(() => status = undefined)
   }}
@@ -82,10 +77,23 @@
     )} />
   </Button>
 
+  {#if $inputPrompt.imagePaths}
+    <ImagePreview paths={$inputPrompt.imagePaths} onDelete={(i) => inputPrompt.update(item => {
+      const path = item.imagePaths?.splice(i, 1).at(0)
+      if (path) {
+        imageCache.delete(path)
+      }
+      return item
+    })} />
+  {/if}
+
   <textarea
     bind:this={textEntry}
     name="prompt"
-    bind:value={prompt}
+    bind:value={() => $inputPrompt.text, (v) => inputPrompt.update(o => {
+      o.text = v
+      return o
+    })}
     class="w-full border-none outline-none resize-none bg-transparent max-h-72 mx-2"
     placeholder="Enter your prompt here"
     required
@@ -99,6 +107,7 @@
 
   <div class="flex">
     <div class="flex-grow flex">
+      <Toolbar />
     </div>
 
     <div class="flex-shrink-0">
@@ -119,7 +128,7 @@
           size="icon"
           class="rounded-full"
           type="submit"
-          disabled={!!status || prompt.length < 1 || !$selectedSessionModel}
+          disabled={!!status || !$isSubmittable}
           title="Send prompt"
         >
           {#if status === "submitting"}

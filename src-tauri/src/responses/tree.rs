@@ -1,7 +1,7 @@
 use models::NewChildNode;
 use sqlx::{Executor, Sqlite, Transaction};
 
-use crate::{errors::Error, models::chat::Chat};
+use crate::{errors::Error, models::chat::Chat, utils::images::save_image};
 
 pub mod models;
 
@@ -34,14 +34,14 @@ impl ChatTree {
         Ok(
             sqlx::query_as::<_, Chat>(r#"
                 WITH RECURSIVE rec_chats (
-                    id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority,
+                    id, session_id, role, content, image_count, completed, date_created, date_edited, model, parent_id, priority,
                     thoughts, thought_for
                 )
                 AS (
                     SELECT *
                     FROM (
                         SELECT
-                            id, session_id, role, content, completed, date_created, date_edited, model, parent_id, priority,
+                            id, session_id, role, content, image_count, completed, date_created, date_edited, model, parent_id, priority,
                             thoughts, thought_for
                         FROM v_complete_chats
                         WHERE
@@ -53,7 +53,7 @@ impl ChatTree {
                     )
                     UNION
                     SELECT
-                        c1.id, c1.session_id, c1.role, c1.content, c1.completed, c1.date_created,
+                        c1.id, c1.session_id, c1.role, c1.content, c1.image_count, c1.completed, c1.date_created,
                         c1.date_edited, c1.model, c1.parent_id, c1.priority, c1.thoughts, c1.thought_for
                     FROM v_complete_chats AS c1, rec_chats
                     WHERE c1.session_id = $1
@@ -141,7 +141,7 @@ impl ChatTree {
         &self,
         tx: &mut Transaction<'_, Sqlite>,
         parent_id: Option<i64>,
-        create_info: NewChildNode<'_, '_>,
+        create_info: NewChildNode<'_, '_, '_>,
     ) -> Result<(i64, i64), Error> {
         sqlx::query(
             r#"
@@ -181,6 +181,20 @@ impl ChatTree {
             .bind(model)
             .execute(&mut **tx)
             .await?;
+        }
+
+        if let Some(images) = create_info.images {
+            for image_path in images.into_iter() {
+                let dest = save_image(image_path)?;
+
+                sqlx::query(r#"
+                    INSERT INTO prompt_images (chat_id, origin, path)
+                    VALUES ($1, $2, $3);
+                "#)
+                    .bind(ret.0).bind(image_path).bind(dest)
+                    .execute(&mut **tx)
+                    .await?;
+            }
         }
 
         Ok(ret)
