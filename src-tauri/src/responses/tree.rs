@@ -1,7 +1,7 @@
 use models::NewChildNode;
 use sqlx::{Executor, Sqlite, Transaction};
 
-use crate::{errors::Error, image::{get_compressed_image, MODEL_IMAGE_SIZE}, models::chat::Chat, utils::images::save_image};
+use crate::{errors::Error, models::chat::Chat, utils::images::save_image};
 
 pub mod models;
 
