@@ -12,7 +12,7 @@ pub struct Base64ImageReturn {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", tag = "type")]
 pub enum ImageReturn {
     #[serde(rename_all = "camelCase")]
     Reference {
