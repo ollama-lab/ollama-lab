@@ -1,6 +1,6 @@
 [package]
 name = "ollama-lab"
-version = "0.3.0-dev.0"
+version = "0.2.0"
 description = "Ollama Lab"
 authors = ["Charles Dong <chardon_cs@proton.me>"]
 edition = "2021"
