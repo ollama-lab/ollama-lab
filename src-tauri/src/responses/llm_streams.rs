@@ -1,4 +1,4 @@
-use std::{str::FromStr, sync::Arc};
+use std::{collections::HashMap, str::FromStr, sync::Arc};
 
 use ollama_rest::{
     chrono::{DateTime, Local, Utc},
@@ -27,6 +27,24 @@ pub async fn stream_response(
         .current_branch(pool, None, true)
         .await?;
 
+    let mut image_map: HashMap<i64, Vec<String>> = HashMap::new();
+
+    for chat_id in chat_history.iter().map(|chat| chat.id) {
+        let image_paths: Vec<String> = sqlx::query_as::<_, (String,)>(r#"
+            SELECT image_path
+            FROM prompt_image_paths
+            WHERE chat_id = $1;
+        "#)
+            .bind(chat_id)
+            .fetch_all(pool)
+            .await?
+            .into_iter()
+            .map(|tuple| tuple.0)
+            .collect();
+
+        image_map.insert(chat_id, image_paths);
+    }
+
     let req = ChatRequest {
         model: current_model.to_string(),
         stream: None,
@@ -39,7 +57,7 @@ pub async fn stream_response(
             .map(|item| Message {
                 role: Role::from_str(item.role.as_str()).unwrap(),
                 content: item.content,
-                images: None,
+                images: image_map.remove(&item.id),
                 tool_calls: None,
             })
             .collect(),

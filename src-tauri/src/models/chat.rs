@@ -29,7 +29,7 @@ pub struct MountedChat {
     pub session_id: i64,
     pub role: String,
     pub content: String,
-    pub image_paths: Option<Vec<String>>,
+    pub image_count: u32,
     pub completed: bool,
     pub date_created: DateTime<Utc>,
     pub date_edited: Option<DateTime<Utc>>,
@@ -90,24 +90,22 @@ impl<'c> MountChatInfo<'c> for Chat {
         .map(|tuple| tuple.0)
         .collect();
 
-        let image_paths: Vec<String> = sqlx::query_as::<_, (String,)>(r#"
-            SELECT image_path
-            FROM prompt_image_paths
-            WHERE chat_id = $1;
+        let image_count = sqlx::query_as::<_, (u32,)>(r#"
+            SELECT COUNT(*)
+            FROM prompt_images
+            WHERE chat_id = $1
         "#)
             .bind(self.id)
-            .fetch_all(&mut **conn)
+            .fetch_one(&mut **conn)
             .await?
-            .into_iter()
-            .map(|tuple| tuple.0)
-            .collect();
+            .0;
 
         Ok(MountedChat {
             id: self.id,
             session_id: self.session_id,
             role: self.role,
             content: self.content,
-            image_paths: if image_paths.is_empty() { None } else { Some(image_paths) },
+            image_count,
             completed: self.completed,
             date_created: self.date_created,
             date_edited: self.date_edited,
@@ -154,22 +152,20 @@ impl<'c> MountChatInfo<'c> for Vec<Chat> {
             }
         }
 
-        let mut image_map = HashMap::new();
+        let mut image_count_map = HashMap::new();
 
         for chat in self.iter() {
-            let image_paths: Vec<String> = sqlx::query_as::<_, (String,)>(r#"
-                SELECT image_path
+            let image_count = sqlx::query_as::<_, (u32,)>(r#"
+                SELECT COUNT(*) 
                 FROM prompt_image_paths
                 WHERE chat_id = $1;
             "#)
                 .bind(chat.id)
-                .fetch_all(&mut **conn)
+                .fetch_one(&mut **conn)
                 .await?
-                .into_iter()
-                .map(|tuple| tuple.0)
-                .collect();
+                .0;
 
-            image_map.insert(chat.id, image_paths);
+            image_count_map.insert(chat.id, image_count);
         }
 
         Ok(self
@@ -179,7 +175,7 @@ impl<'c> MountChatInfo<'c> for Vec<Chat> {
                 session_id: item.session_id,
                 role: item.role,
                 content: item.content,
-                image_paths: image_map.remove(&item.id),
+                image_count: image_count_map.remove(&item.id).unwrap_or(0),
                 completed: item.completed,
                 date_created: item.date_created,
                 date_edited: item.date_edited,

@@ -27,11 +27,11 @@ pub async fn get_current_branch(
     .await?
     .ok_or(Error::NotExists)?;
 
-    ChatTree::new(session.0)
+    Ok(ChatTree::new(session.0)
         .current_branch(&mut *conn, None, false)
         .await?
         .mount_info(&mut conn)
-        .await
+        .await?)
 }
 
 #[tauri::command]
