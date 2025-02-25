@@ -33,6 +33,7 @@ pub enum StreamingResponseEvent {
     #[serde(rename_all = "camelCase")]
     UserPrompt {
         id: i64,
+        images: Option<Vec<String>>,
         timestamp: i64,
     },
 

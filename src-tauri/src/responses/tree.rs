@@ -141,7 +141,7 @@ impl ChatTree {
         &self,
         tx: &mut Transaction<'_, Sqlite>,
         parent_id: Option<i64>,
-        create_info: NewChildNode<'_, '_>,
+        create_info: NewChildNode<'_, '_, '_>,
     ) -> Result<(i64, i64), Error> {
         sqlx::query(
             r#"
@@ -181,6 +181,18 @@ impl ChatTree {
             .bind(model)
             .execute(&mut **tx)
             .await?;
+        }
+
+        if let Some(images) = create_info.images {
+            for image_path in images.into_iter() {
+                sqlx::query(r#"
+                    INSERT INTO prompt_image_paths (chat_id, image_path)
+                    VALUES ($1, $2);
+                "#)
+                    .bind(ret.0).bind(image_path)
+                    .execute(&mut **tx)
+                    .await?;
+            }
         }
 
         Ok(ret)
