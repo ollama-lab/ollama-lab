@@ -27,11 +27,11 @@
 
   $effect(() => {
     const el = textEntry
-    el?.addEventListener("load", attachAutosize)
+    el?.addEventListener("focus", attachAutosize)
 
     return () => {
       if (el) {
-        el.removeEventListener("load", attachAutosize)
+        el.removeEventListener("focus", attachAutosize)
         autosize.destroy(el)
         autosizeAttached = false
       }
