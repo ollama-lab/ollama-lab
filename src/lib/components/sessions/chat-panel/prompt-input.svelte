@@ -27,11 +27,11 @@
 
   $effect(() => {
     const el = textEntry
-    el?.addEventListener("focus", attachAutosize)
+    // Workaround to prevent incorrect textarea height
+    setTimeout(() => attachAutosize())
 
     return () => {
       if (el) {
-        el.removeEventListener("focus", attachAutosize)
         autosize.destroy(el)
         autosizeAttached = false
       }
