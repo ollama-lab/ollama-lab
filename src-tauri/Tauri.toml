@@ -5,8 +5,8 @@ identifier = "org.ollamalab.tauri"
 [build]
 before-build-command = "bun run build"
 before-dev-command = "bun run dev"
-frontend-dist = "../build"
-dev-url = "http://localhost:1420"
+frontend-dist = "../dist"
+dev-url = "http://localhost:5173"
 
 [bundle]
 active = true
