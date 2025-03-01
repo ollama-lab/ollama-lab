@@ -44,5 +44,5 @@ export function TabLink(props: TabLinkProps) {
         {childrenComp()}
       </A>
     </div>
-  )
+  );
 }

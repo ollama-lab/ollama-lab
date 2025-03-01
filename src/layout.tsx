@@ -11,9 +11,7 @@ export function Layout(props: { children?: JSX.Element }) {
     <div class="flex flex-row w-dvw h-dvh">
       <AppBar />
 
-      <div class="grow">
-        {childrenComp()}
-      </div>
+      <div class="grow">{childrenComp()}</div>
     </div>
   );
 }

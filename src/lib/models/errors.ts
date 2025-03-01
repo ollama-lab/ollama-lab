@@ -1,3 +1,3 @@
 export interface CommandError {
-  message: string
+  message: string;
 }

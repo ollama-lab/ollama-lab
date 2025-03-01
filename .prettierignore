@@ -1,0 +1,15 @@
+src-tauri/
+*.toml/
+
+dist/
+build/
+
+.git/
+.github/
+
+*.lock
+
+public/
+
+tmp/
+src-svelte/

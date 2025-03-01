@@ -1,37 +1,37 @@
 export type StreamingResponseEvent =
   | {
-    type: "userPrompt"
-    id: number
-    timestamp: number
-  }
+      type: "userPrompt";
+      id: number;
+      timestamp: number;
+    }
   | {
-    type: "responseInfo"
-    id: number
-  }
+      type: "responseInfo";
+      id: number;
+    }
   | {
-    type: "systemPrompt"
-    id: number
-    text: string
-  }
+      type: "systemPrompt";
+      id: number;
+      text: string;
+    }
   | {
-    type: "text"
-    chunk: string
-  }
+      type: "text";
+      chunk: string;
+    }
   | {
-    type: "thoughtBegin"
-  }
+      type: "thoughtBegin";
+    }
   | {
-    type: "thoughtEnd"
-    thoughtFor: number | null
-  }
+      type: "thoughtEnd";
+      thoughtFor: number | null;
+    }
   | {
-    type: "done"
-  }
+      type: "done";
+    }
   | {
-    type: "failure"
-    message: string | null
-  }
+      type: "failure";
+      message: string | null;
+    }
   | {
-    type: "canceled"
-    message: string | null
-  }
+      type: "canceled";
+      message: string | null;
+    };

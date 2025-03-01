@@ -1,10 +1,10 @@
 export interface ChatGenerationReturn {
-  id: number
-  dateCreated: Date
+  id: number;
+  dateCreated: Date;
 }
 
 export interface IncomingUserPrompt {
-  text: string
-  imagePaths?: string[]
-  useSystemPrompt?: boolean
+  text: string;
+  imagePaths?: string[];
+  useSystemPrompt?: boolean;
 }
