@@ -30,16 +30,6 @@ export const settingsSchema: { [key: string]: { [key: string]: TypeDetail } } = 
       values: ["system", "light", "dark"],
       default: "system",
     },
-    //light: {
-    //  type: "enum",
-    //  values: ["Shadcn Zinc Light"],
-    //  default: "Shadcn Zinc Light",
-    //},
-    //dark: {
-    //  type: "enum",
-    //  values: ["Shadcn Zinc Dark"],
-    //  default: "Shadcn Zinc Dark",
-    //},
   },
   ollama: {
     uri: {
