@@ -8,7 +8,14 @@ export default function OllamaSection() {
 
   const connUri = createMemo(() => settings?.settings.ollama.uri);
   const updateConnUri = (newValue: string | null) => {
-    settings?.set("ollama", "uri", newValue)
+    let uri = null;
+    try {
+      if (newValue) {
+        uri = new URL(newValue);
+      }
+    } catch {}
+
+    settings?.set("ollama", "uri", uri ? uri.href : null)
   }
 
   return (

@@ -16,7 +16,7 @@ export default function TextSection(props: TextSectionProps) {
   const inputType = createMemo(() => props.type ?? "text");
   const onValueChange = props.onValueChange;
 
-  const [instantValue, setInstantValue] = createSignal(props.value ?? "");
+  const [instantValue, setInstantValue] = createSignal<string | undefined>(props.value ?? undefined);
 
   return (
     <div class="flex flex-col gap-1">
@@ -26,14 +26,18 @@ export default function TextSection(props: TextSectionProps) {
           type={inputType()}
           name={name()}
           placeholder={props.placeholder}
-          value={instantValue()}
+          value={instantValue() ?? props.value ?? ""}
           onInput={(ev) => setInstantValue(ev.currentTarget.value)}
           onBlur={() => {
-            const value = instantValue().trim();
-            if (value.length < 1) {
-              onValueChange?.(null);
-            } else {
-              onValueChange?.(value);
+            const value = instantValue()?.trim();
+            if (value) {
+              if (value.length < 1) {
+                onValueChange?.(null);
+              } else {
+                onValueChange?.(value);
+              }
+
+              setInstantValue(undefined);
             }
           }}
         />
