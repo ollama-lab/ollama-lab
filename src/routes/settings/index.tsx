@@ -1,4 +1,4 @@
-export function SettingsPage() {
+export default function SettingsPage() {
   return (
     <></>
   );

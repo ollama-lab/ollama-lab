@@ -2,14 +2,13 @@
 import { render } from 'solid-js/web';
 import { Route, Router } from "@solidjs/router";
 import { Layout } from './layout';
-import { IndexPage } from './routes';
-import { ModelsPage } from './routes/models';
-import { SettingsPage } from './routes/settings';
+import IndexPage from './routes';
+import { lazy } from 'solid-js';
 
 render(() => (
   <Router root={Layout}>
     <Route path="/" component={IndexPage} />
-    <Route path="/models" component={ModelsPage} />
-    <Route path="/settings" component={SettingsPage} />
+    <Route path="/models" component={lazy(() => import("./routes/models"))} />
+    <Route path="/settings" component={lazy(() => import("./routes/settings"))} />
   </Router>
 ), document.getElementById('root')!);

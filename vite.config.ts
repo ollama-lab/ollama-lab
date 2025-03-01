@@ -1,6 +1,6 @@
-import { fileURLToPath } from 'url'
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
+import path from "node:path"
 
 const host = process.env.TAURI_DEV_HOST
 
@@ -26,7 +26,7 @@ export default defineConfig({
   plugins: [solid()],
   resolve: {
     alias: {
-      '$': fileURLToPath(new URL("./src", import.meta.url)),
+      "~": path.resolve(__dirname, "./src"),
     },
   },
 })

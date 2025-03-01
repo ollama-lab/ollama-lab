@@ -1,6 +1,6 @@
-export function IndexPage() {
+export default function IndexPage() {
   return (
     <>
     </>
-  )
+  );
 }

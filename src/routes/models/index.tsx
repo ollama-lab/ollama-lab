@@ -1,4 +1,4 @@
-export function ModelsPage() {
+export default function ModelsPage() {
   return (
     <>
     </>
