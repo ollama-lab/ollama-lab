@@ -1,51 +1,70 @@
-import { createContext, JSX, useContext } from "solid-js";
+import { useColorMode } from "@kobalte/core";
+import { createContext, createEffect, createMemo, createSignal, JSX, useContext } from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
 import { getSettings, setSettings } from "~/lib/commands/settings";
 import { Settings } from "~/lib/models/settings";
 
-interface SettingsStore {
-  settings?: Settings;
+export interface SettingsContextContent {
+  settings: Settings;
   restartVotes: number;
-}
-
-export interface SettingsContextOps {
+  voteRestart: () => void;
+  unvoteRestart: () => void;
+  set: SetStoreFunction<Settings>;
+  save: () => Promise<void>;
   reload: () => Promise<void>;
-  save: (newSettings?: Settings) => Promise<void>;
-  set: SetStoreFunction<SettingsStore>;
 }
 
-type SettingsContextTuple = [SettingsStore, SettingsContextOps];
-
-const SettingsContext = createContext<SettingsContextTuple>();
+const SettingsContext = createContext<SettingsContextContent>();
 
 export function SettingsProvider(props: { children?: JSX.Element }) {
-  const [store, setStore] = createStore<SettingsStore>({
-    settings: undefined,
-    restartVotes: 0,
+  const [settingsStore, setSettingsStore] = createStore<Settings>({
+    appearance: {
+      "color-mode": "system",
+      dark: null,
+      light: null,
+    },
+    ollama: {
+      uri: "",
+    },
   });
 
+  const [restartVotes, setRestartVotes] = createSignal(0);
+
   const reload = async () => {
-    setStore({
-      settings: await getSettings(),
-    });
+    const settings = await getSettings();
+
+    setSettingsStore((cur) => ({
+      ...cur,
+      settings,
+    }));
+  }
+  
+  const save = async () => {
+    await setSettings(settingsStore)
   }
 
-  const save = async (newSettings?: Settings) => {
-    const inputSettings = newSettings ?? store.settings;
-    let retSettings: Settings | undefined = undefined;
-    if (inputSettings) {
-      retSettings = await setSettings(inputSettings);
-    }
+  const { setColorMode } = useColorMode();
+  const currentColorMode = createMemo(() => settingsStore.appearance["color-mode"]);
 
-    if (retSettings) {
-      setStore({
-        settings: retSettings,
-      });
+  createEffect(() => {
+    const current = currentColorMode();
+    if (current) {
+      setColorMode(current);
     }
-  }
+  });
+
+  createEffect(() => reload());
 
   return (
-    <SettingsContext.Provider value={[store, { reload, save, set: setStore }]}>
+    <SettingsContext.Provider value={{
+      settings: settingsStore,
+      restartVotes: restartVotes(),
+      voteRestart: () => setRestartVotes((cur) => cur + 1),
+      unvoteRestart: () => setRestartVotes((cur) => cur - 1),
+      reload,
+      set: setSettingsStore,
+      save,
+    }}>
       {props.children}
     </SettingsContext.Provider>
   );
