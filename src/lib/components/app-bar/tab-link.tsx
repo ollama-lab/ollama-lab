@@ -14,8 +14,6 @@ export function TabLink(props: TabLinkProps) {
   const active = createMemo(() => props.active);
   const href = () => props.href;
   const name = createMemo(() => props.name);
-  const childrenComp = children(() => props.children);
-  const onClickFn = () => props.onClick;
 
   return (
     <div
@@ -23,7 +21,7 @@ export function TabLink(props: TabLinkProps) {
         "group flex rounded cursor-pointer",
         active() && "bg-secondary",
       )}
-      onClick={onClickFn()}
+      onClick={props.onClick}
     >
       <div class="py-1">
         <hr
@@ -41,7 +39,7 @@ export function TabLink(props: TabLinkProps) {
         draggable={false}
         class="p-3"
       >
-        {childrenComp()}
+        {props.children}
       </A>
     </div>
   );
