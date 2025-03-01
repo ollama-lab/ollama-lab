@@ -31,6 +31,8 @@ const footerTabs: Section[] = [
 export function AppBar() {
   const loc = useLocation();
 
+  const pathname = createMemo(() => loc.pathname);
+
   return (
     <nav class="flex flex-col border-r border-border px-1 py-1">
       <div class="grow flex flex-col">
@@ -39,7 +41,7 @@ export function AppBar() {
             href={href}
             onClick={onClick}
             name={name}
-            active={activePattern?.test(loc.pathname)}
+            active={activePattern?.test(pathname())}
           >
             {icon}
           </TabLink>
@@ -51,7 +53,7 @@ export function AppBar() {
             href={href}
             onClick={onClick}
             name={name}
-            active={activePattern?.test(loc.pathname)}
+            active={activePattern?.test(pathname())}
           >
             {icon}
           </TabLink>
