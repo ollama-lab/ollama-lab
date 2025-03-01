@@ -1,4 +1,4 @@
-import { JSX } from "solid-js";
+import { createMemo, JSX, Show } from "solid-js";
 
 export interface SectionRootProps {
   title?: string;
@@ -6,10 +6,14 @@ export interface SectionRootProps {
 }
 
 export function SectionRoot(prop: SectionRootProps) {
+  const title = createMemo(() => prop.title);
+
   return (
     <div class="flex flex-col">
-      <h2>{prop.title}</h2>
-      <div class="flex flex-col">
+      <Show when={!!title()}>
+        <h2>{title()}</h2>
+      </Show>
+      <div class="flex flex-col gap-2">
         {prop.children}
       </div>
     </div>
