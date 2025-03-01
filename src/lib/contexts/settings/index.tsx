@@ -5,6 +5,7 @@ import { Settings } from "~/lib/models/settings";
 
 interface SettingsStore {
   settings?: Settings;
+  restartVotes: number;
 }
 
 export interface SettingsContextOps {
@@ -19,7 +20,8 @@ const SettingsContext = createContext<SettingsContextTuple>();
 
 export function SettingsProvider(props: { children?: JSX.Element }) {
   const [store, setStore] = createStore<SettingsStore>({
-    settings: undefined
+    settings: undefined,
+    restartVotes: 0,
   });
 
   const reload = async () => {
