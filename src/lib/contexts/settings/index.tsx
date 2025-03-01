@@ -1,8 +1,8 @@
-import { useColorMode } from "@kobalte/core";
 import { createContext, createEffect, createMemo, createSignal, JSX, useContext } from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
 import { getSettings, setSettings } from "~/lib/commands/settings";
 import { Settings } from "~/lib/models/settings";
+import { useColorMode } from "../color-mode";
 
 export interface SettingsContextContent {
   settings: Settings;
@@ -43,7 +43,7 @@ export function SettingsProvider(props: { children?: JSX.Element }) {
     await setSettings(settingsStore)
   }
 
-  const { setColorMode } = useColorMode();
+  const [_, setColorMode] = useColorMode();
   const currentColorMode = createMemo(() => settingsStore.appearance["color-mode"]);
 
   createEffect(() => {

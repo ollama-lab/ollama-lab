@@ -3,15 +3,13 @@ import "./app.css";
 import "@fontsource-variable/inter/wght.css";
 import { AppBar } from "./lib/components/app-bar";
 import { SettingsProvider } from "./lib/contexts/settings";
-import { ColorModeProvider, ColorModeScript, createLocalStorageManager } from "@kobalte/core";
+import { ColorModeProvider } from "./lib/contexts/color-mode";
 
 export function Layout(props: { children?: JSX.Element }) {
-  const storageManager = createLocalStorageManager("color-mode");
 
   return (
     <>
-      <ColorModeScript storageType={storageManager.type} />
-      <ColorModeProvider storageManager={storageManager}>
+      <ColorModeProvider>
         <SettingsProvider>
           <div class="flex flex-row w-dvw h-dvh">
             <AppBar />
