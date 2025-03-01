@@ -33,7 +33,7 @@
     "lucide-solid": "latest",
     "solid-js": "^1.9.5",
     "solid-sonner": "^0.2.8",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.9",
