@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
 import path from "node:path"
+import lucideOptimizer from './lucide-optimizer'
 
 const host = process.env.TAURI_DEV_HOST
 
@@ -23,7 +24,7 @@ export default defineConfig({
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_ENV_DEBUG,
   },
-  plugins: [solid()],
+  plugins: [solid(), lucideOptimizer()],
   resolve: {
     alias: {
       "~": path.resolve(__dirname, "./src"),
