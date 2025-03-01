@@ -30,7 +30,7 @@ export default function TextSection(props: TextSectionProps) {
           onInput={(ev) => setInstantValue(ev.currentTarget.value)}
           onBlur={() => {
             const value = instantValue()?.trim();
-            if (value) {
+            if (value !== undefined) {
               if (value.length < 1) {
                 onValueChange?.(null);
               } else {
