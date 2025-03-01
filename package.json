@@ -14,6 +14,8 @@
   "license": "MIT",
   "dependencies": {
     "@fontsource-variable/inter": "^5.1.1",
+    "@solidjs/meta": "^0.29.4",
+    "@solidjs/router": "^0.15.3",
     "@tauri-apps/api": "^2.3.0",
     "@tauri-apps/cli": "^2.3.0",
     "@tauri-apps/plugin-dialog": "^2.2.0",
@@ -34,6 +36,7 @@
     "@types/autosize": "^4.0.3",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.0.9",
+    "url": "^0.11.4",
     "vite": "^6.2.0",
     "vite-plugin-solid": "^2.11.2"
   }

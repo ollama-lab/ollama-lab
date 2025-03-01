@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'url'
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
 
@@ -23,4 +24,9 @@ export default defineConfig({
     sourcemap: !!process.env.TAURI_ENV_DEBUG,
   },
   plugins: [solid()],
+  resolve: {
+    alias: {
+      '$': fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
 })

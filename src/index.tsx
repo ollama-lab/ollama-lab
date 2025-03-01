@@ -1,8 +1,15 @@
 /* @refresh reload */
-import { render } from 'solid-js/web'
-import './index.css'
-import App from './App.tsx'
+import { render } from 'solid-js/web';
+import { Route, Router } from "@solidjs/router";
+import { Layout } from './layout';
+import { IndexPage } from './routes';
+import { ModelsPage } from './routes/models';
+import { SettingsPage } from './routes/settings';
 
-const root = document.getElementById('root')
-
-render(() => <App />, root!)
+render(() => (
+  <Router root={Layout}>
+    <Route path="/" component={IndexPage} />
+    <Route path="/models" component={ModelsPage} />
+    <Route path="/settings" component={SettingsPage} />
+  </Router>
+), document.getElementById('root')!);
