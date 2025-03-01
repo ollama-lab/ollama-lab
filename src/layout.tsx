@@ -4,6 +4,16 @@ import "@fontsource-variable/inter/wght.css";
 import { AppBar } from "./lib/components/app-bar";
 import { SettingsProvider } from "./lib/contexts/settings";
 import { ColorModeProvider } from "./lib/contexts/color-mode";
+import { Suspense } from "solid-js";
+import { LoaderSpin } from "./lib/components/loader-spin";
+
+function LoadingScreen() {
+  return (
+    <div class="flex items-center place-content-center w-full h-full">
+      <LoaderSpin text="Loading page..." />
+    </div>
+  )
+}
 
 export function Layout(props: { children?: JSX.Element }) {
 
@@ -14,7 +24,9 @@ export function Layout(props: { children?: JSX.Element }) {
           <div class="flex flex-row w-dvw h-dvh">
             <AppBar />
 
-            <div class="grow">{props.children}</div>
+            <div class="grow">
+              <Suspense fallback={<LoadingScreen />}>{props.children}</Suspense>
+            </div>
           </div>
         </SettingsProvider>
       </ColorModeProvider>
