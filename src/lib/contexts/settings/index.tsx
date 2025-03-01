@@ -24,7 +24,7 @@ export function SettingsProvider(props: { children?: JSX.Element }) {
       light: null,
     },
     ollama: {
-      uri: "",
+      uri: null, 
     },
   });
 
@@ -32,11 +32,7 @@ export function SettingsProvider(props: { children?: JSX.Element }) {
 
   const reload = async () => {
     const settings = await getSettings();
-
-    setSettingsStore((cur) => ({
-      ...cur,
-      settings,
-    }));
+    setSettingsStore(settings);
   }
   
   const save = async () => {
