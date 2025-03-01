@@ -1,5 +1,5 @@
 import { A } from "@solidjs/router";
-import { JSX } from "solid-js";
+import { children, createMemo, JSX } from "solid-js";
 import { cn } from "~/lib/utils/class-names";
 
 export interface TabLinkProps {
@@ -10,32 +10,38 @@ export interface TabLinkProps {
   onClick?: () => void;
 }
 
-export function TabLink({ children, name, href, active, onClick }: TabLinkProps) {
+export function TabLink(props: TabLinkProps) {
+  const active = createMemo(() => props.active);
+  const href = () => props.href;
+  const name = createMemo(() => props.name);
+  const childrenComp = children(() => props.children);
+  const onClickFn = () => props.onClick;
+
   return (
     <div
       class={cn(
         "group flex rounded cursor-pointer",
-        active && "bg-secondary",
+        active() && "bg-secondary",
       )}
-      onClick={onClick}
+      onClick={onClickFn()}
     >
       <div class="py-1">
         <hr
           class={cn(
             "border h-full border-transparent rounded-full",
-            active ? "border-primary" : "group-hover:border-secondary",
+            active() ? "border-primary" : "group-hover:border-secondary",
           )}
         />
       </div>
 
       <A
-        href={href ?? ""}
-        aria-label={name}
-        title={name}
+        href={href() ?? ""}
+        aria-label={name()}
+        title={name()}
         draggable={false}
         class="p-3"
       >
-        {children}
+        {childrenComp()}
       </A>
     </div>
   )

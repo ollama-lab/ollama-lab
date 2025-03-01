@@ -2,6 +2,7 @@ import { Section } from "~/lib/models/section"
 import { BotMessageSquareIcon, PackageIcon, SettingsIcon } from "lucide-solid"
 import { TabLink } from "./tab-link";
 import { useLocation } from "@solidjs/router";
+import { createMemo } from "solid-js";
 
 const tabs: Section[] = [
   {
