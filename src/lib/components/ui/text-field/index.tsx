@@ -24,32 +24,34 @@ export const TextField = <T extends ValidComponent = "div">(
   );
 };
 
+export type InputType = 
+  | "button"
+  | "checkbox"
+  | "color"
+  | "date"
+  | "datetime-local"
+  | "email"
+  | "file"
+  | "hidden"
+  | "image"
+  | "month"
+  | "number"
+  | "password"
+  | "radio"
+  | "range"
+  | "reset"
+  | "search"
+  | "submit"
+  | "tel"
+  | "text"
+  | "time"
+  | "url"
+  | "week";
+
 export type TextFieldInputProps<T extends ValidComponent = "input"> =
   TextFieldPrimitive.TextFieldInputProps<T> & {
     class?: string | undefined;
-    type?:
-      | "button"
-      | "checkbox"
-      | "color"
-      | "date"
-      | "datetime-local"
-      | "email"
-      | "file"
-      | "hidden"
-      | "image"
-      | "month"
-      | "number"
-      | "password"
-      | "radio"
-      | "range"
-      | "reset"
-      | "search"
-      | "submit"
-      | "tel"
-      | "text"
-      | "time"
-      | "url"
-      | "week";
+    type?: InputType;
   };
 
 export const TextFieldInput = <T extends ValidComponent = "input">(
