@@ -24,7 +24,7 @@ export const TextField = <T extends ValidComponent = "div">(
   );
 };
 
-export type InputType = 
+export type InputType =
   | "button"
   | "checkbox"
   | "color"

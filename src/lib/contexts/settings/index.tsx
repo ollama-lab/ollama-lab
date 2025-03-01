@@ -1,4 +1,11 @@
-import { createContext, createEffect, createMemo, createSignal, JSX, useContext } from "solid-js";
+import {
+  createContext,
+  createEffect,
+  createMemo,
+  createSignal,
+  JSX,
+  useContext,
+} from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
 import { getSettings, setSettings } from "~/lib/commands/settings";
 import { Settings } from "~/lib/models/settings";
@@ -24,7 +31,7 @@ export function SettingsProvider(props: { children?: JSX.Element }) {
       light: null,
     },
     ollama: {
-      uri: null, 
+      uri: null,
     },
   });
 
@@ -33,14 +40,16 @@ export function SettingsProvider(props: { children?: JSX.Element }) {
   const reload = async () => {
     const settings = await getSettings();
     setSettingsStore(settings);
-  }
-  
+  };
+
   const save = async () => {
-    await setSettings(settingsStore)
-  }
+    await setSettings(settingsStore);
+  };
 
   const [_, setColorMode] = useColorMode();
-  const currentColorMode = createMemo(() => settingsStore.appearance["color-mode"]);
+  const currentColorMode = createMemo(
+    () => settingsStore.appearance["color-mode"],
+  );
 
   createEffect(() => {
     const current = currentColorMode();
@@ -52,15 +61,17 @@ export function SettingsProvider(props: { children?: JSX.Element }) {
   createEffect(() => reload());
 
   return (
-    <SettingsContext.Provider value={{
-      settings: settingsStore,
-      restartVotes: restartVotes(),
-      voteRestart: () => setRestartVotes((cur) => cur + 1),
-      unvoteRestart: () => setRestartVotes((cur) => cur - 1),
-      reload,
-      set: setSettingsStore,
-      save,
-    }}>
+    <SettingsContext.Provider
+      value={{
+        settings: settingsStore,
+        restartVotes: restartVotes(),
+        voteRestart: () => setRestartVotes((cur) => cur + 1),
+        unvoteRestart: () => setRestartVotes((cur) => cur - 1),
+        reload,
+        set: setSettingsStore,
+        save,
+      }}
+    >
       {props.children}
     </SettingsContext.Provider>
   );

@@ -1,1 +1,1 @@
-export type Updater<T> = (cur: T) => T
+export type Updater<T> = (cur: T) => T;

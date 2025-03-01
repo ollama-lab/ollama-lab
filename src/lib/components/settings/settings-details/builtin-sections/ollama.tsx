@@ -15,9 +15,9 @@ export default function OllamaSection() {
       }
     } catch {}
 
-    settings?.set("ollama", "uri", uri ? uri.href : null)
+    settings?.set("ollama", "uri", uri ? uri.href : null);
     settings?.save();
-  }
+  };
 
   return (
     <SectionRoot title="Ollama">

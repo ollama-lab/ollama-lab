@@ -12,11 +12,10 @@ function LoadingScreen() {
     <div class="flex items-center place-content-center w-full h-full">
       <LoaderSpin text="Loading page..." />
     </div>
-  )
+  );
 }
 
 export function Layout(props: { children?: JSX.Element }) {
-
   return (
     <>
       <ColorModeProvider>

@@ -1,6 +1,12 @@
 import { createMemo } from "solid-js";
 import { Label } from "~/lib/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/lib/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/lib/components/ui/select";
 
 export interface SelectionModuleProps {
   title?: string;
@@ -30,9 +36,7 @@ export default function SelectionModule(props: SelectionModuleProps) {
         )}
       >
         <SelectTrigger aria-label={name()}>
-          <SelectValue<string>>
-            {(state) => state.selectedOption()}
-          </SelectValue>
+          <SelectValue<string>>{(state) => state.selectedOption()}</SelectValue>
         </SelectTrigger>
 
         <SelectContent />

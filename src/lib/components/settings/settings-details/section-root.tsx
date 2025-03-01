@@ -13,9 +13,7 @@ export function SectionRoot(prop: SectionRootProps) {
       <Show when={!!title()}>
         <h2>{title()}</h2>
       </Show>
-      <div class="flex flex-col gap-2">
-        {prop.children}
-      </div>
+      <div class="flex flex-col gap-2">{prop.children}</div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useSettings } from "~/lib/contexts/settings";
-import AppearanceSection from "./builtin-sections/appearance"
+import AppearanceSection from "./builtin-sections/appearance";
 import OllamaSection from "./builtin-sections/ollama";
 import { createMemo, createSignal, Match, Show, Switch } from "solid-js";
 import { Button } from "../../ui/button";
@@ -22,10 +22,12 @@ export function SettingsDetails() {
       <div class="flex">
         <Show when={restartVotes() > 0}>
           <div class="flex flex-col">
-            <Button on:click={async () => {
-              setRestarting(true);
-              await relaunch();
-            }}>
+            <Button
+              on:click={async () => {
+                setRestarting(true);
+                await relaunch();
+              }}
+            >
               <Switch fallback={"Restart"}>
                 <Match when={restarting}>
                   <LoaderSpin class="size-4" />

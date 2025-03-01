@@ -1,7 +1,16 @@
-import { createContext, createEffect, createSignal, JSX, Setter, useContext } from "solid-js";
+import {
+  createContext,
+  createEffect,
+  createSignal,
+  JSX,
+  Setter,
+  useContext,
+} from "solid-js";
 import type { ColorMode as ColorModeModel } from "~/lib/models/settings";
 
-const ColorModeContext = createContext<[ColorModeModel, Setter<ColorModeModel>]>(["system", () => {}]);
+const ColorModeContext = createContext<
+  [ColorModeModel, Setter<ColorModeModel>]
+>(["system", () => {}]);
 
 export interface ColorModeProviderProps {
   children?: JSX.Element;
@@ -15,8 +24,7 @@ export function ColorModeProvider(props: ColorModeProviderProps) {
 
     let preferredMode = colorMode();
     if (preferredMode === "system") {
-      preferredMode = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
+      preferredMode = window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
     }
@@ -32,7 +40,7 @@ export function ColorModeProvider(props: ColorModeProviderProps) {
     <ColorModeContext.Provider value={[colorMode(), setColorMode]}>
       {props.children}
     </ColorModeContext.Provider>
-  )
+  );
 }
 
 export function useColorMode() {

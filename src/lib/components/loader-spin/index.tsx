@@ -8,22 +8,12 @@ export interface LoaderSpinProps {
 }
 
 export function LoaderSpin(props: LoaderSpinProps) {
-  const loader = (
-    <Loader2Icon
-      class={cn(
-        "animate-spin",
-        props.class,
-      )}
-    />
-  )
+  const loader = <Loader2Icon class={cn("animate-spin", props.class)} />;
 
   return (
     <Switch fallback={loader}>
       <Match when={!!props.text}>
-        <div class={cn(
-          "inline-flex flex-row gap-2 items-center",
-          props.class,
-        )}>
+        <div class={cn("inline-flex flex-row gap-2 items-center", props.class)}>
           {loader}
           <span>{props.text}</span>
         </div>
