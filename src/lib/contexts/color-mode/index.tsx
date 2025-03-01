@@ -1,5 +1,4 @@
 import { createContext, createEffect, createSignal, JSX, Setter, useContext } from "solid-js";
-import { isServer } from "solid-js/web";
 import type { ColorMode as ColorModeModel } from "~/lib/models/settings";
 
 const ColorModeContext = createContext<[ColorModeModel, Setter<ColorModeModel>]>(["system", () => {}]);
@@ -12,10 +11,6 @@ export function ColorModeProvider(props: ColorModeProviderProps) {
   const [colorMode, setColorMode] = createSignal<ColorModeModel>("system");
 
   createEffect(() => {
-    if (isServer) {
-      return;
-    }
-
     const root = window.document.body;
 
     let preferredMode = colorMode();
@@ -23,7 +18,7 @@ export function ColorModeProvider(props: ColorModeProviderProps) {
       preferredMode = window.matchMedia("(prefers-color-scheme: dark)")
         .matches
         ? "dark"
-        : "light"
+        : "light";
     }
 
     if (preferredMode === "dark") {
