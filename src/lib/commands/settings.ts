@@ -1,4 +1,4 @@
-import type { Settings } from "$lib/models/settings"
+import type { Settings } from "~/lib/models/settings"
 import { invoke } from "@tauri-apps/api/core"
 
 export async function getSettings(): Promise<Settings> {
