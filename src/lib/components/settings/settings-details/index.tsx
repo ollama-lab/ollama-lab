@@ -1,9 +1,10 @@
 import { useSettings } from "~/lib/contexts/settings";
 import AppearanceSection from "./builtin-sections/appearance"
 import OllamaSection from "./builtin-sections/ollama";
-import { createMemo, createSignal, Show } from "solid-js";
+import { createMemo, createSignal, Match, Show, Switch } from "solid-js";
 import { Button } from "../../ui/button";
 import { relaunch } from "@tauri-apps/plugin-process";
+import { LoaderSpin } from "../../loader-spin";
 
 const builtinSections = [
   <AppearanceSection />,
@@ -29,10 +30,15 @@ export function SettingsDetails() {
               setRestarting(true);
               await relaunch();
             }}>
+              <Switch fallback={"Restart"}>
+                <Match when={restarting}>
+                  <LoaderSpin class="size-4" />
+                </Match>
+              </Switch>
             </Button>
           </div>
         </Show>
       </div>
     </div>
-  )
+  );
 }
