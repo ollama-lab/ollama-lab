@@ -8,7 +8,7 @@ import { cva } from "class-variance-authority";
 
 import { cn } from "~/lib/utils/class-names";
 
-const buttonVariants = cva(
+export const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
@@ -37,14 +37,14 @@ const buttonVariants = cva(
   },
 );
 
-type ButtonProps<T extends ValidComponent = "button"> =
+export type ButtonProps<T extends ValidComponent = "button"> =
   ButtonPrimitive.ButtonRootProps<T> &
     VariantProps<typeof buttonVariants> & {
       class?: string | undefined;
       children?: JSX.Element;
     };
 
-const Button = <T extends ValidComponent = "button">(
+export const Button = <T extends ValidComponent = "button">(
   props: PolymorphicProps<T, ButtonProps<T>>,
 ) => {
   const [local, others] = splitProps(props as ButtonProps, [
@@ -62,6 +62,3 @@ const Button = <T extends ValidComponent = "button">(
     />
   );
 };
-
-export type { ButtonProps };
-export { Button, buttonVariants };
