@@ -1,5 +1,5 @@
 import { A } from "@solidjs/router";
-import { children, createMemo, JSX } from "solid-js";
+import { createMemo, JSX } from "solid-js";
 import { cn } from "~/lib/utils/class-names";
 
 export interface TabLinkProps {
