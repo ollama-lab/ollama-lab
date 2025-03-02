@@ -1,4 +1,4 @@
-import { createContext, JSX } from "solid-js";
+import { createContext, JSX, useContext } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import { getSession, listSessions } from "~/lib/commands/sessions";
 import { Session } from "~/lib/models/session";
@@ -15,7 +15,7 @@ const ChatSessionsContext = createContext<ChatContextModel>({
   reloadSession: async () => {},
 });
 
-export function ChatSessionProvider(props: { children?: JSX.Element }) {
+export function ChatSessionsProvider(props: { children?: JSX.Element }) {
   const [sessions, setSessions] = createStore<Session[]>([]);
 
   const reload = async () => {
@@ -52,4 +52,8 @@ export function ChatSessionProvider(props: { children?: JSX.Element }) {
       {props.children}
     </ChatSessionsContext.Provider>
   );
+}
+
+export function useChatSessions() {
+  return useContext(ChatSessionsContext);
 }
