@@ -1,8 +1,8 @@
-import { Accessor, createContext, createMemo, JSX, useContext } from "solid-js";
+import { Accessor, createContext, createEffect, createMemo, JSX, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import { getCurrentBranch } from "~/lib/commands/chat-history";
-import { IncomingUserPrompt } from "~/lib/models/chat";
 import { ChatBubble } from "~/lib/models/session";
+import { useChatSessions } from ".";
 
 export interface ChatHistory {
   session: number;
@@ -21,10 +21,6 @@ interface ChatHistoryContextCollection {
   reload: () => Promise<void>;
   switchToSession: (sessionId: number | null) => Promise<void>;
   clear: () => Promise<void>;
-  submit: (prompt: IncomingUserPrompt, evs?: PromptSubmissionEvents) => Promise<void>;
-  regenerate: (chatId: number, model?: string, evs?: PromptSubmissionEvents) => Promise<void>;
-  switchBranch: (chatId: number) => Promise<void>;
-  editPrompt: (prompt: IncomingUserPrompt, chatId: number, evs?: PromptSubmissionEvents) => Promise<void>;
 }
 
 const ChatHistoryContext = createContext<ChatHistoryContextCollection>();
@@ -36,7 +32,16 @@ export function ChatHistoryProvider(props: { children?: JSX.Element }) {
 
   const lastChat = createMemo(() => chatHistoryStore.chatHistory?.chats.at(-1));
 
-  const modelListContext = useModel
+  const chatSessionsContext = useChatSessions();
+
+  createEffect(() => {
+    const sessions = chatSessionsContext?.sessions;
+    const curSessionId = chatHistoryStore.chatHistory?.session;
+
+    if (curSessionId !== undefined && !sessions?.find((s) => s.id === curSessionId)) {
+      setChatHistoryStore("chatHistory", null);
+    }
+  });
 
   const reload = async () => {
     if (!chatHistoryStore.chatHistory) {
@@ -68,12 +73,6 @@ export function ChatHistoryProvider(props: { children?: JSX.Element }) {
     await switchToSession(null);
   };
 
-  const submit = async (prompt: IncomingUserPrompt, {
-    onRespond,
-    onScrollDown,
-  }: PromptSubmissionEvents = {}) => {
-  };
-
   return (
     <ChatHistoryContext.Provider value={{
       chatHistory: chatHistoryStore.chatHistory,
@@ -81,10 +80,6 @@ export function ChatHistoryProvider(props: { children?: JSX.Element }) {
       reload,
       switchToSession,
       clear,
-      submit,
-      regenerate,
-      switchBranch,
-      editPrompt,
     }}>
       {props.children}
     </ChatHistoryContext.Provider>

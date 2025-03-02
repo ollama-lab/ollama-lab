@@ -1,4 +1,4 @@
-import { createContext, createMemo, JSX, useContext, type Accessor } from "solid-js";
+import { createContext, JSX, useContext, } from "solid-js";
 import { createStore } from "solid-js/store";
 import { toast } from "solid-sonner";
 import {
@@ -8,7 +8,6 @@ import {
   setDefaultModel,
 } from "~/lib/commands/models";
 import { ModelListItem, RunningModel } from "~/lib/models/model-item";
-import { useChatSessions } from "../chats";
 
 interface ModelContextCollection {
   modelList: ModelListItem[];

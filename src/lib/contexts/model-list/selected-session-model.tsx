@@ -1,7 +1,7 @@
 import { Accessor, createContext, createMemo, createSignal, JSX, useContext } from "solid-js";
 import { useChatSessions } from "../chats";
-import { useChatHistory } from "../chats/chat-history";
 import { setSessionModel as setSessionModelCommand } from "~/lib/commands/sessions";
+import { useChatHistory } from "../chats/chat-history";
 
 interface SelectedSessionModelContextModel {
   selectedSessionModel: Accessor<string | null>;
@@ -12,18 +12,17 @@ const SelectedSessionModelContext = createContext<SelectedSessionModelContextMod
 
 export function SelectedSessionModelProvider(props: { children?: JSX.Element }) {
   const sessionContext = useChatSessions();
-  const chatHistoryContext = useChatHistory();
 
   const [candidate, setCandidate] = createSignal<string | null>(null);
 
   const sessions = createMemo(() => sessionContext?.sessions);
-  const chatHistory = createMemo(() => chatHistoryContext?.chatHistory);
+  const chatHistoryContext = useChatHistory();
 
   const selectedSessionModel = createMemo(() => {
     const s = sessions();
-    const ch = chatHistory();
-    if (s && s.length > 0 && ch?.session !== undefined) {
-      return s?.find(s => s.id === ch?.session)?.currentModel;
+    const session = chatHistoryContext?.chatHistory?.session;
+    if (s && s.length > 0 && session !== undefined) {
+      return s?.find(s => s.id === session)?.currentModel;
     }
 
     return candidate();
@@ -31,11 +30,11 @@ export function SelectedSessionModelProvider(props: { children?: JSX.Element }) 
 
   const setSessionModel = async (value: string) => {
     const s = sessions();
-    const ch = chatHistory();
+    const session = chatHistoryContext?.chatHistory?.session;
 
-    if (s && ch) {
-      await setSessionModelCommand(ch.session, value); 
-      await sessionContext?.reloadSession(ch.session);
+    if (s && typeof session === "number") {
+      await setSessionModelCommand(session, value); 
+      await sessionContext?.reloadSession(session);
       setCandidate(null);
     } else {
       setCandidate(value);

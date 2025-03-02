@@ -13,13 +13,13 @@ export default function Providers(props: { children?: JSX.Element }) {
       <SettingsProvider>
         <ModelContextProvider>
           <ChatSessionsProvider>
-            <PullModelTasksProvider>
-              <ChatHistoryProvider>
-                <SelectedSessionModelProvider>
-                    {props.children}
-                </SelectedSessionModelProvider>
-              </ChatHistoryProvider>
-            </PullModelTasksProvider>
+            <ChatHistoryProvider>
+              <SelectedSessionModelProvider>
+                <PullModelTasksProvider>
+                  {props.children}
+                </PullModelTasksProvider>
+              </SelectedSessionModelProvider>
+            </ChatHistoryProvider>
           </ChatSessionsProvider>
         </ModelContextProvider>
       </SettingsProvider>
