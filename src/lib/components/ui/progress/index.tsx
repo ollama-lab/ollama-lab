@@ -7,12 +7,12 @@ import * as ProgressPrimitive from "@kobalte/core/progress"
 import { Label } from "~/lib/components/ui/label"
  
 export type ProgressRootProps<T extends ValidComponent = "div"> =
-  ProgressPrimitive.ProgressRootProps<T> & { children?: JSX.Element }
+  ProgressPrimitive.ProgressRootProps<T> & { children?: JSX.Element, indeterminate?: boolean }
  
 export const Progress = <T extends ValidComponent = "div">(
   props: PolymorphicProps<T, ProgressRootProps<T>>
 ) => {
-  const [local, others] = splitProps(props as ProgressRootProps, ["children"])
+  const [local, others] = splitProps(props as ProgressRootProps, ["children", "indeterminate"])
   return (
     <ProgressPrimitive.Root {...others}>
       {local.children}

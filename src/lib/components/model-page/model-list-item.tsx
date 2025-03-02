@@ -41,7 +41,7 @@ export function ModelListItem(props: ModelListItemProps) {
 
   const status = () => props.status;
 
-  const progressPrecentage = createMemo(() => {
+  const progressPrecentage = createMemo<[number, boolean] | undefined>(() => {
     if (status() !== "inProgress") {
       return undefined;
     }
@@ -50,10 +50,10 @@ export function ModelListItem(props: ModelListItemProps) {
     const t = total();
 
     if (c !== undefined && t !== undefined) {
-      return c / t * 100;
+      return [c / t * 100, false];
     }
 
-    return undefined;
+    return [0, true];
   });
   
   const name = () => props.name;
@@ -143,13 +143,18 @@ export function ModelListItem(props: ModelListItemProps) {
         </div>
       </div>
 
-      <Progress
-        value={progressPrecentage()}
-        class={cn(
-          "h-1 rounded-none bg-transparent",
-          selected() && "invert",
+      <Show when={progressPrecentage()}>
+        {(p) => (
+          <Progress
+            value={p()[0]}
+            indeterminate={p()[1]}
+            class={cn(
+              "h-1 rounded-none bg-transparent",
+              selected() && "invert",
+            )}
+          />
         )}
-      />
+      </Show>
     </div>
   );
 }
