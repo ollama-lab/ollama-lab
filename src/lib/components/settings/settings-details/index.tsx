@@ -9,7 +9,7 @@ import { LoaderSpin } from "../../loader-spin";
 export function SettingsDetails() {
   const settings = useSettings();
 
-  const restartVotes = createMemo(() => settings?.restartVotes ?? 0);
+  const restartVotes = createMemo(() => settings?.restartVotes() ?? []);
 
   const [restarting, setRestarting] = createSignal(false);
 
@@ -20,7 +20,7 @@ export function SettingsDetails() {
         <OllamaSection />
       </div>
       <div class="flex">
-        <Show when={restartVotes() > 0}>
+        <Show when={restartVotes().length > 0}>
           <div class="flex flex-col">
             <Button
               on:click={async () => {
@@ -29,7 +29,7 @@ export function SettingsDetails() {
               }}
             >
               <Switch fallback={"Restart"}>
-                <Match when={restarting}>
+                <Match when={restarting()}>
                   <LoaderSpin class="size-4" />
                 </Match>
               </Switch>

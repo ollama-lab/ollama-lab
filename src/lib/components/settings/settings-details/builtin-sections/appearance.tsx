@@ -6,12 +6,12 @@ import { ColorMode } from "@kobalte/core";
 
 export default function AppearanceSection() {
   const settingsContext = useSettings();
-  const settings = createMemo(() => settingsContext?.settings);
+  const settings = settingsContext?.settings;
 
-  const colorMode = createMemo(() => settings()?.appearance["color-mode"]);
+  const colorMode = createMemo(() => settings?.()?.appearance["color-mode"]);
 
   const changeColorMode = (newMode: string | null) => {
-    const s = settings();
+    const s = settings?.();
     if (s) {
       settingsContext?.set("appearance", "color-mode", (newMode ?? "system") as ColorMode);
       settingsContext?.save();

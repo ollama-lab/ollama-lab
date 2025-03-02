@@ -1,14 +1,14 @@
-import { createContext, createEffect, createMemo, createSignal, JSX, useContext } from "solid-js";
+import { Accessor, createContext, createEffect, createMemo, createSignal, JSX, useContext } from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
 import { getSettings, setSettings } from "~/lib/commands/settings";
 import { Settings } from "~/lib/models/settings";
 import { useColorMode } from "../color-mode";
 
 export interface SettingsContextContent {
-  settings: Settings;
-  restartVotes: number;
-  voteRestart: () => void;
-  unvoteRestart: () => void;
+  settings: Accessor<Settings>;
+  restartVotes: Accessor<string[]>;
+  voteRestart: (id: string) => void;
+  unvoteRestart: (id: string) => void;
   set: SetStoreFunction<Settings>;
   save: () => Promise<void>;
   reload: () => Promise<void>;
@@ -28,7 +28,7 @@ export function SettingsProvider(props: { children?: JSX.Element }) {
     },
   });
 
-  const [restartVotes, setRestartVotes] = createSignal(0);
+  const [restartVotes, setRestartVotes] = createSignal<string[]>([]);
 
   const reload = async () => {
     const settings = await getSettings();
@@ -54,10 +54,10 @@ export function SettingsProvider(props: { children?: JSX.Element }) {
   return (
     <SettingsContext.Provider
       value={{
-        settings: settingsStore,
-        restartVotes: restartVotes(),
-        voteRestart: () => setRestartVotes((cur) => cur + 1),
-        unvoteRestart: () => setRestartVotes((cur) => cur - 1),
+        settings: () => settingsStore,
+        restartVotes,
+        voteRestart: (id) => setRestartVotes((cur) => ([...cur.filter((k) => k !== id), id])),
+        unvoteRestart: (id) => setRestartVotes((cur) => cur.filter((k) => k !== id)),
         reload,
         set: setSettingsStore,
         save,

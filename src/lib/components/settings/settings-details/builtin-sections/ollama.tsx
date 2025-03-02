@@ -1,12 +1,14 @@
 import { useSettings } from "~/lib/contexts/settings";
 import TextSection from "../modules/text";
 import { SectionRoot } from "../section-root";
-import { createMemo } from "solid-js";
+import { createEffect, createMemo } from "solid-js";
 
 export default function OllamaSection() {
   const settings = useSettings();
 
-  const connUri = createMemo(() => settings?.settings.ollama.uri);
+  const runningUri = settings?.settings().ollama.uri ?? null;
+
+  const connUri = createMemo(() => settings?.settings().ollama.uri);
   const updateConnUri = (newValue: string | null) => {
     let uri = null;
     try {
@@ -18,6 +20,14 @@ export default function OllamaSection() {
     settings?.set("ollama", "uri", uri ? uri.href : null);
     settings?.save();
   };
+
+  createEffect(() => {
+    if ((connUri() ?? null) !== runningUri) {
+      settings?.voteRestart("ollama.uri");
+    } else {
+      settings?.unvoteRestart("ollama.uri");
+    }
+  });
 
   return (
     <SectionRoot title="Ollama">
