@@ -1,6 +1,16 @@
-import { Accessor, createContext, createEffect, createMemo, JSX, useContext } from "solid-js";
+import {
+  Accessor,
+  createContext,
+  createEffect,
+  createMemo,
+  JSX,
+  useContext,
+} from "solid-js";
 import { createStore } from "solid-js/store";
-import { getCurrentBranch, switchBranch as switchBranchCommand } from "~/lib/commands/chat-history";
+import {
+  getCurrentBranch,
+  switchBranch as switchBranchCommand,
+} from "~/lib/commands/chat-history";
 import { ChatBubble, ChatHistory } from "~/lib/models/session";
 import { useChatSessions } from ".";
 import { IncomingUserPrompt } from "~/lib/models/chat";
@@ -19,10 +29,23 @@ interface ChatHistoryContextCollection {
   reload: () => Promise<void>;
   switchToSession: (sessionId: number | null) => Promise<void>;
   clear: () => Promise<void>;
-  submit: (prompt: IncomingUserPrompt, model: string, evs?: PromptSubmissionEvents) => Promise<void>;
-  regenerate: (chatId: number, model?: string, evs?: PromptSubmissionEvents) => Promise<void>;
+  submit: (
+    prompt: IncomingUserPrompt,
+    model: string,
+    evs?: PromptSubmissionEvents,
+  ) => Promise<void>;
+  regenerate: (
+    chatId: number,
+    model?: string,
+    evs?: PromptSubmissionEvents,
+  ) => Promise<void>;
   switchBranch: (chatId: number) => Promise<void>;
-  editPrompt: (prompt: IncomingUserPrompt, chatId: number, model: string, evs?: PromptSubmissionEvents) => Promise<void>;
+  editPrompt: (
+    prompt: IncomingUserPrompt,
+    chatId: number,
+    model: string,
+    evs?: PromptSubmissionEvents,
+  ) => Promise<void>;
 }
 
 const ChatHistoryContext = createContext<ChatHistoryContextCollection>();
@@ -30,9 +53,11 @@ const ChatHistoryContext = createContext<ChatHistoryContextCollection>();
 export type ChatHistoryStore = { chatHistory: ChatHistory | null };
 
 export function ChatHistoryProvider(props: { children?: JSX.Element }) {
-  const [chatHistoryStore, setChatHistoryStore] = createStore<ChatHistoryStore>({
-    chatHistory: null,
-  });
+  const [chatHistoryStore, setChatHistoryStore] = createStore<ChatHistoryStore>(
+    {
+      chatHistory: null,
+    },
+  );
 
   const chatHistory = createMemo(() => chatHistoryStore.chatHistory);
   const lastChat = createMemo(() => chatHistory()?.chats.at(-1));
@@ -43,7 +68,10 @@ export function ChatHistoryProvider(props: { children?: JSX.Element }) {
     const sessions = chatSessionsContext?.sessions;
     const curSessionId = chatHistory()?.session;
 
-    if (curSessionId !== undefined && !sessions?.find((s) => s.id === curSessionId)) {
+    if (
+      curSessionId !== undefined &&
+      !sessions?.find((s) => s.id === curSessionId)
+    ) {
       setChatHistoryStore("chatHistory", null);
     }
   });
@@ -66,11 +94,16 @@ export function ChatHistoryProvider(props: { children?: JSX.Element }) {
   };
 
   const switchToSession = async (sessionId: number | null) => {
-    setChatHistoryStore("chatHistory", sessionId === null ? null : {
-      session: sessionId,
-      chats: [],
-      loading: false,
-    });
+    setChatHistoryStore(
+      "chatHistory",
+      sessionId === null
+        ? null
+        : {
+            session: sessionId,
+            chats: [],
+            loading: false,
+          },
+    );
 
     await reload();
   };
@@ -79,10 +112,11 @@ export function ChatHistoryProvider(props: { children?: JSX.Element }) {
     await switchToSession(null);
   };
 
-  const submit = async (prompt: IncomingUserPrompt, model: string, {
-    onRespond,
-    onScrollDown,
-  }: PromptSubmissionEvents = {}) => {
+  const submit = async (
+    prompt: IncomingUserPrompt,
+    model: string,
+    { onRespond, onScrollDown }: PromptSubmissionEvents = {},
+  ) => {
     let ch = chatHistory();
     if (!ch) {
       // TODO: Add settings option for default session name: 1) no name, 2) first prompt, 3) generated after first response
@@ -125,10 +159,11 @@ export function ChatHistoryProvider(props: { children?: JSX.Element }) {
     });
   };
 
-  const regenerate = async (chatId: number, model?: string, {
-    onRespond,
-    onScrollDown,
-  }: PromptSubmissionEvents = {}) => {
+  const regenerate = async (
+    chatId: number,
+    model?: string,
+    { onRespond, onScrollDown }: PromptSubmissionEvents = {},
+  ) => {
     const ch = chatHistory();
     if (!ch) {
       return;
@@ -174,25 +209,30 @@ export function ChatHistoryProvider(props: { children?: JSX.Element }) {
       return;
     }
 
-    const index = parentId !== null ? ch.chats.findIndex(chat => chat.id === parentId) + 1 : 0;
+    const index =
+      parentId !== null
+        ? ch.chats.findIndex((chat) => chat.id === parentId) + 1
+        : 0;
     if (index >= 0) {
-      setChatHistoryStore("chatHistory", "chats", (chats) => ([
+      setChatHistoryStore("chatHistory", "chats", (chats) => [
         ...chats.slice(0, index),
         ...subbranch,
-      ]));
+      ]);
     }
   };
 
-  const editPrompt = async (prompt: IncomingUserPrompt, chatId: number, model: string, {
-    onRespond,
-    onScrollDown
-  }: PromptSubmissionEvents = {}) => {
+  const editPrompt = async (
+    prompt: IncomingUserPrompt,
+    chatId: number,
+    model: string,
+    { onRespond, onScrollDown }: PromptSubmissionEvents = {},
+  ) => {
     const ch = chatHistory();
     if (!ch) {
       throw new Error("No chat history.");
     }
 
-    const curIndex = ch.chats.findIndex(value => value.id === chatId);
+    const curIndex = ch.chats.findIndex((value) => value.id === chatId);
     if (curIndex < 0) {
       throw new Error("Original chat not found.");
     }
@@ -227,20 +267,22 @@ export function ChatHistoryProvider(props: { children?: JSX.Element }) {
   };
 
   return (
-    <ChatHistoryContext.Provider value={{
-      chatHistory: chatHistoryStore.chatHistory,
-      lastChat,
-      reload,
-      switchToSession,
-      clear,
-      submit,
-      regenerate,
-      switchBranch,
-      editPrompt,
-    }}>
+    <ChatHistoryContext.Provider
+      value={{
+        chatHistory: chatHistoryStore.chatHistory,
+        lastChat,
+        reload,
+        switchToSession,
+        clear,
+        submit,
+        regenerate,
+        switchBranch,
+        editPrompt,
+      }}
+    >
       {props.children}
     </ChatHistoryContext.Provider>
-  )
+  );
 }
 
 export function useChatHistory() {

@@ -1,4 +1,4 @@
-import { createContext, JSX, useContext, } from "solid-js";
+import { createContext, JSX, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import { toast } from "solid-sonner";
 import {
