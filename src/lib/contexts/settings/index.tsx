@@ -39,13 +39,13 @@ export function SettingsProvider(props: { children?: JSX.Element }) {
     await setSettings(settingsStore);
   };
 
-  const [_, setColorMode] = useColorMode();
+  const colorModeContext = useColorMode();
   const currentColorMode = createMemo(() => settingsStore.appearance["color-mode"]);
 
   createEffect(() => {
     const current = currentColorMode();
     if (current) {
-      setColorMode(current);
+      colorModeContext?.setColorMode(current);
     }
   });
 
