@@ -1,4 +1,4 @@
-import { createContext, JSX, useContext } from "solid-js";
+import { Accessor, createContext, JSX, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import { getDefaultModel, listLocalModels, listRunningModels, setDefaultModel } from "~/lib/commands/models";
 import { ModelListItem, RunningModel } from "~/lib/models/model-item";
@@ -6,11 +6,11 @@ import { ModelListItem, RunningModel } from "~/lib/models/model-item";
 type FetchingStatus = "unfetched" | "fetching" | "error" | "fetched";
 
 interface ModelContextCollection {
-  modelList: ModelListItem[];
-  defaultModel: string | null;
-  currentModel: string | null;
-  activeModels: RunningModel[];
-  status: FetchingStatus;
+  modelList: Accessor<ModelListItem[]>;
+  defaultModel: Accessor<string | null>;
+  currentModel: Accessor<string | null>;
+  activeModels: Accessor<RunningModel[]>;
+  status: Accessor<FetchingStatus>;
   init: () => Promise<void>;
   reload: () => Promise<void>;
   reloadActiveModels: () => Promise<void>;
@@ -80,11 +80,11 @@ export function ModelContextProvider(props: ModelContextProviderProps) {
   return (
     <ModelContext.Provider
       value={{
-        modelList: store.modelList,
-        defaultModel: store.defaultModel,
-        currentModel: store.currentModel,
-        activeModels: store.activeModels,
-        status: store.status,
+        modelList: () => store.modelList,
+        defaultModel: () => store.defaultModel,
+        currentModel: () => store.currentModel,
+        activeModels: () => store.activeModels,
+        status: () => store.status,
         init,
         reload,
         reloadActiveModels,

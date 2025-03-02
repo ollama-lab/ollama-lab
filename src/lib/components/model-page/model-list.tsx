@@ -25,12 +25,12 @@ export function ModelList() {
   const pullModelTasksContext = usePullModelTasks();
   const modelPageCurrentModel = useModelPageCurrentModel();
 
-  const status = createMemo(() => modelContext?.status);
+  const status = modelContext?.status;
 
   const setCurrentModel = modelPageCurrentModel?.[1];
 
-  const modelList = () => modelContext?.modelList;
-  const modelNameList = createMemo(() => modelList()?.map(({ name }) => name));
+  const modelList = modelContext?.modelList;
+  const modelNameList = createMemo(() => modelList?.()?.map(({ name }) => name));
 
   createEffect(() => {
     modelContext?.init();
@@ -74,7 +74,7 @@ export function ModelList() {
               } satisfies DisplayModelListItem
         }
       }),
-      ...(modelList()?.map((item) => ({
+      ...(modelList?.()?.map((item) => ({
         name: item.name,
         totalSize: item.size,
         modifiedAt: item.modified_at,
@@ -90,8 +90,8 @@ export function ModelList() {
           <Button
             variant="outline"
             size="icon"
-            disabled={status() === "fetching"}
-            title={status() === "fetching" ? "Refreshing..." : "Refresh model list"}
+            disabled={status?.() === "fetching"}
+            title={status?.() === "fetching" ? "Refreshing..." : "Refresh model list"}
             onClick={() => {
               const reloadPromise = modelContext?.reload();
               if (reloadPromise) {
@@ -105,7 +105,7 @@ export function ModelList() {
               }
             }}
           >
-            <RefreshCwIcon class={cn(status() === "fetching" && "animate-spin")} />
+            <RefreshCwIcon class={cn(status?.() === "fetching" && "animate-spin")} />
           </Button>
 
           <PullModel />
@@ -115,10 +115,10 @@ export function ModelList() {
       <div class="grow overflow-y-auto" onClick={() => setCurrentModel?.(null)}>
         <div class="flex flex-col gap-2 px-2">
           <Switch>
-            <Match when={status() === "fetching"}>
+            <Match when={status?.() === "fetching"}>
               <LoaderSpin text="Loading" />
             </Match>
-            <Match when={status() === "error"}>
+            <Match when={status?.() === "error"}>
               <Alert class="bg-destructive text-destructive-foreground border-destructive">
                 <CircleAlertIcon class="size-4" />
                 <AlertTitle>Error</AlertTitle>
