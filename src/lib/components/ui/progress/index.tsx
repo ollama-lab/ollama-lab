@@ -5,6 +5,7 @@ import type { PolymorphicProps } from "@kobalte/core/polymorphic"
 import * as ProgressPrimitive from "@kobalte/core/progress"
  
 import { Label } from "~/lib/components/ui/label"
+import { cn } from "~/lib/utils/class-names"
  
 export type ProgressRootProps<T extends ValidComponent = "div"> =
   ProgressPrimitive.ProgressRootProps<T> & { children?: JSX.Element, indeterminate?: boolean }
@@ -12,12 +13,15 @@ export type ProgressRootProps<T extends ValidComponent = "div"> =
 export const Progress = <T extends ValidComponent = "div">(
   props: PolymorphicProps<T, ProgressRootProps<T>>
 ) => {
-  const [local, others] = splitProps(props as ProgressRootProps, ["children", "indeterminate"])
+  const [local, others] = splitProps(props as ProgressRootProps, ["children", "indeterminate", "value"])
   return (
-    <ProgressPrimitive.Root {...others}>
+    <ProgressPrimitive.Root value={local.indeterminate ? 100 : local.value} {...others}>
       {local.children}
       <ProgressPrimitive.Track class="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
-        <ProgressPrimitive.Fill class="h-full w-[var(--kb-progress-fill-width)] flex-1 bg-primary transition-all" />
+        <ProgressPrimitive.Fill class={cn(
+          "h-full w-[var(--kb-progress-fill-width)] flex-1 bg-primary transition-all",
+          local.indeterminate && "animate-indeterminate",
+        )} />
       </ProgressPrimitive.Track>
     </ProgressPrimitive.Root>
   )

@@ -22,6 +22,32 @@
   --color-ring: hsl(240 10% 3.9%);
 
   --font-sans-inter: "Inter Variable", var(--font-sans);
+
+  --animate-indeterminate: indeterminate-progress 2s infinite linear;
+
+  @keyframes indeterminate-progress {
+    0% {
+      transform: translateX(-100%) scaleX(0);
+    }
+    35% {
+      transform: translateX(-30%) scaleX(0.7);
+    }
+    63% {
+      transform: translateX(100%) scaleX(0.7);
+    }
+    64% {
+      transform: translateX(100%) scaleX(0);
+    }
+    65% {
+      transform: translateX(-100%) scaleX(0);
+    }
+    85% {
+      transform: translateX(50%) scaleX(0.6);
+    }
+    100% {
+      transform: translateX(100%) scaleX(0);
+    }
+  }
 }
 
 @layer base {
