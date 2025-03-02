@@ -9,11 +9,7 @@ interface ChatContextModel {
   reloadSession: (id: number) => Promise<void>;
 }
 
-const ChatSessionsContext = createContext<ChatContextModel>({
-  sessions: [],
-  reload: async () => {},
-  reloadSession: async () => {},
-});
+const ChatSessionsContext = createContext<ChatContextModel>();
 
 export function ChatSessionsProvider(props: { children?: JSX.Element }) {
   const [sessions, setSessions] = createStore<Session[]>([]);

@@ -1,4 +1,4 @@
-import { createContext, createMemo, JSX, type Accessor } from "solid-js";
+import { createContext, createMemo, JSX, useContext, type Accessor } from "solid-js";
 import { createStore } from "solid-js/store";
 import { toast } from "solid-sonner";
 import {
@@ -8,39 +8,25 @@ import {
   setDefaultModel,
 } from "~/lib/commands/models";
 import { ModelListItem, RunningModel } from "~/lib/models/model-item";
+import { useChatSessions } from "../chats";
 
-interface ModelListContextCollection {
+interface ModelContextCollection {
   modelList: ModelListItem[];
   defaultModel: string | null;
   currentModel: string | null;
   activeModels: RunningModel[];
-  selectedSessionModel: Accessor<string | null>;
   init: () => Promise<void>;
   reload: () => Promise<void>;
   reloadActiveModels: () => Promise<void>;
   reloadDefaultModel: () => Promise<void>;
   setDefault: (newModel: string) => Promise<void>;
-  setSessionModel: (value: string) => void;
 }
 
-const ModelListContext = createContext<ModelListContextCollection>({
-  // Placeholder
-  modelList: [],
-  defaultModel: null,
-  currentModel: null,
-  activeModels: [],
-  selectedSessionModel: () => null,
-  init: async () => {},
-  reload: async () => {},
-  reloadActiveModels: async () => {},
-  reloadDefaultModel: async () => {},
-  setDefault: async () => {},
-  setSessionModel: async () => {},
-});
+const ModelContext = createContext<ModelContextCollection>();
 
 type FetchingStatus = "unfetched" | "fetching" | "error" | "fetched";
 
-export interface ModelListProviderProps {
+export interface ModelContextProviderProps {
   children?: JSX.Element;
 }
 
@@ -48,22 +34,18 @@ interface InternalStore {
   modelList: ModelListItem[];
   defaultModel: string | null;
   currentModel: string | null;
-  candidateSessionModel: string | null;
   activeModels: RunningModel[];
   status: FetchingStatus;
 }
 
-export function ModelListProvider(props: ModelListProviderProps) {
+export function ModelContextProvider(props: ModelContextProviderProps) {
   const [store, setStore] = createStore<InternalStore>({
     modelList: [],
     defaultModel: null,
     currentModel: null,
-    candidateSessionModel: null,
     activeModels: [],
     status: "unfetched",
   });
-
-  const selectedSessionModel = createMemo(() => {});
 
   const reloadActiveModels = async () => {
     const result = await listRunningModels();
@@ -103,7 +85,7 @@ export function ModelListProvider(props: ModelListProviderProps) {
   };
 
   return (
-    <ModelListContext.Provider
+    <ModelContext.Provider
       value={{
         modelList: store.modelList,
         defaultModel: store.defaultModel,
@@ -117,6 +99,10 @@ export function ModelListProvider(props: ModelListProviderProps) {
       }}
     >
       {props.children}
-    </ModelListContext.Provider>
+    </ModelContext.Provider>
   );
+}
+
+export function useModelContext() {
+  return useContext(ModelContext);
 }

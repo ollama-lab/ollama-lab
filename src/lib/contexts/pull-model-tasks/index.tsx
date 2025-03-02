@@ -15,14 +15,7 @@ interface TaskMapContextCollection {
   channel: (model: string) => Channel<ProgressEvent>;
 }
 
-const PullModelTasksContext = createContext<TaskMapContextCollection>({
-  // Placeholder object
-  taskMap: {},
-  clear: () => {},
-  add: () => {},
-  error: () => {},
-  channel: () => new Channel<ProgressEvent>(),
-});
+const PullModelTasksContext = createContext<TaskMapContextCollection>();
 
 export interface PullModelTasksProviderProps {
   children?: JSX.Element;
