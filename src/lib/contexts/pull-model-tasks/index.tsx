@@ -1,14 +1,15 @@
 import { Channel } from "@tauri-apps/api/core";
-import { createContext, JSX, useContext } from "solid-js";
+import { Accessor, createContext, JSX, useContext } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import { ProgressEvent } from "~/lib/models/events/progress";
+import { useModelContext } from "../model-list";
 
 interface TaskMap {
   [id: string]: ProgressEvent;
 }
 
 interface TaskMapContextCollection {
-  taskMap: TaskMap;
+  taskMap: Accessor<TaskMap>;
   clear: (id?: string) => void;
   add: (id: string, message: string) => void;
   error: (id: string, message: string) => void;
@@ -22,7 +23,9 @@ export interface PullModelTasksProviderProps {
 }
 
 export function PullModelTasksProvider(props: PullModelTasksProviderProps) {
-  const [taskMap, setTaskMap] = createStore<TaskMap>({});
+  const [taskMapStore, setTaskMap] = createStore<TaskMap>({});
+
+  const modelContext = useModelContext();
 
   const clear = (id?: string) => {
     if (id === undefined) {
@@ -62,13 +65,17 @@ export function PullModelTasksProvider(props: PullModelTasksProviderProps) {
 
       switch (msgEv.type) {
         case "success":
-          // TODO: reload model list
           clear(model);
+          modelContext?.reload();
           break;
 
         case "canceled":
-          // TODO: reset current model
           clear(model);
+
+          const m = modelContext?.currentModel();
+          if (m === model) {
+            modelContext?.setCurrent(null);
+          }
           break;
 
         default:
@@ -78,6 +85,8 @@ export function PullModelTasksProvider(props: PullModelTasksProviderProps) {
 
     return chan;
   };
+
+  const taskMap = () => taskMapStore;
 
   return (
     <PullModelTasksContext.Provider value={{ taskMap, clear, add, error, channel }}>

@@ -31,13 +31,15 @@ export function ModelListItem(props: ModelListItemProps) {
 
   const currentModel = modelPageCurrentModel?.[0];
   const setCurrentModel = modelPageCurrentModel?.[1];
-  const defaultModel = createMemo(() => modelContext?.defaultModel);
+  const defaultModel = modelContext?.defaultModel;
 
   const selected = createMemo(() => currentModel?.() === props.name);
-  const isDefault = createMemo(() => defaultModel() === props.name);
+  const isDefault = createMemo(() => defaultModel?.() === props.name);
 
   const completed = () => props.completedSize;
   const total = () => props.totalSize;
+
+  const status = () => props.status;
 
   const progressPrecentage = createMemo(() => {
     if (status() !== "inProgress") {
@@ -54,7 +56,6 @@ export function ModelListItem(props: ModelListItemProps) {
     return undefined;
   });
   
-  const status = () => props.status;
   const name = () => props.name;
   const message = () => props.message;
 
@@ -84,7 +85,7 @@ export function ModelListItem(props: ModelListItemProps) {
 
           <span class="font-bold">{name()}</span>
 
-          <Show when={modelContext?.activeModels.map(item => item.name).includes(name())}>
+          <Show when={modelContext?.activeModels().map(item => item.name).includes(name())}>
             <StatusDot status="success" />
           </Show>
 

@@ -24,12 +24,12 @@ async fn init_db() -> Result<SqlitePool, Error> {
         },
     }
 
-    let conn = SqlitePool::connect_lazy(
+    let conn = SqlitePool::connect(
         db_path()
             .as_ref()
             .and_then(|path| path.to_str())
             .ok_or(Error::NoDataPath)?,
-    )?;
+    ).await?;
 
     sqlx::migrate!("./migrations/").run(&conn).await?;
 

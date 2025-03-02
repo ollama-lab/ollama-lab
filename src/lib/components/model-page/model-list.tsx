@@ -13,7 +13,7 @@ import { ModelListItem } from "./model-list-item";
 
 interface DisplayModelListItem {
   name: string
-  status?: "inProgress" | "failure"
+  status?: "inProgress" | "failure" | "canceled"
   message?: string
   completedSize?: number
   totalSize?: number
@@ -69,12 +69,12 @@ export function ModelList() {
             case "canceled":
               return {
                 name,
-                status: "failure",
+                status: "canceled",
                 message: item.message ?? undefined,
               } satisfies DisplayModelListItem
         }
       }),
-      ...(modelList?.()?.map((item) => ({
+      ...(modelList?.().map((item) => ({
         name: item.name,
         totalSize: item.size,
         modifiedAt: item.modified_at,
@@ -129,11 +129,11 @@ export function ModelList() {
             </Match>
           </Switch>
 
-          <Index each={displayModelList()}>
-            {(item, index) => (
-              <ModelListItem index={index} {...item()} />
-            )}
-          </Index>
+            <Index each={displayModelList()}>
+              {(item, index) => (
+                <ModelListItem index={index} {...item()} />
+              )}
+            </Index>
         </div>
       </div>
     </div>

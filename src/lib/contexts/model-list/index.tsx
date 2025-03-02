@@ -16,7 +16,7 @@ interface ModelContextCollection {
   reloadActiveModels: () => Promise<void>;
   reloadDefaultModel: () => Promise<void>;
   setDefault: (newModel: string) => Promise<void>;
-  setCurrent: (newModel: string) => void;
+  setCurrent: (newModel: string | null) => void;
 }
 
 const ModelContext = createContext<ModelContextCollection>();
@@ -73,7 +73,7 @@ export function ModelContextProvider(props: ModelContextProviderProps) {
     setStore("defaultModel", newModel);
   };
 
-  const setCurrent = (newModel: string) => {
+  const setCurrent = (newModel: string | null) => {
     setStore("currentModel", newModel);
   };
 
