@@ -1,6 +1,5 @@
 import { createContext, JSX, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
-import { toast } from "solid-sonner";
 import { getDefaultModel, listLocalModels, listRunningModels, setDefaultModel } from "~/lib/commands/models";
 import { ModelListItem, RunningModel } from "~/lib/models/model-item";
 
@@ -55,15 +54,9 @@ export function ModelContextProvider(props: ModelContextProviderProps) {
   const reload = async () => {
     setStore("status", "fetching");
 
-    await listLocalModels()
-      .then((result) => {
-        setStore("modelList", result);
-        setStore("status", "fetched");
-      })
-      .catch((err) => {
-        toast.error(err);
-        setStore("status", "error");
-      });
+    const result = await listLocalModels();
+    setStore("modelList", result);
+    setStore("status", "fetched");
 
     await reloadActiveModels();
     await reloadDefaultModel();

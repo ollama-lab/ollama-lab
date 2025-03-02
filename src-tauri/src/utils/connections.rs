@@ -18,21 +18,21 @@ pub trait ConvertMutexContentAsync<O> {
     fn convert_to(&self) -> impl Future<Output = Result<O, Self::Err>>;
 }
 
-impl CloneMutexContentAsync for Mutex<Option<Pool<Sqlite>>> {
+impl CloneMutexContentAsync for Mutex<Pool<Sqlite>> {
     type Output = Pool<Sqlite>;
     type Err = Error;
 
     async fn clone_inside(&self) -> Result<Pool<Sqlite>, Self::Err> {
         let guard = self.lock().await;
-        Ok(guard.as_ref().ok_or(Error::NoConnection)?.clone())
+        Ok(guard.clone())
     }
 }
 
-impl ConvertMutexContentAsync<PoolConnection<Sqlite>> for Mutex<Option<Pool<Sqlite>>> {
+impl ConvertMutexContentAsync<PoolConnection<Sqlite>> for Mutex<Pool<Sqlite>> {
     type Err = Error;
 
     async fn convert_to(&self) -> Result<PoolConnection<Sqlite>, Self::Err> {
         let guard = self.lock().await;
-        Ok(guard.as_ref().ok_or(Error::NoConnection)?.acquire().await?)
+        Ok(guard.acquire().await?)
     }
 }

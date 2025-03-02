@@ -1,4 +1,4 @@
-import { createMemo, Index, Match, onMount, Switch } from "solid-js"
+import { createEffect, createMemo, Index, Match, Switch } from "solid-js"
 import { useModelContext } from "~/lib/contexts/model-list";
 import { usePullModelTasks } from "~/lib/contexts/pull-model-tasks";
 import { Button } from "../ui/button";
@@ -29,11 +29,12 @@ export function ModelList() {
 
   const setCurrentModel = modelPageCurrentModel?.[1];
 
-  onMount(() => {
-    modelContext?.reload();
-  });
+  const modelList = () => modelContext?.modelList;
+  const modelNameList = createMemo(() => modelList()?.map(({ name }) => name));
 
-  const modelNameList = createMemo(() => modelContext?.modelList.map(({ name }) => name));
+  createEffect(() => {
+    modelContext?.init();
+  });
 
   const displayModelList = createMemo<DisplayModelListItem[]>(() => {
     if (!pullModelTasksContext) {
@@ -73,11 +74,11 @@ export function ModelList() {
               } satisfies DisplayModelListItem
         }
       }),
-      ...modelContext?.modelList.map((item) => ({
+      ...(modelList()?.map((item) => ({
         name: item.name,
         totalSize: item.size,
         modifiedAt: item.modified_at,
-      } satisfies DisplayModelListItem)) ?? [],
+      } satisfies DisplayModelListItem)) ?? []),
     ];
   });
 

@@ -1,12 +1,6 @@
-use std::str::FromStr;
-
 use app_state::AppState;
-use errors::Error;
-use ollama_rest::Ollama;
 use paths::local_config_dir;
-use settings::Settings;
 use tauri::Manager;
-use tokio::sync::Mutex;
 
 pub mod app_state;
 pub mod commands;
@@ -34,7 +28,6 @@ pub fn run() {
             commands::models::delete_model,
             commands::models::get_default_model,
             commands::models::get_model,
-            commands::init::initialize,
             commands::models::list_local_models,
             commands::models::list_running_models,
             commands::models::pull_model,
@@ -59,31 +52,7 @@ pub fn run() {
             commands::images::get_images_by_chat_id,
         ])
         .setup(|app| {
-            let config_path = local_config_dir()
-                .map(|mut dir| {
-                    dir.push("default.settings.toml");
-                    dir
-                })
-                .ok_or(Error::Settings(settings::error::Error::NoValidConfigPath))?;
-
-            let settings = Settings::load(&config_path)?;
-
-            let ollama = if let Some(ref uri) = settings.ollama.uri {
-                Ollama::from_str(uri.as_str())?
-            } else {
-                Ollama::default()
-            };
-
-            app.manage(AppState {
-                conn_pool: Mutex::new(None),
-                ollama,
-                // Default profile
-                // TODO: Multi-profile
-                profile: 0,
-                config_path,
-                settings: Mutex::new(settings),
-            });
-
+            app.manage(AppState::init()?);
             Ok(())
         })
         .run(tauri::generate_context!())
