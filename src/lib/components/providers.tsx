@@ -6,6 +6,7 @@ import { ChatSessionsProvider } from "../contexts/chats";
 import { ModelContextProvider } from "../contexts/model-list";
 import { ChatHistoryProvider } from "../contexts/chats/chat-history";
 import { SelectedSessionModelProvider } from "../contexts/model-list/selected-session-model";
+import { ModelPageCurrentModelProvider } from "../contexts/model-page/current-model";
 
 export default function Providers(props: { children?: JSX.Element }) {
   return (
@@ -15,7 +16,11 @@ export default function Providers(props: { children?: JSX.Element }) {
           <ChatSessionsProvider>
             <ChatHistoryProvider>
               <SelectedSessionModelProvider>
-                <PullModelTasksProvider>{props.children}</PullModelTasksProvider>
+                <PullModelTasksProvider>
+                  <ModelPageCurrentModelProvider>
+                    {props.children}
+                  </ModelPageCurrentModelProvider>
+                </PullModelTasksProvider>
               </SelectedSessionModelProvider>
             </ChatHistoryProvider>
           </ChatSessionsProvider>

@@ -4,21 +4,23 @@ import { toast } from "solid-sonner";
 import { getDefaultModel, listLocalModels, listRunningModels, setDefaultModel } from "~/lib/commands/models";
 import { ModelListItem, RunningModel } from "~/lib/models/model-item";
 
+type FetchingStatus = "unfetched" | "fetching" | "error" | "fetched";
+
 interface ModelContextCollection {
   modelList: ModelListItem[];
   defaultModel: string | null;
   currentModel: string | null;
   activeModels: RunningModel[];
+  status: FetchingStatus;
   init: () => Promise<void>;
   reload: () => Promise<void>;
   reloadActiveModels: () => Promise<void>;
   reloadDefaultModel: () => Promise<void>;
   setDefault: (newModel: string) => Promise<void>;
+  setCurrent: (newModel: string) => void;
 }
 
 const ModelContext = createContext<ModelContextCollection>();
-
-type FetchingStatus = "unfetched" | "fetching" | "error" | "fetched";
 
 export interface ModelContextProviderProps {
   children?: JSX.Element;
@@ -78,6 +80,10 @@ export function ModelContextProvider(props: ModelContextProviderProps) {
     setStore("defaultModel", newModel);
   };
 
+  const setCurrent = (newModel: string) => {
+    setStore("currentModel", newModel);
+  };
+
   return (
     <ModelContext.Provider
       value={{
@@ -85,11 +91,13 @@ export function ModelContextProvider(props: ModelContextProviderProps) {
         defaultModel: store.defaultModel,
         currentModel: store.currentModel,
         activeModels: store.activeModels,
+        status: store.status,
         init,
         reload,
         reloadActiveModels,
         reloadDefaultModel,
         setDefault,
+        setCurrent,
       }}
     >
       {props.children}
