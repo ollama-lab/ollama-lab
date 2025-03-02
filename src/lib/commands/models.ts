@@ -1,5 +1,4 @@
-import type { ModelDetails, ModelInfo, ModelListItem, RunningModel } from "$lib/models/model-item"
-import { pullModelTasks } from "$lib/stores/pull-model"
+import type { ModelDetails, ModelInfo, ModelListItem, RunningModel } from "~/lib/models/model-item"
 import { invoke } from "@tauri-apps/api/core"
 
 interface RawModelListItem {

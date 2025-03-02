@@ -2,10 +2,9 @@ import { JSX } from "solid-js/jsx-runtime";
 import "./app.css";
 import "@fontsource-variable/inter/wght.css";
 import { AppBar } from "./lib/components/app-bar";
-import { SettingsProvider } from "./lib/contexts/settings";
-import { ColorModeProvider } from "./lib/contexts/color-mode";
 import { Suspense } from "solid-js";
 import { LoaderSpin } from "./lib/components/loader-spin";
+import Providers from "./lib/components/providers";
 
 function LoadingScreen() {
   return (
@@ -17,18 +16,14 @@ function LoadingScreen() {
 
 export function Layout(props: { children?: JSX.Element }) {
   return (
-    <>
-      <ColorModeProvider>
-        <SettingsProvider>
-          <div class="flex flex-row w-dvw h-dvh">
-            <AppBar />
+    <Providers>
+      <div class="flex flex-row w-dvw h-dvh">
+        <AppBar />
 
-            <div class="grow">
-              <Suspense fallback={<LoadingScreen />}>{props.children}</Suspense>
-            </div>
-          </div>
-        </SettingsProvider>
-      </ColorModeProvider>
-    </>
+        <div class="grow">
+          <Suspense fallback={<LoadingScreen />}>{props.children}</Suspense>
+        </div>
+      </div>
+    </Providers>
   );
 }
