@@ -7,7 +7,7 @@ use tokio::sync::Mutex;
 use crate::{errors::Error, local_config_dir, paths::{db_path, local_data_dir}, settings::{self, Settings}};
 
 pub struct AppState {
-    pub conn_pool: Mutex<SqlitePool>,
+    pub conn_pool: SqlitePool,
     pub ollama: Ollama,
     pub profile: i64,
     pub config_path: PathBuf,
@@ -63,7 +63,7 @@ impl AppState {
         let conn_pool = rx.recv().unwrap();
 
         Ok(AppState {
-            conn_pool: Mutex::new(conn_pool),
+            conn_pool,
             ollama,
             // Default profile
             // TODO: Multi-profile
