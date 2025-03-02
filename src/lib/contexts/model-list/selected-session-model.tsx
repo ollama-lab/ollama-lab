@@ -1,11 +1,4 @@
-import {
-  Accessor,
-  createContext,
-  createMemo,
-  createSignal,
-  JSX,
-  useContext,
-} from "solid-js";
+import { Accessor, createContext, createMemo, createSignal, JSX, useContext } from "solid-js";
 import { useChatSessions } from "../chats";
 import { setSessionModel as setSessionModelCommand } from "~/lib/commands/sessions";
 import { useChatHistory } from "../chats/chat-history";
@@ -15,12 +8,9 @@ interface SelectedSessionModelContextModel {
   setSessionModel: (value: string) => void;
 }
 
-const SelectedSessionModelContext =
-  createContext<SelectedSessionModelContextModel>();
+const SelectedSessionModelContext = createContext<SelectedSessionModelContextModel>();
 
-export function SelectedSessionModelProvider(props: {
-  children?: JSX.Element;
-}) {
+export function SelectedSessionModelProvider(props: { children?: JSX.Element }) {
   const sessionContext = useChatSessions();
 
   const [candidate, setCandidate] = createSignal<string | null>(null);

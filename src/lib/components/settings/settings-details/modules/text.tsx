@@ -1,10 +1,5 @@
 import { createMemo, createSignal } from "solid-js";
-import {
-  InputType,
-  TextField,
-  TextFieldInput,
-  TextFieldLabel,
-} from "~/lib/components/ui/text-field";
+import { InputType, TextField, TextFieldInput, TextFieldLabel } from "~/lib/components/ui/text-field";
 
 export interface TextSectionProps {
   title?: string;
@@ -21,9 +16,7 @@ export default function TextSection(props: TextSectionProps) {
   const inputType = createMemo(() => props.type ?? "text");
   const onValueChange = props.onValueChange;
 
-  const [instantValue, setInstantValue] = createSignal<string | undefined>(
-    props.value ?? undefined,
-  );
+  const [instantValue, setInstantValue] = createSignal<string | undefined>(props.value ?? undefined);
 
   return (
     <div class="flex flex-col gap-1">

@@ -20,10 +20,7 @@ export default function lucideOptimizer(): Plugin {
             .split(",")
             .map((v) => v.trim())
             .map((name) => {
-              const path = kebabCase(name.replace(/Icon$/, "")).replace(
-                /\d/,
-                (value) => "-" + value,
-              );
+              const path = kebabCase(name.replace(/Icon$/, "")).replace(/\d/, (value) => "-" + value);
               return `${whitespace}import ${name} from 'lucide-solid/icons/${path}'${hasSemi ? ";" : ""}`;
             });
 

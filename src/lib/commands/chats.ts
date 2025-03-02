@@ -1,7 +1,4 @@
-import type {
-  ChatGenerationReturn,
-  IncomingUserPrompt,
-} from "~/lib/models/chat";
+import type { ChatGenerationReturn, IncomingUserPrompt } from "~/lib/models/chat";
 import type { StreamingResponseEvent } from "~/lib/models/events/text-streams";
 import { Channel, invoke } from "@tauri-apps/api/core";
 

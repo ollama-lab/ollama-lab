@@ -1,9 +1,4 @@
-import type {
-  ModelDetails,
-  ModelInfo,
-  ModelListItem,
-  RunningModel,
-} from "~/lib/models/model-item";
+import type { ModelDetails, ModelInfo, ModelListItem, RunningModel } from "~/lib/models/model-item";
 import { invoke } from "@tauri-apps/api/core";
 
 interface RawModelListItem {
@@ -69,10 +64,7 @@ export async function setDefaultModel(newModel: string): Promise<void> {
   await invoke<void>("set_default_model", { newModel });
 }
 
-export async function copyModel(
-  source: string,
-  destination: string,
-): Promise<void> {
+export async function copyModel(source: string, destination: string): Promise<void> {
   await invoke<void>("copy_model", { source, destination });
 }
 

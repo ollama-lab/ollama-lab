@@ -1,8 +1,4 @@
-import type {
-  Session,
-  SessionCurrentModelReturn,
-  SessionRenameReturn,
-} from "~/lib/models/session";
+import type { Session, SessionCurrentModelReturn, SessionRenameReturn } from "~/lib/models/session";
 import { invoke } from "@tauri-apps/api/core";
 
 interface InternalSession {
@@ -39,27 +35,18 @@ export async function deleteSession(id: number): Promise<number | null> {
   return await invoke<number | null>("delete_session", { id });
 }
 
-export async function renameSession(
-  id: number,
-  newName: string | null,
-): Promise<SessionRenameReturn> {
+export async function renameSession(id: number, newName: string | null): Promise<SessionRenameReturn> {
   return await invoke<SessionRenameReturn>("rename_session", { id, newName });
 }
 
-export async function setSessionModel(
-  id: number,
-  model: string,
-): Promise<SessionCurrentModelReturn> {
+export async function setSessionModel(id: number, model: string): Promise<SessionCurrentModelReturn> {
   return await invoke<SessionCurrentModelReturn>("set_session_model", {
     id,
     model,
   });
 }
 
-export async function createSession(
-  currentModel: string,
-  title?: string | null,
-): Promise<Session> {
+export async function createSession(currentModel: string, title?: string | null): Promise<Session> {
   return await invoke<InternalSession>("create_session", {
     currentModel,
     title,

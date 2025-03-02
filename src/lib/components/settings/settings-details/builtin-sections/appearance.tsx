@@ -13,11 +13,7 @@ export default function AppearanceSection() {
   const changeColorMode = (newMode: string | null) => {
     const s = settings();
     if (s) {
-      settingsContext?.set(
-        "appearance",
-        "color-mode",
-        (newMode ?? "system") as ColorMode,
-      );
+      settingsContext?.set("appearance", "color-mode", (newMode ?? "system") as ColorMode);
       settingsContext?.save();
     }
   };

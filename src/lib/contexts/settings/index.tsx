@@ -1,11 +1,4 @@
-import {
-  createContext,
-  createEffect,
-  createMemo,
-  createSignal,
-  JSX,
-  useContext,
-} from "solid-js";
+import { createContext, createEffect, createMemo, createSignal, JSX, useContext } from "solid-js";
 import { createStore, SetStoreFunction } from "solid-js/store";
 import { getSettings, setSettings } from "~/lib/commands/settings";
 import { Settings } from "~/lib/models/settings";
@@ -47,9 +40,7 @@ export function SettingsProvider(props: { children?: JSX.Element }) {
   };
 
   const [_, setColorMode] = useColorMode();
-  const currentColorMode = createMemo(
-    () => settingsStore.appearance["color-mode"],
-  );
+  const currentColorMode = createMemo(() => settingsStore.appearance["color-mode"]);
 
   createEffect(() => {
     const current = currentColorMode();

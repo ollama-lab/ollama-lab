@@ -38,12 +38,7 @@ export function AppBar() {
       <div class="grow flex flex-col">
         <For each={tabs}>
           {({ name, icon, href, activePattern, onClick }) => (
-            <TabLink
-              href={href}
-              onClick={onClick}
-              name={name}
-              active={activePattern?.test(pathname())}
-            >
+            <TabLink href={href} onClick={onClick} name={name} active={activePattern?.test(pathname())}>
               {icon}
             </TabLink>
           )}
@@ -52,12 +47,7 @@ export function AppBar() {
       <div class="shrink-0 flex flex-col">
         <For each={footerTabs}>
           {({ name, icon, href, activePattern, onClick }) => (
-            <TabLink
-              href={href}
-              onClick={onClick}
-              name={name}
-              active={activePattern?.test(pathname())}
-            >
+            <TabLink href={href} onClick={onClick} name={name} active={activePattern?.test(pathname())}>
               {icon}
             </TabLink>
           )}

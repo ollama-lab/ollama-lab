@@ -10,36 +10,24 @@ export type ResizableProps<T extends ValidComponent = "div"> = RootProps<T> & {
   class?: string;
 };
 
-export const Resizable = <T extends ValidComponent = "div">(
-  props: DynamicProps<T, ResizableProps<T>>,
-) => {
+export const Resizable = <T extends ValidComponent = "div">(props: DynamicProps<T, ResizableProps<T>>) => {
   const [, rest] = splitProps(props as ResizableProps, ["class"]);
   return (
-    <ResizablePrimitive
-      class={cn(
-        "flex size-full data-[orientation=vertical]:flex-col",
-        props.class,
-      )}
-      {...rest}
-    />
+    <ResizablePrimitive class={cn("flex size-full data-[orientation=vertical]:flex-col", props.class)} {...rest} />
   );
 };
 
 export const ResizablePanel = ResizablePrimitive.Panel;
 
-export type ResizableHandleProps<T extends ValidComponent = "button"> =
-  HandleProps<T> & {
-    class?: string;
-    withHandle?: boolean;
-  };
+export type ResizableHandleProps<T extends ValidComponent = "button"> = HandleProps<T> & {
+  class?: string;
+  withHandle?: boolean;
+};
 
 export const ResizableHandle = <T extends ValidComponent = "button">(
   props: DynamicProps<T, ResizableHandleProps<T>>,
 ) => {
-  const [, rest] = splitProps(props as ResizableHandleProps, [
-    "class",
-    "withHandle",
-  ]);
+  const [, rest] = splitProps(props as ResizableHandleProps, ["class", "withHandle"]);
   return (
     <ResizablePrimitive.Handle
       class={cn(

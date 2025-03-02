@@ -80,9 +80,7 @@ export function PullModelTasksProvider(props: PullModelTasksProviderProps) {
   };
 
   return (
-    <PullModelTasksContext.Provider
-      value={{ taskMap, clear, add, error, channel }}
-    >
+    <PullModelTasksContext.Provider value={{ taskMap, clear, add, error, channel }}>
       {props.children}
     </PullModelTasksContext.Provider>
   );

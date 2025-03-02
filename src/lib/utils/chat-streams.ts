@@ -4,10 +4,7 @@ import { emit } from "@tauri-apps/api/event";
 import { toast } from "solid-sonner";
 import { Accessor } from "solid-js";
 import { ChatHistory } from "../models/session";
-import {
-  ChatHistoryStore,
-  PromptSubmissionEvents,
-} from "../contexts/chats/chat-history";
+import { ChatHistoryStore, PromptSubmissionEvents } from "../contexts/chats/chat-history";
 import { produce, reconcile, SetStoreFunction } from "solid-js/store";
 
 export interface ResponseStreamingContext {
@@ -37,9 +34,7 @@ export function convertResponseEvents(
       }
 
       if (regenerateFor !== undefined) {
-        const chatIndex = ch.chats.findIndex(
-          (value) => value.id === regenerateFor,
-        );
+        const chatIndex = ch.chats.findIndex((value) => value.id === regenerateFor);
         if (chatIndex >= 0) {
           setChatHistoryStore(
             "chatHistory",
@@ -155,30 +150,12 @@ export function convertResponseEvents(
         return;
       }
 
-      setChatHistoryStore(
-        "chatHistory",
-        "chats",
-        context.responseIndex,
-        "status",
-        reconcile("sending"),
-      );
+      setChatHistoryStore("chatHistory", "chats", context.responseIndex, "status", reconcile("sending"));
 
       if (chat.thinking) {
-        setChatHistoryStore(
-          "chatHistory",
-          "chats",
-          context.responseIndex,
-          "thoughts",
-          (t) => (t ?? "") + chunk,
-        );
+        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "thoughts", (t) => (t ?? "") + chunk);
       } else {
-        setChatHistoryStore(
-          "chatHistory",
-          "chats",
-          context.responseIndex,
-          "content",
-          (t) => (t ?? "") + chunk,
-        );
+        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "content", (t) => (t ?? "") + chunk);
       }
 
       onScrollDown?.();
@@ -195,13 +172,7 @@ export function convertResponseEvents(
 
       const chat = ch.chats.at(context.responseIndex);
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore(
-          "chatHistory",
-          "chats",
-          context.responseIndex,
-          "status",
-          "sent",
-        );
+        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "status", "sent");
       }
 
       currentChatId = undefined;
@@ -218,13 +189,7 @@ export function convertResponseEvents(
 
       const chat = ch.chats.at(context.responseIndex);
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore(
-          "chatHistory",
-          "chats",
-          context.responseIndex,
-          "status",
-          "not sent",
-        );
+        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "status", "not sent");
       }
 
       currentChatId = undefined;
@@ -245,13 +210,7 @@ export function convertResponseEvents(
 
       const chat = ch.chats.at(context.responseIndex);
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore(
-          "chatHistory",
-          "chats",
-          context.responseIndex,
-          "status",
-          "not sent",
-        );
+        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "status", "not sent");
       }
 
       currentChatId = undefined;

@@ -1,12 +1,7 @@
 import { createContext, JSX, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import { toast } from "solid-sonner";
-import {
-  getDefaultModel,
-  listLocalModels,
-  listRunningModels,
-  setDefaultModel,
-} from "~/lib/commands/models";
+import { getDefaultModel, listLocalModels, listRunningModels, setDefaultModel } from "~/lib/commands/models";
 import { ModelListItem, RunningModel } from "~/lib/models/model-item";
 
 interface ModelContextCollection {

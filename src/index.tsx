@@ -10,10 +10,7 @@ render(
     <Router root={Layout}>
       <Route path="/" component={IndexPage} />
       <Route path="/models" component={lazy(() => import("./routes/models"))} />
-      <Route
-        path="/settings"
-        component={lazy(() => import("./routes/settings"))}
-      />
+      <Route path="/settings" component={lazy(() => import("./routes/settings"))} />
     </Router>
   ),
   document.getElementById("root")!,

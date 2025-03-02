@@ -1,16 +1,6 @@
-import {
-  Accessor,
-  createContext,
-  createEffect,
-  createMemo,
-  JSX,
-  useContext,
-} from "solid-js";
+import { Accessor, createContext, createEffect, createMemo, JSX, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
-import {
-  getCurrentBranch,
-  switchBranch as switchBranchCommand,
-} from "~/lib/commands/chat-history";
+import { getCurrentBranch, switchBranch as switchBranchCommand } from "~/lib/commands/chat-history";
 import { ChatBubble, ChatHistory } from "~/lib/models/session";
 import { useChatSessions } from ".";
 import { IncomingUserPrompt } from "~/lib/models/chat";
@@ -29,16 +19,8 @@ interface ChatHistoryContextCollection {
   reload: () => Promise<void>;
   switchToSession: (sessionId: number | null) => Promise<void>;
   clear: () => Promise<void>;
-  submit: (
-    prompt: IncomingUserPrompt,
-    model: string,
-    evs?: PromptSubmissionEvents,
-  ) => Promise<void>;
-  regenerate: (
-    chatId: number,
-    model?: string,
-    evs?: PromptSubmissionEvents,
-  ) => Promise<void>;
+  submit: (prompt: IncomingUserPrompt, model: string, evs?: PromptSubmissionEvents) => Promise<void>;
+  regenerate: (chatId: number, model?: string, evs?: PromptSubmissionEvents) => Promise<void>;
   switchBranch: (chatId: number) => Promise<void>;
   editPrompt: (
     prompt: IncomingUserPrompt,
@@ -53,11 +35,9 @@ const ChatHistoryContext = createContext<ChatHistoryContextCollection>();
 export type ChatHistoryStore = { chatHistory: ChatHistory | null };
 
 export function ChatHistoryProvider(props: { children?: JSX.Element }) {
-  const [chatHistoryStore, setChatHistoryStore] = createStore<ChatHistoryStore>(
-    {
-      chatHistory: null,
-    },
-  );
+  const [chatHistoryStore, setChatHistoryStore] = createStore<ChatHistoryStore>({
+    chatHistory: null,
+  });
 
   const chatHistory = createMemo(() => chatHistoryStore.chatHistory);
   const lastChat = createMemo(() => chatHistory()?.chats.at(-1));
@@ -68,10 +48,7 @@ export function ChatHistoryProvider(props: { children?: JSX.Element }) {
     const sessions = chatSessionsContext?.sessions;
     const curSessionId = chatHistory()?.session;
 
-    if (
-      curSessionId !== undefined &&
-      !sessions?.find((s) => s.id === curSessionId)
-    ) {
+    if (curSessionId !== undefined && !sessions?.find((s) => s.id === curSessionId)) {
       setChatHistoryStore("chatHistory", null);
     }
   });
@@ -140,17 +117,10 @@ export function ChatHistoryProvider(props: { children?: JSX.Element }) {
       ch.session,
       prompt,
       parentId === undefined ? null : parentId,
-      convertResponseEvents(
-        ctx,
-        chatHistory,
-        setChatHistoryStore,
-        model,
-        prompt,
-        {
-          onRespond,
-          onScrollDown,
-        },
-      ),
+      convertResponseEvents(ctx, chatHistory, setChatHistoryStore, model, prompt, {
+        onRespond,
+        onScrollDown,
+      }),
     );
 
     setChatHistoryStore("chatHistory", "chats", ctx.responseIndex, {
@@ -209,15 +179,9 @@ export function ChatHistoryProvider(props: { children?: JSX.Element }) {
       return;
     }
 
-    const index =
-      parentId !== null
-        ? ch.chats.findIndex((chat) => chat.id === parentId) + 1
-        : 0;
+    const index = parentId !== null ? ch.chats.findIndex((chat) => chat.id === parentId) + 1 : 0;
     if (index >= 0) {
-      setChatHistoryStore("chatHistory", "chats", (chats) => [
-        ...chats.slice(0, index),
-        ...subbranch,
-      ]);
+      setChatHistoryStore("chatHistory", "chats", (chats) => [...chats.slice(0, index), ...subbranch]);
     }
   };
 
