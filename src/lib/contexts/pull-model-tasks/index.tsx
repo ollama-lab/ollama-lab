@@ -1,11 +1,11 @@
 import { Channel } from "@tauri-apps/api/core";
-import { createContext, JSX, useContext } from "solid-js"
+import { createContext, JSX, useContext } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import { ProgressEvent } from "~/lib/models/events/progress";
 
 interface TaskMap {
   [id: string]: ProgressEvent;
-};
+}
 
 interface TaskMapContextCollection {
   taskMap: TaskMap;
@@ -41,15 +41,17 @@ export function PullModelTasksProvider(props: PullModelTasksProviderProps) {
   };
 
   const add = (id: string, message: string) => {
-    setTaskMap(produce((cur) => {
-      if (!cur[id]) {
-        cur[id] = {
-          id,
-          type: "inProgress",
-          message,
-        };
-      }
-    }));
+    setTaskMap(
+      produce((cur) => {
+        if (!cur[id]) {
+          cur[id] = {
+            id,
+            type: "inProgress",
+            message,
+          };
+        }
+      }),
+    );
   };
 
   const error = (id: string, message: string) => {
@@ -85,10 +87,12 @@ export function PullModelTasksProvider(props: PullModelTasksProviderProps) {
   };
 
   return (
-    <PullModelTasksContext.Provider value={{ taskMap, clear, add, error, channel }}>
+    <PullModelTasksContext.Provider
+      value={{ taskMap, clear, add, error, channel }}
+    >
       {props.children}
     </PullModelTasksContext.Provider>
-  )
+  );
 }
 
 export function usePullModelTasks() {
