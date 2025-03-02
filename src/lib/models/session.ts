@@ -29,8 +29,9 @@ export interface ChatBubble {
 }
 
 export interface ChatHistory {
-  sessionId: number;
-  bubbles: ChatBubble[];
+  session: number;
+  chats: ChatBubble[];
+  loading: boolean;
 }
 
 export type SessionRenameReturn = null | {
