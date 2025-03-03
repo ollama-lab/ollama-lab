@@ -50,7 +50,7 @@ export function StatusLine(props: StatusLineProps) {
             }}
           </Show>
 
-          <Show when={downloadInfo()?.type === "success"}>
+          <Show when={!downloadInfo() || downloadInfo()?.type === "success"}>
             {runningInfo() ? "Active" : "Inactive"}
           </Show>
         </span>

@@ -1,4 +1,4 @@
-import { createMemo, createResource, Match, onMount, Show, Switch } from "solid-js";
+import { createMemo, createResource, Match, onMount, Show, Suspense, Switch } from "solid-js";
 import { PlaceholderTitle } from "./placeholder-title";
 import { useModelPageCurrentModel } from "~/lib/contexts/model-page/current-model";
 import { useModelContext } from "~/lib/contexts/model-list";
@@ -9,6 +9,9 @@ import SetDefault from "./toolbar-items/set-default";
 import { DuplicateModel } from "./toolbar-items/duplicate-model";
 import DeleteModel from "./toolbar-items/delete-model";
 import { StatusLine } from "./status-line";
+import { LoaderSpin } from "../loader-spin";
+import { Progress } from "../ui/progress";
+import ProgressSize from "../custom-ui/progress-size";
 
 function PlaceholderPage() {
   return (
@@ -73,6 +76,37 @@ export function ModelDetails() {
                 </div>
               </div>
               <StatusLine downloadInfo={downloadInfo} model={m} />
+            </div>
+
+            <div>
+              <Show when={modelInfo.loading}>
+                <LoaderSpin text="Loading..." />
+              </Show>
+
+              <Show when={downloadInfo()}>
+                {(info) => {
+                  const infoObj = info();
+                  return infoObj.type === "inProgress" && (
+                    <div class="flex text-sm gap-2 md:gap-3.5 items-center">
+                      <Progress
+                        minValue={0}
+                        maxValue={infoObj.total ?? undefined}
+                        value={infoObj.completed ?? undefined}
+                        indeterminate={infoObj.completed === null}
+                      />
+                      <ProgressSize
+                        completed={infoObj.completed ?? undefined}
+                        total={infoObj.total ?? undefined}
+                      />
+                    </div>
+                  );
+                }}
+              </Show>
+
+              <Suspense>
+                <div>
+                </div>
+              </Suspense>
             </div>
           </div>
         )}

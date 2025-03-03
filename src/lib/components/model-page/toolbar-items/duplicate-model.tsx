@@ -23,7 +23,7 @@ export function DuplicateModel(props: DuplicateModelProps) {
 
   return (
     <Dialog open={open()} onOpenChange={setOpen}>
-      <DialogTrigger as={Button<"button">} size="icon" title="Duplicate">
+      <DialogTrigger as={Button<"button">} size="icon" title="Duplicate" variant="outline">
         <CopyIcon />
       </DialogTrigger>
       <DialogContent>
