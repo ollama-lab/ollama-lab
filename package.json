@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@corvu/resizable": "^0.2.4",
-    "@fontsource-variable/inter": "^5.1.1",
+    "@fontsource-variable/inter": "^5.2.5",
     "@kobalte/core": "^0.13.9",
     "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^0.15.3",
@@ -43,7 +43,7 @@
     "change-case": "^5.4.4",
     "magic-string": "^0.30.17",
     "postcss": "^8.5.3",
-    "prettier": "^3.5.2",
+    "prettier": "^3.5.3",
     "tailwindcss": "^4.0.9",
     "vite": "^6.2.0",
     "vite-plugin-solid": "^2.11.6"
