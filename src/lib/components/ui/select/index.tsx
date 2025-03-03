@@ -45,7 +45,7 @@ export const SelectContent = <T extends ValidComponent = "div">(props: Polymorph
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         class={cn(
-          "relative z-50 min-w-32 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md animate-in fade-in-80",
+          "relative z-50 min-w-32 overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md ease-in-out animate-in fade-in slide-in-from-top-5 data-[closed]:animate-out data-[closed]:fade-out data-[closed]:slide-out-to-top-5",
           local.class,
         )}
         {...others}
