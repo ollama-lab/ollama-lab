@@ -45,7 +45,7 @@ export function CodeBlock(props: CodeBlockProps) {
       </div>
 
       <div class="text-sm overflow-x-auto">
-        <pre class="whitespace-pre-wrap!">
+        <pre class="whitespace-pre-line!">
           <code class={cn(
             "hljs",
             detectedLang() ? `language-${detectedLang()!}` : ""
