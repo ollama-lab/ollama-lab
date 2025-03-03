@@ -40,11 +40,11 @@ export function CodeBlock(props: CodeBlockProps) {
   return (
     <div class={cn("relative rounded flex flex-col", props.class)}>
       <CodeBlockToolbar code={code} />
-      <div class="flex py-1 items-center bg-secondary text-secondary-foreground px-2">
+      <div class="flex py-1 items-center bg-secondary text-secondary-foreground px-2 rounded-t">
         <div class="shrink-0 text-sm">{langName()}</div>
       </div>
 
-      <div class="text-sm overflow-x-auto">
+      <div class="text-sm overflow-x-auto rounded-b">
         <pre class="whitespace-pre-line!">
           <code class={cn(
             "hljs",
