@@ -3,6 +3,7 @@ import { useModelContext } from "~/lib/contexts/model-list";
 import { ProgressEvent } from "~/lib/models/events/progress";
 import { LoaderSpin } from "../loader-spin";
 import StatusDot from "../custom-ui/status-dot";
+import { Countdown } from "./countdown";
 
 export interface StatusLineProps {
   model: Accessor<string>;
@@ -55,8 +56,26 @@ export function StatusLine(props: StatusLineProps) {
         </span>
       </span>
 
-      <Show when={runningInfo() && expiresInSec() >= 0}>
-        <hr class="bg-border h-full w-[2pt]" />
+      <Show when={expiresInSec() >= 0}>
+        <Show when={runningInfo()}>
+          {(info) => (
+            <>
+              <hr class="bg-border h-full w-[2pt]" />
+              <span class="space-x-1" title={info().expires_at.toLocaleString()}>
+                Session expires in
+                <Countdown
+                  seconds={expiresInSec}
+                  expiresAt={() => info().expires_at}
+                  onTick={setExpiresInSec}
+                  onExpire={() => {
+                    modelContext?.reloadActiveModels();
+                  }}
+                />
+                second{expiresInSec() !== 1 ? "s" : ""}
+              </span>
+            </>
+          )}
+        </Show>
       </Show>
     </div>
   );

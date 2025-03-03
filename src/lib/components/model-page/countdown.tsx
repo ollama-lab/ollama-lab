@@ -29,7 +29,7 @@ export function Countdown(props: CountdownProps) {
     setExpirationTimerId(setInterval(() => {
       if (seconds() <= 0) {
         onExpire?.();
-        clearInterval(timerId);
+        clearInterval(expirationTimerId());
         setExpirationTimerId(undefined);
         return;
       }
