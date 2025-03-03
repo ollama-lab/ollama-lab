@@ -24,14 +24,13 @@ export function SystemPromptSection(props: SystemPromptSectionProps) {
         <TextField
           value={promptInfo() ?? ""}
           onChange={(value) => mutate(value)}
-          onBlur={async () => {
-            const content = promptInfo();
-            if (content) {
-              mutate(await setModelSystemPrompt(model(), content));
-            }
-          }}
         >
-          <TextFieldTextArea />
+          <TextFieldTextArea
+            onBlur={async () => {
+              const content = promptInfo();
+              mutate(await setModelSystemPrompt(model(), content ?? ""));
+            }}
+          />
         </TextField>
       </div>
     </Suspense>

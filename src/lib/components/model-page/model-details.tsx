@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { CodeBlock } from "../custom-ui/code-block";
 import { Details } from "./sections/details";
 import { ModelInfo } from "./sections/model-info";
+import { SystemPromptSection } from "./sections/system-prompt";
 
 function PlaceholderPage() {
   return (
@@ -174,6 +175,7 @@ export function ModelDetails() {
                     </Show>
 
                     <TabsContent value="system-prompt">
+                      <SystemPromptSection model={m()} />
                     </TabsContent>
                   </div>
                 </Tabs>
