@@ -10,14 +10,16 @@ import { cn } from "~/lib/utils/class-names";
 export type ProgressRootProps<T extends ValidComponent = "div"> = ProgressPrimitive.ProgressRootProps<T> & {
   children?: JSX.Element;
   indeterminate?: boolean;
+  class?: string;
 };
 
 export const Progress = <T extends ValidComponent = "div">(props: PolymorphicProps<T, ProgressRootProps<T>>) => {
-  const [local, others] = splitProps(props as ProgressRootProps, ["children", "indeterminate", "value", "maxValue"]);
+  const [local, others] = splitProps(props as ProgressRootProps, ["children", "indeterminate", "value", "maxValue", "class"]);
   return (
     <ProgressPrimitive.Root
       maxValue={local.maxValue}
-      value={local.indeterminate ? local.maxValue : local.value}
+      value={local.indeterminate ? (local.maxValue ?? 100) : local.value}
+      class={local.class}
       {...others}
     >
       {local.children}
