@@ -20,5 +20,5 @@ export default function StatusDot(props: StatusDotProps) {
         status() === "disabled" && "text-gray-600",
       )}
     />
-  )
+  );
 }

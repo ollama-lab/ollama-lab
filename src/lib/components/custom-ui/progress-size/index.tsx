@@ -22,9 +22,7 @@ export default function ProgressSize(props: ProgressSizeProps) {
           </span>
         )}
       </Show>
-      <Show when={isProgressComplete()}>
-        /
-      </Show>
+      <Show when={isProgressComplete()}>/</Show>
       <Show when={total()}>
         {(t) => (
           <span title={`${t().toLocaleString()} bytes`}>
@@ -33,5 +31,5 @@ export default function ProgressSize(props: ProgressSizeProps) {
         )}
       </Show>
     </span>
-  )
+  );
 }

@@ -26,9 +26,11 @@ export function StatusLine(props: StatusLineProps) {
   return (
     <div class="flex gap-2 items-center text-sm">
       <span class="flex items-center select-none">
-        <Switch fallback={(
-          <StatusDot status={downloadInfo()?.type === "failure" ? "error" : runningInfo() ? "success" : "disabled"} />
-        )} >
+        <Switch
+          fallback={
+            <StatusDot status={downloadInfo()?.type === "failure" ? "error" : runningInfo() ? "success" : "disabled"} />
+          }
+        >
           <Match when={downloadInfo()?.type === "inProgress"}>
             <LoaderSpin class="size-4 mr-2" />
           </Match>

@@ -39,8 +39,8 @@ export function ModelDetails() {
 
     return undefined;
   });
-  
-  const [modelInfo, { refetch }] = createResource(model, async (modelName) => {
+
+  const [modelInfo] = createResource(model, async (modelName) => {
     const di = downloadInfo();
     if (di && di.type !== "success") {
       return null;
@@ -86,26 +86,24 @@ export function ModelDetails() {
               <Show when={downloadInfo()}>
                 {(info) => {
                   const infoObj = info();
-                  return infoObj.type === "inProgress" && (
-                    <div class="flex text-sm gap-2 md:gap-3.5 items-center">
-                      <Progress
-                        minValue={0}
-                        maxValue={infoObj.total ?? undefined}
-                        value={infoObj.completed ?? undefined}
-                        indeterminate={infoObj.completed === null}
-                      />
-                      <ProgressSize
-                        completed={infoObj.completed ?? undefined}
-                        total={infoObj.total ?? undefined}
-                      />
-                    </div>
+                  return (
+                    infoObj.type === "inProgress" && (
+                      <div class="flex text-sm gap-2 md:gap-3.5 items-center">
+                        <Progress
+                          minValue={0}
+                          maxValue={infoObj.total ?? undefined}
+                          value={infoObj.completed ?? undefined}
+                          indeterminate={infoObj.completed === null}
+                        />
+                        <ProgressSize completed={infoObj.completed ?? undefined} total={infoObj.total ?? undefined} />
+                      </div>
+                    )
                   );
                 }}
               </Show>
 
               <Suspense>
-                <div>
-                </div>
+                <div></div>
               </Suspense>
             </div>
           </div>

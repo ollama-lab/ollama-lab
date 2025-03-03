@@ -56,7 +56,7 @@ export function SettingsProvider(props: { children?: JSX.Element }) {
       value={{
         settings: () => settingsStore,
         restartVotes,
-        voteRestart: (id) => setRestartVotes((cur) => ([...cur.filter((k) => k !== id), id])),
+        voteRestart: (id) => setRestartVotes((cur) => [...cur.filter((k) => k !== id), id]),
         unvoteRestart: (id) => setRestartVotes((cur) => cur.filter((k) => k !== id)),
         reload,
         set: setSettingsStore,

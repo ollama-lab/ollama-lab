@@ -6,5 +6,5 @@
  * @returns Compatible format
  */
 export function toEventString(input: string): string {
-  return input.replaceAll(/[^\d\w-/:_]/g, "_")
+  return input.replaceAll(/[^\d\w-/:_]/g, "_");
 }

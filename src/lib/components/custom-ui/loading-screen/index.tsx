@@ -14,4 +14,3 @@ export function LoadingScreen(props: LoadingScreenProps) {
     </div>
   );
 }
-

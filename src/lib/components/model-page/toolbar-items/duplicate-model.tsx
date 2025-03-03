@@ -1,5 +1,13 @@
 import { Accessor, createSignal, Match, Switch } from "solid-js";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../ui/dialog";
 import { Button } from "../../ui/button";
 import { CopyIcon } from "lucide-solid";
 import { LoaderSpin } from "../../loader-spin";
@@ -29,9 +37,7 @@ export function DuplicateModel(props: DuplicateModelProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Duplicate model</DialogTitle>
-          <DialogDescription>
-            Enter the new model name for the copy.
-          </DialogDescription>
+          <DialogDescription>Enter the new model name for the copy.</DialogDescription>
         </DialogHeader>
 
         <Switch>
@@ -61,9 +67,9 @@ export function DuplicateModel(props: DuplicateModelProps) {
 
                 const toModel = completeModelName(newModelName);
                 modelContext?.setCurrent(toModel);
-                toast.success(`Model copied to ${toModel}`)
+                toast.success(`Model copied to ${toModel}`);
               }}
-            > 
+            >
               <TextField>
                 <TextFieldInput type="text" name="model" placeholder="New model name" required />
               </TextField>
@@ -72,9 +78,7 @@ export function DuplicateModel(props: DuplicateModelProps) {
                 <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit">
-                  Proceed
-                </Button>
+                <Button type="submit">Proceed</Button>
               </DialogFooter>
             </form>
           </Match>

@@ -1,4 +1,4 @@
-import { createEffect, createMemo, Index, Match, Switch } from "solid-js"
+import { createEffect, createMemo, Index, Match, Switch } from "solid-js";
 import { useModelContext } from "~/lib/contexts/model-list";
 import { usePullModelTasks } from "~/lib/contexts/pull-model-tasks";
 import { Button } from "../ui/button";
@@ -12,12 +12,12 @@ import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { ModelListItem } from "./model-list-item";
 
 interface DisplayModelListItem {
-  name: string
-  status?: "inProgress" | "failure" | "canceled"
-  message?: string
-  completedSize?: number
-  totalSize?: number
-  modifiedAt?: Date
+  name: string;
+  status?: "inProgress" | "failure" | "canceled";
+  message?: string;
+  completedSize?: number;
+  totalSize?: number;
+  modifiedAt?: Date;
 }
 
 export function ModelList() {
@@ -45,7 +45,7 @@ export function ModelList() {
 
     return [
       ...Object.entries(pullModelTasksContext.taskMap)
-        .filter(([name,]) => !modelNameListRet?.includes(name))
+        .filter(([name]) => !modelNameListRet?.includes(name))
         .map(([name, item]) => {
           switch (item.type) {
             case "inProgress":
@@ -55,30 +55,33 @@ export function ModelList() {
                 message: item.message,
                 completedSize: item.completed === null ? undefined : item.completed,
                 totalSize: item.total === null ? undefined : item.total,
-              } satisfies DisplayModelListItem
+              } satisfies DisplayModelListItem;
             case "failure":
               return {
                 name,
                 message: item.message ?? undefined,
                 status: "failure",
-              } satisfies DisplayModelListItem
+              } satisfies DisplayModelListItem;
             case "success":
               return {
                 name,
-              } satisfies DisplayModelListItem
+              } satisfies DisplayModelListItem;
             case "canceled":
               return {
                 name,
                 status: "canceled",
                 message: item.message ?? undefined,
-              } satisfies DisplayModelListItem
-        }
-      }),
-      ...(modelList?.().map((item) => ({
-        name: item.name,
-        totalSize: item.size,
-        modifiedAt: item.modified_at,
-      } satisfies DisplayModelListItem)) ?? []),
+              } satisfies DisplayModelListItem;
+          }
+        }),
+      ...(modelList?.().map(
+        (item) =>
+          ({
+            name: item.name,
+            totalSize: item.size,
+            modifiedAt: item.modified_at,
+          }) satisfies DisplayModelListItem,
+      ) ?? []),
     ];
   });
 
@@ -99,7 +102,7 @@ export function ModelList() {
                   loading: "Refreshing model list...",
                   success: "Model list refreshed.",
                   error: (err) => {
-                    return `Failed to refresh model list: ${err}`
+                    return `Failed to refresh model list: ${err}`;
                   },
                 });
               }
@@ -122,20 +125,14 @@ export function ModelList() {
               <Alert class="bg-destructive text-destructive-foreground border-destructive">
                 <CircleAlertIcon class="size-4" />
                 <AlertTitle>Error</AlertTitle>
-                <AlertDescription>
-                  Failed to fetch the model list.
-                </AlertDescription>
+                <AlertDescription>Failed to fetch the model list.</AlertDescription>
               </Alert>
             </Match>
           </Switch>
 
-            <Index each={displayModelList()}>
-              {(item, index) => (
-                <ModelListItem index={index} {...item()} />
-              )}
-            </Index>
+          <Index each={displayModelList()}>{(item, index) => <ModelListItem index={index} {...item()} />}</Index>
         </div>
       </div>
     </div>
-  )
+  );
 }

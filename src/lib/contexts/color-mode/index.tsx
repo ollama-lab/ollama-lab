@@ -46,13 +46,15 @@ export function ColorModeProvider(props: ColorModeProviderProps) {
   const preferredColorMode = () => colorModeStore.preferredColorMode;
 
   return (
-    <ColorModeContext.Provider value={{
-      colorMode,
-      preferredColorMode,
-      setColorMode: (value) => setColorModeStore("colorMode", value),
-    }}>
-    {props.children}
-  </ColorModeContext.Provider>
+    <ColorModeContext.Provider
+      value={{
+        colorMode,
+        preferredColorMode,
+        setColorMode: (value) => setColorModeStore("colorMode", value),
+      }}
+    >
+      {props.children}
+    </ColorModeContext.Provider>
   );
 }
 

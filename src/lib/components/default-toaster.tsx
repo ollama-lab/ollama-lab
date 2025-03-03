@@ -5,12 +5,5 @@ export function DefaultToaster() {
   const colorModeContext = useColorMode();
   const colorMode = colorModeContext?.preferredColorMode;
 
-  return (
-    <Toaster
-      closeButton
-      richColors
-      class="font-sans-inter!"
-      theme={colorMode?.()}
-    />
-  )
+  return <Toaster closeButton richColors class="font-sans-inter!" theme={colorMode?.()} />;
 }

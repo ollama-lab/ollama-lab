@@ -15,21 +15,22 @@ export default function SetDefault(props: SetDefaultProps) {
   const defaultModel = modelContext?.defaultModel;
 
   return (
-    <Button onClick={() => {
-      // Optimistic update
-      const prev = defaultModel?.();
-      const m = model();
+    <Button
+      onClick={() => {
+        // Optimistic update
+        const prev = defaultModel?.();
+        const m = model();
 
-      modelContext?.setDefault(m);
-      setDefaultModel(m)
-        .catch((err) => {
+        modelContext?.setDefault(m);
+        setDefaultModel(m).catch((err) => {
           if (prev) {
             modelContext?.setDefault(prev);
           }
 
           toast.error(err);
         });
-    }}>
+      }}
+    >
       Set default
     </Button>
   );

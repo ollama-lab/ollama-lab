@@ -17,7 +17,7 @@ export function Countdown(props: CountdownProps) {
 
   const countdown = () => {
     onTick?.(Math.floor((expiresAt().getTime() - Date.now()) / 1000));
-  }
+  };
 
   createEffect(() => {
     const timerId = untrack(expirationTimerId);
@@ -26,23 +26,23 @@ export function Countdown(props: CountdownProps) {
     setExpirationTimerId(undefined);
 
     countdown();
-    setExpirationTimerId(setInterval(() => {
-      if (seconds() <= 0) {
-        onExpire?.();
-        clearInterval(expirationTimerId());
-        setExpirationTimerId(undefined);
-        return;
-      }
+    setExpirationTimerId(
+      setInterval(() => {
+        if (seconds() <= 0) {
+          onExpire?.();
+          clearInterval(expirationTimerId());
+          setExpirationTimerId(undefined);
+          return;
+        }
 
-      countdown();
-    }, 1000));
+        countdown();
+      }, 1000),
+    );
   });
 
   onCleanup(() => {
     clearInterval(expirationTimerId());
   });
 
-  return (
-    <span>{seconds()}</span>
-  );
+  return <span>{seconds()}</span>;
 }

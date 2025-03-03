@@ -50,12 +50,12 @@ export function ModelListItem(props: ModelListItemProps) {
     const t = total();
 
     if (c !== undefined && t !== undefined) {
-      return [c / t * 100, false];
+      return [(c / t) * 100, false];
     }
 
     return [0, true];
   });
-  
+
   const name = () => props.name;
   const message = () => props.message;
 
@@ -85,22 +85,23 @@ export function ModelListItem(props: ModelListItemProps) {
 
           <span class="font-bold">{name()}</span>
 
-          <Show when={modelContext?.activeModels().map(item => item.name).includes(name())}>
+          <Show
+            when={modelContext
+              ?.activeModels()
+              .map((item) => item.name)
+              .includes(name())}
+          >
             <StatusDot status="success" />
           </Show>
 
           <Show when={isDefault()}>
-            <Badge
-              variant={selected() ? "secondary" : "default"}
-              title="Newly created sessions will use this model."
-            >
+            <Badge variant={selected() ? "secondary" : "default"} title="Newly created sessions will use this model.">
               Default
             </Badge>
           </Show>
 
           <div class="grow"></div>
           <Show when={status()}>
-
             {(s) => (
               <button
                 title={s() === "canceled" ? "Remove" : "Cancel"}
@@ -125,11 +126,7 @@ export function ModelListItem(props: ModelListItemProps) {
         </div>
 
         <div class="flex items-center text-xs gap-1">
-          <Show when={message()}>
-            {(msg) => (
-              <span class="truncate">{msg()}</span>
-            )}
-          </Show>
+          <Show when={message()}>{(msg) => <span class="truncate">{msg()}</span>}</Show>
           <Show when={props.modifiedAt}>
             {(ma) => (
               <span class="flex gap-1">
@@ -148,10 +145,7 @@ export function ModelListItem(props: ModelListItemProps) {
           <Progress
             value={p()[0]}
             indeterminate={p()[1]}
-            class={cn(
-              "h-1 rounded-none bg-transparent",
-              selected() && "invert",
-            )}
+            class={cn("h-1 rounded-none bg-transparent", selected() && "invert")}
           />
         )}
       </Show>

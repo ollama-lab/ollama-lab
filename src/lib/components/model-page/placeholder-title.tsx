@@ -53,10 +53,8 @@ export function PlaceholderTitle() {
       }}
     >
       <Switch fallback={defaultText}>
-        <Match when={eggTriggered()}>
-          {atob(eggTextBase64) + " 😏"}
-        </Match>
+        <Match when={eggTriggered()}>{atob(eggTextBase64) + " 😏"}</Match>
       </Switch>
     </span>
-  )
+  );
 }

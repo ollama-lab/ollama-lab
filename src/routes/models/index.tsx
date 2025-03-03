@@ -13,9 +13,11 @@ export default function ModelsPage() {
     if (modelContext) {
       modelContext.reloadActiveModels();
 
-      setTimerId(setInterval(() => {
-        modelContext.reloadActiveModels();
-      }, 10_000));
+      setTimerId(
+        setInterval(() => {
+          modelContext.reloadActiveModels();
+        }, 10_000),
+      );
     }
   });
 
