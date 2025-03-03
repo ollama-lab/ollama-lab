@@ -29,6 +29,7 @@
     "autosize": "^6.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cmdk-solid": "^1.1.2",
     "convert": "^5.8.0",
     "dayjs": "^1.11.13",
     "hast-util-to-jsx-runtime": "^2.3.5",
