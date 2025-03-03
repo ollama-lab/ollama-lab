@@ -34,7 +34,7 @@ export function AppBar() {
   const pathname = createMemo(() => loc.pathname);
 
   return (
-    <nav class="flex flex-col border-r border-border px-1 py-1">
+    <nav class="sticky flex flex-col border-r border-border px-1 py-1 shrink-0">
       <div class="grow flex flex-col">
         <For each={tabs}>
           {({ name, icon, href, activePattern, onClick }) => (
