@@ -14,6 +14,8 @@ import { Progress } from "../ui/progress";
 import ProgressSize from "../custom-ui/progress-size";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { CodeBlock } from "../custom-ui/code-block";
+import { Details } from "./sections/details";
+import { ModelInfo } from "./sections/model-info";
 
 function PlaceholderPage() {
   return (
@@ -119,7 +121,7 @@ export function ModelDetails() {
                             <TabsTrigger value="info">Model Info</TabsTrigger>
                           </Show>
                           <Show when={info().parameters}>
-                            <TabsTrigger value="params">Parameters</TabsTrigger>
+                            <TabsTrigger value="parameters">Parameters</TabsTrigger>
                           </Show>
                           <TabsTrigger value="template">Template</TabsTrigger>
                         </>
@@ -139,9 +141,40 @@ export function ModelDetails() {
                               </TabsContent>
                             )}
                           </Show>
+                          <Show when={info().details}>
+                            {(d) => (
+                              <TabsContent value="details">
+                                <Details value={d()} />
+                              </TabsContent>
+                            )}
+                          </Show>
+                          <Show when={info().model_info}>
+                            {(mi) => (
+                              <TabsContent value="info">
+                                <ModelInfo value={mi()} />
+                              </TabsContent>
+                            )}
+                          </Show>
+                          <Show when={info().parameters}>
+                            {(p) => (
+                              <TabsContent value="parameters">
+                                <CodeBlock code={p()} />
+                              </TabsContent>
+                            )}
+                          </Show>
+                          <Show when={info().template}>
+                            {(t) => (
+                              <TabsContent value="template">
+                                <CodeBlock code={t()} />
+                              </TabsContent>
+                            )}
+                          </Show>
                         </>
                       )}
                     </Show>
+
+                    <TabsContent value="system-prompt">
+                    </TabsContent>
                   </div>
                 </Tabs>
               </Suspense>
