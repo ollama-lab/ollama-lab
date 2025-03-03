@@ -44,7 +44,6 @@
 
   --font-sans-inter: "Inter Variable", var(--font-sans);
 
-  --animate-accordion-down: accordion-down 0.2s ease-out;
   @keyframes accordion-down {
     from {
       height: 0;
@@ -53,7 +52,7 @@
       height: var(--kb-accordion-content-height);
     }
   }
-  --animate-accordion-up: accordion-up 0.2s ease-out;
+
   @keyframes accordion-up {
     from {
       height: var(--kb-accordion-content-height);
@@ -63,7 +62,6 @@
     }
   }
 
-  --animate-content-show: content-show 0.2s ease-out;
   @keyframes content-show {
     from {
       opacity: 0;
@@ -75,7 +73,6 @@
     }
   }
 
-  --animate-content-hide: content-hide 0.2s ease-out;
   @keyframes content-hide {
     from {
       opacity: 1;
@@ -87,7 +84,6 @@
     }
   }
 
-  --animate-caret-blink: caret-blink 1.25s ease-out infinite;
   @keyframes caret-blink {
     0%,70%,100% {
       opacity: 1;
@@ -98,7 +94,11 @@
     }
   }
 
-  --animate-indeterminate: indeterminate-progress 2s infinite linear;
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-content-show: content-show 0.2s ease-out;
+  --animate-content-hide: content-hide 0.2s ease-out;
+  --animate-caret-blink: caret-blink 1.25s ease-out infinite;
 
   @keyframes indeterminate-progress {
     0% {
@@ -123,6 +123,8 @@
       transform: translateX(100%) scaleX(0);
     }
   }
+
+  --animate-indeterminate: indeterminate-progress 2s infinite linear;
 }
 
 @layer base {
