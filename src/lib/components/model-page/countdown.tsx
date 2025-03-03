@@ -1,4 +1,4 @@
-import { Accessor, createEffect, onCleanup } from "solid-js";
+import { Accessor, createEffect, createSignal, onCleanup, untrack } from "solid-js";
 
 export interface CountdownProps {
   seconds: Accessor<number>;
@@ -13,32 +13,33 @@ export function Countdown(props: CountdownProps) {
   const expiresAt = props.expiresAt;
   const onExpire = props.onExpire;
 
-  // Direct value in purpose
-  let expirationTimerId: number | undefined = undefined;
+  const [expirationTimerId, setExpirationTimerId] = createSignal<number>();
 
   const countdown = () => {
     onTick?.(Math.floor((expiresAt().getTime() - Date.now()) / 1000));
   }
 
   createEffect(() => {
-    clearInterval(expirationTimerId);
-    expirationTimerId = undefined;
+    const timerId = untrack(expirationTimerId);
+
+    clearInterval(timerId);
+    setExpirationTimerId(undefined);
 
     countdown();
-    expirationTimerId = setInterval(() => {
+    setExpirationTimerId(setInterval(() => {
       if (seconds() <= 0) {
         onExpire?.();
-        clearInterval(expirationTimerId);
-        expirationTimerId = undefined;
+        clearInterval(timerId);
+        setExpirationTimerId(undefined);
         return;
       }
 
       countdown();
-    }, 1000);
+    }, 1000));
   });
 
   onCleanup(() => {
-    clearInterval(expirationTimerId);
+    clearInterval(expirationTimerId());
   });
 
   return (
