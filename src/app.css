@@ -5,6 +5,8 @@
 @theme {
   --color-background: hsl(0 0% 100%);
   --color-foreground: hsl(240 10% 3.9%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: 240 10% 3.9%;
   --color-muted: hsl(240 4.8% 95.9%);
   --color-muted-foreground: hsl(240 3.8% 46.1%);
   --color-popover: hsl(0 0% 100%);
@@ -19,6 +21,7 @@
   --color-accent-foreground: hsl(240 5.9% 10%);
   --color-destructive: hsl(0 72.2% 50.6%);
   --color-destructive-foreground: hsl(0 0% 98%);
+  --color-input: hsl(240 5.9% 90%);
   --color-ring: hsl(240 10% 3.9%);
 
   --color-info: hsl(204 94% 94%);
@@ -40,6 +43,60 @@
   --color-sidebar-ring: hsl(217.2 91.2% 59.8%);
 
   --font-sans-inter: "Inter Variable", var(--font-sans);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--kb-accordion-content-height);
+    }
+  }
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  @keyframes accordion-up {
+    from {
+      height: var(--kb-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+
+  --animate-content-show: content-show 0.2s ease-out;
+  @keyframes content-show {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  --animate-content-hide: content-hide 0.2s ease-out;
+  @keyframes content-hide {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+
+  --animate-caret-blink: caret-blink 1.25s ease-out infinite;
+  @keyframes caret-blink {
+    0%,70%,100% {
+      opacity: 1;
+    }
+
+    20%,50% {
+      opacity: 0;
+    }
+  }
 
   --animate-indeterminate: indeterminate-progress 2s infinite linear;
 
@@ -72,6 +129,8 @@
   .dark {
     --color-background: hsl(240 10% 3.9%);
     --color-foreground: hsl(0 0% 98%);
+    --color-card: 240 10% 3.9%;
+    --color-card-foreground: 0 0% 98%;
     --color-muted: hsl(240 3.7% 15.9%);
     --color-muted-foreground: hsl(240 5% 64.9%);
     --color-popover: hsl(240 10% 3.9%);
@@ -88,6 +147,7 @@
     --color-accent-foreground: hsl(0 0% 98%);
     --color-destructive: hsl(0 62.8% 30.6%);
     --color-destructive-foreground: hsl(0 0% 98%);
+    --color-input: hsl(240 3.7% 15.9%);
     --color-ring: hsl(240 4.9% 83.9%);
 
     --color-info: hsl(226.2 57% 21%);
@@ -134,21 +194,6 @@
   .container {
     @apply px-4;
   }
-}
-
-::-webkit-scrollbar {
-  width: 16px;
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 9999px;
-  border: 4px solid transparent;
-  background-clip: content-box;
-  @apply bg-accent;
-}
-
-::-webkit-scrollbar-corner {
-  display: none;
 }
 
 [data-corvu-resizable-panel]:has(+ [data-corvu-resizable-handle][data-dragging]) iframe {
