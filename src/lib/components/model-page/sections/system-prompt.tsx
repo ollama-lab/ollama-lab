@@ -21,10 +21,7 @@ export function SystemPromptSection(props: SystemPromptSectionProps) {
           <p>Tell the model how to behave. System prompts in existing sessions will not be changed.</p>
         </div>
 
-        <TextField
-          value={promptInfo() ?? ""}
-          onChange={(value) => mutate(value)}
-        >
+        <TextField value={promptInfo() ?? ""} onChange={(value) => mutate(value)}>
           <TextFieldTextArea
             onBlur={async () => {
               const content = promptInfo();

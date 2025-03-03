@@ -12,9 +12,7 @@ export function ModelInfo(props: ModelInfoProps) {
         <For each={Object.entries(props.value)}>
           {([key, val]) => (
             <TableRow>
-              <TableCell class="max-w-fit font-semibold">
-                {key}
-              </TableCell>
+              <TableCell class="max-w-fit font-semibold">{key}</TableCell>
               <TableCell>{val?.toString?.()}</TableCell>
             </TableRow>
           )}

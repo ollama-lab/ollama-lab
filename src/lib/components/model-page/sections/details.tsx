@@ -5,32 +5,32 @@ import { For } from "solid-js";
 interface DetailEntry {
   name: string;
   valueFn: (v: ModelDetails) => string;
-};
+}
 
 const DETAIL_ENTRIES: DetailEntry[] = [
   {
     name: "Format",
-    valueFn: value => value.format,
+    valueFn: (value) => value.format,
   },
   {
     name: "Parent Model",
-    valueFn: value => value.parent_model,
+    valueFn: (value) => value.parent_model,
   },
   {
     name: "Family",
-    valueFn: value => value.family,
+    valueFn: (value) => value.family,
   },
   {
     name: "Families",
-    valueFn: value => value.families.toString(),
+    valueFn: (value) => value.families.toString(),
   },
   {
     name: "Parameter Size",
-    valueFn: value => value.parameter_size,
+    valueFn: (value) => value.parameter_size,
   },
   {
     name: "Quantization Level",
-    valueFn: value => value.quantization_level,
+    valueFn: (value) => value.quantization_level,
   },
 ];
 

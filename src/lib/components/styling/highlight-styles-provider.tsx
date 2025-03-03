@@ -7,12 +7,12 @@ import { Style } from "@solidjs/meta";
 export function HighlightStylesProvider(props: { children?: JSX.Element }) {
   const colorModeContext = useColorMode();
 
-  const cssString = createMemo(() => colorModeContext?.preferredColorMode() === "light" ? lightModeCSS : darkModeCSS);
+  const cssString = createMemo(() => (colorModeContext?.preferredColorMode() === "light" ? lightModeCSS : darkModeCSS));
 
   return (
     <>
       <Style id="highlight-styles">{cssString()}</Style>
       {props.children}
     </>
-  )
+  );
 }

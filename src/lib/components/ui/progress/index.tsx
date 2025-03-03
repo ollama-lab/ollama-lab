@@ -14,7 +14,13 @@ export type ProgressRootProps<T extends ValidComponent = "div"> = ProgressPrimit
 };
 
 export const Progress = <T extends ValidComponent = "div">(props: PolymorphicProps<T, ProgressRootProps<T>>) => {
-  const [local, others] = splitProps(props as ProgressRootProps, ["children", "indeterminate", "value", "maxValue", "class"]);
+  const [local, others] = splitProps(props as ProgressRootProps, [
+    "children",
+    "indeterminate",
+    "value",
+    "maxValue",
+    "class",
+  ]);
   return (
     <ProgressPrimitive.Root
       maxValue={local.maxValue}

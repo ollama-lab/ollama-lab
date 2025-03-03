@@ -16,7 +16,7 @@ export interface CodeBlockProps {
 export function CodeBlock(props: CodeBlockProps) {
   const code = () => props.code;
   const autoGuess = () => props.autoGuess ?? false;
-  const lang = createMemo(() => !props.lang ? (autoGuess() ? null : "plaintext") : props.lang);
+  const lang = createMemo(() => (!props.lang ? (autoGuess() ? null : "plaintext") : props.lang));
 
   const lowlight = createLowlight(all);
 
@@ -46,12 +46,7 @@ export function CodeBlock(props: CodeBlockProps) {
 
       <div class="text-sm overflow-x-auto rounded-b">
         <pre class="whitespace-pre-line!">
-          <code class={cn(
-            "hljs",
-            detectedLang() ? `language-${detectedLang()!}` : ""
-          )}>
-            {yieldElement()}
-          </code>
+          <code class={cn("hljs", detectedLang() ? `language-${detectedLang()!}` : "")}>{yieldElement()}</code>
         </pre>
       </div>
     </div>
