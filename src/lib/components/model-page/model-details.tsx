@@ -138,7 +138,7 @@ export function ModelDetails() {
                           <Show when={info().modelfile}>
                             {(content) => (
                               <TabsContent value="modelfile">
-                                <CodeBlock code={content()} />
+                                <CodeBlock code={content()} class="max-w-screen-sm lg:max-w-screen-md xl:max-w-screen-lg" />
                               </TabsContent>
                             )}
                           </Show>
