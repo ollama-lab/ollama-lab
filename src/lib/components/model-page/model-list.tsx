@@ -44,7 +44,7 @@ export function ModelList() {
     const modelNameListRet = modelNameList();
 
     return [
-      ...Object.entries(pullModelTasksContext.taskMap)
+      ...Object.entries(pullModelTasksContext.taskMap())
         .filter(([name]) => !modelNameListRet?.includes(name))
         .map(([name, item]) => {
           switch (item.type) {

@@ -16,7 +16,7 @@ export function Layout(props: { children?: JSX.Element }) {
       <div class="flex flex-row w-dvw h-dvh">
         <AppBar />
 
-        <div class="grow overflow-auto">
+        <div class="grow">
           <Suspense fallback={<LoadingScreen text="Loading page..." />}>{props.children}</Suspense>
         </div>
       </div>

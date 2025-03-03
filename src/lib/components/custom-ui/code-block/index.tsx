@@ -4,6 +4,7 @@ import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import { jsx, jsxs, Fragment } from "solid-js/h/jsx-runtime";
 import hljs from "highlight.js";
 import { cn } from "~/lib/utils/class-names";
+import { CodeBlockToolbar } from "./toolbar";
 
 export interface CodeBlockProps {
   code: string;
@@ -37,12 +38,10 @@ export function CodeBlock(props: CodeBlockProps) {
   });
 
   return (
-    <div class={cn("relative rounded overflow-hidden flex flex-col", props.class)}>
-      <div class="flex py-1 bg-secondary text-secondary-foreground px-2">
+    <div class={cn("relative rounded flex flex-col", props.class)}>
+      <CodeBlockToolbar code={code} />
+      <div class="flex py-1 items-center bg-secondary text-secondary-foreground px-2">
         <div class="shrink-0 text-sm">{langName()}</div>
-        <div class="grow"></div>
-        <div>
-        </div>
       </div>
 
       <div class="text-sm overflow-x-auto">

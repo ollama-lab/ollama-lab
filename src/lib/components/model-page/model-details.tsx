@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createResource, createSignal, Match, onMount, Show, Suspense, Switch } from "solid-js";
+import { createMemo, createResource, createSignal, Match, onMount, Show, Suspense, Switch } from "solid-js";
 import { PlaceholderTitle } from "./placeholder-title";
 import { useModelPageCurrentModel } from "~/lib/contexts/model-page/current-model";
 import { useModelContext } from "~/lib/contexts/model-list";
@@ -57,32 +57,11 @@ export function ModelDetails() {
 
   const [tabValue, setTabValue] = createSignal<string>("details");
 
-  const [root, setRoot] = createSignal<HTMLDivElement>();
-
-  const enforceParentWidth = (rootElement: HTMLDivElement) => {
-    if (!rootElement.parentElement) {
-      return;
-    }
-
-    const width = window.getComputedStyle(rootElement.parentElement).width;
-    rootElement.style.maxWidth = width;
-  };
-
-  createEffect(() => {
-    const rootElement = root();
-    if (!rootElement) {
-      return;
-    }
-
-    rootElement.addEventListener("resize", enforceParentWidth.bind(null, rootElement));
-    enforceParentWidth(rootElement);
-  });
-
   return (
     <Switch fallback={<PlaceholderPage />}>
       <Match when={model?.()}>
         {(m) => (
-          <div ref={setRoot} class="flex flex-col h-full px-4 py-6 gap-4 overflow-y-auto">
+          <div class="flex flex-col h-full px-4 py-6 gap-4 overflow-y-auto">
             <div class="border border-border px-4 py-3 rounded flex flex-col gap-3">
               <div class="flex items-center gap-2">
                 <h3 class="font-bold text-xl">{m()}</h3>
@@ -107,7 +86,6 @@ export function ModelDetails() {
               <Show when={modelInfo.loading}>
                 <LoaderSpin text="Loading..." />
               </Show>
-
               <Show when={downloadInfo()}>
                 {(info) => {
                   const infoObj = info();
@@ -129,7 +107,7 @@ export function ModelDetails() {
 
               <Suspense>
                 <Tabs value={tabValue()} onChange={setTabValue}>
-                  <TabsList>
+                  <TabsList class="sticky -top-6 z-20">
                     <Show when={modelInfo()}>
                       {(info) => (
                         <>
@@ -150,14 +128,14 @@ export function ModelDetails() {
                     <TabsTrigger value="system-prompt">System Prompt</TabsTrigger>
                   </TabsList>
 
-                  <div class="overflow-y-auto">
+                  <div>
                     <Show when={modelInfo()}>
                       {(info) => (
                         <>
                           <Show when={info().modelfile}>
                             {(content) => (
                               <TabsContent value="modelfile">
-                                <CodeBlock code={content()} class="" />
+                                <CodeBlock code={content()} />
                               </TabsContent>
                             )}
                           </Show>
