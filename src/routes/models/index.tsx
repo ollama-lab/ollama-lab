@@ -1,4 +1,5 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
+import { ModelDetails } from "~/lib/components/model-page/model-details";
 import { ModelList } from "~/lib/components/model-page/model-list";
 import { Resizable, ResizableHandle, ResizablePanel } from "~/lib/components/ui/resizable";
 import { useModelContext } from "~/lib/contexts/model-list";
@@ -28,7 +29,8 @@ export default function ModelsPage() {
         <ModelList />
       </ResizablePanel>
       <ResizableHandle />
-      <ResizablePanel>
+      <ResizablePanel initialSize={0.75}>
+        <ModelDetails />
       </ResizablePanel>
     </Resizable>
   );
