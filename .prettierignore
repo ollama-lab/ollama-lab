@@ -13,3 +13,5 @@ public/
 
 tmp/
 src-svelte/
+
+src/lib/components/providers.tsx

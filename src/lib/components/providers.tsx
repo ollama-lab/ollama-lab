@@ -17,7 +17,9 @@ export default function Providers(props: { children?: JSX.Element }) {
             <ChatHistoryProvider>
               <SelectedSessionModelProvider>
                 <PullModelTasksProvider>
-                  <ModelPageCurrentModelProvider>{props.children}</ModelPageCurrentModelProvider>
+                  <ModelPageCurrentModelProvider>
+                    {props.children}
+                  </ModelPageCurrentModelProvider>
                 </PullModelTasksProvider>
               </SelectedSessionModelProvider>
             </ChatHistoryProvider>
