@@ -16,6 +16,7 @@ import {
 } from "~/lib/contexts/globals/model-states";
 import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";
 import { ModelSearchResultProvider } from "~/lib/contexts/model-search-result";
+import { setCurrentModelPageModel } from "~/lib/contexts/globals/model-page";
 
 interface DisplayModelListItem {
   name: string;
@@ -110,7 +111,7 @@ export function ModelList() {
         </div>
       </div>
 
-      <div class="grow overflow-y-auto" onClick={() => setCurrentModel(null)}>
+      <div class="grow overflow-y-auto" onClick={() => setCurrentModelPageModel(null)}>
         <div class="flex flex-col gap-2 px-2">
           <Switch>
             <Match when={status?.() === "fetching"}>
