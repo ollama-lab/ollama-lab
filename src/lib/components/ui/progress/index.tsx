@@ -1,50 +1,51 @@
-import type { Component, JSX, ValidComponent } from "solid-js";
-import { splitProps } from "solid-js";
+import type { ComponentProps } from "solid-js";
+import { createMemo, splitProps } from "solid-js";
 
-import type { PolymorphicProps } from "@kobalte/core/polymorphic";
-import * as ProgressPrimitive from "@kobalte/core/progress";
-
-import { Label } from "~/lib/components/ui/label";
 import { cn } from "~/lib/utils/class-names";
 
-export type ProgressRootProps<T extends ValidComponent = "div"> = ProgressPrimitive.ProgressRootProps<T> & {
-  children?: JSX.Element;
-  indeterminate?: boolean;
-  class?: string;
-};
+export interface ProgressProps extends ComponentProps<"div"> {
+  value?: number | null;
+  minValue?: number;
+  maxValue?: number;
+}
 
-export const Progress = <T extends ValidComponent = "div">(props: PolymorphicProps<T, ProgressRootProps<T>>) => {
-  const [local, others] = splitProps(props as ProgressRootProps, [
-    "children",
-    "indeterminate",
-    "value",
-    "maxValue",
-    "class",
-  ]);
+export function Progress(props: ProgressProps) {
+  const [local, other] = splitProps(props, ["class", "value", "minValue", "maxValue"]);
+  
+  const percentage = createMemo(() => {
+    if (props.value === null) {
+      return undefined;
+    }
+
+    const maxValue = props.maxValue === undefined ? 100 : props.maxValue;
+    const minValue = props.minValue ?? 0;
+    const value = Math.min(Math.max(props.value ?? 0, minValue), maxValue);
+
+    return (value - minValue) / (maxValue - minValue);
+  });
+
+  const transformStyle = createMemo(() => {
+    const p = percentage();
+    return typeof p === "number" ? `${p * 100 - 100}%` : undefined;
+  });
+
   return (
-    <ProgressPrimitive.Root
-      maxValue={local.maxValue}
-      value={local.indeterminate ? (local.maxValue ?? 100) : local.value}
-      class={local.class}
-      {...others}
+    <div
+      class={cn(
+        "relative h-2 overflow-hidden rounded-full bg-secondary",
+        local.class,
+      )}
+      {...other}
     >
-      {local.children}
-      <ProgressPrimitive.Track class="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
-        <ProgressPrimitive.Fill
-          class={cn(
-            "h-full w-[var(--kb-progress-fill-width)] flex-1 bg-primary transition-all",
-            local.indeterminate && "animate-indeterminate",
-          )}
-        />
-      </ProgressPrimitive.Track>
-    </ProgressPrimitive.Root>
+      <div
+        class={cn(
+          "h-full transition-transform bg-primary rounded-full",
+          local.value === null && "animate-indeterminate",
+        )}
+        style={{
+          translate: transformStyle(),
+        }}
+      />
+    </div>
   );
-};
-
-export const ProgressLabel: Component<ProgressPrimitive.ProgressLabelProps> = (props) => {
-  return <ProgressPrimitive.Label as={Label} {...props} />;
-};
-
-export const ProgressValueLabel: Component<ProgressPrimitive.ProgressValueLabelProps> = (props) => {
-  return <ProgressPrimitive.ValueLabel as={Label} {...props} />;
-};
+}

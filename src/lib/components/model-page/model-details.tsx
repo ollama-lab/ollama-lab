@@ -100,8 +100,8 @@ export function ModelDetails() {
                         <Progress
                           minValue={0}
                           maxValue={infoObj.total ?? undefined}
-                          value={infoObj.completed ?? undefined}
-                          indeterminate={infoObj.completed === null}
+                          value={infoObj.completed}
+                          class="w-48 md:w-56 lg:w-72 xl:w-96"
                         />
                         <ProgressSize completed={infoObj.completed ?? undefined} total={infoObj.total ?? undefined} />
                       </div>
