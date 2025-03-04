@@ -12,22 +12,18 @@ import { Button } from "../../ui/button";
 import { CopyIcon } from "lucide-solid";
 import { LoaderSpin } from "../../loader-spin";
 import { copyModel } from "~/lib/commands/models";
-import { useModelContext } from "~/lib/contexts/model-list";
 import { completeModelName } from "~/lib/utils/model-name";
 import { toast } from "solid-sonner";
 import { TextField, TextFieldInput } from "../../ui/text-field";
+import { reloadModelStates, setCurrentModel } from "~/lib/contexts/globals/model-states";
 
 export interface DuplicateModelProps {
   model: Accessor<string>;
 }
 
 export function DuplicateModel(props: DuplicateModelProps) {
-  const modelContext = useModelContext();
-
   const [open, setOpen] = createSignal(false);
   const [submitting, setSubmitting] = createSignal(false);
-
-  const model = props.model;
 
   return (
     <Dialog open={open()} onOpenChange={setOpen}>
@@ -58,15 +54,15 @@ export function DuplicateModel(props: DuplicateModelProps) {
                 }
 
                 try {
-                  await copyModel(model(), newModelName);
-                  await modelContext?.reload();
+                  await copyModel(props.model(), newModelName);
+                  await reloadModelStates();
                 } finally {
                   setSubmitting(false);
                   setOpen(false);
                 }
 
                 const toModel = completeModelName(newModelName);
-                modelContext?.setCurrent(toModel);
+                setCurrentModel(toModel);
                 toast.success(`Model copied to ${toModel}`);
               }}
             >

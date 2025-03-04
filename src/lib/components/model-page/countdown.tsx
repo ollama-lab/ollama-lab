@@ -8,12 +8,12 @@ export interface CountdownProps {
 }
 
 export function Countdown(props: CountdownProps) {
-  const seconds = props.seconds;
-  const onTick = props.onTick;
-  const expiresAt = props.expiresAt;
-  const onExpire = props.onExpire;
+  const seconds = () => props.seconds();
+  const onTick = (newSec: number) => props.onTick?.(newSec);
+  const expiresAt = () => props.expiresAt();
+  const onExpire = () => props.onExpire?.();
 
-  const [expirationTimerId, setExpirationTimerId] = createSignal<number>();
+  const [expirationTimerId, setExpirationTimerId] = createSignal<Timer>();
 
   const countdown = () => {
     onTick?.(Math.floor((expiresAt().getTime() - Date.now()) / 1000));
@@ -29,7 +29,7 @@ export function Countdown(props: CountdownProps) {
     setExpirationTimerId(
       setInterval(() => {
         if (seconds() <= 0) {
-          onExpire?.();
+          onExpire();
           clearInterval(expirationTimerId());
           setExpirationTimerId(undefined);
           return;

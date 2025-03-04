@@ -1,3 +1,5 @@
 import { createSignal } from "solid-js";
 
-export const [currentModel, setCurrentModel] = createSignal<string | null>(null);
+const [currentModelPageModel, setCurrentModelPageModel] = createSignal<string | null>(null);
+
+export { currentModelPageModel, setCurrentModelPageModel };

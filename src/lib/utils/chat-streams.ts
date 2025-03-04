@@ -4,8 +4,8 @@ import { emit } from "@tauri-apps/api/event";
 import { toast } from "solid-sonner";
 import { Accessor } from "solid-js";
 import { ChatHistory } from "../models/session";
-import { ChatHistoryStore, PromptSubmissionEvents } from "../contexts/chats/chat-history";
 import { produce, reconcile, SetStoreFunction } from "solid-js/store";
+import { ChatHistoryStore, PromptSubmissionEvents } from "../contexts/globals/chat-history";
 
 export interface ResponseStreamingContext {
   responseIndex: number;
@@ -95,7 +95,11 @@ export function convertResponseEvents(
                 cur.model = model;
               }
 
-              cur.versions ? cur.versions.push(id) : [id];
+               if (cur.versions) {
+                 cur.versions.push(id);
+               } else {
+                 cur.versions = [id];
+               }
             }),
           );
 
@@ -198,7 +202,7 @@ export function convertResponseEvents(
         toast.error(msg);
       }
     },
-    onCancel(_): void {
+    onCancel(): void {
       if (context.responseIndex < 0) {
         return;
       }

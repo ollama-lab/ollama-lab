@@ -1,9 +1,9 @@
 import { Accessor, createMemo, createSignal, Match, Show, Switch } from "solid-js";
-import { useModelContext } from "~/lib/contexts/model-list";
 import { ProgressEvent } from "~/lib/models/events/progress";
 import { LoaderSpin } from "../loader-spin";
 import StatusDot from "../custom-ui/status-dot";
 import { Countdown } from "./countdown";
+import { activeModels, reloadActiveModels } from "~/lib/contexts/globals/model-states";
 
 export interface StatusLineProps {
   model: Accessor<string>;
@@ -11,16 +11,14 @@ export interface StatusLineProps {
 }
 
 export function StatusLine(props: StatusLineProps) {
-  const modelContext = useModelContext();
-
-  const downloadInfo = props.downloadInfo;
-
   const [expiresInSec, setExpiresInSec] = createSignal(0);
+
+  const downloadInfo = () => props.downloadInfo();
 
   const runningInfo = createMemo(() => {
     const modelName = props.model();
 
-    return modelContext?.activeModels()?.find(({ name }) => modelName === name);
+    return activeModels()?.find(({ name }) => modelName === name);
   });
 
   return (
@@ -70,7 +68,7 @@ export function StatusLine(props: StatusLineProps) {
                   expiresAt={() => info().expires_at}
                   onTick={setExpiresInSec}
                   onExpire={() => {
-                    modelContext?.reloadActiveModels();
+                    reloadActiveModels();
                   }}
                 />
                 second{expiresInSec() !== 1 ? "s" : ""}

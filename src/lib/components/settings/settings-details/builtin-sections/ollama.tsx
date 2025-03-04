@@ -14,7 +14,9 @@ export default function OllamaSection() {
       if (newValue) {
         uri = new URL(newValue);
       }
-    } catch {}
+    } catch {
+      //
+    }
 
     setCurrentSettings("ollama", "uri", uri ? uri.href : null);
     saveSettings();

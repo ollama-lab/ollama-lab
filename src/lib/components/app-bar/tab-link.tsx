@@ -16,7 +16,7 @@ export function TabLink(props: TabLinkProps) {
   const name = createMemo(() => props.name);
 
   return (
-    <div class={cn("group flex rounded cursor-pointer", active() && "bg-secondary")} onClick={props.onClick}>
+    <div class={cn("group flex rounded cursor-pointer", active() && "bg-secondary")} onClick={() => props.onClick?.()}>
       <div class="py-1">
         <hr
           class={cn(

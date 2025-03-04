@@ -3,7 +3,7 @@ import { Accessor, ComponentProps, splitProps } from "solid-js";
 import { toast } from "solid-sonner";
 import { cn } from "~/lib/utils/class-names";
 
-interface ToolbarButtonProps extends ComponentProps<"button"> {}
+type ToolbarButtonProps = ComponentProps<"button">;
 
 function ToolbarButton(props: ToolbarButtonProps) {
   const [local, other] = splitProps(props, ["class", "children"]);

@@ -5,7 +5,7 @@ import { Resizable, ResizableHandle, ResizablePanel } from "~/lib/components/ui/
 import { reloadActiveModels } from "~/lib/contexts/globals/model-states";
 
 export default function ModelsPage() {
-  let [timerId, setTimerId] = createSignal<number>();
+  const [timerId, setTimerId] = createSignal<number>();
 
   onMount(() => {
     reloadActiveModels();

@@ -1,3 +1,3 @@
 export function PullModel() {
-  return <div></div>;
+  return <div />;
 }

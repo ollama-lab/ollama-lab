@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableRow } from "../../ui/table";
 import { For } from "solid-js";
 
 export interface ModelInfoProps {
-  value: { [key: string]: any };
+  value: { [key: string]: unknown };
 }
 
 export function ModelInfo(props: ModelInfoProps) {

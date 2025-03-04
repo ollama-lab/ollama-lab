@@ -16,7 +16,7 @@ export default function RelativeTime(props: RelativeTimeProps) {
     return dayjs(date()).fromNow();
   };
 
-  let [timerId, setTimerId] = createSignal<number>();
+  const [timerId, setTimerId] = createSignal<number>();
   const [display, setDisplay] = createSignal<string>(updateRelativeTime());
 
   const getNextUpdateInterval = () => {

@@ -4,18 +4,14 @@ import { TrashIcon } from "lucide-solid";
 import { Button } from "../../ui/button";
 import { LoaderSpin } from "../../loader-spin";
 import { deleteModel } from "~/lib/commands/models";
-import { useModelContext } from "~/lib/contexts/model-list";
 import { toast } from "solid-sonner";
+import { reloadModelStates, setCurrentModel } from "~/lib/contexts/globals/model-states";
 
 export interface DeleteModelProps {
   model: Accessor<string>;
 }
 
 export default function DeleteModel(props: DeleteModelProps) {
-  const modelContext = useModelContext();
-
-  const model = props.model;
-
   const [open, setOpen] = createSignal(false);
   const [submitting, setSubmitting] = createSignal(false);
 
@@ -50,11 +46,11 @@ export default function DeleteModel(props: DeleteModelProps) {
               variant="destructive"
               onClick={() => {
                 setSubmitting(true);
-                const deletionPromise = deleteModel(model())
-                  .then(() => {
+                const deletionPromise = deleteModel(props.model())
+                  .then(async () => {
                     setOpen(false);
-                    modelContext?.setCurrent(null);
-                    modelContext?.reload();
+                    setCurrentModel(null);
+                    await reloadModelStates();
                   })
                   .finally(() => setSubmitting(false));
 

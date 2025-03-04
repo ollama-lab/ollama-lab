@@ -1,16 +1,20 @@
 import { createStore } from "solid-js/store";
-import type { ChatHistory } from "../models/session";
+import type { ChatHistory } from "~/lib/models/session";
 import { createEffect, createMemo } from "solid-js";
 import { getAllSessions, reloadSession } from "./sessions";
-import { getCurrentBranch } from "../commands/chat-history";
-import { IncomingUserPrompt } from "../models/chat";
-import { PromptSubmissionEvents } from "../contexts/chats/chat-history";
-import { createSession } from "../commands/sessions";
-import { regenerateResponse, submitUserPrompt } from "../commands/chats";
-import { convertResponseEvents } from "../utils/chat-streams";
+import { getCurrentBranch } from "~/lib/commands/chat-history";
+import { IncomingUserPrompt } from "~/lib/models/chat";
+import { createSession } from "~/lib/commands/sessions";
+import { regenerateResponse, submitUserPrompt } from "~/lib/commands/chats";
+import { convertResponseEvents } from "~/lib/utils/chat-streams";
 import { switchBranch as switchBranchCommand } from "~/lib/commands/chat-history";
 
-type ChatHistoryStore = { chatHistory: ChatHistory | null };
+export interface PromptSubmissionEvents {
+  onRespond?: () => void;
+  onScrollDown?: () => void;
+}
+
+export type ChatHistoryStore = { chatHistory: ChatHistory | null };
 
 const [chatHistoryStore, setChatHistoryStore] = createStore<ChatHistoryStore>({
   chatHistory: null,
@@ -81,7 +85,7 @@ export async function submit(prompt: IncomingUserPrompt, model: string, {
 
   const parentId = lastChat()?.id;
 
-  let ctx = {
+  const ctx = {
     responseIndex: -1,
   };
 
@@ -109,7 +113,7 @@ export async function regenerate(chatId: number, model?: string, {
     return;
   }
 
-  let ctx = {
+  const ctx = {
     responseIndex: -1,
   };
 
@@ -173,7 +177,7 @@ export async function editPrompt(
 
   const parentId = curIndex === 0 ? null : ch.chats[curIndex - 1].id;
 
-  let ctx = {
+  const ctx = {
     responseIndex: -1,
   };
 

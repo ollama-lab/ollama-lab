@@ -49,9 +49,11 @@ export function pullTaskChan(model: string) {
       case "canceled":
         clear(model);
 
-        const m = currentModel();
-        if (m === model) {
-          setCurrentModel(null);
+        {
+          const m = currentModel();
+          if (m === model) {
+            setCurrentModel(null);
+          }
         }
         break;
 

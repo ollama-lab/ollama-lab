@@ -19,9 +19,9 @@ export function SettingsDetails() {
         <Show when={restartVotes().length > 0}>
           <div class="flex flex-col">
             <Button
-              on:click={async () => {
+              on:click={() => {
                 setRestarting(true);
-                await relaunch();
+                relaunch();
               }}
             >
               <Switch fallback={"Restart"}>

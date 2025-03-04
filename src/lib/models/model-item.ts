@@ -25,7 +25,7 @@ export interface ModelInfo {
   parameters?: string;
   template?: string;
   details?: ModelDetails;
-  model_info?: { [key: string]: any };
+  model_info?: { [key: string]: unknown };
 }
 
 export interface RunningModel {

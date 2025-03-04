@@ -85,7 +85,7 @@ export function ModelListItem(props: ModelListItemProps) {
             </Badge>
           </Show>
 
-          <div class="grow"></div>
+          <div class="grow" />
           <Show when={status()}>
             {(s) => (
               <button
@@ -120,7 +120,7 @@ export function ModelListItem(props: ModelListItemProps) {
               </span>
             )}
           </Show>
-          <div class="grow"></div>
+          <div class="grow" />
           <ProgressSize completed={completed()} total={total()} />
         </div>
       </div>

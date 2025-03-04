@@ -14,9 +14,9 @@ export interface TextSectionProps {
 export default function TextSection(props: TextSectionProps) {
   const name = createMemo(() => props.name);
   const inputType = createMemo(() => props.type ?? "text");
-  const onValueChange = props.onValueChange;
+  const value = () => props.value;
 
-  const [instantValue, setInstantValue] = createSignal<string | undefined>(props.value ?? undefined);
+  const [instantValue, setInstantValue] = createSignal<string | undefined>(value() ?? undefined);
 
   return (
     <div class="flex flex-col gap-1">
@@ -32,9 +32,9 @@ export default function TextSection(props: TextSectionProps) {
             const value = instantValue()?.trim();
             if (value !== undefined) {
               if (value.length < 1) {
-                onValueChange?.(null);
+                props.onValueChange?.(null);
               } else {
-                onValueChange?.(value);
+                props.onValueChange?.(value);
               }
 
               setInstantValue(undefined);

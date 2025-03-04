@@ -1,9 +1,6 @@
 import { createMemo, createResource, createSignal, Match, onMount, Show, Suspense, Switch } from "solid-js";
 import { PlaceholderTitle } from "./placeholder-title";
-import { useModelPageCurrentModel } from "~/lib/contexts/model-page/current-model";
-import { useModelContext } from "~/lib/contexts/model-list";
 import { Badge } from "../ui/badge";
-import { usePullModelTasks } from "~/lib/contexts/pull-model-tasks";
 import { getModel } from "~/lib/commands/models";
 import SetDefault from "./toolbar-items/set-default";
 import { DuplicateModel } from "./toolbar-items/duplicate-model";
@@ -17,6 +14,9 @@ import { CodeBlock } from "../custom-ui/code-block";
 import { Details } from "./sections/details";
 import { ModelInfo } from "./sections/model-info";
 import { SystemPromptSection } from "./sections/system-prompt";
+import { currentModelPageModel } from "~/lib/contexts/globals/model-page";
+import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";
+import { defaultModel, reloadActiveModels } from "~/lib/contexts/globals/model-states";
 
 function PlaceholderPage() {
   return (
@@ -26,16 +26,19 @@ function PlaceholderPage() {
   );
 }
 
-export function ModelDetails() {
-  const modelPageCurrentModelContext = useModelPageCurrentModel();
-  const modelContext = useModelContext();
-  const pullModelTasksContext = usePullModelTasks();
+async function fetcher({ modelName, downloadInfo }: { modelName: string | null, downloadInfo?: ProgressEvent }) {
+  if (!modelName || downloadInfo && downloadInfo.type !== "success") {
+    return null;
+  }
 
-  const model = modelPageCurrentModelContext?.[0];
-  const defaultModel = modelContext?.defaultModel;
+  return await getModel(modelName);
+};
+
+export function ModelDetails() {
+  const model = () => currentModelPageModel(); 
 
   const downloadInfo = createMemo(() => {
-    const taskMap = pullModelTasksContext?.taskMap();
+    const taskMap = getTaskMap();
     const m = model?.();
 
     if (taskMap && m) {
@@ -45,17 +48,13 @@ export function ModelDetails() {
     return undefined;
   });
 
-  const [modelInfo] = createResource(model, async (modelName) => {
-    const di = downloadInfo();
-    if (di && di.type !== "success") {
-      return null;
-    }
-
-    return await getModel(modelName);
-  });
+  const [modelInfo] = createResource(
+    () => ({ modelName: model(), downloadInfo: downloadInfo() }),
+    fetcher,
+  );
 
   onMount(() => {
-    modelContext?.reloadActiveModels();
+    reloadActiveModels();
   });
 
   const [tabValue, setTabValue] = createSignal<string>("details");
@@ -68,10 +67,10 @@ export function ModelDetails() {
             <div class="border border-border px-4 py-3 rounded flex flex-col gap-3">
               <div class="flex items-center gap-2">
                 <h3 class="font-bold text-xl">{m()}</h3>
-                <Show when={defaultModel?.() === m()}>
+                <Show when={defaultModel() === m()}>
                   <Badge variant="outline">Default</Badge>
                 </Show>
-                <div class="grow"></div>
+                <div class="grow" />
                 <div class="flex gap-2 items-center">
                   <Show when={!downloadInfo()}>
                     <Show when={defaultModel?.() !== model?.()}>
