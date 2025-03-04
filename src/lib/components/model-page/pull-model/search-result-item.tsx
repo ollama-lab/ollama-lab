@@ -1,4 +1,4 @@
-import { SearchItem } from "~/lib/contexts/model-search-result";
+import { SearchItem, useModelSearchResult } from "~/lib/contexts/model-search-result";
 import { CommandItem } from "../../ui/command";
 import { createMemo, createSignal } from "solid-js/types/server/reactive.js";
 import { modelList } from "~/lib/contexts/globals/model-states";
@@ -31,6 +31,8 @@ export interface SearchResultItemProps {
 
 export function SearchResultItem(props: SearchResultItemProps) {
   const LATEST = "latest";
+
+  const searchResultContext = useModelSearchResult();
 
   const searchItem = () => props.item;
 
@@ -85,7 +87,9 @@ export function SearchResultItem(props: SearchResultItemProps) {
             variant="ghost"
             on:click={(ev) => {
               ev.stopPropagation();
+              searchResultContext?.startPullModel(fullName());
             }}
+            disabled={downloadedAlready()}
           >
             <Switch fallback={(
               <CloudDownloadIcon class={cn("size-4", downloadedAlready() && "text-muted-foreground")} />

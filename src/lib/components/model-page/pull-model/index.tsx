@@ -1,4 +1,4 @@
-import { createMemo, createSignal, Match, Show, Switch } from "solid-js";
+import { createMemo, createSignal, For, Match, Show, Suspense, Switch } from "solid-js";
 import { Button } from "~/lib/components/ui/button";
 import { CloudDownloadIcon } from "lucide-solid";
 import { CommandDialog, CommandGroup, CommandInput, CommandList } from "~/lib/components/ui/command";
@@ -7,6 +7,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { Motion, Presence } from "solid-motionone";
 import { platform } from "@tauri-apps/plugin-os";
 import { LoaderSpin } from "../../loader-spin";
+import { SearchResultItem } from "./search-result-item";
 
 interface HintsProps {
   searchEntered?: boolean;
@@ -135,17 +136,23 @@ export function PullModel() {
         <Hints searchEntered={inputKeyword().trim().length > 0} />
 
         <CommandList>
-          <Show when={searchResult()?.loading}>
+          <Suspense fallback={(
             <div class="px-2 py-2 text-sm">
               <LoaderSpin text="Searching..." />
             </div>
-          </Show>
-          <Show when={searchResult()}>
-            {(s) => (
-              <CommandGroup heading="Search result">
-              </CommandGroup>
-            )}
-          </Show>
+          )}>
+            <Show when={searchResult()}>
+              {(s) => (
+                <CommandGroup heading="Search result">
+                  <For each={s()()?.result}>
+                    {(item) => (
+                      <SearchResultItem item={item} />
+                    )}
+                  </For>
+                </CommandGroup>
+              )}
+            </Show>
+          </Suspense>
         </CommandList>
       </CommandDialog>
     </>
