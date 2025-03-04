@@ -37,7 +37,7 @@ createEffect(() => {
   }
 });
 
-export async function reload() {
+export async function reloadChatHistory() {
   const ch = getChatHistory();
   if (!ch) {
     return;
