@@ -1,11 +1,9 @@
 import { createStore, produce } from "solid-js/store";
-import { ProgressEvent } from "../models/events/progress";
 import { Channel } from "@tauri-apps/api/core";
 import { currentModel, reloadModelStates, setCurrentModel } from "./model-states";
+import { ProgressEvent } from "~/lib/models/events/progress";
 
-export interface TaskMap {
-  [id: string]: ProgressEvent;
-}
+export type TaskMap = Record<string, ProgressEvent>;
 
 const [taskMapStore, setTaskMap] = createStore<TaskMap>({});
 

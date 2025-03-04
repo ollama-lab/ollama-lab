@@ -14,7 +14,7 @@ export interface PromptSubmissionEvents {
   onScrollDown?: () => void;
 }
 
-export type ChatHistoryStore = { chatHistory: ChatHistory | null };
+export interface ChatHistoryStore { chatHistory: ChatHistory | null }
 
 const [chatHistoryStore, setChatHistoryStore] = createStore<ChatHistoryStore>({
   chatHistory: null,
