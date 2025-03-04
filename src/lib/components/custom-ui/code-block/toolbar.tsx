@@ -23,23 +23,22 @@ function ToolbarButton(props: ToolbarButtonProps) {
 
 export interface CodeBlockToolbarProps {
   code: Accessor<string>;
+  class?: string;
 }
 
 export function CodeBlockToolbar(props: CodeBlockToolbarProps) {
   return (
-    <div class="sticky -top-5 z-10">
-      <div class="absolute top-0 right-0 flex gap-0.5 px-3 py-0.5 bg-secondary rounded">
-        <ToolbarButton
-          title="Copy to clipboard"
-          onClick={() => {
-            window.navigator.clipboard.writeText(props.code());
-            toast.success("Successfully copied.");
-          }}
-        >
-          <CopyIcon class="size-4" />
-          Copy
-        </ToolbarButton>
-      </div>
+    <div class={cn("flex gap-0.5 bg-secondary rounded", props.class)}>
+      <ToolbarButton
+        title="Copy to clipboard"
+        onClick={() => {
+          window.navigator.clipboard.writeText(props.code());
+          toast.success("Successfully copied.");
+        }}
+      >
+        <CopyIcon class="size-4" />
+        Copy
+      </ToolbarButton>
     </div>
   );
 }
