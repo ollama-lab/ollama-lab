@@ -29,12 +29,20 @@ function Hints(props: HintsProps) {
           exit={{ x: -100, opacity: 0 }}
         >
           <span class="flex gap-2 items-center">
-            <span class="z-[1]"><kbd>Enter</kbd></span>
+            <span class="z-[1]">
+              <kbd>Enter</kbd>
+            </span>
             Search
           </span>
           <span class="flex gap-2 items-center">
             <span>
-              <Switch fallback={<><kbd>Ctrl</kbd> + <kbd>Enter</kbd></>}>
+              <Switch
+                fallback={
+                  <>
+                    <kbd>Ctrl</kbd> + <kbd>Enter</kbd>
+                  </>
+                }
+              >
                 <Match when={os() === "macos" || os() === "ios"}>
                   <kbd>{"\u2318" /* Command key symbol */} Enter</kbd>
                 </Match>
@@ -61,12 +69,7 @@ export function PullModel() {
 
   return (
     <>
-      <Button
-        size="icon"
-        variant="outline"
-        title="Pull model"
-        onClick={() => setOpen(true)}
-      >
+      <Button size="icon" variant="outline" title="Pull model" onClick={() => setOpen(true)}>
         <CloudDownloadIcon />
       </Button>
 
@@ -79,24 +82,25 @@ export function PullModel() {
             onValueChange={setInputKeyword}
             on:keydown={(ev) => {
               if (ev.key === "End") {
-                ev.preventDefault()
-                ev.stopPropagation()
-                const value = ev.currentTarget.value
-                ev.currentTarget.setSelectionRange(value.length, value.length)
-                return
+                ev.preventDefault();
+                ev.stopPropagation();
+                const value = ev.currentTarget.value;
+                ev.currentTarget.setSelectionRange(value.length, value.length);
+                return;
               }
 
               if (ev.key === "Home") {
-                ev.preventDefault()
-                ev.stopPropagation()
-                ev.currentTarget.setSelectionRange(0, 0)
+                ev.preventDefault();
+                ev.stopPropagation();
+                ev.currentTarget.setSelectionRange(0, 0);
+                return;
               }
 
               if (ev.key === "Enter") {
-                ev.preventDefault()
+                ev.preventDefault();
 
                 if (ev.ctrlKey) {
-                  searchResultContext?.startPullModel(keyword());
+                  searchResultContext?.startPullModel(inputKeyword());
                   setInputKeyword("");
                 } else {
                   initiateSearch(keyword());
@@ -139,19 +143,17 @@ export function PullModel() {
           <Hints searchEntered={inputKeyword().trim().length > 0} />
 
           <CommandList>
-            <Suspense fallback={(
-              <div class="px-2 py-2 text-sm">
-                <LoaderSpin text="Searching..." />
-              </div>
-            )}>
-              <Show when={searchResult()}>
+            <Suspense
+              fallback={
+                <div class="px-2 py-2 text-sm">
+                  <LoaderSpin text="Searching..." />
+                </div>
+              }
+            >
+              <Show when={searchResult()?.()}>
                 {(s) => (
                   <CommandGroup heading="Search result">
-                    <For each={s()()?.result}>
-                      {(item) => (
-                        <SearchResultItem item={item} />
-                      )}
-                    </For>
+                    <For each={s()?.result}>{(item) => <SearchResultItem item={item} />}</For>
                   </CommandGroup>
                 )}
               </Show>

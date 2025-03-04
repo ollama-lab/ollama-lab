@@ -14,7 +14,9 @@ export interface PromptSubmissionEvents {
   onScrollDown?: () => void;
 }
 
-export interface ChatHistoryStore { chatHistory: ChatHistory | null }
+export interface ChatHistoryStore {
+  chatHistory: ChatHistory | null;
+}
 
 const [chatHistoryStore, setChatHistoryStore] = createStore<ChatHistoryStore>({
   chatHistory: null,
@@ -55,11 +57,13 @@ export async function reload() {
 export async function switchToSession(sessionId: number | null) {
   setChatHistoryStore(
     "chatHistory",
-    sessionId === null ? null : {
-      session: sessionId,
-      chats: [],
-      loading: false,
-    },
+    sessionId === null
+      ? null
+      : {
+          session: sessionId,
+          chats: [],
+          loading: false,
+        },
   );
 }
 
@@ -67,9 +71,11 @@ export async function clearChatHistory() {
   await switchToSession(null);
 }
 
-export async function submitChat(prompt: IncomingUserPrompt, model: string, {
- onRespond, onScrollDown,
-}: PromptSubmissionEvents = {}) {
+export async function submitChat(
+  prompt: IncomingUserPrompt,
+  model: string,
+  { onRespond, onScrollDown }: PromptSubmissionEvents = {},
+) {
   let ch = getChatHistory();
   if (!ch) {
     // TODO: Add settings option for default session name: 1) no name, 2) first prompt, 3) generated after first response
@@ -105,9 +111,11 @@ export async function submitChat(prompt: IncomingUserPrompt, model: string, {
   });
 }
 
-export async function regenerate(chatId: number, model?: string, {
-  onRespond, onScrollDown,
-}: PromptSubmissionEvents = {}) {
+export async function regenerate(
+  chatId: number,
+  model?: string,
+  { onRespond, onScrollDown }: PromptSubmissionEvents = {},
+) {
   const ch = getChatHistory();
   if (!ch) {
     return;

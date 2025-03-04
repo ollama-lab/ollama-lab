@@ -22,13 +22,17 @@ export function clearPullTasks(id?: string) {
 
 export function addPullTask(id: string, message: string) {
   setTaskMap(id, {
-    id, type: "inProgress", message,
+    id,
+    type: "inProgress",
+    message,
   });
 }
 
 export function errorPullTask(id: string, message: string) {
   setTaskMap(id, {
-    id, type: "failure", message,
+    id,
+    type: "failure",
+    message,
   });
 }
 

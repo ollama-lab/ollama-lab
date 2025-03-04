@@ -25,8 +25,7 @@ export function SystemPromptSection(props: SystemPromptSectionProps) {
           <TextFieldTextArea
             onBlur={() => {
               const content = promptInfo();
-              setModelSystemPrompt(model(), content ?? "")
-                .then((result) => mutate(result));
+              setModelSystemPrompt(model(), content ?? "").then((result) => mutate(result));
             }}
           />
         </TextField>

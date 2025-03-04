@@ -1,4 +1,10 @@
-import { getCurrentSettings, saveSettings, setCurrentSettings, unvoteRestart, voteRestart } from "~/lib/contexts/globals/settings";
+import {
+  getCurrentSettings,
+  saveSettings,
+  setCurrentSettings,
+  unvoteRestart,
+  voteRestart,
+} from "~/lib/contexts/globals/settings";
 import TextSection from "../modules/text";
 import { SectionRoot } from "../section-root";
 import { createEffect, createMemo } from "solid-js";

@@ -23,11 +23,11 @@ const [modelStatesStore, setStore] = createStore<ModelStates>({
 export async function reloadActiveModels() {
   const result = await listRunningModels();
   setStore("activeModels", result);
-};
+}
 
 export async function reloadDefaultModel() {
   setStore("defaultModel", await getDefaultModel());
-};
+}
 
 export async function reloadModelStates() {
   setStore("status", "fetching");
@@ -53,7 +53,7 @@ export async function setDefaultModel(newModel: string) {
 
 export function setCurrentModel(newModel: string | null) {
   setStore("currentModel", newModel);
-};
+}
 
 export function modelList() {
   return modelStatesStore.modelList;

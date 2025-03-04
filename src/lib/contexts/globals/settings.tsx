@@ -26,7 +26,7 @@ export async function saveSettings() {
 }
 
 createEffect(() => {
-  const current = settingsStore.appearance["color-mode"]; 
+  const current = settingsStore.appearance["color-mode"];
   if (current) {
     setColorMode(current);
   }
@@ -43,7 +43,7 @@ export function voteRestart(id: string) {
 }
 
 export function unvoteRestart(id: string) {
-  setRestartVotes((cur) => cur.filter((k) => k !== id))
+  setRestartVotes((cur) => cur.filter((k) => k !== id));
 }
 
 export { restartVotes, setSettingsStore as setCurrentSettings };

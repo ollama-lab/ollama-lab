@@ -33,15 +33,15 @@ interface FetchingProps {
 }
 
 async function fetcher({ modelName, downloadInfo }: FetchingProps) {
-  if (!modelName || downloadInfo && downloadInfo.type !== "success") {
+  if (!modelName || (downloadInfo && downloadInfo.type !== "success")) {
     return null;
   }
 
   return await getModel(modelName);
-};
+}
 
 export function ModelDetails() {
-  const model = () => currentModelPageModel(); 
+  const model = () => currentModelPageModel();
 
   const downloadInfo = createMemo(() => {
     const taskMap = getTaskMap();
@@ -54,10 +54,7 @@ export function ModelDetails() {
     return undefined;
   });
 
-  const [modelInfo] = createResource(
-    () => ({ modelName: model(), downloadInfo: downloadInfo() }),
-    fetcher,
-  );
+  const [modelInfo] = createResource(() => ({ modelName: model(), downloadInfo: downloadInfo() }), fetcher);
 
   onMount(() => {
     reloadActiveModels();

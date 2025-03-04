@@ -1,38 +1,38 @@
-import { Accessor, createContext, createResource, createSignal, JSX, Resource, Setter, useContext } from "solid-js"
-import { searchModel } from "../utils/search/model-search"
-import { toast } from "solid-sonner"
-import { modelList } from "./globals/model-states"
-import { addPullTask, getTaskMap, errorPullTask, setTaskMap, clearPullTasks } from "./globals/pull-model-tasks"
-import { pullModel } from "../commands/models"
+import { Accessor, createContext, createResource, createSignal, JSX, Resource, Setter, useContext } from "solid-js";
+import { searchModel } from "../utils/search/model-search";
+import { toast } from "solid-sonner";
+import { modelList } from "./globals/model-states";
+import { addPullTask, getTaskMap, errorPullTask, setTaskMap, clearPullTasks } from "./globals/pull-model-tasks";
+import { pullModel } from "../commands/models";
 
-export const BASE_DOMAIN = "ollama.com"
-export const BASE_URL = `https://${BASE_DOMAIN}`
+export const BASE_DOMAIN = "ollama.com";
+export const BASE_URL = `https://${BASE_DOMAIN}`;
 
-export type TagType = "category" | "parameter"
+export type TagType = "category" | "parameter";
 
 export interface Tag {
-  type: TagType
-  content: string
+  type: TagType;
+  content: string;
 }
 
 export interface SearchItem {
-  name: string
-  description?: string
-  tags: Tag[]
-  pulls: string
-  tagCount: string
-  updated: string
+  name: string;
+  description?: string;
+  tags: Tag[];
+  pulls: string;
+  tagCount: string;
+  updated: string;
 }
 
-export type Category = "all" | "embedding" | "vision" | "tools"
+export type Category = "all" | "embedding" | "vision" | "tools";
 
-export type OrderedBy = "popular" | "newest"
+export type OrderedBy = "popular" | "newest";
 
 export interface SearchResult {
-  keyword: string
-  category: Category
-  orderedBy: OrderedBy
-  result: SearchItem[]
+  keyword: string;
+  category: Category;
+  orderedBy: OrderedBy;
+  result: SearchItem[];
 }
 
 export type ModelPullingInitiator = (model: string) => Promise<void>;
@@ -84,37 +84,39 @@ export function ModelSearchResultProvider(props: { children?: JSX.Element }) {
   };
 
   const startPullModel: ModelPullingInitiator = async (model) => {
-    const downloadedAlready = modelList().filter(({ name }) => name === model).length > 0
+    const downloadedAlready = modelList().filter(({ name }) => name === model).length > 0;
     if (downloadedAlready) {
-      toast.error("Model already downloaded")
-      return
+      toast.error("Model already downloaded");
+      return;
     }
 
     const taskMap = getTaskMap();
-    const downloading = Object.keys(taskMap).includes(model)
+    const downloading = Object.keys(taskMap).includes(model);
     if (downloading) {
-      toast.warning("Model already downloading")
-      return
+      toast.warning("Model already downloading");
+      return;
     }
 
-    addPullTask(model, "Starting pulling...")
+    addPullTask(model, "Starting pulling...");
 
     try {
       const result = await pullModel(model, (ev) => setTaskMap(ev.id, ev));
       clearPullTasks(result.id);
     } catch (err) {
-      errorPullTask(model, `Error: ${err}`)
+      errorPullTask(model, `Error: ${err}`);
     }
   };
 
   return (
-    <ModelSearchResultContext.Provider value={{
-      keyword: () => keyword() ?? "",
-      searchResult,
-      initiateSearch,
-      mutate,
-      startPullModel,
-    }}>
+    <ModelSearchResultContext.Provider
+      value={{
+        keyword: () => keyword() ?? "",
+        searchResult,
+        initiateSearch,
+        mutate,
+        startPullModel,
+      }}
+    >
       {props.children}
     </ModelSearchResultContext.Provider>
   );

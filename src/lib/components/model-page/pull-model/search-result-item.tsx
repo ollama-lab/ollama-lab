@@ -57,9 +57,7 @@ export function SearchResultItem(props: SearchResultItemProps) {
             {(tag) => (
               <Switch>
                 <Match when={tag.type === "category"}>
-                  <TagBadge class="bg-fuchsia-200/80 dark:bg-fuchsia-900/80">
-                    {tag.content}
-                  </TagBadge>
+                  <TagBadge class="bg-fuchsia-200/80 dark:bg-fuchsia-900/80">{tag.content}</TagBadge>
                 </Match>
                 <Match when={tag.type === "parameter"}>
                   <TagBadge
@@ -91,9 +89,9 @@ export function SearchResultItem(props: SearchResultItemProps) {
             }}
             disabled={downloadedAlready()}
           >
-            <Switch fallback={(
-              <CloudDownloadIcon class={cn("size-4", downloadedAlready() && "text-muted-foreground")} />
-            )}>
+            <Switch
+              fallback={<CloudDownloadIcon class={cn("size-4", downloadedAlready() && "text-muted-foreground")} />}
+            >
               <Match when={downloading()}>
                 <LoaderSpin class="size-4" />
               </Match>

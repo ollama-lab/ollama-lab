@@ -5,7 +5,7 @@ import { Style } from "@solidjs/meta";
 import { preferredColorMode } from "~/lib/contexts/globals/color-mode";
 
 export function HighlightStylesProvider(props: { children?: JSX.Element }) {
-  const cssString = () => preferredColorMode() === "light" ? lightModeCSS : darkModeCSS;
+  const cssString = () => (preferredColorMode() === "light" ? lightModeCSS : darkModeCSS);
 
   return (
     <>

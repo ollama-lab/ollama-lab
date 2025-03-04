@@ -95,11 +95,11 @@ export function convertResponseEvents(
                 cur.model = model;
               }
 
-               if (cur.versions) {
-                 cur.versions.push(id);
-               } else {
-                 cur.versions = [id];
-               }
+              if (cur.versions) {
+                cur.versions.push(id);
+              } else {
+                cur.versions = [id];
+              }
             }),
           );
 
