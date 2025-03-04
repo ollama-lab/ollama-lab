@@ -23,11 +23,11 @@ export default function ModelsPage() {
 
   return (
     <Resizable orientation="horizontal">
-      <ResizablePanel initialSize={0.25}>
+      <ResizablePanel initialSize={.25}>
         <ModelList />
       </ResizablePanel>
       <ResizableHandle />
-      <ResizablePanel initialSize={0.75}>
+      <ResizablePanel initialSize={.75}>
         <ModelDetails />
       </ResizablePanel>
     </Resizable>
