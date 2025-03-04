@@ -2,9 +2,11 @@ import { createMemo, Show } from "solid-js";
 import { all, createLowlight } from "lowlight";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import { jsx, jsxs, Fragment } from "solid-js/h/jsx-runtime";
+import { jsxDEV } from "solid-js/h/jsx-dev-runtime";
 import hljs from "highlight.js";
 import { cn } from "~/lib/utils/class-names";
 import { CodeBlockToolbar } from "./toolbar";
+import { isDev } from "solid-js/web";
 
 export interface CodeBlockProps {
   code: string;
@@ -24,13 +26,16 @@ export function CodeBlock(props: CodeBlockProps) {
 
   const hastTree = createMemo(() => {
     const detectedLang = lang();
-    if (detectedLang) {
-      return lowlight.highlight(detectedLang, code());
-    }
-
-    return lowlight.highlightAuto(code());
+    return detectedLang ? lowlight.highlight(detectedLang, code()) : lowlight.highlightAuto(code());
   });
-  const yieldElement = createMemo(() => toJsxRuntime(hastTree(), { Fragment, jsx, jsxs }));
+
+  const yieldElement = createMemo(() => toJsxRuntime(hastTree(), {
+    Fragment, jsx, jsxs,
+    development: isDev,
+    jsxDEV,
+    elementAttributeNameCase: "html",
+    stylePropertyNameCase: "css",
+  }));
 
   const detectedLang = createMemo(() => hastTree().data?.language);
 
@@ -54,9 +59,17 @@ export function CodeBlock(props: CodeBlockProps) {
         </Show>
       </div>
 
-      <div class="text-sm overflow-x-auto rounded-b">
-        <pre class="whitespace-pre-line!">
-          <code class={cn("hljs", detectedLang() ? `language-${detectedLang()!}` : "")}>{yieldElement()}</code>
+      <div class="relative text-sm rounded-b overflow-hidden">
+        <pre class="min-w-full whitespace-normal">
+          <code
+            class={cn(
+              "relative whitespace-pre overflow-x-auto grid! grid-cols-1",
+              "hljs",
+              detectedLang() ? `language-${detectedLang()!}` : ""
+            )}
+          >
+            {yieldElement()}
+          </code>
         </pre>
       </div>
     </div>
