@@ -46,13 +46,13 @@ export function SearchResultItem(props: SearchResultItemProps) {
   const downloading = createMemo(() => Object.keys(getTaskMap()).includes(fullName()));
 
   return (
-    <CommandItem onClick={() => setSelected(LATEST)}>
+    <CommandItem onClick={() => setSelected(LATEST)} class="flex flex-col">
       <div class="flex flex-col gap-2 w-full">
         <span class="font-bold">{searchItem().name}</span>
         <span class="whitespace-pre-wrap flex-wrap">{searchItem().description}</span>
       </div>
       <div class="flex gap-2 w-full">
-        <div class="flex gap-2">
+        <div class="flex gap-2 items-center">
           <For each={searchItem().tags}>
             {(tag) => (
               <Switch>

@@ -103,7 +103,7 @@ export function PullModel() {
                   searchResultContext?.startPullModel(inputKeyword());
                   setInputKeyword("");
                 } else {
-                  initiateSearch(keyword());
+                  initiateSearch(inputKeyword());
                 }
               }
             }}
