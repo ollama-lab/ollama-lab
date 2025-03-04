@@ -15,7 +15,7 @@ function ToolbarButton(props: ToolbarButtonProps) {
   return (
     <button
       class={cn(
-        "cursor-pointer inline-flex gap-2 items-center text-sm bg-accent text-accent-foreground hover:bg-zinc-200 dark:hover:bg-zinc-700 px-1 py-0.5 rounded transition-colors",
+        "cursor-pointer inline-flex gap-1.5 items-center text-sm bg-accent text-accent-foreground hover:bg-zinc-200 dark:hover:bg-zinc-700 px-1 py-0.5 rounded transition-colors",
         local.enabled && "bg-sky-100 dark:bg-sky-900 hover:bg-sky-200 dark:hover:bg-sky-800",
         local.class,
       )}
