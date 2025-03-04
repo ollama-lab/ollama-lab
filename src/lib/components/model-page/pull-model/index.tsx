@@ -155,9 +155,7 @@ export function PullModel() {
                 {(s) => (
                   <CommandGroup heading="Search result">
                     <For each={s()?.result}>
-                      {(item) => (
-                        <SearchResultItem item={item} on:startDownloading={() => setOpen(false)} />
-                      )}
+                      {(item) => <SearchResultItem item={item} on:startDownloading={() => setOpen(false)} />}
                     </For>
                   </CommandGroup>
                 )}

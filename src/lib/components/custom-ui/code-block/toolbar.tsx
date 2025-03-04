@@ -22,11 +22,7 @@ function ToolbarButton(props: ToolbarButtonProps) {
       {...other}
     >
       {local.icon}
-      <Show when={local.text}>
-        {(t) => (
-          <span class="hidden md:inline">{t()}</span>
-        )}
-      </Show>
+      <Show when={local.text}>{(t) => <span class="hidden md:inline">{t()}</span>}</Show>
       {props.children}
     </button>
   );

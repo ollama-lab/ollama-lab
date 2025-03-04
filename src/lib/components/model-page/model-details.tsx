@@ -112,24 +112,24 @@ export function ModelDetails() {
 
               <Suspense>
                 <Tabs value={tabValue()} onChange={setTabValue}>
-                    <Show when={modelInfo()}>
-                      {(info) => (
-                        <TabsList class="sticky -top-6 z-20">
-                          <Show when={info().details}>
-                            <TabsTrigger value="details">Details</TabsTrigger>
-                          </Show>
-                          <TabsTrigger value="modelfile">Modelfile</TabsTrigger>
-                          <Show when={info().model_info}>
-                            <TabsTrigger value="info">Model Info</TabsTrigger>
-                          </Show>
-                          <Show when={info().parameters}>
-                            <TabsTrigger value="parameters">Parameters</TabsTrigger>
-                          </Show>
-                          <TabsTrigger value="template">Template</TabsTrigger>
-                          <TabsTrigger value="system-prompt">System Prompt</TabsTrigger>
-                        </TabsList>
-                      )}
-                    </Show>
+                  <Show when={modelInfo()}>
+                    {(info) => (
+                      <TabsList class="sticky -top-6 z-20">
+                        <Show when={info().details}>
+                          <TabsTrigger value="details">Details</TabsTrigger>
+                        </Show>
+                        <TabsTrigger value="modelfile">Modelfile</TabsTrigger>
+                        <Show when={info().model_info}>
+                          <TabsTrigger value="info">Model Info</TabsTrigger>
+                        </Show>
+                        <Show when={info().parameters}>
+                          <TabsTrigger value="parameters">Parameters</TabsTrigger>
+                        </Show>
+                        <TabsTrigger value="template">Template</TabsTrigger>
+                        <TabsTrigger value="system-prompt">System Prompt</TabsTrigger>
+                      </TabsList>
+                    )}
+                  </Show>
 
                   <div>
                     <Show when={modelInfo()}>

@@ -11,7 +11,7 @@ export interface ProgressProps extends ComponentProps<"div"> {
 
 export function Progress(props: ProgressProps) {
   const [local, other] = splitProps(props, ["class", "value", "minValue", "maxValue"]);
-  
+
   const percentage = createMemo(() => {
     if (props.value === null) {
       return undefined;
@@ -30,13 +30,7 @@ export function Progress(props: ProgressProps) {
   });
 
   return (
-    <div
-      class={cn(
-        "relative h-2 overflow-hidden rounded-full bg-secondary",
-        local.class,
-      )}
-      {...other}
-    >
+    <div class={cn("relative h-2 overflow-hidden rounded-full bg-secondary", local.class)} {...other}>
       <div
         class={cn(
           "h-full transition-transform bg-primary rounded-full",

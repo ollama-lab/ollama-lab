@@ -7,12 +7,7 @@ import { PullModel } from "./pull-model";
 import { LoaderSpin } from "../loader-spin";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { ModelListItem } from "./model-list-item";
-import {
-  initModelStates,
-  modelList,
-  reloadModelStates,
-  status,
-} from "~/lib/contexts/globals/model-states";
+import { initModelStates, modelList, reloadModelStates, status } from "~/lib/contexts/globals/model-states";
 import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";
 import { ModelSearchResultProvider } from "~/lib/contexts/model-search-result";
 import { setCurrentModelPageModel } from "~/lib/contexts/globals/model-page";

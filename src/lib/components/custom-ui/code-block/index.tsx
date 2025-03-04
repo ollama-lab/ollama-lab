@@ -31,13 +31,17 @@ export function CodeBlock(props: CodeBlockProps) {
     return detectedLang ? lowlight.highlight(detectedLang, code()) : lowlight.highlightAuto(code());
   });
 
-  const yieldElement = createMemo(() => toJsxRuntime(hastTree(), {
-    Fragment, jsx, jsxs,
-    development: isDev,
-    jsxDEV,
-    elementAttributeNameCase: "html",
-    stylePropertyNameCase: "css",
-  }));
+  const yieldElement = createMemo(() =>
+    toJsxRuntime(hastTree(), {
+      Fragment,
+      jsx,
+      jsxs,
+      development: isDev,
+      jsxDEV,
+      elementAttributeNameCase: "html",
+      stylePropertyNameCase: "css",
+    }),
+  );
 
   const detectedLang = createMemo(() => hastTree().data?.language);
 
@@ -62,17 +66,15 @@ export function CodeBlock(props: CodeBlockProps) {
   );
 
   const lineCount = createMemo(() => {
-    return hastTree()
-      .children
-      .reduce((acc, cur) => {
-        if (cur.type === "text" || cur.type === "comment") {
-          acc += cur.value.split("\n").length;
-        } else {
-          acc++;
-        }
+    return hastTree().children.reduce((acc, cur) => {
+      if (cur.type === "text" || cur.type === "comment") {
+        acc += cur.value.split("\n").length;
+      } else {
+        acc++;
+      }
 
-        return acc;
-      }, 0);
+      return acc;
+    }, 0);
   });
 
   return (
@@ -91,11 +93,7 @@ export function CodeBlock(props: CodeBlockProps) {
       </div>
 
       <div class="relative text-sm rounded-b overflow-hidden">
-        <Switch fallback={(
-          <div class="bg-muted text-muted-foreground px-2 py-1">
-            {lineCount()} lines hidden
-          </div>
-        )}>
+        <Switch fallback={<div class="bg-muted text-muted-foreground px-2 py-1">{lineCount()} lines hidden</div>}>
           <Match when={!collapsible() || !collapsed()}>
             <pre class="min-w-full whitespace-normal">
               <code
@@ -103,7 +101,7 @@ export function CodeBlock(props: CodeBlockProps) {
                   "relative overflow-x-auto grid! grid-cols-1",
                   wrapText() ? "whitespace-pre-wrap" : "whitespace-pre",
                   "hljs",
-                  detectedLang() ? `language-${detectedLang()!}` : ""
+                  detectedLang() ? `language-${detectedLang()!}` : "",
                 )}
               >
                 {yieldElement()}
