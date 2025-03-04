@@ -187,6 +187,10 @@
   body {
     @apply bg-background text-foreground font-sans-inter;
   }
+
+  kbd {
+    @apply bg-secondary text-secondary-foreground rounded p-1;
+  }
 }
 
 @utilities {
