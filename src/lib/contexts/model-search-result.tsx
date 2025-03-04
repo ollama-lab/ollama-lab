@@ -1,9 +1,10 @@
 import { Accessor, createContext, createResource, createSignal, JSX, Resource, Setter, useContext } from "solid-js";
 import { searchModel } from "../utils/search/model-search";
 import { toast } from "solid-sonner";
-import { modelList } from "./globals/model-states";
+import { modelList, reloadModelStates } from "./globals/model-states";
 import { addPullTask, getTaskMap, errorPullTask, setTaskMap, clearPullTasks } from "./globals/pull-model-tasks";
 import { pullModel } from "../commands/models";
+import { setCurrentModelPageModel } from "./globals/model-page";
 
 export const BASE_DOMAIN = "ollama.com";
 export const BASE_URL = `https://${BASE_DOMAIN}`;
@@ -103,6 +104,8 @@ export function ModelSearchResultProvider(props: { children?: JSX.Element }) {
       await pullModel(model, (ev) => {
         if (ev.type === "success") {
           clearPullTasks(model);
+          reloadModelStates();
+          setCurrentModelPageModel(model);
           return;
         }
         setTaskMap(model, ev);
