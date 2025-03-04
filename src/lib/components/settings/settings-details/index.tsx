@@ -1,16 +1,12 @@
-import { useSettings } from "~/lib/contexts/settings";
 import AppearanceSection from "./builtin-sections/appearance";
 import OllamaSection from "./builtin-sections/ollama";
-import { createMemo, createSignal, Match, Show, Switch } from "solid-js";
+import { createSignal, Match, Show, Switch } from "solid-js";
 import { Button } from "../../ui/button";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { LoaderSpin } from "../../loader-spin";
+import { restartVotes } from "~/lib/contexts/globals/settings";
 
 export function SettingsDetails() {
-  const settings = useSettings();
-
-  const restartVotes = createMemo(() => settings?.restartVotes() ?? []);
-
   const [restarting, setRestarting] = createSignal(false);
 
   return (

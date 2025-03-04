@@ -1,14 +1,13 @@
-import { useSettings } from "~/lib/contexts/settings";
+import { getCurrentSettings, saveSettings, setCurrentSettings, unvoteRestart, voteRestart } from "~/lib/contexts/globals/settings";
 import TextSection from "../modules/text";
 import { SectionRoot } from "../section-root";
 import { createEffect, createMemo } from "solid-js";
 
 export default function OllamaSection() {
-  const settings = useSettings();
+  // Static
+  const runningUri = getCurrentSettings().ollama.uri ?? null;
 
-  const runningUri = settings?.settings().ollama.uri ?? null;
-
-  const connUri = createMemo(() => settings?.settings().ollama.uri);
+  const connUri = createMemo(() => getCurrentSettings().ollama.uri);
   const updateConnUri = (newValue: string | null) => {
     let uri = null;
     try {
@@ -17,15 +16,15 @@ export default function OllamaSection() {
       }
     } catch {}
 
-    settings?.set("ollama", "uri", uri ? uri.href : null);
-    settings?.save();
+    setCurrentSettings("ollama", "uri", uri ? uri.href : null);
+    saveSettings();
   };
 
   createEffect(() => {
     if ((connUri() ?? null) !== runningUri) {
-      settings?.voteRestart("ollama.uri");
+      voteRestart("ollama.uri");
     } else {
-      settings?.unvoteRestart("ollama.uri");
+      unvoteRestart("ollama.uri");
     }
   });
 

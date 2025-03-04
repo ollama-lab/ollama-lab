@@ -1,13 +1,11 @@
 import { JSX } from "solid-js";
-import { useColorMode } from "~/lib/contexts/color-mode";
 import lightModeCSS from "highlight.js/styles/atom-one-light.min.css?raw";
 import darkModeCSS from "highlight.js/styles/atom-one-dark-reasonable.min.css?raw";
 import { Style } from "@solidjs/meta";
+import { preferredColorMode } from "~/lib/contexts/globals/color-mode";
 
 export function HighlightStylesProvider(props: { children?: JSX.Element }) {
-  const colorModeContext = useColorMode();
-
-  const cssString = () => (colorModeContext?.preferredColorMode() === "light" ? lightModeCSS : darkModeCSS);
+  const cssString = () => preferredColorMode() === "light" ? lightModeCSS : darkModeCSS;
 
   return (
     <>
