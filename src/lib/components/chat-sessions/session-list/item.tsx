@@ -57,9 +57,7 @@ export function SessionListItem(props: SessionListItemProps) {
       <div class="grow select-none truncate text-sm flex gap-2 items-center">
         <Switch fallback={<Title />}>
           <Match when={renameMode()}>
-            <TextField
-              defaultValue={title() ?? ""}
-            >
+            <TextField defaultValue={title() ?? ""}>
               <TextFieldInput
                 class="text-foreground"
                 on:keydown={(ev) => {
@@ -104,9 +102,7 @@ export function SessionListItem(props: SessionListItemProps) {
         </Switch>
       </div>
       <Show when={!renameMode()}>
-        <div class="shrink-0 flex items-center">
-          
-        </div>
+        <div class="shrink-0 flex items-center"></div>
       </Show>
     </div>
   );
