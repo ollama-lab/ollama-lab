@@ -9,6 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { ModelListItem } from "./model-list-item";
 import { initModelStates, modelList, reloadModelStates, setCurrentModel, status } from "~/lib/contexts/globals/model-states";
 import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";
+import { ModelSearchResultProvider } from "~/lib/contexts/model-search-result";
 
 interface DisplayModelListItem {
   name: string;
@@ -97,7 +98,9 @@ export function ModelList() {
             <RefreshCwIcon class={cn(status?.() === "fetching" && "animate-spin")} />
           </Button>
 
-          <PullModel />
+          <ModelSearchResultProvider>
+            <PullModel />
+          </ModelSearchResultProvider>
         </div>
       </div>
 

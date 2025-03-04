@@ -1,6 +1,5 @@
-import { BASE_URL, type SearchItem, type Tag, type TagType } from "$lib/stores/model-search"
+import { BASE_URL, type SearchItem, type Tag, type TagType } from "~/lib/contexts/model-search-result"
 import { fetch } from "@tauri-apps/plugin-http"
-import DOMPurify from "isomorphic-dompurify"
 
 function guessTagTypeByTailwindClasses(className: string): TagType {
   if (className.includes("indigo")) {
@@ -13,11 +12,14 @@ function guessTagTypeByTailwindClasses(className: string): TagType {
 /**
  * Search model
  *
+ * This function crawls the HTML/HTMX chunk from Ollama's search page
+ * and parses it using the browser's DOM.
+ *
  * NOTE: This function returns a promise that returns a generator
  * rather than an async generator.
  *
  * @param keyword Search keyword
- * @returns A promise that returns a generator
+ * @returns A promise that returns a generator for search items
  *
  * @author Charles Dong
  * @since 0.1.0
@@ -31,7 +33,7 @@ export async function searchModel(keyword: string): Promise<Generator<SearchItem
   const html = await res.text()
 
   const parser = new DOMParser()
-  const document = parser.parseFromString(DOMPurify.sanitize(html), "text/html")
+  const document = parser.parseFromString(html, "text/html")
 
   const listRoot = document.querySelector("#searchresults > ul[role=list]")
   if (!listRoot) {

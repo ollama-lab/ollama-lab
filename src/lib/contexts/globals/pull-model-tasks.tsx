@@ -26,7 +26,7 @@ export function addPullTask(id: string, message: string) {
   });
 }
 
-export function pullTaskError(id: string, message: string) {
+export function errorPullTask(id: string, message: string) {
   setTaskMap(id, {
     id, type: "failure", message,
   });
@@ -62,3 +62,5 @@ export function pullTaskChan(model: string) {
     return chan;
   };
 }
+
+export { setTaskMap };

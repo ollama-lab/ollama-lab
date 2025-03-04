@@ -1,5 +1,6 @@
 import type { ModelDetails, ModelInfo, ModelListItem, RunningModel } from "~/lib/models/model-item";
 import { Channel, invoke } from "@tauri-apps/api/core";
+import { ProgressEvent } from "../models/events/progress";
 
 interface RawModelListItem {
   name: string;
@@ -72,9 +73,12 @@ export async function deleteModel(model: string): Promise<void> {
   await invoke<void>("delete_model", { model });
 }
 
-export async function pullModel(model: string, channel: Channel): Promise<ProgressEvent> {
+export async function pullModel(model: string, onProgress: (ev: ProgressEvent) => void): Promise<ProgressEvent> {
+  const chan = new Channel<ProgressEvent>();
+  chan.onmessage = onProgress;
+
   return await invoke<ProgressEvent>("pull_model", {
     model,
-    onPull: channel,
+    onPull: chan,
   });
 }
