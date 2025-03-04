@@ -191,9 +191,6 @@
   kbd {
     @apply bg-secondary text-secondary-foreground rounded p-1;
   }
-
-  .code-line {
-  }
 }
 
 @utilities {
