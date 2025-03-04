@@ -1,15 +1,14 @@
 import { createEffect, createMemo, Index, Match, Switch } from "solid-js";
-import { useModelContext } from "~/lib/contexts/model-list";
-import { usePullModelTasks } from "~/lib/contexts/pull-model-tasks";
 import { Button } from "../ui/button";
 import { toast } from "solid-sonner";
 import { CircleAlertIcon, RefreshCwIcon } from "lucide-solid";
 import { cn } from "~/lib/utils/class-names";
 import { PullModel } from "./pull-model";
-import { useModelPageCurrentModel } from "~/lib/contexts/model-page/current-model";
 import { LoaderSpin } from "../loader-spin";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { ModelListItem } from "./model-list-item";
+import { initModelStates, modelList, reloadModelStates, setCurrentModel, status } from "~/lib/contexts/globals/model-states";
+import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";
 
 interface DisplayModelListItem {
   name: string;
@@ -21,30 +20,17 @@ interface DisplayModelListItem {
 }
 
 export function ModelList() {
-  const modelContext = useModelContext();
-  const pullModelTasksContext = usePullModelTasks();
-  const modelPageCurrentModel = useModelPageCurrentModel();
-
-  const status = modelContext?.status;
-
-  const setCurrentModel = modelPageCurrentModel?.[1];
-
-  const modelList = modelContext?.modelList;
-  const modelNameList = createMemo(() => modelList?.()?.map(({ name }) => name));
+  const modelNameList = createMemo(() => modelList()?.map(({ name }) => name));
 
   createEffect(() => {
-    modelContext?.init();
+    initModelStates();
   });
 
   const displayModelList = createMemo<DisplayModelListItem[]>(() => {
-    if (!pullModelTasksContext) {
-      return [];
-    }
-
     const modelNameListRet = modelNameList();
 
     return [
-      ...Object.entries(pullModelTasksContext.taskMap())
+      ...Object.entries(getTaskMap())
         .filter(([name]) => !modelNameListRet?.includes(name))
         .map(([name, item]) => {
           switch (item.type) {
@@ -93,10 +79,10 @@ export function ModelList() {
           <Button
             variant="outline"
             size="icon"
-            disabled={status?.() === "fetching"}
-            title={status?.() === "fetching" ? "Refreshing..." : "Refresh model list"}
+            disabled={status() === "fetching"}
+            title={status() === "fetching" ? "Refreshing..." : "Refresh model list"}
             onClick={() => {
-              const reloadPromise = modelContext?.reload();
+              const reloadPromise = reloadModelStates();
               if (reloadPromise) {
                 toast.promise(reloadPromise, {
                   loading: "Refreshing model list...",
@@ -115,7 +101,7 @@ export function ModelList() {
         </div>
       </div>
 
-      <div class="grow overflow-y-auto" onClick={() => setCurrentModel?.(null)}>
+      <div class="grow overflow-y-auto" onClick={() => setCurrentModel(null)}>
         <div class="flex flex-col gap-2 px-2">
           <Switch>
             <Match when={status?.() === "fetching"}>

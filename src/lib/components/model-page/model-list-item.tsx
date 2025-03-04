@@ -1,18 +1,17 @@
 import { TriangleAlertIcon, XIcon } from "lucide-solid";
 import { createMemo, Match, Show, Switch } from "solid-js";
-import { useModelContext } from "~/lib/contexts/model-list";
-import { useModelPageCurrentModel } from "~/lib/contexts/model-page/current-model";
 import { cn } from "~/lib/utils/class-names";
 import { LoaderSpin } from "../loader-spin";
 import StatusDot from "../custom-ui/status-dot";
 import { Badge } from "../ui/badge";
-import { usePullModelTasks } from "~/lib/contexts/pull-model-tasks";
 import { emit } from "@tauri-apps/api/event";
 import { toEventString } from "~/lib/utils/strings";
 import { toast } from "solid-sonner";
 import RelativeTime from "../custom-ui/relative-time";
 import ProgressSize from "../custom-ui/progress-size";
 import { Progress } from "../ui/progress";
+import { activeModels, currentModel, defaultModel, setCurrentModel } from "~/lib/contexts/globals/model-states";
+import { clearPullTasks } from "~/lib/contexts/globals/pull-model-tasks";
 
 export interface ModelListItemProps {
   name: string;
@@ -25,16 +24,8 @@ export interface ModelListItemProps {
 }
 
 export function ModelListItem(props: ModelListItemProps) {
-  const modelPageCurrentModel = useModelPageCurrentModel();
-  const modelContext = useModelContext();
-  const pullModelTasksContext = usePullModelTasks();
-
-  const currentModel = modelPageCurrentModel?.[0];
-  const setCurrentModel = modelPageCurrentModel?.[1];
-  const defaultModel = modelContext?.defaultModel;
-
-  const selected = createMemo(() => currentModel?.() === props.name);
-  const isDefault = createMemo(() => defaultModel?.() === props.name);
+  const selected = createMemo(() => currentModel() === props.name);
+  const isDefault = createMemo(() => defaultModel() === props.name);
 
   const completed = () => props.completedSize;
   const total = () => props.totalSize;
@@ -53,7 +44,7 @@ export function ModelListItem(props: ModelListItemProps) {
       role="button"
       tabindex={props.index}
       on:click={(ev) => {
-        setCurrentModel?.(props.name);
+        setCurrentModel(props.name);
         ev.stopPropagation();
       }}
     >
@@ -71,8 +62,7 @@ export function ModelListItem(props: ModelListItemProps) {
           <span class="font-bold">{name()}</span>
 
           <Show
-            when={modelContext
-              ?.activeModels()
+            when={activeModels()
               .map((item) => item.name)
               .includes(name())}
           >
@@ -92,7 +82,7 @@ export function ModelListItem(props: ModelListItemProps) {
                 title={s() === "canceled" ? "Remove" : "Cancel"}
                 onClick={() => {
                   if (s() === "canceled" || s() === "failure") {
-                    pullModelTasksContext?.clear(name());
+                    clearPullTasks(name());
                   } else {
                     const promise = emit(`cancel-pull/${toEventString(name())}`);
 

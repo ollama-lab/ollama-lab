@@ -11,7 +11,7 @@ export function getTaskMap() {
   return taskMapStore;
 }
 
-export function clear(id?: string) {
+export function clearPullTasks(id?: string) {
   if (id === undefined) {
     setTaskMap({});
     return;
@@ -40,12 +40,12 @@ export function pullTaskChan(model: string) {
 
     switch (ev.type) {
       case "success":
-        clear(model);
+        clearPullTasks(model);
         reloadModelStates();
         break;
 
       case "canceled":
-        clear(model);
+        clearPullTasks(model);
 
         {
           const m = currentModel();

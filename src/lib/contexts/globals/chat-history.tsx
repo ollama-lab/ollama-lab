@@ -63,11 +63,11 @@ export async function switchToSession(sessionId: number | null) {
   );
 }
 
-export async function clear() {
+export async function clearChatHistory() {
   await switchToSession(null);
 }
 
-export async function submit(prompt: IncomingUserPrompt, model: string, {
+export async function submitChat(prompt: IncomingUserPrompt, model: string, {
  onRespond, onScrollDown,
 }: PromptSubmissionEvents = {}) {
   let ch = getChatHistory();
