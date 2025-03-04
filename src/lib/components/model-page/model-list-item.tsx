@@ -123,8 +123,7 @@ export function ModelListItem(props: ModelListItemProps) {
         <Progress
           minValue={0}
           maxValue={total()}
-          value={completed()}
-          indeterminate={completed() === undefined || total() === undefined}
+          value={typeof completed() === "number" && typeof total() === "number" ? completed()! : null}
           class={cn("h-1 rounded-none bg-transparent", selected() && "invert")}
         />
       </Show>
