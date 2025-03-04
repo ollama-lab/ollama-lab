@@ -10,8 +10,9 @@ import { toast } from "solid-sonner";
 import RelativeTime from "../custom-ui/relative-time";
 import ProgressSize from "../custom-ui/progress-size";
 import { Progress } from "../ui/progress";
-import { activeModels, currentModel, defaultModel, setCurrentModel } from "~/lib/contexts/globals/model-states";
+import { activeModels, defaultModel } from "~/lib/contexts/globals/model-states";
 import { clearPullTasks } from "~/lib/contexts/globals/pull-model-tasks";
+import { currentModelPageModel, setCurrentModelPageModel } from "~/lib/contexts/globals/model-page";
 
 export interface ModelListItemProps {
   name: string;
@@ -24,7 +25,7 @@ export interface ModelListItemProps {
 }
 
 export function ModelListItem(props: ModelListItemProps) {
-  const selected = createMemo(() => currentModel() === props.name);
+  const selected = createMemo(() => currentModelPageModel() === props.name);
   const isDefault = createMemo(() => defaultModel() === props.name);
 
   const completed = () => props.completedSize;
@@ -44,7 +45,7 @@ export function ModelListItem(props: ModelListItemProps) {
       role="button"
       tabindex={props.index}
       on:click={(ev) => {
-        setCurrentModel(props.name);
+        setCurrentModelPageModel(props.name);
         ev.stopPropagation();
       }}
     >
