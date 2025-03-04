@@ -76,7 +76,7 @@ export function ModelList() {
     <div class="w-full h-full flex flex-col">
       <div class="sticky py-4 px-3 shrink-0 flex place-items-center backdrop-blur-lg bg-background/50">
         <h2 class="text-lg font-bold select-none flex-grow">Models</h2>
-        <div class="shrink-0">
+        <div class="shrink-0 flex gap-1">
           <Button
             variant="outline"
             size="icon"

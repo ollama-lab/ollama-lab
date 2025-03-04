@@ -1,6 +1,6 @@
 import { SearchItem, useModelSearchResult } from "~/lib/contexts/model-search-result";
 import { CommandItem } from "../../ui/command";
-import { createMemo, createSignal } from "solid-js/types/server/reactive.js";
+import { createMemo, createSignal } from "solid-js";
 import { modelList } from "~/lib/contexts/globals/model-states";
 import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";
 import { For, JSX, Match, Switch } from "solid-js";
