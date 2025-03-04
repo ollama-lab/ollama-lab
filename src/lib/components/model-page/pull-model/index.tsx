@@ -102,6 +102,7 @@ export function PullModel() {
                 if (ev.ctrlKey) {
                   searchResultContext?.startPullModel(inputKeyword());
                   setInputKeyword("");
+                  setOpen(false);
                 } else {
                   initiateSearch(inputKeyword());
                 }
@@ -153,7 +154,11 @@ export function PullModel() {
               <Show when={searchResult()?.()}>
                 {(s) => (
                   <CommandGroup heading="Search result">
-                    <For each={s()?.result}>{(item) => <SearchResultItem item={item} />}</For>
+                    <For each={s()?.result}>
+                      {(item) => (
+                        <SearchResultItem item={item} on:startDownloading={() => setOpen(false)} />
+                      )}
+                    </For>
                   </CommandGroup>
                 )}
               </Show>

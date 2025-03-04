@@ -11,7 +11,6 @@ import {
   initModelStates,
   modelList,
   reloadModelStates,
-  setCurrentModel,
   status,
 } from "~/lib/contexts/globals/model-states";
 import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";

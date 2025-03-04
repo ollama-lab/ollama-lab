@@ -80,8 +80,11 @@ export function ModelListItem(props: ModelListItemProps) {
           <Show when={status()}>
             {(s) => (
               <button
+                class="cursor-pointer"
                 title={s() === "canceled" ? "Remove" : "Cancel"}
-                onClick={() => {
+                on:click={(ev) => {
+                  ev.stopPropagation();
+
                   if (s() === "canceled" || s() === "failure") {
                     clearPullTasks(name());
                   } else {
@@ -116,7 +119,7 @@ export function ModelListItem(props: ModelListItemProps) {
         </div>
       </div>
 
-      <Show when={completed() === undefined && total() === undefined}>
+      <Show when={status() === "inProgress"}>
         <Progress
           minValue={0}
           maxValue={total()}

@@ -27,6 +27,7 @@ function TagBadge(props: TagBadgeProps) {
 
 export interface SearchResultItemProps {
   item: SearchItem;
+  ["on:startDownloading"]?: () => void;
 }
 
 export function SearchResultItem(props: SearchResultItemProps) {
@@ -37,7 +38,7 @@ export function SearchResultItem(props: SearchResultItemProps) {
   const searchItem = () => props.item;
 
   const [selected, setSelected] = createSignal<string>(LATEST);
-  const fullName = createMemo(() => `${props.item}:${selected()}`);
+  const fullName = createMemo(() => `${props.item.name}:${selected()}`);
 
   const downloadedAlready = createMemo(() => {
     const modelName = fullName();
@@ -86,6 +87,7 @@ export function SearchResultItem(props: SearchResultItemProps) {
             on:click={(ev) => {
               ev.stopPropagation();
               searchResultContext?.startPullModel(fullName());
+              props["on:startDownloading"]?.();
             }}
             disabled={downloadedAlready()}
           >

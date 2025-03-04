@@ -73,7 +73,7 @@ export async function deleteModel(model: string): Promise<void> {
   await invoke<void>("delete_model", { model });
 }
 
-export async function pullModel(model: string, onProgress: (ev: ProgressEvent) => void): Promise<ProgressEvent> {
+export async function pullModel(model: string, onProgress: (ev: ProgressEvent) => void): Promise<ProgressEvent | null> {
   const chan = new Channel<ProgressEvent>();
   chan.onmessage = onProgress;
 

@@ -112,10 +112,9 @@ export function ModelDetails() {
 
               <Suspense>
                 <Tabs value={tabValue()} onChange={setTabValue}>
-                  <TabsList class="sticky -top-6 z-20">
                     <Show when={modelInfo()}>
                       {(info) => (
-                        <>
+                        <TabsList class="sticky -top-6 z-20">
                           <Show when={info().details}>
                             <TabsTrigger value="details">Details</TabsTrigger>
                           </Show>
@@ -127,11 +126,10 @@ export function ModelDetails() {
                             <TabsTrigger value="parameters">Parameters</TabsTrigger>
                           </Show>
                           <TabsTrigger value="template">Template</TabsTrigger>
-                        </>
+                          <TabsTrigger value="system-prompt">System Prompt</TabsTrigger>
+                        </TabsList>
                       )}
                     </Show>
-                    <TabsTrigger value="system-prompt">System Prompt</TabsTrigger>
-                  </TabsList>
 
                   <div>
                     <Show when={modelInfo()}>
@@ -172,13 +170,12 @@ export function ModelDetails() {
                               </TabsContent>
                             )}
                           </Show>
+                          <TabsContent value="system-prompt">
+                            <SystemPromptSection model={m()} />
+                          </TabsContent>
                         </>
                       )}
                     </Show>
-
-                    <TabsContent value="system-prompt">
-                      <SystemPromptSection model={m()} />
-                    </TabsContent>
                   </div>
                 </Tabs>
               </Suspense>

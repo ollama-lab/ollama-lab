@@ -100,8 +100,13 @@ export function ModelSearchResultProvider(props: { children?: JSX.Element }) {
     addPullTask(model, "Starting pulling...");
 
     try {
-      const result = await pullModel(model, (ev) => setTaskMap(ev.id, ev));
-      clearPullTasks(result.id);
+      await pullModel(model, (ev) => {
+        if (ev.type === "success") {
+          clearPullTasks(model);
+          return;
+        }
+        setTaskMap(model, ev);
+      });
     } catch (err) {
       errorPullTask(model, `Error: ${err}`);
     }
