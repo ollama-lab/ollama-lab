@@ -1,6 +1,6 @@
 import { createStore } from "solid-js/store";
-import { ModelListItem, RunningModel } from "../models/model-item";
-import { getDefaultModel, listLocalModels, listRunningModels, setDefaultModel } from "../commands/models";
+import { ModelListItem, RunningModel } from "~/lib/models/model-item";
+import { getDefaultModel, listLocalModels, listRunningModels } from "~/lib/commands/models";
 
 export type FetchingStatus = "unfetched" | "fetching" | "error" | "fetched";
 
@@ -40,7 +40,7 @@ export async function reloadModelStates() {
   await reloadDefaultModel();
 }
 
-export async function init() {
+export async function initModelStates() {
   if (modelStatesStore.status === "unfetched") {
     await reloadModelStates();
   }

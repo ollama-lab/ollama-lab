@@ -1,6 +1,6 @@
 import { createStore, produce } from "solid-js/store";
-import { Session } from "../models/session";
-import { getSession, listSessions } from "../commands/sessions";
+import { Session } from "../../models/session";
+import { getSession, listSessions } from "../../commands/sessions";
 
 const [sessions, setSessions] = createStore<Session[]>([]);
 

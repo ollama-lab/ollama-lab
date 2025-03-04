@@ -12,11 +12,12 @@ import ProgressSize from "../custom-ui/progress-size";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { CodeBlock } from "../custom-ui/code-block";
 import { Details } from "./sections/details";
-import { ModelInfo } from "./sections/model-info";
 import { SystemPromptSection } from "./sections/system-prompt";
 import { currentModelPageModel } from "~/lib/contexts/globals/model-page";
 import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";
 import { defaultModel, reloadActiveModels } from "~/lib/contexts/globals/model-states";
+import { ProgressEvent } from "~/lib/models/events/progress";
+import { ModelInfo } from "./sections/model-info";
 
 function PlaceholderPage() {
   return (
@@ -26,7 +27,12 @@ function PlaceholderPage() {
   );
 }
 
-async function fetcher({ modelName, downloadInfo }: { modelName: string | null, downloadInfo?: ProgressEvent }) {
+interface FetchingProps {
+  modelName: string | null;
+  downloadInfo?: ProgressEvent;
+}
+
+async function fetcher({ modelName, downloadInfo }: FetchingProps) {
   if (!modelName || downloadInfo && downloadInfo.type !== "success") {
     return null;
   }

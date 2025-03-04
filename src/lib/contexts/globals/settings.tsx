@@ -1,6 +1,6 @@
 import { createStore } from "solid-js/store";
-import { Settings } from "../models/settings";
-import { getSettings as getSettingsCommand, setSettings as setSettingsCommand } from "../commands/settings";
+import { Settings } from "../../models/settings";
+import { getSettings as getSettingsCommand, setSettings as setSettingsCommand } from "../../commands/settings";
 import { createEffect, createSignal } from "solid-js";
 import { setColorMode } from "./color-mode";
 
