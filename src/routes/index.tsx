@@ -1,5 +1,6 @@
+import { ChatPanel } from "~/lib/components/chat-sessions/chat-panel";
 import { SessionList } from "~/lib/components/chat-sessions/session-list";
-import { Resizable, ResizablePanel } from "~/lib/components/ui/resizable";
+import { Resizable, ResizableHandle, ResizablePanel } from "~/lib/components/ui/resizable";
 
 export default function IndexPage() {
   return (
@@ -7,8 +8,10 @@ export default function IndexPage() {
       <ResizablePanel initialSize={0.25} collapsible>
         <SessionList />
       </ResizablePanel>
-      <ResizablePanel />
-      <ResizablePanel></ResizablePanel>
+      <ResizableHandle />
+      <ResizablePanel initialSize={0.75}>
+        <ChatPanel />
+      </ResizablePanel>
     </Resizable>
   );
 }

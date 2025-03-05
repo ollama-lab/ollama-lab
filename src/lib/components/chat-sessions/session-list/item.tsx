@@ -1,5 +1,5 @@
 import { Match, Show, Switch } from "solid-js";
-import { createSignal } from "solid-js/types/server/reactive.js";
+import { createSignal } from "solid-js";
 import { toast } from "solid-sonner";
 import { getChatHistory, switchToSession } from "~/lib/contexts/globals/chat-history";
 import { cn } from "~/lib/utils/class-names";
@@ -8,6 +8,7 @@ import { TextField } from "../../ui/text-field";
 import { TextFieldInput } from "@kobalte/core/src/text-field/text-field-input.jsx";
 import { renameSession } from "~/lib/commands/sessions";
 import { reloadSession } from "~/lib/contexts/globals/sessions";
+import { OperationsDropdown } from "./operations";
 
 export interface SessionListItemProps {
   sessionId: number;
@@ -102,7 +103,9 @@ export function SessionListItem(props: SessionListItemProps) {
         </Switch>
       </div>
       <Show when={!renameMode()}>
-        <div class="shrink-0 flex items-center"></div>
+        <div class="shrink-0 flex items-center">
+          <OperationsDropdown sessionId={sessionId()} onEdit={() => setRenameMode(true)} />
+        </div>
       </Show>
     </div>
   );
