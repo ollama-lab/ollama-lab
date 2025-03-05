@@ -3,7 +3,7 @@ import { ChatPanelHeader } from "./header";
 
 export function ChatPanel() {
   return (
-    <div class="flex flex-col w-full h-full">
+    <div class="flex flex-col w-full h-full overflow-y-hidden">
       <ChatPanelHeader />
 
       <div class="grow px-4 py-2 w-full overflow-y-auto">
