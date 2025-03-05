@@ -44,7 +44,7 @@ export function PromptInput() {
   const deletePreviewItem = (i: number) => {
     setInputPrompt("imagePaths", produce((paths) => {
       if (paths) {
-        delete paths[i];
+        paths.splice(i, 1);
       }
     }));
   }

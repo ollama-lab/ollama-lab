@@ -10,7 +10,7 @@ export async function getThumbnailBase64(path: string, cached: boolean = true): 
   if (cached) {
     const data = getImageCache()[path] as CachedItem | undefined;
     if (data) {
-      return data.data
+      return data.data;
     }
   }
 
@@ -19,10 +19,10 @@ export async function getThumbnailBase64(path: string, cached: boolean = true): 
     setImageCache(path, {
       data: result,
       timestamp: Date.now(),
-    })
+    });
   }
 
-  return result
+  return result;
 }
 
 export async function getImagesByChatId(chatId: number): Promise<ImageReturn> {

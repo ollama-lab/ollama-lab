@@ -28,7 +28,7 @@ export function ImagePreview(props: ImagePreviewProps) {
           <div>
             <div class="group relative flex flex-col gap-1 overflow-auto cursor-pointer border border-border px-0.5 py-0.5 min-w-40">
               <div class="max-h-[200px]">
-                <Suspense fallback={<Skeleton class="w-[200px] h-[200px]" />}>
+                <Suspense fallback={<Skeleton width={200} height={200} radius={6} />}>
                   <img src={src()?.result} alt="N/A" title={src()?.origin} />
                 </Suspense>
               </div>
