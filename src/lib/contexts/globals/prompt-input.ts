@@ -1,5 +1,5 @@
 import { createStore } from "solid-js/store";
-import { createMemo, createSignal } from "solid-js/types/server/reactive.js";
+import { createMemo, createSignal } from "solid-js";
 import { IncomingUserPrompt } from "~/lib/models/chat";
 import { getSessionWiseModel } from "./session-wise-model";
 

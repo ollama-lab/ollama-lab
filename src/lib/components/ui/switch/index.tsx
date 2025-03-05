@@ -6,7 +6,7 @@ import * as SwitchPrimitive from "@kobalte/core/switch";
 
 import { cn } from "~/lib/utils/class-names";
 
-export const SwitchField = SwitchPrimitive.Root;
+export const SwitchRoot = SwitchPrimitive.Root;
 export const SwitchDescription = SwitchPrimitive.Description;
 export const SwitchErrorMessage = SwitchPrimitive.ErrorMessage;
 
@@ -14,7 +14,7 @@ export type SwitchControlProps = SwitchPrimitive.SwitchControlProps & {
   class?: string | undefined;
 };
 
-export const SwitchButton = <T extends ValidComponent = "input">(props: PolymorphicProps<T, SwitchControlProps>) => {
+export const SwitchControl = <T extends ValidComponent = "input">(props: PolymorphicProps<T, SwitchControlProps>) => {
   const [local, others] = splitProps(props as SwitchControlProps, ["class"]);
   return (
     <>
