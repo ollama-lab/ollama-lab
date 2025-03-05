@@ -6,6 +6,9 @@ export function ChatPanel() {
     <div class="flex flex-col w-full h-full">
       <ChatPanelHeader />
 
+      <div class="grow px-4 py-2 w-full overflow-y-auto">
+      </div>
+
       <div class="max-w-5xl w-full mx-auto">
         <PromptInput />
       </div>
