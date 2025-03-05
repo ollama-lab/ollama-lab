@@ -1,4 +1,4 @@
-import { createMemo, createSignal, Match, Show, Switch } from "solid-js";
+import { createMemo, createRenderEffect, createSignal, Match, Show, Switch } from "solid-js";
 import { all, createLowlight } from "lowlight";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import { jsx, jsxs, Fragment } from "solid-js/h/jsx-runtime";
@@ -7,6 +7,8 @@ import hljs from "highlight.js";
 import { cn } from "~/lib/utils/class-names";
 import { CodeBlockToolbar } from "./toolbar";
 import { isDev } from "solid-js/web";
+import { createStore, reconcile } from "solid-js/store";
+import { Root } from "hast";
 
 export interface CodeBlockProps {
   code: string;
@@ -26,13 +28,16 @@ export function CodeBlock(props: CodeBlockProps) {
 
   const lowlight = createLowlight(all);
 
-  const hastTree = createMemo(() => {
+  const [hastTree, setHastTree] = createStore<Root>({ type: "root", children: [] });
+
+  createRenderEffect(() => {
     const detectedLang = lang();
-    return detectedLang ? lowlight.highlight(detectedLang, code()) : lowlight.highlightAuto(code());
+    const tree = detectedLang ? lowlight.highlight(detectedLang, code()) : lowlight.highlightAuto(code());
+    setHastTree(reconcile(tree));
   });
 
   const yieldElement = createMemo(() =>
-    toJsxRuntime(hastTree(), {
+    toJsxRuntime(hastTree, {
       Fragment,
       jsx,
       jsxs,
