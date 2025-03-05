@@ -48,7 +48,7 @@ export function CodeBlock(props: CodeBlockProps) {
     }),
   );
 
-  const detectedLang = createMemo(() => hastTree().data?.language);
+  const detectedLang = createMemo(() => hastTree.data?.language);
 
   const langName = createMemo(() => {
     const language = detectedLang();
@@ -71,7 +71,7 @@ export function CodeBlock(props: CodeBlockProps) {
   );
 
   const lineCount = createMemo(() => {
-    return hastTree().children.reduce((acc, cur) => {
+    return hastTree.children.reduce((acc, cur) => {
       if (cur.type === "text" || cur.type === "comment") {
         acc += cur.value.split("\n").length;
       } else {
