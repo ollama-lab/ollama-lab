@@ -49,7 +49,10 @@ export function ModelSelector() {
                 <CommandGroup heading={prefix}>
                   <For each={list}>
                     {(item) => (
-                      <CommandItem onClick={() => updateSessionModel(item.name)}>
+                      <CommandItem
+                        class="cursor-pointer"
+                        on:click={() => updateSessionModel(item.name)}
+                      >
                         {item.name}
                       </CommandItem>
                     )}
