@@ -66,12 +66,12 @@ export function ChatImagePreview(props: ChatImagePreviewProps) {
 
   return (
     <div class="flex gap-2 overflow-x-auto">
-      <Suspense>
+      <Suspense fallback={<Skeleton width={160} height={160} />}>
         <For each={images()}>
           {(image) => (
             <div>
               <div class="group relative flex flex-col gap-1 overflow-auto cursor-pointer border border-border px-0.5 py-0.5 min-w-40">
-                <div class="max-h-[200px]">
+                <div class="max-h-[160px]">
                   <img src={toSrcString(image.mime, image.base64)} alt="N/A" title={image.origin ?? undefined} />
                 </div>
               </div>
