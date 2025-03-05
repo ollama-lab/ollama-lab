@@ -25,6 +25,6 @@ export async function getThumbnailBase64(path: string, cached: boolean = true): 
   return result;
 }
 
-export async function getImagesByChatId(chatId: number): Promise<ImageReturn> {
-  return await invoke<ImageReturn>("get_images_by_chat_id", { chatId });
+export async function getImagesByChatId(chatId: number): Promise<ImageReturn[]> {
+  return await invoke<ImageReturn[]>("get_images_by_chat_id", { chatId });
 }

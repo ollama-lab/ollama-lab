@@ -19,6 +19,7 @@ import { PromptInputToolbar } from "./toolbar";
 import { LoaderSpin } from "../../loader-spin";
 import { emit } from "@tauri-apps/api/event";
 import autosize from "autosize";
+import { toSrcString } from "~/lib/utils/images";
 
 export function PromptInput() {
   const [formRef, setFormRef] = createSignal<HTMLFormElement | undefined>(undefined);
@@ -36,7 +37,7 @@ export function PromptInput() {
   const fetcher = async (src: string) => {
     const image = await getThumbnailBase64(src);
     return {
-      result: `data:${image.mime};base64,${image.base64}`,
+      result: toSrcString(image.mime, image.base64),
       origin: image.path,
     } satisfies ImageInfoReturn;
   };
@@ -113,7 +114,7 @@ export function PromptInput() {
 
       <Show when={getInputPrompt().imagePaths}>
         <ImagePreview
-          srcs={getInputPrompt().imagePaths ?? []}
+          srcs={() => getInputPrompt().imagePaths ?? []}
           fetcher={fetcher}
           onDelete={deletePreviewItem}
         />

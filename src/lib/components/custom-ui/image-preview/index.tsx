@@ -2,6 +2,9 @@ import { createMemo, createResource, For, Suspense } from "solid-js";
 import { Skeleton } from "../../ui/skeleton";
 import { Button } from "../../ui/button";
 import { TrashIcon } from "lucide-solid";
+import { createAsync } from "@solidjs/router";
+import { getImagesByChatId } from "~/lib/commands/image";
+import { toSrcString } from "~/lib/utils/images";
 
 export interface ImageInfoReturn {
   result: string;
@@ -48,6 +51,34 @@ export function ImagePreview(props: ImagePreviewProps) {
           </div>
         )}
       </For>
+    </div>
+  );
+}
+
+export interface ChatImagePreviewProps {
+  chatId: number;
+}
+
+export function ChatImagePreview(props: ChatImagePreviewProps) {
+  const chatId = () => props.chatId;
+
+  const images = createAsync(async () => await getImagesByChatId(chatId()));
+
+  return (
+    <div class="flex gap-2 overflow-x-auto">
+      <Suspense>
+        <For each={images()}>
+          {(image) => (
+            <div>
+              <div class="group relative flex flex-col gap-1 overflow-auto cursor-pointer border border-border px-0.5 py-0.5 min-w-40">
+                <div class="max-h-[200px]">
+                  <img src={toSrcString(image.mime, image.base64)} alt="N/A" title={image.origin ?? undefined} />
+                </div>
+              </div>
+            </div>
+          )}
+        </For>
+      </Suspense>
     </div>
   );
 }
