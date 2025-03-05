@@ -1,4 +1,5 @@
 import { ModelSelector } from "../../custom-ui/model-selector";
+import { SystemPromptToggle } from "./header/system-prompt-toggle";
 
 export function ChatPanelHeader() {
   return (
@@ -6,6 +7,7 @@ export function ChatPanelHeader() {
       <div class="grow flex gap-2">
         <ModelSelector />
       </div>
+      <SystemPromptToggle />
     </div>
   );
 }
