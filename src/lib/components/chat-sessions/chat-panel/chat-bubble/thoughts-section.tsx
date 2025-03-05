@@ -66,7 +66,13 @@ export function ThoughtsSection() {
           </div>
 
           <Presence>
-            <CollapsibleContent as={Motion.div}>
+            <CollapsibleContent
+              as={Motion.div}
+              transition={{ duration: 300 }}
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+            >
               <div></div>
             </CollapsibleContent>
           </Presence>
