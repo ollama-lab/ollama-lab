@@ -23,5 +23,6 @@ export const isSubmittable = createMemo(() => {
 });
 
 export const getInputPrompt = () => inputPrompt;
+export const clearInputPrompt = () => setInputPrompt({ text: "" });
 
 export { setInputPrompt, hidePromptBar, setHidePromptBar };

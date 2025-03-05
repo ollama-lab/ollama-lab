@@ -35,9 +35,7 @@ export function DeletionDialog(props: DeletionDialogProps) {
   return (
     <Dialog open={props.open?.()} onOpenChange={props.onOpenChange}>
       <DialogContent>
-        <DialogHeader class="font-bold text-lg text-red-600 dark:text-red-400">
-          Confirm deletion
-        </DialogHeader>
+        <DialogHeader class="font-bold text-lg text-red-600 dark:text-red-400">Confirm deletion</DialogHeader>
         <div>
           The session and its chat history will be <b>permanently</b> deleted. This operation cannot be undone.
         </div>
