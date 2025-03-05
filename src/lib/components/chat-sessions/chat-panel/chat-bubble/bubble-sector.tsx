@@ -3,6 +3,7 @@ import { ChatImagePreview } from "~/lib/components/custom-ui/image-preview";
 import { Avatar, AvatarImage } from "~/lib/components/ui/avatar";
 import { useChatEntry } from "~/lib/contexts/chat-entry";
 import { cn } from "~/lib/utils/class-names";
+import { ThoughtsSection } from "./thoughts-section";
 
 export function BubbleSector() {
   const chat = useChatEntry();
@@ -56,6 +57,10 @@ export function BubbleSector() {
                       </Show>
                     </Show>
                   )}
+                </Show>
+
+                <Show when={role() === "assistant"}>
+                  <ThoughtsSection />
                 </Show>
               </div>
             </div>
