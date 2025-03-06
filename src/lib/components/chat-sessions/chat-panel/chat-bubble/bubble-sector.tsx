@@ -8,12 +8,18 @@ import { Bubble } from "./bubble";
 import { BubbleInlineEditor } from "./inline-editor";
 import { editPrompt } from "~/lib/contexts/globals/chat-history";
 import { VersionPagination } from "./version-pagination";
+import { SectorFooter } from "./sector-footer";
+import { EditModeProvider } from "~/lib/contexts/edit-mode";
+import { LoaderSpin } from "~/lib/components/loader-spin";
+import { TriangleAlertIcon } from "lucide-solid";
+import { SystemPromptBlock } from "./bubble-sector/system-prompt-block";
 
 export function BubbleSector() {
   const chat = useChatEntry();
 
   const role = createMemo(() => chat?.().role);
   const model = createMemo(() => chat?.().model);
+  const status = createMemo(() => chat?.().status);
 
   const [editMode, setEditMode] = createSignal(false);
 
@@ -94,13 +100,25 @@ export function BubbleSector() {
                 <Show when={chat?.().versions}>
                   <VersionPagination />
                 </Show>
+
+                <EditModeProvider accessor={editMode} setter={setEditMode}>
+                  <SectorFooter />
+                </EditModeProvider>
               </div>
             </div>
           </div>
+
+          <Show when={role() === "user"}>
+            <Switch fallback={<TriangleAlertIcon class="text-yellow-600" />}>
+              <Match when={status() === "sending"}>
+                <LoaderSpin />
+              </Match>
+            </Switch>
+          </Show>
         </div>
       </Match>
       <Match when={role() === "system"}>
-        <></>
+        <SystemPromptBlock />
       </Match>
     </Switch>
   );
