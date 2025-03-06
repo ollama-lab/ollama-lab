@@ -212,7 +212,7 @@
     @apply space-y-4;
 
     &.__dev-flash {
-      &.span,&.p {
+      & span, & p {
         @apply animate-flash-out;
       }
     }
