@@ -25,7 +25,9 @@ export function BubbleSectorFooterStatus() {
         <Show when={role()}>
           {(r) => (
             <Show when={status()}>
-              {(s) => text[r()]?.[s()]}
+              {(s) => (
+                <span>{text[r()]?.[s()]}</span>
+              )}
             </Show>
           )}
         </Show>
