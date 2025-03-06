@@ -7,6 +7,7 @@ import { cn } from "~/lib/utils/class-names";
 export function Bubble() {
   const chat = useChatEntry();
   const role = () => chat?.().role;
+  const content = createMemo(() => chat?.().content);
   const status = () => chat?.().status;
 
   return (
@@ -14,7 +15,7 @@ export function Bubble() {
       "py-2",
       role() === "user" && "bg-secondary text-secondary-foreground px-5 rounded-2xl",
     )}>
-      <MarkdownBlock markdown={""} />
+      <MarkdownBlock markdown={content()} />
       <Show when={status() === "preparing"}>
         <LoaderSpin />
       </Show>

@@ -2,6 +2,7 @@ import convert from "convert";
 import { ChevronDownIcon } from "lucide-solid";
 import { createMemo, createSignal, JSX, Match, Show, Switch } from "solid-js";
 import { Motion, Presence } from "solid-motionone";
+import { MarkdownBlock } from "~/lib/components/custom-ui/markdown-block";
 import { LoaderSpin } from "~/lib/components/loader-spin";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "~/lib/components/ui/collapsible";
 import { useChatEntry } from "~/lib/contexts/chat-entry";
@@ -73,7 +74,7 @@ export function ThoughtsSection() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -20, opacity: 0 }}
             >
-              <div></div>
+              <MarkdownBlock markdown={chat?.().thoughts ?? undefined} />
             </CollapsibleContent>
           </Presence>
         </Collapsible>
