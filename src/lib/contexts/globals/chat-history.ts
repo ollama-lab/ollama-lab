@@ -1,13 +1,14 @@
 import { createStore } from "solid-js/store";
 import type { ChatHistory } from "~/lib/models/session";
 import { createEffect, createMemo } from "solid-js";
-import { getAllSessions, reloadSession } from "./sessions";
+import { reloadSession } from "./sessions";
 import { getCurrentBranch } from "~/lib/commands/chat-history";
 import { EditUserPrompt, IncomingUserPrompt } from "~/lib/models/chat";
 import { createSession } from "~/lib/commands/sessions";
 import { regenerateResponse, submitUserPrompt } from "~/lib/commands/chats";
 import { convertResponseEvents } from "~/lib/utils/chat-streams";
 import { switchBranch as switchBranchCommand } from "~/lib/commands/chat-history";
+import { currentSession, setSessionId } from "./current-session";
 
 export interface PromptSubmissionEvents {
   onRespond?: () => void;
@@ -28,47 +29,22 @@ export function getChatHistory() {
 
 const lastChat = createMemo(() => getChatHistory()?.chats.at(-1));
 
-createEffect(() => {
-  const sessions = getAllSessions();
-  const curSession = getChatHistory()?.session;
-
-  if (curSession !== undefined && !sessions.find((s) => s.id === curSession)) {
+export async function reloadChatHistory() {
+  const session = currentSession();
+  if (session) {
+    const result = await getCurrentBranch(session.id);
+    setChatHistoryStore("chatHistory", "chats", result);
+  } else {
     setChatHistoryStore("chatHistory", null);
   }
+}
+
+createEffect(() => {
+  reloadChatHistory();
 });
 
-export async function reloadChatHistory() {
-  const ch = getChatHistory();
-  if (!ch) {
-    return;
-  }
-
-  const sessionId = ch.session;
-  setChatHistoryStore("chatHistory", "loading", true);
-
-  try {
-    const chats = await getCurrentBranch(sessionId);
-    setChatHistoryStore("chatHistory", "chats", chats);
-  } finally {
-    setChatHistoryStore("chatHistory", "loading", false);
-  }
-}
-
-export async function switchToSession(sessionId: number | null) {
-  setChatHistoryStore(
-    "chatHistory",
-    sessionId === null
-      ? null
-      : {
-          session: sessionId,
-          chats: [],
-          loading: false,
-        },
-  );
-}
-
 export async function clearChatHistory() {
-  await switchToSession(null);
+  setSessionId(null);
 }
 
 export async function submitChat(
@@ -76,17 +52,16 @@ export async function submitChat(
   model: string,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
 ) {
-  let ch = getChatHistory();
-  if (!ch) {
+  let session = currentSession() ?? undefined;
+
+  if (!session) {
     // TODO: Add settings option for default session name: 1) no name, 2) first prompt, 3) generated after first response
     // Currently it is `first prompt`
     const sessionTitle = prompt.text.split("\n").at(0);
-    const session = await createSession(model, sessionTitle);
+    session = await createSession(model, sessionTitle);
 
     await reloadSession(session.id);
-    await switchToSession(session.id);
-
-    ch = getChatHistory()!;
+    setSessionId(session.id);
   }
 
   const parentId = lastChat()?.id;
@@ -96,7 +71,7 @@ export async function submitChat(
   };
 
   const ret = await submitUserPrompt(
-    ch.session,
+    session?.id,
     prompt,
     parentId === undefined ? null : parentId,
     convertResponseEvents(ctx, getChatHistory, setChatHistoryStore, model, prompt, {
@@ -116,8 +91,8 @@ export async function regenerate(
   model?: string,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
 ) {
-  const ch = getChatHistory();
-  if (!ch) {
+  const session = currentSession();
+  if (!session) {
     return;
   }
 
@@ -126,7 +101,7 @@ export async function regenerate(
   };
 
   const ret = await regenerateResponse(
-    ch.session,
+    session.id,
     chatId,
     model,
     convertResponseEvents(
@@ -173,6 +148,11 @@ export async function editPrompt(
   model: string,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
 ) {
+  const session = currentSession();
+  if (!session) {
+    return;
+  }
+
   const ch = getChatHistory();
   if (!ch) {
     throw new Error("No chat history.");
@@ -196,7 +176,7 @@ export async function editPrompt(
   const mergedPrompt: IncomingUserPrompt = { ...curPrompt, ...prompt };
 
   const ret = await submitUserPrompt(
-    ch.session,
+    session.id,
     mergedPrompt,
     parentId,
     convertResponseEvents(

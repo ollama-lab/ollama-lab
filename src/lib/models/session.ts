@@ -29,9 +29,7 @@ export interface ChatBubble {
 }
 
 export interface ChatHistory {
-  session: number;
   chats: ChatBubble[];
-  loading: boolean;
 }
 
 export type SessionRenameReturn = null | {

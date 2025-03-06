@@ -1,27 +1,24 @@
 import { createSignal } from "solid-js";
-import { getAllSessions, reloadSession } from "./sessions";
-import { getChatHistory } from "./chat-history";
 import { setSessionModel as setSessionModelCommand } from "~/lib/commands/sessions";
+import { currentSession, reloadCurrentSession } from "./current-session";
 
 const [candidate, setCandidate] = createSignal<string | null>(null);
 
 export function getSessionWiseModel(): string | null {
-  const sessions = getAllSessions();
-  const currentSession = getChatHistory()?.session;
-  if (sessions && sessions.length > 0 && currentSession !== undefined) {
-    return sessions.find((s) => s.id === currentSession)?.currentModel ?? null;
+  const session = currentSession();
+  if (session) {
+    return session.currentModel;
   }
 
-  return candidate();
+  return candidate() ?? null;
 }
 
 export async function setSessionWiseModel(value: string) {
-  const sessions = getAllSessions();
-  const currentSession = getChatHistory()?.session;
+  const session = currentSession();
 
-  if (sessions && sessions.length > 0 && currentSession !== undefined) {
-    await setSessionModelCommand(currentSession, value);
-    await reloadSession(currentSession);
+  if (session) {
+    await setSessionModelCommand(session.id, value);
+    await reloadCurrentSession();
     setCandidate(null);
   } else {
     setCandidate(value);
