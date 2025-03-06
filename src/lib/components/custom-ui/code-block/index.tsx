@@ -121,7 +121,7 @@ export function CodeBlock(props: CodeBlockProps) {
         </div>
       </Show>
       <div class="flex py-1 items-center bg-secondary text-secondary-foreground px-2 rounded-t">
-        <div class="shrink-0 text-sm">{langName()}</div>
+        <div class="shrink-0 text-sm px-1">{langName()}</div>
         <div class="grow" />
         <Show when={!stickyToolbar()}>
           <ToolbarTemplate class="shrink-0" />
