@@ -36,6 +36,7 @@ export function BubbleSector() {
             <div class="flex gap-2 w-full">
               <Show when={role() === "assistant"}>
                 <Avatar>
+                  {/* TODO: Dynamic avatar */}
                   <AvatarImage src="/ollama.svg" alt="Ollama" class="bg-white p-1 pb-0" />
                 </Avatar>
               </Show>
