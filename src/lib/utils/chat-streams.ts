@@ -49,6 +49,7 @@ export function convertResponseEvents(
               ...ch.chats.slice(0, chatIndex),
               {
                 ...ch.chats[chatIndex],
+                model: model ?? ch.chats[chatIndex].model,
                 status: "sent",
                 content: prompt?.text ?? "",
                 dateSent: date,
@@ -100,7 +101,7 @@ export function convertResponseEvents(
                 id,
                 status: "preparing",
                 content: "",
-                model,
+                model: model ?? ch.chats[i].model,
                 versions: versions ? [...versions, id] : [ch.chats[i].id, id]
               },
             ]),
