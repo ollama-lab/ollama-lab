@@ -5,7 +5,6 @@ use crate::{
     errors::Error,
     models::chat::{MountedChat, MountChatInfo},
     responses::tree::ChatTree,
-    utils::connections::ConvertMutexContentAsync,
 };
 
 #[tauri::command]
@@ -13,7 +12,7 @@ pub async fn get_current_branch(
     state: State<'_, AppState>,
     session_id: i64,
 ) -> Result<Vec<MountedChat>, Error> {
-    let mut conn = state.conn_pool.convert_to().await?;
+    let mut conn = state.conn_pool.acquire().await?;
     let profile_id = state.profile;
 
     let session = sqlx::query_as::<_, (i64,)>(
@@ -39,7 +38,7 @@ pub async fn switch_branch(
     state: State<'_, AppState>,
     target_chat_id: i64,
 ) -> Result<(Option<i64>, Vec<MountedChat>), Error> {
-    let mut conn = state.conn_pool.convert_to().await?;
+    let mut conn = state.conn_pool.acquire().await?;
     let profile_id = state.profile;
 
     let chat_info = sqlx::query_as::<_, (i64, i64, Option<i64>)>(

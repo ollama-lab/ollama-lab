@@ -4,13 +4,12 @@ use crate::{
     app_state::AppState,
     errors::Error,
     models::session::{Session, SessionCurrentModelReturn, SessionNameReturn},
-    utils::connections::ConvertMutexContentAsync,
 };
 
 #[tauri::command]
 pub async fn list_sessions(state: State<'_, AppState>) -> Result<Vec<Session>, Error> {
     let profile_id = state.profile;
-    let mut conn = state.conn_pool.convert_to().await?;
+    let mut conn = state.conn_pool.acquire().await?;
 
     let sessions = sqlx::query_as::<_, Session>(
         "\
@@ -30,7 +29,7 @@ pub async fn list_sessions(state: State<'_, AppState>) -> Result<Vec<Session>, E
 #[tauri::command]
 pub async fn get_session(state: State<'_, AppState>, id: i64) -> Result<Option<Session>, Error> {
     let profile_id = state.profile;
-    let mut conn = state.conn_pool.convert_to().await?;
+    let mut conn = state.conn_pool.acquire().await?;
 
     let session = sqlx::query_as::<_, Session>(
         "\
@@ -55,7 +54,7 @@ pub async fn rename_session(
     new_name: Option<String>,
 ) -> Result<Option<SessionNameReturn>, Error> {
     let profile_id = state.profile;
-    let mut conn = state.conn_pool.convert_to().await?;
+    let mut conn = state.conn_pool.acquire().await?;
 
     let valid_new_name = new_name
         .as_ref()
@@ -98,7 +97,7 @@ pub async fn set_session_model(
     model: String,
 ) -> Result<Option<SessionCurrentModelReturn>, Error> {
     let profile_id = state.profile;
-    let mut conn = state.conn_pool.convert_to().await?;
+    let mut conn = state.conn_pool.acquire().await?;
 
     let valid_model = model.trim();
 
@@ -128,7 +127,7 @@ pub async fn set_session_model(
 #[tauri::command]
 pub async fn delete_session(state: State<'_, AppState>, id: i64) -> Result<Option<i64>, Error> {
     let profile_id = state.profile;
-    let mut conn = state.conn_pool.convert_to().await?;
+    let mut conn = state.conn_pool.acquire().await?;
 
     let result = sqlx::query(
         "\
@@ -155,7 +154,7 @@ pub async fn create_session(
     title: Option<String>,
 ) -> Result<Session, Error> {
     let profile_id = state.profile;
-    let mut conn = state.conn_pool.convert_to().await?;
+    let mut conn = state.conn_pool.acquire().await?;
 
     let session = sqlx::query_as::<_, Session>(
         r#"

@@ -1,44 +1,43 @@
 export interface Session {
-  id: number
-  profileId: number
-  title: string | null
-  dateCreated: Date
-  currentModel: string
+  id: number;
+  profileId: number;
+  title: string | null;
+  dateCreated: Date;
+  currentModel: string;
 }
 
-export type Role = "system" | "assistant" | "user" | "tool"
+export type Role = "system" | "assistant" | "user" | "tool";
 
-export type TransmissionStatus = "preparing" | "sending" | "sent" | "not sent"
+export type TransmissionStatus = "preparing" | "sending" | "sent" | "not sent";
 
 export interface ChatBubble {
-  id: number
-  role: Role
-  content: string
-  imageCount: number
-  dateSent?: Date
-  dateEdited?: Date
-  status: TransmissionStatus 
+  id: number;
+  role: Role;
+  content: string;
+  imageCount: number;
+  dateSent?: Date;
+  dateEdited?: Date;
+  status: TransmissionStatus;
 
-  model?: string
+  model?: string;
 
-  versions?: number[] | null
+  versions?: number[] | null;
 
-  thinking?: boolean
-  thoughts?: string | null
-  thoughtFor?: number | null
+  thinking?: boolean;
+  thoughts?: string | null;
+  thoughtFor?: number | null;
 }
 
 export interface ChatHistory {
-  sessionId: number
-  bubbles: ChatBubble[]
+  chats: ChatBubble[];
 }
 
 export type SessionRenameReturn = null | {
-  id: number
-  title: string | null
-}
+  id: number;
+  title: string | null;
+};
 
 export type SessionCurrentModelReturn = null | {
-  id: number
-  currentModel: string | null
-}
+  id: number;
+  currentModel: string | null;
+};

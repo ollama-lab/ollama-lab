@@ -10,7 +10,6 @@ use tokio::sync::{mpsc, oneshot};
 
 use crate::{
     app_state::AppState, errors::Error, events::ProgressEvent, strings::ToEventString,
-    utils::connections::ConvertMutexContentAsync,
 };
 
 #[tauri::command]
@@ -43,7 +42,7 @@ pub async fn get_model(
 
 #[tauri::command]
 pub async fn get_default_model(state: State<'_, AppState>) -> Result<Option<String>, Error> {
-    let mut conn = state.conn_pool.convert_to().await?;
+    let mut conn = state.conn_pool.acquire().await?;
 
     let row =
         sqlx::query_as::<_, (String,)>("SELECT model FROM default_models WHERE profile_id = $1")
@@ -57,7 +56,7 @@ pub async fn get_default_model(state: State<'_, AppState>) -> Result<Option<Stri
 #[tauri::command]
 pub async fn set_default_model(state: State<'_, AppState>, new_model: String) -> Result<(), Error> {
     let profile_id = state.profile;
-    let mut conn = state.conn_pool.convert_to().await?;
+    let mut conn = state.conn_pool.acquire().await?;
 
     sqlx::query(
         "INSERT INTO default_models (profile_id, model) VALUES ($1, $2) \

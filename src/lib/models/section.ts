@@ -1,7 +1,9 @@
+import { JSX } from "solid-js";
+
 export interface Section {
-  name: string
-  icon?: any
-  href?: string
-  onClick?: () => void
-  activePattern?: RegExp
+  name: string;
+  icon?: JSX.Element;
+  href?: string;
+  onClick?: () => void;
+  activePattern?: RegExp;
 }

@@ -4,7 +4,10 @@ use image::ImageFormat;
 use tauri::State;
 
 use crate::{
-    app_state::AppState, encoding::ToBase64, errors::Error, image::{get_compressed_image, ToFormattedBytes, MODEL_IMAGE_SIZE, THUMBNAIL_SIZE}, models::images::{Base64ImageReturn, ImageReturn}, utils::{connections::ConvertMutexContentAsync, images::get_chat_images}
+    app_state::AppState, encoding::ToBase64, errors::Error,
+    image::{get_compressed_image, ToFormattedBytes, MODEL_IMAGE_SIZE, THUMBNAIL_SIZE},
+    models::images::{Base64ImageReturn, ImageReturn},
+    utils::images::get_chat_images,
 };
 
 #[tauri::command]
@@ -46,7 +49,7 @@ pub async fn get_images_by_chat_id(
     state: State<'_, AppState>,
     chat_id: i64,
 ) -> Result<Vec<ImageReturn>, Error> {
-    let mut conn = state.conn_pool.convert_to().await?;
+    let mut conn = state.conn_pool.acquire().await?;
 
     Ok(get_chat_images(&mut conn, chat_id, Some(THUMBNAIL_SIZE)).await?)
 }

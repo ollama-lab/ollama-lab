@@ -1,0 +1,17 @@
+src-tauri/
+*.toml/
+
+dist/
+build/
+
+.git/
+.github/
+
+*.lock
+
+public/
+
+tmp/
+src-svelte/
+
+src/lib/components/providers.tsx

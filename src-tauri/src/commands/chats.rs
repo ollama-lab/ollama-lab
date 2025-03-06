@@ -15,8 +15,7 @@ use crate::{
     responses::{
         llm_streams::stream_response,
         tree::{models::NewChildNode, ChatTree},
-    },
-    utils::{connections::CloneMutexContentAsync, system_prompt::SystemPromptOperator},
+    }, utils::system_prompt::get_system_prompt,
 };
 
 pub mod chat_history;
@@ -32,7 +31,7 @@ pub async fn submit_user_prompt(
 ) -> Result<ChatGenerationReturn, Error> {
     let ollama = &state.ollama;
     let profile_id = state.profile;
-    let pool = state.conn_pool.clone_inside().await?;
+    let pool = state.conn_pool.clone();
 
     let session = sqlx::query_as::<_, Session>(
         r#"
@@ -54,8 +53,7 @@ pub async fn submit_user_prompt(
     let mut parent_id = parent_id;
 
     if prompt.use_system_prompt.unwrap_or(false) && parent_id.is_none() {
-        let content = SystemPromptOperator::new(profile_id, session.current_model.as_str())
-            .get(&mut *tx)
+        let content = get_system_prompt(profile_id, session.current_model.as_str(), &mut *tx)
             .await?;
 
         if let Some(content) = content {
@@ -183,7 +181,7 @@ pub async fn regenerate_response(
 ) -> Result<ChatGenerationReturn, Error> {
     let ollama = &state.ollama;
     let profile_id = state.profile;
-    let pool = state.conn_pool.clone_inside().await?;
+    let pool = state.conn_pool.clone();
 
     let session = sqlx::query_as::<_, Session>(
         r#"

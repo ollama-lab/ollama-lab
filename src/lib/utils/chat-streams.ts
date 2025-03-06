@@ -1,255 +1,264 @@
-import type { PromptResponseEvents } from "$lib/commands/chats"
-import type { IncomingUserPrompt } from "$lib/models/chat"
-import type { ChatHistory, PromptSubmissionEvents } from "$lib/stores/chats"
-import { emit } from "@tauri-apps/api/event"
-import { toast } from "svelte-sonner"
-import type { Writable } from "svelte/store"
+import type { PromptResponseEvents } from "~/lib/commands/chats";
+import type { IncomingUserPrompt } from "~/lib/models/chat";
+import { emit } from "@tauri-apps/api/event";
+import { toast } from "solid-sonner";
+import { Accessor } from "solid-js";
+import { ChatHistory } from "../models/session";
+import { reconcile, SetStoreFunction } from "solid-js/store";
+import { ChatHistoryStore, PromptSubmissionEvents } from "../contexts/globals/chat-history";
 
 export interface ResponseStreamingContext {
-  responseIndex: number
+  responseIndex: number;
 }
 
 export interface ConvertResponseEventsProps {
-  regenerateFor?: number
+  regenerateFor?: number;
 }
 
 export function convertResponseEvents(
   context: ResponseStreamingContext,
-  internalChatHistory: Writable<ChatHistory | undefined>,
+  chatHistory: Accessor<ChatHistory | null>,
+  setChatHistoryStore: SetStoreFunction<ChatHistoryStore>,
   model?: string,
   prompt?: IncomingUserPrompt,
   { onScrollDown, onRespond }: PromptSubmissionEvents = {},
   { regenerateFor }: ConvertResponseEventsProps = {},
 ): PromptResponseEvents {
-  let currentChatId: number | undefined = undefined
+  let currentChatId: number | undefined = undefined;
 
   return {
     afterUserPromptSubmitted(id: number, date: Date): void {
-      internalChatHistory.update(ch => {
-        if (!ch) {
-          return ch
-        }
+      let ch = chatHistory();
+      if (!ch) {
+        ch = {
+          chats: [],
+        };
 
-        if (regenerateFor !== undefined) {
-          const chatIndex = ch.chats.findIndex(value => value.id === regenerateFor)
-          if (chatIndex >= 0) {
-            const chat = ch.chats[chatIndex]
+        setChatHistoryStore("chatHistory", ch);
+      }
 
-            ch.chats = [
+      if (regenerateFor !== undefined) {
+        const chatIndex = ch.chats.findIndex((value) => value.id === regenerateFor);
+        if (chatIndex >= 0) {
+          const versions = ch.chats[chatIndex].versions;
+
+          setChatHistoryStore(
+            "chatHistory",
+            "chats",
+            reconcile([
               ...ch.chats.slice(0, chatIndex),
               {
-                id,
+                ...ch.chats[chatIndex],
+                model: model ?? ch.chats[chatIndex].model,
                 status: "sent",
                 content: prompt?.text ?? "",
-                role: "user",
                 dateSent: date,
-                versions: chat.versions ? [...chat.versions, id] : [id],
+                versions: versions ? [...versions, id] : [ch.chats[chatIndex].id, id],
               },
-            ]
-          }
-          
-          regenerateFor = undefined
-        } else {
-          ch.chats.push({
-            id,
-            status: "sent",
-            content: prompt?.text ?? "",
-            role: "user",
-            dateSent: date,
-            versions: null,
-          })
+            ]),
+          );
         }
+        regenerateFor = undefined;
+      } else {
+        setChatHistoryStore("chatHistory", "chats", ch.chats.length, {
+          id,
+          status: "sent",
+          content: prompt?.text ?? "",
+          role: "user",
+          dateSent: date,
+          versions: null,
+          imageCount: prompt?.imagePaths?.length ?? 0,
+        });
+      }
 
-        return ch
-      })
-      onScrollDown?.()
+      onScrollDown?.();
     },
     afterResponseCreated(id: number): void {
       if (context.responseIndex >= 0) {
-        return
+        return;
       }
 
-      currentChatId = id
+      currentChatId = id;
 
-      internalChatHistory.update(ch => {
-        if (ch) {
-          if (regenerateFor !== undefined) {
-            const i = ch.chats.findIndex((value) => value.id === regenerateFor)
-            if (i < 0) {
-              return ch
-            }
+      const ch = chatHistory();
 
-            const chat = ch.chats[i]
-            const existingVersions = chat.versions ?? []
+      if (ch) {
+        if (regenerateFor !== undefined) {
+          const i = ch.chats.findIndex((value) => value.id === regenerateFor);
+          if (i < 0) {
+            return;
+          }
 
-            ch.chats = [
+          const versions = ch.chats[i].versions;
+
+          setChatHistoryStore(
+            "chatHistory",
+            "chats",
+            reconcile([
               ...ch.chats.slice(0, i),
               {
+                ...ch.chats[i],
                 id,
-                content: "",
                 status: "preparing",
-                role: "assistant",
-                model: model ?? chat.model,
-                versions: [...existingVersions, id],
+                content: "",
+                model: model ?? ch.chats[i].model,
+                versions: versions ? [...versions, id] : [ch.chats[i].id, id]
               },
-            ]
+            ]),
+          );
 
-            context.responseIndex = ch.chats.length - 1
-          } else {
-            const length = ch.chats.push({
-              id,
-              status: "preparing",
-              role: "assistant",
-              content: "",
-              model,
-              versions: null,
-            })
+          context.responseIndex = ch.chats.length - 1;
+        } else {
+          const length = ch.chats.length;
+          setChatHistoryStore("chatHistory", "chats", length, {
+            id,
+            status: "preparing",
+            role: "assistant",
+            content: "",
+            model,
+            versions: null,
+            imageCount: 0,
+          });
 
-            if (length !== undefined) {
-              context.responseIndex = length - 1
-            }
+          if (length !== undefined) {
+            context.responseIndex = length;
           }
         }
+      }
 
-        return ch
-      })
-
-      onRespond?.()
-      onScrollDown?.()
+      onRespond?.();
+      onScrollDown?.();
     },
     afterSystemPromptCreated(id: number, text: string): void {
-      internalChatHistory.update((value) => {
-        if (value) {
-          value.chats.push({
-            id,
-            content: text,
-            role: "system",
-            status: "sent",
-          })
-        }
+      const ch = chatHistory();
+      if (!ch) {
+        return;
+      }
 
-        return value
-      })
+      setChatHistoryStore("chatHistory", "chats", ch.chats.length, {
+        id,
+        content: text,
+        role: "system",
+        status: "sent",
+        imageCount: 0,
+      });
     },
     onStreamText(chunk: string): void {
       if (context.responseIndex < 0) {
-        return
+        return;
       }
 
-      internalChatHistory.update(ch => {
-        if (ch) {
-          let chat = ch.chats.at(context.responseIndex)
+      const ch = chatHistory();
+      if (!ch) {
+        return;
+      }
 
-          if (!chat || currentChatId !== chat.id) {
-            emit("cancel-gen")
-            return ch
-          }
+      const chat = ch.chats.at(context.responseIndex);
+      if (!chat || currentChatId !== chat.id) {
+        emit("cancel-gen");
+        return;
+      }
 
-          if (ch.chats[context.responseIndex].thinking) {
-            chat.thoughts = (chat.thoughts ?? "") + chunk
-          } else {
-            chat.content += chunk
-          }
-          chat.status = "sending"
-        }
+      setChatHistoryStore("chatHistory", "chats", context.responseIndex, "status", reconcile("sending"));
 
-        return ch
-      })
+      if (chat.thinking) {
+        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "thoughts", (t) => (t ?? "") + chunk);
+      } else {
+        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "content", (t) => (t ?? "") + chunk);
+      }
 
-      onScrollDown?.()
+      onScrollDown?.();
     },
     onCompleteTextStreaming(): void {
       if (context.responseIndex < 0) {
-        return
+        return;
       }
 
-      internalChatHistory.update(ch => {
-        if (ch) {
-          let chat = ch.chats.at(context.responseIndex)
-          if (chat && chat.id === currentChatId) {
-            chat.status = "sent"
-          }
-        }
-        return ch
-      })
+      const ch = chatHistory();
+      if (!ch) {
+        return;
+      }
 
-      currentChatId = undefined
+      const chat = ch.chats.at(context.responseIndex);
+      if (chat && chat.id === currentChatId) {
+        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "status", "sent");
+      }
+
+      currentChatId = undefined;
     },
     onFail(msg): void {
       if (context.responseIndex < 0) {
-        return
+        return;
       }
 
-      internalChatHistory.update(ch => {
-        if (ch) {
-          let chat = ch.chats[context.responseIndex]
-          if (chat && chat.id === currentChatId) {
-            chat.status = "not sent"
-          }
-        }
-        return ch
-      })
+      const ch = chatHistory();
+      if (!ch) {
+        return;
+      }
 
-      currentChatId = undefined
-      
+      const chat = ch.chats.at(context.responseIndex);
+      if (chat && chat.id === currentChatId) {
+        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "status", "not sent");
+      }
+
+      currentChatId = undefined;
+
       if (msg) {
-        toast.error(msg)
+        toast.error(msg);
       }
     },
-    onCancel(_): void {
+    onCancel(): void {
       if (context.responseIndex < 0) {
-        return
+        return;
       }
 
-      internalChatHistory.update(ch => {
-        if (ch) {
-          let chat = ch.chats[context.responseIndex]
-          if (chat && chat.id === currentChatId) {
-            chat.status = "not sent"
-          }
-        }
-        return ch
-      })
+      const ch = chatHistory();
+      if (!ch) {
+        return;
+      }
 
-      currentChatId = undefined
+      const chat = ch.chats.at(context.responseIndex);
+      if (chat && chat.id === currentChatId) {
+        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "status", "not sent");
+      }
+
+      currentChatId = undefined;
     },
     onThoughtBegin(): void {
       if (context.responseIndex < 0) {
-        return
+        return;
       }
 
-      internalChatHistory.update(ch => {
-        if (ch) {
-          let chat = ch.chats.at(context.responseIndex)
-          if (chat && chat.id === currentChatId) {
-            chat.thinking = true
-            chat.status = "sending"
-          }
-        }
+      const ch = chatHistory();
+      if (!ch) {
+        return;
+      }
 
-        return ch
-      })
+      const chat = ch.chats.at(context.responseIndex);
+      if (chat && chat.id === currentChatId) {
+        setChatHistoryStore("chatHistory", "chats", context.responseIndex, {
+          thinking: true,
+          status: "sending",
+        });
+      }
     },
     onThoughtEnd(thoughtFor: number | null): void {
       if (context.responseIndex < 0) {
-        return
+        return;
       }
 
-      internalChatHistory.update(ch => {
-        if (ch) {
-          let chat = ch.chats.at(context.responseIndex)
-          if (chat && chat.id === currentChatId) {
-            if (chat.thoughts) {
-              const trimmedThoughts = chat.thoughts.trim()
-              chat.thoughts = trimmedThoughts.length > 0 ? trimmedThoughts : null
-            }
-            chat.thinking = false
-            chat.thoughtFor = thoughtFor
-          }
-        }
+      const ch = chatHistory();
+      if (!ch) {
+        return;
+      }
 
-        return ch
-      })
+      const chat = ch.chats.at(context.responseIndex);
+      if (chat && chat.id === currentChatId) {
+        setChatHistoryStore("chatHistory", "chats", context.responseIndex, {
+          thinking: false,
+          thoughtFor: thoughtFor,
+        });
+      }
     },
-  }
+  };
 }
