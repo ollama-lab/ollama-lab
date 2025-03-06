@@ -13,34 +13,32 @@ function Hints() {
   };
 
   return (
-    <table class="hint-table">
-      <tbody>
-        <For each={Object.entries(keyHints)}>
-          {([key, desc]) => (
-            <tr class="space-x-2">
-              <td class="text-end">
-                <For each={key.split(" ")}>
-                  {(key) => (
-                    <Switch fallback={key}>
-                      <Match when={key !== "+" && key !== "/"}>
-                        <kbd>{key}</kbd>
-                      </Match>
-                    </Switch>
-                  )}
-                </For>
-              </td>
-              <td class="text-start">{desc}</td>
-            </tr>
-          )}
-        </For>
-      </tbody>
-    </table>
+    <div class="hint-table grid grid-cols-2 gap-x-2 gap-y-1 items-center">
+      <For each={Object.entries(keyHints)}>
+        {([key, desc]) => (
+          <>
+            <div class="text-end">
+              <For each={key.split(" ")}>
+                {(key) => (
+                  <Switch fallback={key}>
+                    <Match when={key !== "+" && key !== "/"}>
+                      <kbd>{key}</kbd>
+                    </Match>
+                  </Switch>
+                )}
+              </For>
+            </div>
+            <div class="text-start">{desc}</div>
+          </>
+        )}
+      </For>
+    </div>
   );
 }
 
 function WelcomeText() {
   return (
-    <div class="text-center space-y-4">
+    <div class="text-center flex flex-col gap-3.5">
       <span class="select-none font-bold text-2xl">Hello there! 👋</span>
       <Hints />
     </div>
@@ -79,7 +77,7 @@ export function ChatFeeds() {
       ref={setRootRef}
       class={cn(
         "flex flex-col flex-wrap text-wrap max-w-5xl mx-auto",
-        getChatHistory() && "h-full place-content-center items-center",
+        !getChatHistory() && "h-full place-content-center items-center",
       )}
       onWheel={(ev) => {
         if (ev.deltaY < 0) {
