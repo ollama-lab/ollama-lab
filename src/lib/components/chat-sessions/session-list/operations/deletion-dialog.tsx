@@ -1,10 +1,11 @@
-import { Accessor, createEffect, createSignal, Match, Switch } from "solid-js";
+import { Accessor, createSignal, Match, Switch } from "solid-js";
 import { toast } from "solid-sonner";
 import { deleteSession } from "~/lib/commands/sessions";
 import { LoaderSpin } from "~/lib/components/loader-spin";
 import { Button } from "~/lib/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from "~/lib/components/ui/dialog";
-import { clearChatHistory, getChatHistory } from "~/lib/contexts/globals/chat-history";
+import { clearChatHistory } from "~/lib/contexts/globals/chat-history";
+import { currentSession } from "~/lib/contexts/globals/current-session";
 import { reloadSessions } from "~/lib/contexts/globals/sessions";
 
 export interface DeletionDialogProps {
@@ -19,12 +20,10 @@ export function DeletionDialog(props: DeletionDialogProps) {
 
   const [proceeding, setProceeding] = createSignal(false);
 
-  const currentSession = () => getChatHistory()?.session;
-
   const afterDeletion = () => {
     onOpenChange(false);
 
-    if (currentSession() === sessionId()) {
+    if (currentSession()?.id === sessionId()) {
       clearChatHistory();
     }
 
