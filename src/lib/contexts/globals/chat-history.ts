@@ -17,11 +17,15 @@ export interface PromptSubmissionEvents {
 
 export interface ChatHistoryStore {
   chatHistory: ChatHistory | null;
+  loading: boolean;
 }
 
 const [chatHistoryStore, setChatHistoryStore] = createStore<ChatHistoryStore>({
   chatHistory: null,
+  loading: false,
 });
+
+export const getChatHistoryStore = () => chatHistoryStore;
 
 export function getChatHistory() {
   return chatHistoryStore.chatHistory;
@@ -32,8 +36,10 @@ const lastChat = createMemo(() => getChatHistory()?.chats.at(-1));
 export async function reloadChatHistory() {
   const session = currentSession();
   if (session) {
+    setChatHistoryStore("loading", true);
     const result = await getCurrentBranch(session.id);
     setChatHistoryStore("chatHistory", "chats", result);
+    setChatHistoryStore("loading", false);
   } else {
     setChatHistoryStore("chatHistory", null);
   }

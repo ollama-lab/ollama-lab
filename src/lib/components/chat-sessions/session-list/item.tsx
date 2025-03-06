@@ -1,13 +1,14 @@
 import { Match, Show, Switch } from "solid-js";
 import { createSignal } from "solid-js";
 import { toast } from "solid-sonner";
-import { getChatHistory, switchToSession } from "~/lib/contexts/globals/chat-history";
+import { getChatHistoryStore } from "~/lib/contexts/globals/chat-history";
 import { cn } from "~/lib/utils/class-names";
 import { LoaderSpin } from "../../loader-spin";
 import { TextField, TextFieldInput } from "../../ui/text-field";
 import { renameSession } from "~/lib/commands/sessions";
 import { reloadSession } from "~/lib/contexts/globals/sessions";
 import { OperationsDropdown } from "./operations";
+import { currentSession, setSessionId } from "~/lib/contexts/globals/current-session";
 
 export interface SessionListItemProps {
   sessionId: number;
@@ -21,12 +22,10 @@ export function SessionListItem(props: SessionListItemProps) {
   const [renameMode, setRenameMode] = createSignal(false);
   const [optimisticTitle, setOptimisticTitle] = createSignal<string | undefined>(undefined);
 
-  const currentSession = () => getChatHistory()?.session;
-
   const Title = () => (
     <>
       <div class="w-full truncate">{optimisticTitle() ?? title() ?? "New Chat"}</div>
-      <Show when={currentSession() === sessionId() && getChatHistory()?.loading}>
+      <Show when={currentSession()?.id === sessionId() && getChatHistoryStore()?.loading}>
         <LoaderSpin class="size-4" />
       </Show>
     </>
@@ -45,13 +44,13 @@ export function SessionListItem(props: SessionListItemProps) {
         }
 
         try {
-          switchToSession(s);
+          setSessionId(s.id);
         } catch (err) {
           toast.error(`Error: ${err}`);
         }
       }}
       role="button"
-      tabindex={currentSession()}
+      tabindex={currentSession()?.id}
       onDblClick={() => setRenameMode(true)}
     >
       <div class="grow select-none truncate text-sm flex gap-2 items-center">
