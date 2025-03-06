@@ -62,12 +62,18 @@ export function BubbleSector() {
                 <Show when={role() === "assistant"}>
                   <ThoughtsSection />
                 </Show>
+
+                <Switch>
+                  <Match when={editMode()}>
+                  </Match>
+                </Switch>
               </div>
             </div>
           </div>
         </div>
       </Match>
       <Match when={role() === "system"}>
+        {/* TODO */}
       </Match>
     </Switch>
   );
