@@ -5,6 +5,7 @@ import { Button } from "../../ui/button";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { LoaderSpin } from "../../loader-spin";
 import { restartVotes } from "~/lib/contexts/globals/settings";
+import { DevModeSection } from "./builtin-sections/dev-mode";
 
 export function SettingsDetails() {
   const [restarting, setRestarting] = createSignal(false);
@@ -14,6 +15,7 @@ export function SettingsDetails() {
       <div class="overflow-y-auto flex flex-col gap-3.5 grow px-2 py-2">
         <AppearanceSection />
         <OllamaSection />
+        <DevModeSection />
       </div>
       <div class="flex">
         <Show when={restartVotes().length > 0}>
