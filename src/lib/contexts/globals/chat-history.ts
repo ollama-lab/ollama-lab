@@ -3,7 +3,7 @@ import type { ChatHistory } from "~/lib/models/session";
 import { createEffect, createMemo } from "solid-js";
 import { getAllSessions, reloadSession } from "./sessions";
 import { getCurrentBranch } from "~/lib/commands/chat-history";
-import { IncomingUserPrompt } from "~/lib/models/chat";
+import { EditUserPrompt, IncomingUserPrompt } from "~/lib/models/chat";
 import { createSession } from "~/lib/commands/sessions";
 import { regenerateResponse, submitUserPrompt } from "~/lib/commands/chats";
 import { convertResponseEvents } from "~/lib/utils/chat-streams";
@@ -168,7 +168,7 @@ export async function switchBranch(chatId: number) {
 }
 
 export async function editPrompt(
-  prompt: IncomingUserPrompt,
+  prompt: EditUserPrompt,
   chatId: number,
   model: string,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
@@ -189,16 +189,22 @@ export async function editPrompt(
     responseIndex: -1,
   };
 
+  const curPrompt: IncomingUserPrompt = {
+    text: ch.chats[chatId].content,
+  };
+
+  const mergedPrompt: IncomingUserPrompt = { ...curPrompt, ...prompt };
+
   const ret = await submitUserPrompt(
     ch.session,
-    prompt,
+    mergedPrompt,
     parentId,
     convertResponseEvents(
       ctx,
       getChatHistory,
       setChatHistoryStore,
       model,
-      prompt,
+      mergedPrompt,
       { onRespond, onScrollDown },
       { regenerateFor: ch.chats[curIndex].id },
     ),

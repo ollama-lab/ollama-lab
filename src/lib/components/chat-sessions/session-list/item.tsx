@@ -4,8 +4,7 @@ import { toast } from "solid-sonner";
 import { getChatHistory, switchToSession } from "~/lib/contexts/globals/chat-history";
 import { cn } from "~/lib/utils/class-names";
 import { LoaderSpin } from "../../loader-spin";
-import { TextField } from "../../ui/text-field";
-import { TextFieldInput } from "@kobalte/core/src/text-field/text-field-input.jsx";
+import { TextField, TextFieldInput } from "../../ui/text-field";
 import { renameSession } from "~/lib/commands/sessions";
 import { reloadSession } from "~/lib/contexts/globals/sessions";
 import { OperationsDropdown } from "./operations";
@@ -60,6 +59,7 @@ export function SessionListItem(props: SessionListItemProps) {
           <Match when={renameMode()}>
             <TextField defaultValue={title() ?? ""}>
               <TextFieldInput
+                autofocus
                 class="text-foreground"
                 on:keydown={(ev) => {
                   switch (ev.key) {

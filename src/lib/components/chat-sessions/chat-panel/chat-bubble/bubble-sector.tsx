@@ -4,6 +4,9 @@ import { Avatar, AvatarImage } from "~/lib/components/ui/avatar";
 import { useChatEntry } from "~/lib/contexts/chat-entry";
 import { cn } from "~/lib/utils/class-names";
 import { ThoughtsSection } from "./thoughts-section";
+import { Bubble } from "./bubble";
+import { BubbleInlineEditor } from "./inline-editor";
+import { editPrompt } from "~/lib/contexts/globals/chat-history";
 
 export function BubbleSector() {
   const chat = useChatEntry();
@@ -63,8 +66,27 @@ export function BubbleSector() {
                   <ThoughtsSection />
                 </Show>
 
-                <Switch>
+                <Switch fallback={<Bubble />}>
                   <Match when={editMode()}>
+                    <BubbleInlineEditor
+                      defaultValue={chat?.().content}
+                      onCancel={() => setEditMode(false)}
+                      onSubmit={(newValue) => {
+                        const c = chat?.();
+                        const id = c?.id;
+                        const model = c?.model;
+
+                        if (id === undefined || model === undefined) {
+                          return;
+                        }
+
+                        editPrompt({ text: newValue }, id, model, {
+                          onRespond() {
+                            setEditMode(false);
+                          },
+                        });
+                      }}
+                    />
                   </Match>
                 </Switch>
               </div>
@@ -73,7 +95,7 @@ export function BubbleSector() {
         </div>
       </Match>
       <Match when={role() === "system"}>
-        {/* TODO */}
+        <></>
       </Match>
     </Switch>
   );

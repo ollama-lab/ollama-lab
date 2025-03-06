@@ -8,3 +8,9 @@ export interface IncomingUserPrompt {
   imagePaths?: string[];
   useSystemPrompt?: boolean;
 }
+
+export interface EditUserPrompt {
+  text?: string;
+  imagePaths?: string[];
+  useSystemPrompt?: boolean;
+}

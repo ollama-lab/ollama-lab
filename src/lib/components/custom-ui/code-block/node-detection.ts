@@ -1,4 +1,4 @@
-import { Element } from "hast";
+import type { Element } from "hast";
 
 /**
  * @see https://github.com/rehypejs/rehype-highlight/blob/main/lib/index.js#L154

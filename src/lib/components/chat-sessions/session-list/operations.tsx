@@ -1,7 +1,6 @@
 import { createSignal } from "solid-js";
-import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 import { EllipsisVerticalIcon, SquarePenIcon, TrashIcon } from "lucide-solid";
-import { DropdownMenuContent } from "@kobalte/core/src/dropdown-menu/dropdown-menu-content.jsx";
 import { DeletionDialog } from "./operations/deletion-dialog";
 
 export interface OperationsDropdownProps {
