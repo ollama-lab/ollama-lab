@@ -28,9 +28,13 @@ export function convertResponseEvents(
 
   return {
     afterUserPromptSubmitted(id: number, date: Date): void {
-      const ch = chatHistory();
+      let ch = chatHistory();
       if (!ch) {
-        return;
+        ch = {
+          chats: [],
+        };
+
+        setChatHistoryStore("chatHistory", ch);
       }
 
       if (regenerateFor !== undefined) {
@@ -105,7 +109,8 @@ export function convertResponseEvents(
 
           context.responseIndex = ch.chats.length - 1;
         } else {
-          setChatHistoryStore("chatHistory", "chats", ch.chats.length, {
+          const length = ch.chats.length;
+          setChatHistoryStore("chatHistory", "chats", length, {
             id,
             status: "preparing",
             role: "assistant",
@@ -116,7 +121,7 @@ export function convertResponseEvents(
           });
 
           if (length !== undefined) {
-            context.responseIndex = length - 1;
+            context.responseIndex = length;
           }
         }
       }
