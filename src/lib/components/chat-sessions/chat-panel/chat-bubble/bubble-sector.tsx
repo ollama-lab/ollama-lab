@@ -109,9 +109,12 @@ export function BubbleSector() {
           </div>
 
           <Show when={role() === "user"}>
-            <Switch fallback={<TriangleAlertIcon class="text-yellow-600" />}>
+            <Switch>
               <Match when={status() === "sending"}>
                 <LoaderSpin />
+              </Match>
+              <Match when={status() === "not sent"}>
+                <TriangleAlertIcon class="text-yellow-600" />
               </Match>
             </Switch>
           </Show>
