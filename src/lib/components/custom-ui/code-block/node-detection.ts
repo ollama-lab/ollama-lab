@@ -12,17 +12,13 @@ export function language(node: Element) {
   }
 
   for (const className of classList) {
-    const matched = className.toString().match(/^language-\w+$/);
+    const classString = className.toString();
+    const matched = classString.startsWith("language-");
     if (!matched) {
       continue;
     }
 
-    const matchedClass = matched.at(0);
-    if (!matchedClass) {
-      continue;
-    }
-
-    return matchedClass.replace("language-", "");
+    return classString.slice(9);
   }
 
   return undefined;

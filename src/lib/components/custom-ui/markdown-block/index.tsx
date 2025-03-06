@@ -4,9 +4,10 @@ import rehypeKatex from "rehype-katex";
 import { SolidMarkdown } from "solid-markdown";
 import { cn } from "~/lib/utils/class-names";
 import { CodeBlock } from "../code-block";
-import { Show } from "solid-js";
+import { createMemo, Show } from "solid-js";
 import { language } from "../code-block/node-detection";
 import { getDevOptions } from "~/lib/contexts/globals/dev-tools/dev-mode";
+import { Element, Text } from "hast";
 
 export interface MarkdownBlockProps {
   markdown?: string;
@@ -38,14 +39,15 @@ export function MarkdownBlock(props: MarkdownBlockProps) {
           return (
             <Show when={props.node.children.at(0)} fallback={<pre>{props.children}</pre>}>
               {(element) => {
-                const el = element();
+                const lang = createMemo(() => {
+                  const el = element();
+                  return el.type === "element" ? language(el) : undefined;
+                });
 
-                const lang = el.type === "element" ? language(el) : undefined;
-
-                return el.type === "text" ? (
-                  <pre>{el.value}</pre>
-                ) : el.type === "element" && el.tagName === "code" && (
-                  <Show when={el.children.at(0)}>
+                return element().type === "text" ? (
+                  <pre>{(element() as Text).value}</pre>
+                ) : element().type === "element" && (element() as Element).tagName === "code" && (
+                  <Show when={(element() as Element).children.at(0)}>
                     {(textElement) => {
                       const t = textElement();
 
@@ -54,7 +56,7 @@ export function MarkdownBlock(props: MarkdownBlockProps) {
                           code={t.value}
                           collapsible
                           stickyToolbar
-                          lang={lang}
+                          lang={lang()}
                           stickyOffset={-10}
                         />
                       );
