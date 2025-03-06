@@ -36,6 +36,5 @@ export async function reloadCurrentSession() {
     return;
   }
 
-  await reloadSession(id)
-  return currentSession;
+  setCurrentSession("session", await reloadSession(id));
 }

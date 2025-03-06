@@ -1,6 +1,7 @@
 import { createStore } from "solid-js/store";
 import { ModelListItem, RunningModel } from "~/lib/models/model-item";
 import { getDefaultModel, listLocalModels, listRunningModels } from "~/lib/commands/models";
+import { createEffect } from "solid-js";
 
 export type FetchingStatus = "unfetched" | "fetching" | "error" | "fetched";
 
@@ -45,6 +46,10 @@ export async function initModelStates() {
     await reloadModelStates();
   }
 }
+
+createEffect(() => {
+  initModelStates();
+});
 
 export async function setDefaultModel(newModel: string) {
   await setDefaultModel(newModel);

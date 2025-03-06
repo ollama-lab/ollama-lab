@@ -28,6 +28,7 @@ export async function reloadSession(id: number) {
   }
 
   setSessions(index, reconcile(session));
+  return session;
 }
 
 export function getAllSessions() {

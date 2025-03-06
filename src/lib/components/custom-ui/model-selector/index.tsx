@@ -1,7 +1,6 @@
 import { ChevronsUpDownIcon } from "lucide-solid";
-import { createEffect, createMemo, createSignal } from "solid-js";
-import { toast } from "solid-sonner";
-import { initModelStates, modelList } from "~/lib/contexts/globals/model-states";
+import { createMemo, createSignal } from "solid-js";
+import { modelList } from "~/lib/contexts/globals/model-states";
 import { getSessionWiseModel, setSessionWiseModel } from "~/lib/contexts/globals/session-wise-model";
 import { ModelListItem } from "~/lib/models/model-item";
 import {
@@ -27,10 +26,6 @@ export function ModelSelector() {
       },
       {} as Record<string, ModelListItem[]>,
     );
-  });
-
-  createEffect(() => {
-    initModelStates().catch((err) => toast.error(String(err)));
   });
 
   const updateSessionModel = async (model: string) => {
