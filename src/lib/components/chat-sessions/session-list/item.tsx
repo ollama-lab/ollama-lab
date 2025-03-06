@@ -57,10 +57,10 @@ export function SessionListItem(props: SessionListItemProps) {
       <div class="grow select-none truncate text-sm flex gap-2 items-center">
         <Switch fallback={<Title />}>
           <Match when={renameMode()}>
-            <TextField defaultValue={title() ?? ""}>
+            <TextField defaultValue={title() ?? ""} class="w-full">
               <TextFieldInput
-                autofocus
-                class="text-foreground"
+                class="text-foreground bg-background w-full"
+                onLoad={(ev) => ev.currentTarget.focus()}
                 on:keydown={(ev) => {
                   switch (ev.key) {
                     case "Enter":

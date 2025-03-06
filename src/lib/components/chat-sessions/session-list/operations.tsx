@@ -19,10 +19,11 @@ export function OperationsDropdown(props: OperationsDropdownProps) {
     <>
       <DropdownMenu open={open()} onOpenChange={setOpen}>
         <DropdownMenuTrigger on:click={(ev) => ev.stopPropagation()}>
-          <EllipsisVerticalIcon />
+          <EllipsisVerticalIcon class="size-4 cursor-pointer" />
         </DropdownMenuTrigger>
         <DropdownMenuContent class="text-sm">
           <DropdownMenuItem
+            class="cursor-pointer"
             on:click={() => {
               props.onEdit?.();
               setOpen(false);
@@ -31,8 +32,8 @@ export function OperationsDropdown(props: OperationsDropdownProps) {
             <SquarePenIcon class="size-4" />
             Rename
           </DropdownMenuItem>
-          <DropdownMenuItem class="bg-destructive text-destructive-foreground">
-            <TrashIcon />
+          <DropdownMenuItem class="bg-destructive text-destructive-foreground cursor-pointer">
+            <TrashIcon class="size-4" />
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>

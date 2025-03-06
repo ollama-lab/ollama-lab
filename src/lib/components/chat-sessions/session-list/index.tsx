@@ -1,9 +1,10 @@
 import { clearChatHistory } from "~/lib/contexts/globals/chat-history";
 import { Button } from "../../ui/button";
 import { PlusIcon } from "lucide-solid";
-import { For } from "solid-js";
+import { For, Suspense } from "solid-js";
 import { getAllSessions } from "~/lib/contexts/globals/sessions";
 import { SessionListItem } from "./item";
+import { LoaderSpin } from "../../loader-spin";
 
 export function SessionList() {
   return (
@@ -18,11 +19,13 @@ export function SessionList() {
       </div>
 
       <div class="grow overflow-y-auto">
-        <div class="flex flex-col gap-2 px-2">
-          <For each={getAllSessions()}>
-            {(session) => <SessionListItem sessionId={session.id} title={session.title ?? undefined} />}
-          </For>
-        </div>
+        <Suspense fallback={<LoaderSpin class="size-4" />}>
+          <div class="flex flex-col gap-2 px-2">
+            <For each={getAllSessions()}>
+              {(session) => <SessionListItem sessionId={session.id} title={session.title ?? undefined} />}
+            </For>
+          </div>
+        </Suspense>
       </div>
     </div>
   );

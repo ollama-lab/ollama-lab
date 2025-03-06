@@ -8,7 +8,7 @@ const [candidate, setCandidate] = createSignal<string | null>(null);
 export function getSessionWiseModel(): string | null {
   const sessions = getAllSessions();
   const currentSession = getChatHistory()?.session;
-  if (sessions.length > 0 && currentSession !== undefined) {
+  if (sessions && sessions.length > 0 && currentSession !== undefined) {
     return sessions.find((s) => s.id === currentSession)?.currentModel ?? null;
   }
 
@@ -19,7 +19,7 @@ export async function setSessionWiseModel(value: string) {
   const sessions = getAllSessions();
   const currentSession = getChatHistory()?.session;
 
-  if (sessions.length > 0 && currentSession !== undefined) {
+  if (sessions && sessions.length > 0 && currentSession !== undefined) {
     await setSessionModelCommand(currentSession, value);
     await reloadSession(currentSession);
     setCandidate(null);
