@@ -114,7 +114,7 @@ export function PromptInput() {
 
       <Show when={getInputPrompt().imagePaths}>
         <ImagePreview
-          srcs={() => getInputPrompt().imagePaths ?? []}
+          srcs={getInputPrompt().imagePaths ?? []}
           fetcher={fetcher}
           onDelete={deletePreviewItem}
         />

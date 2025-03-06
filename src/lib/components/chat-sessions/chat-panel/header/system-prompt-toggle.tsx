@@ -3,7 +3,7 @@ import { Show, Suspense } from "solid-js";
 import { getModelSystemPrompt } from "~/lib/commands/system-prompts";
 import { LoaderSpin } from "~/lib/components/loader-spin";
 import { SwitchControl, SwitchLabel, SwitchRoot } from "~/lib/components/ui/switch";
-import { getChatHistory } from "~/lib/contexts/globals/chat-history";
+import { currentSession } from "~/lib/contexts/globals/current-session";
 import { getInputPrompt, setInputPrompt } from "~/lib/contexts/globals/prompt-input";
 import { getSessionWiseModel } from "~/lib/contexts/globals/session-wise-model";
 
@@ -20,7 +20,7 @@ export function SystemPromptToggle() {
   return (
     <div class="px-2">
       <Suspense fallback={<LoaderSpin class="size-4" />}>
-        <Show when={!getChatHistory() && !!systemPrompt()}>
+        <Show when={!currentSession() && !!systemPrompt()}>
           <SwitchRoot
             class="flex gap-2 items-center"
             name="use-system-prompt"
