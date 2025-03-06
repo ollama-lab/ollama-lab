@@ -62,9 +62,7 @@ export function ChatFeeds() {
   });
 
   createEffect(() => {
-    const status = getChatHistory()?.chats.at(-1)?.status;
-
-    if (status === "preparing" || status === "sending") {
+    if (getChatHistory()?.chats.at(-1)?.content) {
       const root = rootRef();
       if (root && autoScroll()) {
         root.parentElement?.scrollTo(0, root.scrollHeight);
@@ -85,7 +83,7 @@ export function ChatFeeds() {
     <div
       ref={setRootRef}
       class={cn(
-        "flex flex-col flex-wrap text-wrap max-w-5xl mx-auto pb-6",
+        "flex flex-col flex-wrap text-wrap max-w-5xl mx-auto pb-4",
         !hasChatHistory() && "h-full place-content-center items-center",
       )}
       onWheel={(ev) => {
