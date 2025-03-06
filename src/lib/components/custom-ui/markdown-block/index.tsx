@@ -6,6 +6,7 @@ import { cn } from "~/lib/utils/class-names";
 import { CodeBlock } from "../code-block";
 import { Show } from "solid-js";
 import { language } from "../code-block/node-detection";
+import { getDevOptions } from "~/lib/contexts/globals/dev-tools/dev-mode";
 
 export interface MarkdownBlockProps {
   markdown?: string;
@@ -18,7 +19,11 @@ export function MarkdownBlock(props: MarkdownBlockProps) {
   return (
     <SolidMarkdown
       children={markdown()}
-      class={cn("markdown-block", props.class)}
+      class={cn(
+        "markdown-block",
+        getDevOptions("rerenderFlash") && "__dev-flash",
+        props.class,
+      )}
       renderingStrategy="reconcile"
       skipHtml
       remarkPlugins={[

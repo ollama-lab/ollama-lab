@@ -106,6 +106,18 @@
   }
 
   --animate-indeterminate: indeterminate-progress 2s infinite linear;
+
+  @keyframes flash-out {
+    0% {
+      background-color: #FF00001E;
+    }
+
+    100% {
+      background-color: #FF000000;
+    }
+  }
+
+  --animate-flash-out: flash-out 50ms linear;
 }
 
 @layer base {
@@ -198,6 +210,10 @@
 
   .markdown-block {
     @apply space-y-4;
+
+    &.__dev-flash span {
+      @apply animate-flash-out;
+    }
   }
 
   .code-block pre > code > .code-line {
