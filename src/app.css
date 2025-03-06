@@ -109,7 +109,7 @@
 
   @keyframes flash-out {
     0% {
-      background-color: #FF00001E;
+      background-color: #FF00002C;
     }
 
     100% {
@@ -117,7 +117,7 @@
     }
   }
 
-  --animate-flash-out: flash-out 50ms linear;
+  --animate-flash-out: flash-out 60ms linear;
 }
 
 @layer base {
@@ -211,8 +211,10 @@
   .markdown-block {
     @apply space-y-4;
 
-    &.__dev-flash span {
-      @apply animate-flash-out;
+    &.__dev-flash {
+      &.span,&.p {
+        @apply animate-flash-out;
+      }
     }
   }
 
