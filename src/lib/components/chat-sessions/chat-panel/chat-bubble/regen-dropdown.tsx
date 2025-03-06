@@ -1,6 +1,6 @@
 import { RefreshCwIcon } from "lucide-solid";
-import { createMemo, Match, Switch } from "solid-js";
-import { DropdownMenu, DropdownMenuTrigger } from "~/lib/components/ui/dropdown-menu";
+import { createMemo, For, Match, Switch } from "solid-js";
+import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger } from "~/lib/components/ui/dropdown-menu";
 import { useChatEntry } from "~/lib/contexts/chat-entry";
 import { regenerate } from "~/lib/contexts/globals/chat-history";
 import { getSessionWiseModel } from "~/lib/contexts/globals/session-wise-model";
@@ -49,6 +49,23 @@ export function RegenDropdown() {
       <Match when={dropdownNeeded()}>
         <DropdownMenu>
           <DropdownMenuTrigger title="Regenerate">
+            <For each={candidates()}>
+              {(modelName) => (
+                <DropdownMenuItem
+                  class="cursor-pointer"
+                  onClick={() => {
+                    const id = chatId();
+                    if (!id) {
+                      return;
+                    }
+
+                    regenerate(id, modelName);
+                  }}
+                >
+                  Use {modelName}
+                </DropdownMenuItem>
+              )}
+            </For>
           </DropdownMenuTrigger>
         </DropdownMenu>
       </Match>
