@@ -8,11 +8,11 @@ import { TextField, TextFieldInput } from "../../ui/text-field";
 import { renameSession } from "~/lib/commands/sessions";
 import { reloadSession } from "~/lib/contexts/globals/sessions";
 import { OperationsDropdown } from "./operations";
-import { currentSession, setSessionId } from "~/lib/contexts/globals/current-session";
+import { currentSession, setCurrentSessionId } from "~/lib/contexts/globals/current-session";
 
 export interface SessionListItemProps {
   sessionId: number;
-  title?: string;
+  title?: string | undefined;
 }
 
 export function SessionListItem(props: SessionListItemProps) {
@@ -39,13 +39,13 @@ export function SessionListItem(props: SessionListItemProps) {
       )}
       onClick={() => {
         try {
-          setSessionId(sessionId());
+          setCurrentSessionId(sessionId());
         } catch (err) {
           toast.error(`Error: ${err}`);
         }
       }}
       role="button"
-      tabindex={currentSession()?.id}
+      tabindex={sessionId()}
       onDblClick={() => setRenameMode(true)}
     >
       <div class="grow select-none truncate text-sm flex gap-2 items-center">

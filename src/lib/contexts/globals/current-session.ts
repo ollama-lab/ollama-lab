@@ -1,23 +1,34 @@
-import { createResource, createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
+import { createStore } from "solid-js/store";
 import { getSession } from "~/lib/commands/sessions";
-import { getAllSessions, reloadSession } from "~/lib/contexts/globals/sessions";
+import { reloadSession } from "~/lib/contexts/globals/sessions";
+import { Session } from "~/lib/models/session";
 
 const [sessionId, setSessionId] = createSignal<number | null>(null);
 
-const [currentSession, { refetch }] = createResource(sessionId, async (id) => {
+export interface SessionStore {
+  session?: Session;
+}
+
+const [currentSessionStore, setCurrentSession] = createStore<SessionStore>({});
+
+createEffect(() => {
+  const id = sessionId();
+
   if (id === null) {
-    return null;
+    setCurrentSession("session", undefined);
+    return;
   }
 
-  const loadedSessions = getAllSessions()?.find((item) => item.id === id);
-  if (loadedSessions) {
-    return loadedSessions;
-  }
 
-  return await getSession(id);
+  getSession(id).then((session) => setCurrentSession("session", session ?? undefined));
 });
 
-export { sessionId, setSessionId, currentSession };
+export function currentSession() {
+  return currentSessionStore.session;
+}
+
+export { sessionId as currentSessionId, setSessionId as setCurrentSessionId };
 
 export async function reloadCurrentSession() {
   const id = sessionId();
@@ -26,5 +37,5 @@ export async function reloadCurrentSession() {
   }
 
   await reloadSession(id)
-  return refetch();
+  return currentSession;
 }
