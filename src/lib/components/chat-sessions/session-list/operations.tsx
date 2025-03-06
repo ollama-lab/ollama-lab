@@ -32,7 +32,10 @@ export function OperationsDropdown(props: OperationsDropdownProps) {
             <SquarePenIcon class="size-4" />
             Rename
           </DropdownMenuItem>
-          <DropdownMenuItem class="bg-destructive text-destructive-foreground cursor-pointer">
+          <DropdownMenuItem
+            class="bg-destructive text-destructive-foreground cursor-pointer"
+            onClick={() => setDeletionDialogOpen(true)}
+          >
             <TrashIcon class="size-4" />
             Delete
           </DropdownMenuItem>
