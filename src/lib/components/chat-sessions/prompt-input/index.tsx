@@ -87,7 +87,7 @@ export function PromptInput() {
   return (
     <form
       ref={setFormRef}
-      class="border-t border-l border-r border-secondary bg-background flex flex-col gap-1.5 px-2.5 pt-0 pb-2 rounded-t-2xl overflow-hidden transition-[margin]"
+      class="relative border-t border-l border-r border-secondary bg-background flex flex-col gap-1.5 px-2.5 pt-0 pb-2 rounded-t-2xl overflow-hidden transition-[margin] -mt-4 z-30"
       style={{
         "margin-bottom": `-${hidePromptBar() ? (formRef()?.clientHeight ?? 0) - 16 : 0}px`,
       }}

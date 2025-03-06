@@ -8,7 +8,8 @@ import { cn } from "~/lib/utils/class-names";
 import { CodeBlockToolbar } from "./toolbar";
 import { isDev } from "solid-js/web";
 import { createStore, reconcile } from "solid-js/store";
-import { Root } from "hast";
+import { Root, RootContent } from "hast";
+import { h } from "hastscript";
 
 export interface CodeBlockProps {
   code: string;
@@ -35,6 +36,33 @@ export function CodeBlock(props: CodeBlockProps) {
   createRenderEffect(() => {
     const detectedLang = lang();
     const tree = detectedLang ? lowlight.highlight(detectedLang, code()) : lowlight.highlightAuto(code());
+
+    tree.children = tree.children
+      .reduce((acc, cur) => {
+        let lastChild = acc.at(-1);
+        if (cur.type === "text") {
+          for (const line of cur.value.split("\n")) {
+            const lineNode = h("span.code-line", line);
+
+            if (lastChild && lastChild.type === "element") {
+              lastChild.children.push(lineNode);
+              lastChild = undefined;
+              continue;
+            }
+
+            acc.push(lineNode);
+          }
+        } else if (cur.type === "element") {
+          if (!lastChild || lastChild.type !== "element") {
+            acc.push(h("span.code-line", {}, [cur]));
+          } else {
+            lastChild.children.push(cur);
+          }
+        }
+
+        return acc;
+      }, [] as RootContent[]);
+
     setHastTree(reconcile(tree));
   });
 
@@ -86,7 +114,7 @@ export function CodeBlock(props: CodeBlockProps) {
   });
 
   return (
-    <div class={cn("relative rounded flex flex-col", props.class)}>
+    <div class={cn("code-block relative rounded flex flex-col", props.class)}>
       <Show when={stickyToolbar()}>
         <div class="sticky z-10" style={{ "top": `${props.stickyOffset ?? 0}px` }}>
           <ToolbarTemplate class="absolute top-0 right-0 px-3 py-0.5" />
@@ -103,7 +131,7 @@ export function CodeBlock(props: CodeBlockProps) {
       <div class="relative text-sm rounded-b overflow-hidden">
         <Switch fallback={<div class="bg-muted text-muted-foreground px-2 py-1">{lineCount()} lines hidden</div>}>
           <Match when={!collapsible() || !collapsed()}>
-            <pre class="min-w-full whitespace-normal">
+            <pre class="min-w-full">
               <code
                 class={cn(
                   "relative overflow-x-auto grid! grid-cols-1",

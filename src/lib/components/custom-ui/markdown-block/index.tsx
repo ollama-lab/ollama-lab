@@ -18,7 +18,7 @@ export function MarkdownBlock(props: MarkdownBlockProps) {
   return (
     <SolidMarkdown
       children={markdown()}
-      class={cn(props.class)}
+      class={cn("markdown-block", props.class)}
       renderingStrategy="reconcile"
       skipHtml
       remarkPlugins={[
@@ -49,7 +49,7 @@ export function MarkdownBlock(props: MarkdownBlockProps) {
                           code={t.value}
                           collapsible
                           stickyToolbar
-                          lang={lang === false ? undefined : lang}
+                          lang={lang}
                           stickyOffset={-10}
                         />
                       );

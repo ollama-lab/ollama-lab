@@ -85,7 +85,7 @@ export function ChatFeeds() {
     <div
       ref={setRootRef}
       class={cn(
-        "flex flex-col flex-wrap text-wrap max-w-5xl mx-auto",
+        "flex flex-col flex-wrap text-wrap max-w-5xl mx-auto pb-6",
         !hasChatHistory() && "h-full place-content-center items-center",
       )}
       onWheel={(ev) => {

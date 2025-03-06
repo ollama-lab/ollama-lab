@@ -48,7 +48,7 @@ export function RegenDropdown() {
     <Switch fallback={<NormalButton />}>
       <Match when={dropdownNeeded()}>
         <DropdownMenu>
-          <DropdownMenuTrigger title="Regenerate">
+          <DropdownMenuTrigger title="Regeneratel">
             <RefreshCwIcon class="size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
