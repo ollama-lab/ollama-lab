@@ -191,6 +191,10 @@
   kbd {
     @apply bg-secondary text-secondary-foreground rounded p-1;
   }
+
+  button {
+    @apply cursor-pointer;
+  }
 }
 
 @utilities {
