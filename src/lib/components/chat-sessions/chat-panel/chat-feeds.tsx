@@ -1,4 +1,4 @@
-import { createEffect, createSignal, For, Index, Match, Switch } from "solid-js";
+import { createEffect, createMemo, createSignal, For, Index, Match, Switch } from "solid-js";
 import { ChatEntryProvider } from "~/lib/contexts/chat-entry";
 import { getChatHistory } from "~/lib/contexts/globals/chat-history";
 import { cn } from "~/lib/utils/class-names";
@@ -72,12 +72,21 @@ export function ChatFeeds() {
     }
   });
 
+  const hasChatHistory = createMemo(() => {
+    const chatHistory = getChatHistory();
+    if (!chatHistory) {
+      return false;
+    }
+
+    return chatHistory.chats.length > 0;
+  });
+
   return (
     <div
       ref={setRootRef}
       class={cn(
         "flex flex-col flex-wrap text-wrap max-w-5xl mx-auto",
-        !getChatHistory() && "h-full place-content-center items-center",
+        !hasChatHistory() && "h-full place-content-center items-center",
       )}
       onWheel={(ev) => {
         if (ev.deltaY < 0) {

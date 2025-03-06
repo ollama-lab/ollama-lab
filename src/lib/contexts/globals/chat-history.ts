@@ -38,7 +38,9 @@ export async function reloadChatHistory() {
   if (session) {
     setChatHistoryStore("loading", true);
     const result = await getCurrentBranch(session.id);
-    setChatHistoryStore("chatHistory", "chats", result);
+    setChatHistoryStore("chatHistory", {
+      chats: result,
+    });
     setChatHistoryStore("loading", false);
   } else {
     setChatHistoryStore("chatHistory", null);

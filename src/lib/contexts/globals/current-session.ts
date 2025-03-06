@@ -4,8 +4,7 @@ import { getAllSessions, reloadSession } from "~/lib/contexts/globals/sessions";
 
 const [sessionId, setSessionId] = createSignal<number | null>(null);
 
-const [currentSession, { refetch }] = createResource(async () => {
-  const id = sessionId();
+const [currentSession, { refetch }] = createResource(sessionId, async (id) => {
   if (id === null) {
     return null;
   }

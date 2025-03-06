@@ -35,16 +35,11 @@ export function SessionListItem(props: SessionListItemProps) {
     <div
       class={cn(
         "flex items-center px-3 py-2 rounded cursor-pointer min-h-12",
-        currentSession() ? "bg-primary text-primary-foreground" : "hover:bg-secondary",
+        currentSession()?.id === sessionId() ? "bg-primary text-primary-foreground" : "hover:bg-secondary",
       )}
       onClick={() => {
-        const s = currentSession();
-        if (!s) {
-          return;
-        }
-
         try {
-          setSessionId(s.id);
+          setSessionId(sessionId());
         } catch (err) {
           toast.error(`Error: ${err}`);
         }
