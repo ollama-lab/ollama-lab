@@ -7,6 +7,7 @@ import { ThoughtsSection } from "./thoughts-section";
 import { Bubble } from "./bubble";
 import { BubbleInlineEditor } from "./inline-editor";
 import { editPrompt } from "~/lib/contexts/globals/chat-history";
+import { VersionPagination } from "./version-pagination";
 
 export function BubbleSector() {
   const chat = useChatEntry();
@@ -91,6 +92,7 @@ export function BubbleSector() {
                 </Switch>
 
                 <Show when={chat?.().versions}>
+                  <VersionPagination />
                 </Show>
               </div>
             </div>
