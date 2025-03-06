@@ -50,6 +50,7 @@ export function MarkdownBlock(props: MarkdownBlockProps) {
                           collapsible
                           stickyToolbar
                           lang={lang === false ? undefined : lang}
+                          stickyOffset={-10}
                         />
                       );
                     }}

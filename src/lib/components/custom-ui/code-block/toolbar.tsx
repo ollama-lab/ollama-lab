@@ -36,6 +36,7 @@ export interface CodeBlockToolbarProps {
   collapsible?: boolean;
   collapsed?: Accessor<boolean>;
   onToggleCollapsed?: () => void;
+  stickyOffset?: number;
 }
 
 export function CodeBlockToolbar(props: CodeBlockToolbarProps) {
@@ -60,7 +61,7 @@ export function CodeBlockToolbar(props: CodeBlockToolbarProps) {
       <Show when={props.collapsible}>
         <ToolbarButton
           icon={<ChevronUpIcon class={cn("size-4 transition-transform", props.collapsed?.() && "-rotate-180")} />}
-          title="Collapse"
+          title={props.collapsed?.() ? "Expand" : "Collapse"}
           onClick={() => props.onToggleCollapsed?.()}
         />
       </Show>

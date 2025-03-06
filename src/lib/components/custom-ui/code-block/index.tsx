@@ -17,6 +17,7 @@ export interface CodeBlockProps {
   class?: string;
   stickyToolbar?: boolean;
   collapsible?: boolean;
+  stickyOffset?: number;
 }
 
 export function CodeBlock(props: CodeBlockProps) {
@@ -25,6 +26,7 @@ export function CodeBlock(props: CodeBlockProps) {
   const lang = createMemo(() => (!props.lang ? (autoGuess() ? null : "plaintext") : props.lang));
   const stickyToolbar = () => props.stickyToolbar;
   const collapsible = () => props.collapsible;
+  const stickyOffset = () => props.stickyOffset;
 
   const lowlight = createLowlight(all);
 
@@ -67,6 +69,7 @@ export function CodeBlock(props: CodeBlockProps) {
       collapsible={collapsible()}
       collapsed={collapsed}
       onToggleCollapsed={() => setCollapsed((cur) => !cur)}
+      stickyOffset={stickyOffset()}
     />
   );
 
@@ -85,7 +88,7 @@ export function CodeBlock(props: CodeBlockProps) {
   return (
     <div class={cn("relative rounded flex flex-col", props.class)}>
       <Show when={stickyToolbar()}>
-        <div class="sticky -top-5 z-10">
+        <div class="sticky z-10" style={{ "top": `${props.stickyOffset ?? 0}px` }}>
           <ToolbarTemplate class="absolute top-0 right-0 px-3 py-0.5" />
         </div>
       </Show>
