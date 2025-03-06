@@ -4,7 +4,7 @@ import { emit } from "@tauri-apps/api/event";
 import { toast } from "solid-sonner";
 import { Accessor } from "solid-js";
 import { ChatHistory } from "../models/session";
-import { produce, reconcile, SetStoreFunction } from "solid-js/store";
+import { reconcile, SetStoreFunction } from "solid-js/store";
 import { ChatHistoryStore, PromptSubmissionEvents } from "../contexts/globals/chat-history";
 
 export interface ResponseStreamingContext {
@@ -40,21 +40,21 @@ export function convertResponseEvents(
       if (regenerateFor !== undefined) {
         const chatIndex = ch.chats.findIndex((value) => value.id === regenerateFor);
         if (chatIndex >= 0) {
+          const versions = ch.chats[chatIndex].versions;
+
           setChatHistoryStore(
             "chatHistory",
             "chats",
-            chatIndex,
-            produce((cur) => {
-              cur.status = "sent";
-              cur.content = prompt?.text ?? "";
-              cur.dateSent = date;
-              if (cur.versions) {
-                cur.versions.push(id);
-              } else {
-                cur.versions = [id];
-              }
-              cur.imageCount = prompt?.imagePaths?.length ?? 0;
-            }),
+            reconcile([
+              ...ch.chats.slice(0, chatIndex),
+              {
+                ...ch.chats[chatIndex],
+                status: "sent",
+                content: prompt?.text ?? "",
+                dateSent: date,
+                versions: versions ? [...versions, id] : [ch.chats[chatIndex].id, id],
+              },
+            ]),
           );
         }
         regenerateFor = undefined;
@@ -88,23 +88,22 @@ export function convertResponseEvents(
             return;
           }
 
+          const versions = ch.chats[i].versions;
+
           setChatHistoryStore(
             "chatHistory",
             "chats",
-            i,
-            produce((cur) => {
-              cur.content = "";
-              cur.status = "preparing";
-              if (model) {
-                cur.model = model;
-              }
-
-              if (cur.versions) {
-                cur.versions.push(id);
-              } else {
-                cur.versions = [id];
-              }
-            }),
+            reconcile([
+              ...ch.chats.slice(0, i),
+              {
+                ...ch.chats[i],
+                id,
+                status: "preparing",
+                content: "",
+                model,
+                versions: versions ? [...versions, id] : [ch.chats[i].id, id]
+              },
+            ]),
           );
 
           context.responseIndex = ch.chats.length - 1;
