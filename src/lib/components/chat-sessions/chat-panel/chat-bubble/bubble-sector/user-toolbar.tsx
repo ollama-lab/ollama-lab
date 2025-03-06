@@ -10,7 +10,7 @@ export function UserBubbleSectorFooterToolbar() {
         title="Edit"
         onClick={() => editModeControl?.set(true)}
       >
-        <SquarePenIcon />
+        <SquarePenIcon class="size-4" />
       </button>
     </div>
   );

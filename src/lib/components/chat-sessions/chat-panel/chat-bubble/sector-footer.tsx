@@ -33,16 +33,15 @@ export function SectorFooter() {
         <Show when={isCompleted()}>
           <AssistantBubbleSectorFooterToolbar />
         </Show>
+      </Show>
 
-        <Show when={chat?.().dateSent}>
-          {(dateSent) => (
-            <SentDate date={dateSent()} />
-          )}
-        </Show>
-
-        <Show when={role() === "user" && isCompleted() && !editMode()}>
-          <UserBubbleSectorFooterToolbar />
-        </Show>
+      <Show when={chat?.().dateSent}>
+        {(dateSent) => (
+          <SentDate date={dateSent()} />
+        )}
+      </Show>
+      <Show when={role() === "user" && isCompleted() && !editMode()}>
+        <UserBubbleSectorFooterToolbar />
       </Show>
     </div>
   );
