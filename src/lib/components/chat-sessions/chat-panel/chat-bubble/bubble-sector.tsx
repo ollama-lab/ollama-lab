@@ -89,6 +89,9 @@ export function BubbleSector() {
                     />
                   </Match>
                 </Switch>
+
+                <Show when={chat?.().versions}>
+                </Show>
               </div>
             </div>
           </div>
