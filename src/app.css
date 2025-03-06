@@ -200,7 +200,7 @@
     @apply space-y-4;
   }
 
-  .code-block > .code-line {
+  .code-block pre > code > .code-line {
     @apply min-h-5;
   }
 }
