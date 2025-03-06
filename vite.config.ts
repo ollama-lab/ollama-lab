@@ -27,4 +27,7 @@ export default defineConfig({
       "~": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    include: ['solid-markdown > micromark', 'solid-markdown > unified'],
+  },
 });
