@@ -1,6 +1,6 @@
 import { Show, createMemo } from "solid-js";
 import { MarkdownBlock } from "~/lib/components/custom-ui/markdown-block";
-import { LoaderSpin } from "~/lib/components/loader-spin";
+import { Progress } from "~/lib/components/ui/progress";
 import { useChatEntry } from "~/lib/contexts/chat-entry";
 import { cn } from "~/lib/utils/class-names";
 
@@ -17,7 +17,10 @@ export function Bubble() {
     )}>
       <MarkdownBlock markdown={content()} />
       <Show when={status() === "preparing"}>
-        <LoaderSpin />
+        <Progress
+          value={null}
+          class="w-full max-w-md"
+        />
       </Show>
     </div>
   );
