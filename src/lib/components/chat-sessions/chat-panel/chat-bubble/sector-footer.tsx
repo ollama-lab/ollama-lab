@@ -35,7 +35,7 @@ export function SectorFooter() {
         </Show>
       </Show>
 
-      <Show when={chat?.().dateSent}>
+      <Show when={status?.() === "sent" && chat?.().dateSent}>
         {(dateSent) => (
           <SentDate date={dateSent()} />
         )}
