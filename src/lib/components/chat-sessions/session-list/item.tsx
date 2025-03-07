@@ -1,7 +1,7 @@
 import { Component, Match, Show, Switch } from "solid-js";
 import { createSignal } from "solid-js";
 import { toast } from "solid-sonner";
-import { getChatHistoryStore } from "~/lib/contexts/globals/chat-history";
+import { getChatHistoryStore, reloadChatHistory } from "~/lib/contexts/globals/chat-history";
 import { cn } from "~/lib/utils/class-names";
 import { LoaderSpin } from "../../loader-spin";
 import { TextField, TextFieldInput } from "../../ui/text-field";
@@ -38,6 +38,7 @@ export const SessionListItem: Component<{
       onClick={() => {
         try {
           setCurrentSessionId(sessionId());
+          reloadChatHistory();
         } catch (err) {
           toast.error(`Error: ${err}`);
         }
