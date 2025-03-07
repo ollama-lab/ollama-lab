@@ -1,13 +1,12 @@
-import { createEffect, createMemo, Index, Match, Switch } from "solid-js";
+import { createMemo, Index, Match, Switch } from "solid-js";
 import { Button } from "../ui/button";
-import { toast } from "solid-sonner";
 import { CircleAlertIcon, RefreshCwIcon } from "lucide-solid";
 import { cn } from "~/lib/utils/class-names";
 import { PullModel } from "./pull-model";
 import { LoaderSpin } from "../loader-spin";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { ModelListItem } from "./model-list-item";
-import { initModelStates, modelList, reloadModelStates, status } from "~/lib/contexts/globals/model-states";
+import { modelList, reloadModelStates, status } from "~/lib/contexts/globals/model-states";
 import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";
 import { ModelSearchResultProvider } from "~/lib/contexts/model-search-result";
 import { setCurrentModelPageModel } from "~/lib/contexts/globals/model-page";
@@ -23,10 +22,6 @@ interface DisplayModelListItem {
 
 export function ModelList() {
   const modelNameList = createMemo(() => modelList()?.map(({ name }) => name));
-
-  createEffect(() => {
-    initModelStates();
-  });
 
   const displayModelList = createMemo<DisplayModelListItem[]>(() => {
     const modelNameListRet = modelNameList();
@@ -84,16 +79,7 @@ export function ModelList() {
             disabled={status() === "fetching"}
             title={status() === "fetching" ? "Refreshing..." : "Refresh model list"}
             onClick={() => {
-              const reloadPromise = reloadModelStates();
-              if (reloadPromise) {
-                toast.promise(reloadPromise, {
-                  loading: "Refreshing model list...",
-                  success: "Model list refreshed.",
-                  error: (err) => {
-                    return `Failed to refresh model list: ${err}`;
-                  },
-                });
-              }
+              reloadModelStates();
             }}
           >
             <RefreshCwIcon class={cn(status?.() === "fetching" && "animate-spin")} />

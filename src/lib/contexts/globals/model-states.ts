@@ -2,6 +2,7 @@ import { createStore } from "solid-js/store";
 import { ModelListItem, RunningModel } from "~/lib/models/model-item";
 import { getDefaultModel, listLocalModels, listRunningModels } from "~/lib/commands/models";
 import { createEffect } from "solid-js";
+import { toast } from "solid-sonner";
 
 export type FetchingStatus = "unfetched" | "fetching" | "error" | "fetched";
 
@@ -33,12 +34,18 @@ export async function reloadDefaultModel() {
 export async function reloadModelStates() {
   setStore("status", "fetching");
 
-  const result = await listLocalModels();
-  setStore("modelList", result);
-  setStore("status", "fetched");
+  try {
+    const result = await listLocalModels();
+    setStore("modelList", result);
+    setStore("status", "fetched");
 
-  await reloadActiveModels();
-  await reloadDefaultModel();
+    await reloadActiveModels();
+    await reloadDefaultModel();
+  } catch (err) {
+    setStore("status", "error");
+    toast.error(String(err));
+    return;
+  }
 }
 
 export async function initModelStates() {
