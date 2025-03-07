@@ -1,13 +1,11 @@
-import { Accessor, createEffect, createSignal, onCleanup, untrack } from "solid-js";
+import { Accessor, Component, createEffect, createSignal, onCleanup, untrack } from "solid-js";
 
-export interface CountdownProps {
+export const Countdown: Component<{
   seconds: Accessor<number>;
   expiresAt: Accessor<Date>;
   onTick?: (newSec: number) => void;
   onExpire?: () => void;
-}
-
-export function Countdown(props: CountdownProps) {
+}> = (props) => {
   const seconds = () => props.seconds();
   const onTick = (newSec: number) => props.onTick?.(newSec);
   const expiresAt = () => props.expiresAt();

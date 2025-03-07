@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, Match, Show, Suspense, Switch } from "solid-js";
+import { Component, createMemo, createSignal, For, Match, Show, Suspense, Switch } from "solid-js";
 import { Button } from "~/lib/components/ui/button";
 import { CloudDownloadIcon } from "lucide-solid";
 import { Command, CommandDialog, CommandGroup, CommandInput, CommandList } from "~/lib/components/ui/command";
@@ -9,11 +9,9 @@ import { platform } from "@tauri-apps/plugin-os";
 import { LoaderSpin } from "../../loader-spin";
 import { SearchResultItem } from "./search-result-item";
 
-interface HintsProps {
+const Hints: Component<{
   searchEntered?: boolean;
-}
-
-function Hints(props: HintsProps) {
+}> = (props) => {
   const searchEntered = () => props.searchEntered;
 
   const os = createMemo(() => platform());

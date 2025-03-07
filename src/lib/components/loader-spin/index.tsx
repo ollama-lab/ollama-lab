@@ -1,13 +1,11 @@
 import { Loader2Icon } from "lucide-solid";
-import { Match, Switch } from "solid-js";
+import { Component, Match, Switch } from "solid-js";
 import { cn } from "~/lib/utils/class-names";
 
-export interface LoaderSpinProps {
+export const LoaderSpin: Component<{
   class?: string;
   text?: string;
-}
-
-export function LoaderSpin(props: LoaderSpinProps) {
+}> = (props) => {
   const loader = <Loader2Icon class={cn("animate-spin", props.class)} />;
 
   return (

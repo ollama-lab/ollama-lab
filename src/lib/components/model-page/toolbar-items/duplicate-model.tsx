@@ -1,4 +1,4 @@
-import { Accessor, createSignal, Match, Switch } from "solid-js";
+import { Accessor, Component, createSignal, Match, Switch } from "solid-js";
 import {
   Dialog,
   DialogContent,
@@ -17,11 +17,9 @@ import { toast } from "solid-sonner";
 import { TextField, TextFieldInput } from "../../ui/text-field";
 import { reloadModelStates, setCurrentModel } from "~/lib/contexts/globals/model-states";
 
-export interface DuplicateModelProps {
+export const DuplicateModel: Component<{
   model: Accessor<string>;
-}
-
-export function DuplicateModel(props: DuplicateModelProps) {
+}> = (props) => {
   const [open, setOpen] = createSignal(false);
   const [submitting, setSubmitting] = createSignal(false);
 

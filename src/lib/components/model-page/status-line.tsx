@@ -1,16 +1,14 @@
-import { Accessor, createMemo, createSignal, Match, Show, Switch } from "solid-js";
+import { Accessor, Component, createMemo, createSignal, Match, Show, Switch } from "solid-js";
 import { ProgressEvent } from "~/lib/models/events/progress";
 import { LoaderSpin } from "../loader-spin";
 import StatusDot from "../custom-ui/status-dot";
 import { Countdown } from "./countdown";
 import { activeModels, reloadActiveModels } from "~/lib/contexts/globals/model-states";
 
-export interface StatusLineProps {
+export const StatusLine: Component<{
   model: Accessor<string>;
   downloadInfo: Accessor<ProgressEvent | undefined>;
-}
-
-export function StatusLine(props: StatusLineProps) {
+}> = (props) => {
   const [expiresInSec, setExpiresInSec] = createSignal(0);
 
   const downloadInfo = () => props.downloadInfo();

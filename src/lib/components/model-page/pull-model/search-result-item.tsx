@@ -1,6 +1,6 @@
 import { SearchItem, useModelSearchResult } from "~/lib/contexts/model-search-result";
 import { CommandItem } from "../../ui/command";
-import { createMemo, createSignal } from "solid-js";
+import { Component, createMemo, createSignal } from "solid-js";
 import { modelList } from "~/lib/contexts/globals/model-states";
 import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";
 import { For, JSX, Match, Switch } from "solid-js";
@@ -9,13 +9,11 @@ import { Button } from "../../ui/button";
 import { LoaderSpin } from "../../loader-spin";
 import { CloudDownloadIcon } from "lucide-solid";
 
-interface TagBadgeProps {
+const TagBadge: Component<{
   children?: JSX.Element;
   class?: string;
   "on:click"?: (ev: MouseEvent) => void;
-}
-
-function TagBadge(props: TagBadgeProps) {
+}> = (props) => {
   const clickHandler = (ev: MouseEvent) => props["on:click"]?.(ev);
 
   return (
@@ -25,12 +23,10 @@ function TagBadge(props: TagBadgeProps) {
   );
 }
 
-export interface SearchResultItemProps {
+export const SearchResultItem: Component<{
   item: SearchItem;
   ["on:startDownloading"]?: () => void;
-}
-
-export function SearchResultItem(props: SearchResultItemProps) {
+}> = (props) => {
   const LATEST = "latest";
 
   const searchResultContext = useModelSearchResult();

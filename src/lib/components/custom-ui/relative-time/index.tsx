@@ -1,11 +1,9 @@
 import dayjs from "dayjs";
-import { createSignal, onCleanup, onMount } from "solid-js";
+import { Component, createSignal, onCleanup, onMount } from "solid-js";
 
-export interface RelativeTimeProps {
+const RelativeTime: Component<{
   date: Date;
-}
-
-export default function RelativeTime(props: RelativeTimeProps) {
+}> = (props) => {
   const date = () => props.date;
 
   const updateTimeDelta = () => {
@@ -56,3 +54,5 @@ export default function RelativeTime(props: RelativeTimeProps) {
 
   return <span title={date().toLocaleString()}>{display()}</span>;
 }
+
+export default RelativeTime;

@@ -38,7 +38,7 @@ export interface SearchResult {
 
 export type ModelPullingInitiator = (model: string) => Promise<void>;
 
-export interface ModelSearchReusltContextModel {
+export interface ModelSearchResultContextModel {
   keyword: Accessor<string>;
   searchResult: Resource<SearchResult | null>;
   initiateSearch: (keyword: string) => void;
@@ -46,7 +46,7 @@ export interface ModelSearchReusltContextModel {
   startPullModel: ModelPullingInitiator;
 }
 
-const ModelSearchResultContext = createContext<ModelSearchReusltContextModel>();
+const ModelSearchResultContext = createContext<ModelSearchResultContextModel>();
 
 function trimKeyword(keyword: string | null) {
   if (!keyword) {

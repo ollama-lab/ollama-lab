@@ -1,4 +1,4 @@
-import { createMemo, createResource, For, Suspense } from "solid-js";
+import { Component, createMemo, createResource, For, Suspense } from "solid-js";
 import { Skeleton } from "../../ui/skeleton";
 import { Button } from "../../ui/button";
 import { TrashIcon } from "lucide-solid";
@@ -11,13 +11,11 @@ export interface ImageInfoReturn {
   origin: string;
 }
 
-export interface ImagePreviewProps {
+export const ImagePreview: Component<{
   srcs: string[];
   fetcher?: (src: string) => ImageInfoReturn | Promise<ImageInfoReturn>;
   onDelete?: (index: number) => void;
-}
-
-export function ImagePreview(props: ImagePreviewProps) {
+}> = (props) => {
   const srcs = createMemo(() => {
     const fetcher = props.fetcher ?? ((src) => ({ result: src, origin: src }));
 
@@ -55,11 +53,9 @@ export function ImagePreview(props: ImagePreviewProps) {
   );
 }
 
-export interface ChatImagePreviewProps {
+export const ChatImagePreview: Component<{
   chatId: number;
-}
-
-export function ChatImagePreview(props: ChatImagePreviewProps) {
+}> = (props) => {
   const chatId = () => props.chatId;
 
   const images = createAsync(async () => await getImagesByChatId(chatId()));

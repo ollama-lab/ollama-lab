@@ -1,14 +1,12 @@
-import { createSignal } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 import { EllipsisVerticalIcon, SquarePenIcon, TrashIcon } from "lucide-solid";
 import { DeletionDialog } from "./operations/deletion-dialog";
 
-export interface OperationsDropdownProps {
+export const OperationsDropdown: Component<{
   sessionId: number;
   onEdit?: () => void;
-}
-
-export function OperationsDropdown(props: OperationsDropdownProps) {
+}> = (props) => {
   const sessionId = () => props.sessionId;
 
   const [open, setOpen] = createSignal(false);

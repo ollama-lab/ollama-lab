@@ -1,5 +1,5 @@
 import { TriangleAlertIcon, XIcon } from "lucide-solid";
-import { createMemo, Match, Show, Switch } from "solid-js";
+import { Component, createMemo, Match, Show, Switch } from "solid-js";
 import { cn } from "~/lib/utils/class-names";
 import { LoaderSpin } from "../loader-spin";
 import StatusDot from "../custom-ui/status-dot";
@@ -24,7 +24,15 @@ export interface ModelListItemProps {
   index: number;
 }
 
-export function ModelListItem(props: ModelListItemProps) {
+export const ModelListItem: Component<{
+  name: string;
+  message?: string;
+  totalSize?: number;
+  modifiedAt?: Date;
+  completedSize?: number;
+  status?: "inProgress" | "failure" | "canceled";
+  index: number;
+}> = (props) => {
   const selected = createMemo(() => currentModelPageModel() === props.name);
   const isDefault = createMemo(() => defaultModel() === props.name);
 

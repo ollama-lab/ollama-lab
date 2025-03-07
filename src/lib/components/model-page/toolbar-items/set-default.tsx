@@ -1,13 +1,11 @@
-import { Accessor } from "solid-js";
+import { Accessor, Component } from "solid-js";
 import { Button } from "../../ui/button";
 import { toast } from "solid-sonner";
 import { defaultModel, setDefaultModel } from "~/lib/contexts/globals/model-states";
 
-export interface SetDefaultProps {
+const SetDefault: Component<{
   model: Accessor<string>;
-}
-
-export default function SetDefault(props: SetDefaultProps) {
+}> = (props) => {
   return (
     <Button
       onClick={() => {
@@ -29,3 +27,5 @@ export default function SetDefault(props: SetDefaultProps) {
     </Button>
   );
 }
+
+export default SetDefault;

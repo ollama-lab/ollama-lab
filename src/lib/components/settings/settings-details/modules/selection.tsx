@@ -1,8 +1,8 @@
-import { createMemo } from "solid-js";
+import { Component, createMemo } from "solid-js";
 import { Label } from "~/lib/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/lib/components/ui/select";
 
-export interface SelectionModuleProps {
+const SelectionModule: Component<{
   title?: string;
   name: string;
   value?: string | null;
@@ -10,9 +10,7 @@ export interface SelectionModuleProps {
   onValueChange?: (newValue: string | null) => void;
   required?: boolean;
   placeholder?: string;
-}
-
-export default function SelectionModule(props: SelectionModuleProps) {
+}> = (props) => {
   const name = createMemo(() => props.name);
 
   return (
@@ -36,3 +34,5 @@ export default function SelectionModule(props: SelectionModuleProps) {
     </div>
   );
 }
+
+export default SelectionModule;

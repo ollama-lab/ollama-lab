@@ -1,4 +1,4 @@
-import { createMemo, createRenderEffect, createSignal, Match, Show, Switch } from "solid-js";
+import { Component, createMemo, createRenderEffect, createSignal, Match, Show, Switch } from "solid-js";
 import { all, createLowlight } from "lowlight";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import { jsx, jsxs, Fragment } from "solid-js/h/jsx-runtime";
@@ -12,7 +12,7 @@ import { Root, RootContent } from "hast";
 import { h } from "hastscript";
 import "./code-block.css";
 
-export interface CodeBlockProps {
+export const CodeBlock: Component<{
   code: string;
   lang?: string;
   autoGuess?: boolean;
@@ -20,9 +20,7 @@ export interface CodeBlockProps {
   stickyToolbar?: boolean;
   collapsible?: boolean;
   stickyOffset?: number;
-}
-
-export function CodeBlock(props: CodeBlockProps) {
+}> = (props) => {
   const code = () => props.code;
   const autoGuess = () => props.autoGuess ?? false;
   const lang = createMemo(() => (!props.lang ? (autoGuess() ? null : "plaintext") : props.lang));
@@ -89,7 +87,7 @@ export function CodeBlock(props: CodeBlockProps) {
   const [wrapText, setWrapText] = createSignal(false);
   const [collapsed, setCollapsed] = createSignal(false);
 
-  const ToolbarTemplate = (props: { class?: string }) => (
+  const ToolbarTemplate: Component<{ class?: string }> = (props) => (
     <CodeBlockToolbar
       code={code}
       class={props.class}

@@ -1,6 +1,6 @@
 import convert from "convert";
 import { ChevronDownIcon } from "lucide-solid";
-import { createMemo, createSignal, JSX, Match, Show, Switch } from "solid-js";
+import { createMemo, createSignal, Component, JSX, Match, Show, Switch } from "solid-js";
 import { Motion, Presence } from "solid-motionone";
 import { MarkdownBlock } from "~/lib/components/custom-ui/markdown-block";
 import { LoaderSpin } from "~/lib/components/loader-spin";
@@ -24,7 +24,7 @@ function ThinkingHints() {
     return "some time";
   });
 
-  const HintSpan = (props: { children?: JSX.Element }) => (
+  const HintSpan: Component<{ children?: JSX.Element }> = (props) => (
     <Motion.span
       transition={{ duration: 0.15 }}
       initial={{ x: -35, opacity: 0 }}

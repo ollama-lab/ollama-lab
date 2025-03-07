@@ -1,15 +1,13 @@
 import { ArrowUpIcon, XIcon } from "lucide-solid";
-import { createSignal } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import { Button } from "~/lib/components/ui/button";
 import { TextField, TextFieldTextArea } from "~/lib/components/ui/text-field";
 
-export interface BubbleInlineEditorProps {
+export const BubbleInlineEditor: Component<{
   defaultValue?: string;
   onCancel: () => void;
   onSubmit: (newValue: string) => void;
-}
-
-export function BubbleInlineEditor(props: BubbleInlineEditorProps) {
+}> = (props) => {
   const [value, setValue] = createSignal<string | undefined>(props.defaultValue);
 
   return (

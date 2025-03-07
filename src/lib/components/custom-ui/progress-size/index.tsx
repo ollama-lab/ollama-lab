@@ -1,14 +1,12 @@
-import { Show } from "solid-js";
+import { Component, Show } from "solid-js";
 import { cn } from "~/lib/utils/class-names";
 import convert from "convert";
 
-export interface ProgressSizeProps {
+const ProgressSize: Component<{
   completed?: number;
   total?: number;
   class?: string;
-}
-
-export default function ProgressSize(props: ProgressSizeProps) {
+}> = (props) => {
   const isProgressComplete = () => props.completed !== undefined && props.total !== undefined;
   const completed = () => props.completed;
   const total = () => props.total;
@@ -33,3 +31,5 @@ export default function ProgressSize(props: ProgressSizeProps) {
     </span>
   );
 }
+
+export default ProgressSize;

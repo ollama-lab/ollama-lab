@@ -1,5 +1,5 @@
 import { ChevronUpIcon, CopyIcon, WrapTextIcon } from "lucide-solid";
-import { Accessor, ComponentProps, JSX, Show, splitProps } from "solid-js";
+import { Accessor, Component, ComponentProps, JSX, Show, splitProps } from "solid-js";
 import { toast } from "solid-sonner";
 import { cn } from "~/lib/utils/class-names";
 
@@ -9,7 +9,7 @@ interface ToolbarButtonProps extends ComponentProps<"button"> {
   enabled?: boolean;
 }
 
-function ToolbarButton(props: ToolbarButtonProps) {
+const ToolbarButton: Component<ToolbarButtonProps> = (props) => {
   const [local, other] = splitProps(props, ["class", "children", "icon", "text", "enabled"]);
 
   return (
@@ -28,7 +28,7 @@ function ToolbarButton(props: ToolbarButtonProps) {
   );
 }
 
-export interface CodeBlockToolbarProps {
+export const CodeBlockToolbar: Component<{
   code: Accessor<string>;
   class?: string;
   wrapText?: Accessor<boolean>;
@@ -37,9 +37,7 @@ export interface CodeBlockToolbarProps {
   collapsed?: Accessor<boolean>;
   onToggleCollapsed?: () => void;
   stickyOffset?: number;
-}
-
-export function CodeBlockToolbar(props: CodeBlockToolbarProps) {
+}> = (props) => {
   return (
     <div class={cn("flex gap-0.5 bg-secondary rounded", props.class)}>
       <ToolbarButton

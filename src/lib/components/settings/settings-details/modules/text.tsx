@@ -1,7 +1,7 @@
-import { createMemo, createSignal } from "solid-js";
+import { Component, createMemo, createSignal } from "solid-js";
 import { InputType, TextField, TextFieldInput, TextFieldLabel } from "~/lib/components/ui/text-field";
 
-export interface TextSectionProps {
+const TextSection: Component<{
   title?: string;
   name: string;
   value?: string | null;
@@ -9,9 +9,7 @@ export interface TextSectionProps {
   required?: boolean;
   placeholder?: string;
   type?: InputType;
-}
-
-export default function TextSection(props: TextSectionProps) {
+}> = (props) => {
   const name = createMemo(() => props.name);
   const inputType = createMemo(() => props.type ?? "text");
   const value = () => props.value;
@@ -45,3 +43,5 @@ export default function TextSection(props: TextSectionProps) {
     </div>
   );
 }
+
+export default TextSection;

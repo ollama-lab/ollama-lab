@@ -1,11 +1,9 @@
-import { createMemo } from "solid-js";
+import { Component, createMemo } from "solid-js";
 import { LoaderSpin } from "../../loader-spin";
 
-export interface LoadingScreenProps {
+export const LoadingScreen: Component<{
   text?: string;
-}
-
-export function LoadingScreen(props: LoadingScreenProps) {
+}> = (props) => {
   const text = createMemo(() => props.text ?? "Loading...");
 
   return (

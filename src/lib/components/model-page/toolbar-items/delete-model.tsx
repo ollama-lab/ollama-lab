@@ -1,4 +1,4 @@
-import { Accessor, createSignal, Match, Show, Switch } from "solid-js";
+import { Accessor, Component, createSignal, Match, Show, Switch } from "solid-js";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { TrashIcon } from "lucide-solid";
 import { Button } from "../../ui/button";
@@ -7,11 +7,9 @@ import { deleteModel } from "~/lib/commands/models";
 import { toast } from "solid-sonner";
 import { reloadModelStates, setCurrentModel } from "~/lib/contexts/globals/model-states";
 
-export interface DeleteModelProps {
+const DeleteModel: Component<{
   model: Accessor<string>;
-}
-
-export default function DeleteModel(props: DeleteModelProps) {
+}> = (props) => {
   const [open, setOpen] = createSignal(false);
   const [submitting, setSubmitting] = createSignal(false);
 
@@ -71,3 +69,5 @@ export default function DeleteModel(props: DeleteModelProps) {
     </Dialog>
   );
 }
+
+export default DeleteModel;

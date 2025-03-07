@@ -1,4 +1,4 @@
-import { Match, Show, Switch } from "solid-js";
+import { Component, Match, Show, Switch } from "solid-js";
 import { createSignal } from "solid-js";
 import { toast } from "solid-sonner";
 import { getChatHistoryStore } from "~/lib/contexts/globals/chat-history";
@@ -10,12 +10,10 @@ import { reloadSession } from "~/lib/contexts/globals/sessions";
 import { OperationsDropdown } from "./operations";
 import { currentSession, setCurrentSessionId } from "~/lib/contexts/globals/current-session";
 
-export interface SessionListItemProps {
+export const SessionListItem: Component<{
   sessionId: number;
   title?: string | undefined;
-}
-
-export function SessionListItem(props: SessionListItemProps) {
+}> = (props) => {
   const title = () => props.title;
   const sessionId = () => props.sessionId;
 

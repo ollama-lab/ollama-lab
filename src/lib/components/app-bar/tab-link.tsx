@@ -1,16 +1,14 @@
 import { A } from "@solidjs/router";
-import { createMemo, JSX } from "solid-js";
+import { Component, createMemo, JSX } from "solid-js";
 import { cn } from "~/lib/utils/class-names";
 
-export interface TabLinkProps {
+export const TabLink: Component<{
   children?: JSX.Element;
   name: string;
   href?: string;
   active?: boolean;
   onClick?: () => void;
-}
-
-export function TabLink(props: TabLinkProps) {
+}> = (props) => {
   const active = createMemo(() => props.active);
   const href = () => props.href;
   const name = createMemo(() => props.name);

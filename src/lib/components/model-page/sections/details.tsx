@@ -1,6 +1,6 @@
 import { ModelDetails } from "~/lib/models/model-item";
 import { Table, TableBody, TableCell, TableRow } from "../../ui/table";
-import { For } from "solid-js";
+import { Component, For } from "solid-js";
 
 interface DetailEntry {
   name: string;
@@ -34,11 +34,9 @@ const DETAIL_ENTRIES: DetailEntry[] = [
   },
 ];
 
-export interface DetailsProps {
+export const Details: Component<{
   value: ModelDetails;
-}
-
-export function Details(props: DetailsProps) {
+}> = (props) => {
   return (
     <Table>
       <TableBody>

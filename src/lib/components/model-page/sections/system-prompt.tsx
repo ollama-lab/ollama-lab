@@ -1,13 +1,11 @@
-import { createResource, Suspense } from "solid-js";
+import { Component, createResource, Suspense } from "solid-js";
 import { TextField, TextFieldTextArea } from "../../ui/text-field";
 import { getModelSystemPrompt, setModelSystemPrompt } from "~/lib/commands/system-prompts";
 import { LoadingScreen } from "../../custom-ui/loading-screen";
 
-export interface SystemPromptSectionProps {
+export const SystemPromptSection: Component<{
   model: string;
-}
-
-export function SystemPromptSection(props: SystemPromptSectionProps) {
+}> = (props) => {
   const model = () => props.model;
 
   const [promptInfo, { mutate }] = createResource(model, async (modelValue) => {

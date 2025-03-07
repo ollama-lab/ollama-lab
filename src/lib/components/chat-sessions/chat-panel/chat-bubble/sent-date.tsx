@@ -1,8 +1,8 @@
-export interface SentDateProps {
-  date: Date;
-}
+import { Component } from "solid-js";
 
-export function SentDate(props: SentDateProps) {
+export const SentDate: Component<{
+  date: Date;
+}> = (props) => {
   return (
     <span>{props.date.toLocaleString()}</span>
   );

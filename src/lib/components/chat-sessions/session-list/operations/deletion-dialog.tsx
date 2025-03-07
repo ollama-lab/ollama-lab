@@ -1,4 +1,4 @@
-import { Accessor, createSignal, Match, Switch } from "solid-js";
+import { Accessor, Component, createSignal, Match, Switch } from "solid-js";
 import { toast } from "solid-sonner";
 import { deleteSession } from "~/lib/commands/sessions";
 import { LoaderSpin } from "~/lib/components/loader-spin";
@@ -8,13 +8,11 @@ import { clearChatHistory } from "~/lib/contexts/globals/chat-history";
 import { currentSession } from "~/lib/contexts/globals/current-session";
 import { reloadSessions } from "~/lib/contexts/globals/sessions";
 
-export interface DeletionDialogProps {
+export const DeletionDialog: Component<{
   sessionId: number;
   open?: Accessor<boolean>;
   onOpenChange?: (value: boolean) => void;
-}
-
-export function DeletionDialog(props: DeletionDialogProps) {
+}> = (props) => {
   const sessionId = () => props.sessionId;
   const onOpenChange = (value: boolean) => props.onOpenChange?.(value);
 

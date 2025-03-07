@@ -1,13 +1,12 @@
 import { DotIcon } from "lucide-solid";
+import { Component } from "solid-js";
 import { cn } from "~/lib/utils/class-names";
 
 export type DotStatus = "success" | "warning" | "error" | "disabled";
 
-export interface StatusDotProps {
+const StatusDot: Component<{
   status: DotStatus;
-}
-
-export default function StatusDot(props: StatusDotProps) {
+}> = (props) => {
   const status = () => props.status;
 
   return (
@@ -22,3 +21,5 @@ export default function StatusDot(props: StatusDotProps) {
     />
   );
 }
+
+export default StatusDot;
