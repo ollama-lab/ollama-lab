@@ -6,7 +6,7 @@ import { jsxDEV } from "solid-js/h/jsx-dev-runtime";
 import hljs from "highlight.js";
 import { cn } from "~/lib/utils/class-names";
 import { CodeBlockToolbar } from "./toolbar";
-import { isDev } from "solid-js/web";
+import { Dynamic, isDev } from "solid-js/web";
 import { createStore, reconcile } from "solid-js/store";
 import { Root, RootContent } from "hast";
 import { h } from "hastscript";
@@ -65,8 +65,8 @@ export const CodeBlock: Component<{
     setHastTree(reconcile(tree));
   });
 
-  const yieldElement = createMemo(() =>
-    toJsxRuntime(hastTree, {
+  const yieldElement = createMemo(() => {
+    return toJsxRuntime(hastTree, {
       Fragment,
       jsx,
       jsxs,
@@ -74,8 +74,8 @@ export const CodeBlock: Component<{
       jsxDEV,
       elementAttributeNameCase: "html",
       stylePropertyNameCase: "css",
-    }),
-  );
+    });
+  });
 
   const detectedLang = createMemo(() => hastTree.data?.language);
 
@@ -139,7 +139,7 @@ export const CodeBlock: Component<{
                   detectedLang() ? `language-${detectedLang()!}` : "",
                 )}
               >
-                {yieldElement()}
+                <Dynamic component={yieldElement()} />
               </code>
             </pre>
           </Match>
