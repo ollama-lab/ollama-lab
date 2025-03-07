@@ -38,13 +38,21 @@ export const DeletionDialog: Component<{
         </div>
 
         <DialogFooter>
-          <Button autofocus variant="secondary" on:click={() => props.onOpenChange?.(false)}>
+          <Button
+            autofocus
+            variant="secondary"
+            on:click={(ev) => {
+              ev.stopPropagation();
+              props.onOpenChange?.(false)
+            }}
+          >
             Cancel
           </Button>
           <Button
             variant="destructive"
             disabled={proceeding()}
-            on:click={() => {
+            on:click={(ev) => {
+              ev.stopPropagation();
               setProceeding(true);
 
               const sessionId = props.sessionId;

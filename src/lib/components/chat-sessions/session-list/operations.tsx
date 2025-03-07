@@ -22,7 +22,8 @@ export const OperationsDropdown: Component<{
         <DropdownMenuContent class="text-sm">
           <DropdownMenuItem
             class="cursor-pointer"
-            on:click={() => {
+            on:click={(ev) => {
+              ev.stopPropagation();
               props.onEdit?.();
               setOpen(false);
             }}
@@ -32,7 +33,10 @@ export const OperationsDropdown: Component<{
           </DropdownMenuItem>
           <DropdownMenuItem
             class="bg-destructive text-destructive-foreground cursor-pointer"
-            onClick={() => setDeletionDialogOpen(true)}
+            on:click={(ev) => {
+              ev.stopPropagation();
+              setDeletionDialogOpen(true)
+            }}
           >
             <TrashIcon class="size-4" />
             Delete

@@ -8,7 +8,7 @@ import { createSession } from "~/lib/commands/sessions";
 import { regenerateResponse, submitUserPrompt } from "~/lib/commands/chats";
 import { convertResponseEvents } from "~/lib/utils/chat-streams";
 import { switchBranch as switchBranchCommand } from "~/lib/commands/chat-history";
-import { currentSession, setCurrentSessionId } from "./current-session";
+import { currentSession, isNewSession, setCurrentSessionId, setNewSession } from "./current-session";
 
 export interface PromptSubmissionEvents {
   onRespond?: () => void;
@@ -48,7 +48,9 @@ export async function reloadChatHistory() {
 }
 
 createEffect(() => {
-  reloadChatHistory();
+  if (!isNewSession()) {
+    reloadChatHistory();
+  }
 });
 
 export async function clearChatHistory() {
@@ -69,7 +71,7 @@ export async function submitChat(
     session = await createSession(model, sessionTitle);
 
     await reloadSession(session.id);
-    setCurrentSessionId(session.id);
+    await setNewSession(session.id);
   }
 
   const parentId = lastChat()?.id;
