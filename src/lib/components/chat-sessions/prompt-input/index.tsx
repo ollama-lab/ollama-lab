@@ -55,7 +55,7 @@ export function PromptInput() {
   createEffect(() => {
     const ref = textEntryRef();
     if (ref) {
-        autosize(ref);
+      autosize(ref);
     }
   });
 
