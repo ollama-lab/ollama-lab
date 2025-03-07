@@ -26,10 +26,11 @@ function ThinkingHints() {
 
   const HintSpan = (props: { children?: JSX.Element }) => (
     <Motion.span
-      transition={{ duration: 150 }}
+      transition={{ duration: 0.15 }}
       initial={{ x: -35, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 35, opacity: 0 }}
+      class="flex gap-2 items-center relative -z-[1]"
     >
       {props.children}
     </Motion.span>
@@ -42,7 +43,10 @@ function ThinkingHints() {
           <HintSpan>Thought for {thoughtForString()}</HintSpan>
         )}>
           <Match when={thinking() && status() === "sending"}>
-            <HintSpan><LoaderSpin text="Thinking..." /></HintSpan>
+            <HintSpan>
+              <LoaderSpin class="size-4 duration-500" />
+              <span>Thinking...</span>
+            </HintSpan>
           </Match>
         </Switch>
       </Presence>
@@ -55,24 +59,30 @@ export function ThoughtsSection() {
 
   const [open, setOpen] = createSignal(false);
 
+  const hasThoughts = createMemo(() => {
+    const thoughts = chat?.().thoughts;
+    return thoughts && thoughts.trim().length > 0;
+  });
+
   return (
-    <Show when={chat?.().thoughts || chat?.().thinking}>
+    <Show when={hasThoughts()}>
       <div>
         <Collapsible open={open()} onOpenChange={setOpen}>
-          <div class="flex items-center gap-2 text-sm text-muted-foreground">
+          <div class="flex items-center gap-2 text-sm text-muted-foreground relative z-20">
             <ThinkingHints />
             <CollapsibleTrigger title={open() ? "Collapse" : "Expand"}>
               <ChevronDownIcon class={cn("size-4 duration-300", open() && "-rotate-180")} />
             </CollapsibleTrigger>
           </div>
 
-          <Presence>
+          <Presence exitBeforeEnter>
             <CollapsibleContent
               as={Motion.div}
-              transition={{ duration: 300 }}
+              transition={{ duration: 0.3 }}
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -20, opacity: 0 }}
+              class="bg-muted text-muted-foreground text-sm px-4 py-2.5 rounded"
             >
               <MarkdownBlock markdown={chat?.().thoughts ?? undefined} />
             </CollapsibleContent>

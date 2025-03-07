@@ -62,7 +62,9 @@ export function ChatFeeds() {
   });
 
   createEffect(() => {
-    if (getChatHistory()?.chats.at(-1)?.content) {
+    const chat = getChatHistory()?.chats.at(-1)
+
+    if (chat?.content || chat?.thoughts) {
       const root = rootRef();
       if (root && autoScroll()) {
         root.parentElement?.scrollTo(0, root.scrollHeight);

@@ -106,6 +106,7 @@ export function convertResponseEvents(
               id,
               status: "preparing",
               content: "",
+              thoughts: null,
               model: model ?? ch.chats[i].model,
               versions: versions ? [...versions, id] : [ch.chats[i].id, id]
             },
