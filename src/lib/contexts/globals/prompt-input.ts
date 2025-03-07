@@ -1,13 +1,13 @@
 import { createStore } from "solid-js/store";
 import { createMemo, createSignal } from "solid-js";
 import { IncomingUserPrompt } from "~/lib/models/chat";
-import { getSessionWiseModel } from "./session-wise-model";
+import { getCurrentModel } from "./current-model";
 
 const [inputPrompt, setInputPrompt] = createStore<IncomingUserPrompt>({ text: "" });
 const [hidePromptBar, setHidePromptBar] = createSignal(false);
 
 export const isSubmittable = createMemo(() => {
-  if (!getSessionWiseModel()) {
+  if (!getCurrentModel()) {
     return false;
   }
 

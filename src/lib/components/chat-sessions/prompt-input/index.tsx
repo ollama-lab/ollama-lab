@@ -11,7 +11,6 @@ import {
 import { Button } from "../../ui/button";
 import { ArrowUpIcon, ChevronDownIcon, } from "lucide-solid";
 import { cn } from "~/lib/utils/class-names";
-import { getSessionWiseModel } from "~/lib/contexts/globals/session-wise-model";
 import { ImageInfoReturn, ImagePreview } from "../../custom-ui/image-preview";
 import { getThumbnailBase64 } from "~/lib/commands/image";
 import { produce } from "solid-js/store";
@@ -20,6 +19,7 @@ import { LoaderSpin } from "../../loader-spin";
 import { emit } from "@tauri-apps/api/event";
 import autosize from "autosize";
 import { toSrcString } from "~/lib/utils/images";
+import { getCurrentModel } from "~/lib/contexts/globals/current-model";
 
 export function PromptInput() {
   const [formRef, setFormRef] = createSignal<HTMLFormElement | undefined>(undefined);
@@ -98,7 +98,7 @@ export function PromptInput() {
           return;
         }
 
-        const model = getSessionWiseModel();
+        const model = getCurrentModel();
         if (!model) {
           return;
         }

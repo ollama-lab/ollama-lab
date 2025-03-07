@@ -9,7 +9,6 @@ export type FetchingStatus = "unfetched" | "fetching" | "error" | "fetched";
 interface ModelStates {
   modelList: ModelListItem[];
   defaultModel: string | null;
-  currentModel: string | null;
   activeModels: RunningModel[];
   status: FetchingStatus;
 }
@@ -17,7 +16,6 @@ interface ModelStates {
 const [modelStatesStore, setStore] = createStore<ModelStates>({
   modelList: [],
   defaultModel: null,
-  currentModel: null,
   activeModels: [],
   status: "unfetched",
 });
@@ -63,20 +61,12 @@ export async function setDefaultModel(newModel: string) {
   setStore("defaultModel", newModel);
 }
 
-export function setCurrentModel(newModel: string | null) {
-  setStore("currentModel", newModel);
-}
-
 export function modelList() {
   return modelStatesStore.modelList;
 }
 
 export function defaultModel() {
   return modelStatesStore.defaultModel;
-}
-
-export function currentModel() {
-  return modelStatesStore.currentModel;
 }
 
 export function activeModels() {

@@ -1,7 +1,8 @@
 import { createStore, produce } from "solid-js/store";
 import { Channel } from "@tauri-apps/api/core";
-import { currentModel, reloadModelStates, setCurrentModel } from "./model-states";
+import { reloadModelStates } from "./model-states";
 import { ProgressEvent } from "~/lib/models/events/progress";
+import { getCurrentModel, resetModelSelection } from "./current-model";
 
 export type TaskMap = Record<string, ProgressEvent>;
 
@@ -52,9 +53,9 @@ export function pullTaskChan(model: string) {
         clearPullTasks(model);
 
         {
-          const m = currentModel();
+          const m = getCurrentModel();
           if (m === model) {
-            setCurrentModel(null);
+            resetModelSelection(m);
           }
         }
         break;

@@ -3,8 +3,6 @@ import { ChatEntryProvider } from "~/lib/contexts/chat-entry";
 import { getChatHistory } from "~/lib/contexts/globals/chat-history";
 import { cn } from "~/lib/utils/class-names";
 import { BubbleSector } from "./chat-bubble/bubble-sector";
-import { getSessionWiseModel, setSessionWiseModel } from "~/lib/contexts/globals/session-wise-model";
-import { defaultModel, modelList } from "~/lib/contexts/globals/model-states";
 
 function Hints() {
   const keyHints: Record<string, string> = {
@@ -49,17 +47,6 @@ export function ChatFeeds() {
   const [rootRef, setRootRef] = createSignal<HTMLDivElement>();
 
   const [autoScroll, setAutoScroll] = createSignal(true);
-
-  createEffect(() => {
-    if (getSessionWiseModel()) {
-      return;
-    }
-
-    const fallback = defaultModel() ?? modelList().at(0)?.name;
-    if (fallback) {
-      setSessionWiseModel(fallback);
-    }
-  });
 
   createEffect(() => {
     const chat = getChatHistory()?.chats.at(-1)

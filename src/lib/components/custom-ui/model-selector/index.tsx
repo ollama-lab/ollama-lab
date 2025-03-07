@@ -1,7 +1,6 @@
 import { ChevronsUpDownIcon } from "lucide-solid";
 import { createMemo, createSignal } from "solid-js";
 import { modelList } from "~/lib/contexts/globals/model-states";
-import { getSessionWiseModel, setSessionWiseModel } from "~/lib/contexts/globals/session-wise-model";
 import { ModelListItem } from "~/lib/models/model-item";
 import {
   Command,
@@ -13,6 +12,7 @@ import {
   CommandList,
 } from "../../ui/command";
 import { For } from "solid-js";
+import { getCurrentModel, setSessionModel } from "~/lib/contexts/globals/current-model";
 
 export function ModelSelector() {
   const [open, setOpen] = createSignal(false);
@@ -29,14 +29,14 @@ export function ModelSelector() {
   });
 
   const updateSessionModel = async (model: string) => {
-    await setSessionWiseModel(model);
+    await setSessionModel(model);
     setOpen(false);
   };
 
   return (
     <>
       <button class="flex gap-2 px-4 h-full items-center cursor-pointer" onClick={() => setOpen(true)}>
-        <span class="grow truncate text-start w-36 text-sm">{getSessionWiseModel()}</span>
+        <span class="grow truncate text-start w-36 text-sm">{getCurrentModel()}</span>
         <ChevronsUpDownIcon class="size-4" />
       </button>
 

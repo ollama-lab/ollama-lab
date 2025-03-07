@@ -3,13 +3,13 @@ import { Show, Suspense } from "solid-js";
 import { getModelSystemPrompt } from "~/lib/commands/system-prompts";
 import { LoaderSpin } from "~/lib/components/loader-spin";
 import { SwitchControl, SwitchLabel, SwitchRoot } from "~/lib/components/ui/switch";
+import { getCurrentModel } from "~/lib/contexts/globals/current-model";
 import { currentSession } from "~/lib/contexts/globals/current-session";
 import { getInputPrompt, setInputPrompt } from "~/lib/contexts/globals/prompt-input";
-import { getSessionWiseModel } from "~/lib/contexts/globals/session-wise-model";
 
 export function SystemPromptToggle() {
   const systemPrompt = createAsync(async () => {
-    const model = getSessionWiseModel();
+    const model = getCurrentModel();
     if (!model) {
       return null;
     }

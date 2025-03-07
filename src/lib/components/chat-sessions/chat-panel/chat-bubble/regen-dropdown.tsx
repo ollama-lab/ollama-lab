@@ -3,7 +3,7 @@ import { createMemo, For, Match, Switch } from "solid-js";
 import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent } from "~/lib/components/ui/dropdown-menu";
 import { useChatEntry } from "~/lib/contexts/chat-entry";
 import { regenerate } from "~/lib/contexts/globals/chat-history";
-import { getSessionWiseModel } from "~/lib/contexts/globals/session-wise-model";
+import { getCurrentModel } from "~/lib/contexts/globals/current-model";
 
 export function RegenDropdown() {
   const chat = useChatEntry();
@@ -17,7 +17,7 @@ export function RegenDropdown() {
       models.push(current);
     }
 
-    const sessionModel = getSessionWiseModel();
+    const sessionModel = getCurrentModel();
     if (sessionModel) {
       models.push(sessionModel);
     }
