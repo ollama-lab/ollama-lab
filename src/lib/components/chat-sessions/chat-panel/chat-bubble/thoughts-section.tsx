@@ -8,7 +8,7 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "~/lib/compo
 import { useChatEntry } from "~/lib/contexts/chat-entry";
 import { cn } from "~/lib/utils/class-names";
 
-function ThinkingHints() {
+const ThinkingHints: Component = () => {
   const chat = useChatEntry();
 
   const thinking = () => chat?.().thinking;
@@ -54,7 +54,7 @@ function ThinkingHints() {
   );
 }
 
-export function ThoughtsSection() {
+export const ThoughtsSection: Component = () => {
   const chat = useChatEntry();
 
   const [open, setOpen] = createSignal(false);
