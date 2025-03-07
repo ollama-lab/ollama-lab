@@ -1,16 +1,13 @@
 import { Component, createMemo, createRenderEffect, createSignal, Match, Show, Switch } from "solid-js";
 import { all, createLowlight } from "lowlight";
-import { toJsxRuntime } from "hast-util-to-jsx-runtime";
-import { jsx, jsxs, Fragment } from "solid-js/h/jsx-runtime";
-import { jsxDEV } from "solid-js/h/jsx-dev-runtime";
 import hljs from "highlight.js";
 import { cn } from "~/lib/utils/class-names";
 import { CodeBlockToolbar } from "./toolbar";
-import { Dynamic, isDev } from "solid-js/web";
 import { createStore, reconcile } from "solid-js/store";
 import { Root, RootContent } from "hast";
 import { h } from "hastscript";
 import "./code-block.css";
+import { CodeBlockRenderer } from "./renderer";
 
 export const CodeBlock: Component<{
   code: string;
@@ -63,18 +60,6 @@ export const CodeBlock: Component<{
       }, [] as RootContent[]);
 
     setHastTree(reconcile(tree));
-  });
-
-  const yieldElement = createMemo(() => {
-    return toJsxRuntime(hastTree, {
-      Fragment,
-      jsx,
-      jsxs,
-      development: isDev,
-      jsxDEV,
-      elementAttributeNameCase: "html",
-      stylePropertyNameCase: "css",
-    });
   });
 
   const detectedLang = createMemo(() => hastTree.data?.language);
@@ -139,7 +124,7 @@ export const CodeBlock: Component<{
                   detectedLang() ? `language-${detectedLang()!}` : "",
                 )}
               >
-                <Dynamic component={yieldElement()} />
+                <CodeBlockRenderer tree={hastTree} />
               </code>
             </pre>
           </Match>

@@ -33,7 +33,6 @@
     "cmdk-solid": "^1.1.2",
     "convert": "^5.8.0",
     "dayjs": "^1.11.13",
-    "hast-util-to-jsx-runtime": "^2.3.6",
     "hastscript": "^9.0.1",
     "highlight.js": "^11.11.1",
     "lowlight": "^3.3.0",
