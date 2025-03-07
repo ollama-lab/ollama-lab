@@ -10,6 +10,7 @@ import { modelList, reloadModelStates, status } from "~/lib/contexts/globals/mod
 import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";
 import { ModelSearchResultProvider } from "~/lib/contexts/model-search-result";
 import { setCurrentModelPageModel } from "~/lib/contexts/globals/model-page";
+import { toast } from "solid-sonner";
 
 interface DisplayModelListItem {
   name: string;
@@ -79,7 +80,8 @@ export function ModelList() {
             disabled={status() === "fetching"}
             title={status() === "fetching" ? "Refreshing..." : "Refresh model list"}
             onClick={() => {
-              reloadModelStates();
+              reloadModelStates()
+                .then(() => toast.success("Model list refreshed."));
             }}
           >
             <RefreshCwIcon class={cn(status?.() === "fetching" && "animate-spin")} />
