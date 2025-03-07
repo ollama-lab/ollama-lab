@@ -7,16 +7,11 @@ import { ChatHistory } from "../models/session";
 import { reconcile, SetStoreFunction } from "solid-js/store";
 import { ChatHistoryStore, PromptSubmissionEvents } from "../contexts/globals/chat-history";
 
-export interface ResponseStreamingContext {
-  responseIndex: number;
-}
-
 export interface ConvertResponseEventsProps {
   regenerateFor?: number;
 }
 
 export function convertResponseEvents(
-  context: ResponseStreamingContext,
   chatHistory: Accessor<ChatHistory | null>,
   setChatHistoryStore: SetStoreFunction<ChatHistoryStore>,
   model?: string,
@@ -68,7 +63,7 @@ export function convertResponseEvents(
           content: prompt?.text ?? "",
           role: "user",
           dateSent: date,
-          versions: null,
+          versions: [id],
           imageCount: prompt?.imagePaths?.length ?? 0,
         });
       }
@@ -76,10 +71,6 @@ export function convertResponseEvents(
       onScrollDown?.();
     },
     afterResponseCreated(id: number): void {
-      if (context.responseIndex >= 0) {
-        return;
-      }
-
       currentChatId = id;
 
       const ch = getOrCreateHistory();
@@ -108,8 +99,6 @@ export function convertResponseEvents(
             },
           ]),
         );
-
-        context.responseIndex = i;
       } else {
         const length = ch.chats.length;
         setChatHistoryStore("chatHistory", "chats", length, {
@@ -118,13 +107,9 @@ export function convertResponseEvents(
           role: "assistant",
           content: "",
           model,
-          versions: null,
+          versions: [id],
           imageCount: 0,
         });
-
-        if (length !== undefined) {
-          context.responseIndex = length;
-        }
       }
 
       onRespond?.();
@@ -142,52 +127,44 @@ export function convertResponseEvents(
       });
     },
     onStreamText(chunk: string): void {
-      if (context.responseIndex < 0) {
-        return;
-      }
-
       const ch = getOrCreateHistory();
 
-      const chat = ch.chats.at(context.responseIndex);
+      const chat = ch.chats.at(-1);
       if (!chat || currentChatId !== chat.id) {
         emit("cancel-gen");
         return;
       }
 
-      setChatHistoryStore("chatHistory", "chats", context.responseIndex, "status", reconcile("sending"));
+      const index = ch.chats.length - 1;
+
+      setChatHistoryStore("chatHistory", "chats", index, "status", reconcile("sending"));
 
       if (chat.thinking) {
-        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "thoughts", (t) => (t ?? "") + chunk);
+        setChatHistoryStore("chatHistory", "chats", index, "thoughts", (t) => (t ?? "") + chunk);
       } else {
-        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "content", (t) => (t ?? "") + chunk);
+        setChatHistoryStore("chatHistory", "chats", index, "content", (t) => (t ?? "") + chunk);
       }
 
       onScrollDown?.();
     },
     onCompleteTextStreaming(): void {
-      if (context.responseIndex < 0) {
-        return;
-      }
-
       const ch = getOrCreateHistory();
 
-      const chat = ch.chats.at(context.responseIndex);
+      const chat = ch.chats.at(-1);
+      const index = ch.chats.length - 1;
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "status", "sent");
+        setChatHistoryStore("chatHistory", "chats", index, "status", "sent");
       }
 
       currentChatId = undefined;
     },
     onFail(msg): void {
-      if (context.responseIndex < 0) {
-        return;
-      }
-
       const ch = getOrCreateHistory();
 
-      const chat = ch.chats.at(context.responseIndex);
+      const chat = ch.chats.at(-1);
+      const index = ch.chats.length - 1;
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "status", "not sent");
+        setChatHistoryStore("chatHistory", "chats", index, "status", "not sent");
       }
 
       currentChatId = undefined;
@@ -197,44 +174,35 @@ export function convertResponseEvents(
       }
     },
     onCancel(): void {
-      if (context.responseIndex < 0) {
-        return;
-      }
-
       const ch = getOrCreateHistory();
 
-      const chat = ch.chats.at(context.responseIndex);
+      const chat = ch.chats.at(-1);
+      const index = ch.chats.length - 1;
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore("chatHistory", "chats", context.responseIndex, "status", "not sent");
+        setChatHistoryStore("chatHistory", "chats", index, "status", "not sent");
       }
 
       currentChatId = undefined;
     },
     onThoughtBegin(): void {
-      if (context.responseIndex < 0) {
-        return;
-      }
-
       const ch = getOrCreateHistory();
 
-      const chat = ch.chats.at(context.responseIndex);
+      const chat = ch.chats.at(-1);
+      const index = ch.chats.length - 1;
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore("chatHistory", "chats", context.responseIndex, {
+        setChatHistoryStore("chatHistory", "chats", index, {
           thinking: true,
           status: "sending",
         });
       }
     },
     onThoughtEnd(thoughtFor: number | null): void {
-      if (context.responseIndex < 0) {
-        return;
-      }
-
       const ch = getOrCreateHistory();
 
-      const chat = ch.chats.at(context.responseIndex);
+      const chat = ch.chats.at(-1);
+      const index = ch.chats.length - 1;
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore("chatHistory", "chats", context.responseIndex, {
+        setChatHistoryStore("chatHistory", "chats", index, {
           thinking: false,
           thoughtFor: thoughtFor,
         });

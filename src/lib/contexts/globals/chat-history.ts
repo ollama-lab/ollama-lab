@@ -74,21 +74,17 @@ export async function submitChat(
 
   const parentId = lastChat()?.id;
 
-  const ctx = {
-    responseIndex: -1,
-  };
-
   const ret = await submitUserPrompt(
     session?.id,
     prompt,
     parentId === undefined ? null : parentId,
-    convertResponseEvents(ctx, getChatHistory, setChatHistoryStore, model, prompt, {
+    convertResponseEvents(getChatHistory, setChatHistoryStore, model, prompt, {
       onRespond,
       onScrollDown,
     }),
   );
 
-  setChatHistoryStore("chatHistory", "chats", ctx.responseIndex, {
+  setChatHistoryStore("chatHistory", "chats", getChatHistory()!.chats.length - 1, {
     status: "sent",
     dateSent: ret.dateCreated,
   });
@@ -104,16 +100,11 @@ export async function regenerate(
     return;
   }
 
-  const ctx = {
-    responseIndex: -1,
-  };
-
   const ret = await regenerateResponse(
     session.id,
     chatId,
     model,
     convertResponseEvents(
-      ctx,
       getChatHistory,
       setChatHistoryStore,
       model,
@@ -128,12 +119,10 @@ export async function regenerate(
     ),
   );
 
-  if (ctx.responseIndex >= 0) {
-    setChatHistoryStore("chatHistory", "chats", ctx.responseIndex, {
-      status: "sent",
-      dateSent: ret.dateCreated,
-    });
-  }
+  setChatHistoryStore("chatHistory", "chats", getChatHistory()!.chats.length - 1, {
+    status: "sent",
+    dateSent: ret.dateCreated,
+  });
 }
 
 export async function switchBranch(chatId: number) {
@@ -173,10 +162,6 @@ export async function editPrompt(
 
   const parentId = curIndex === 0 ? null : ch.chats[curIndex - 1].id;
 
-  const ctx = {
-    responseIndex: -1,
-  };
-
   const curPrompt: IncomingUserPrompt = {
     text: ch.chats[chatId].content,
   };
@@ -188,7 +173,6 @@ export async function editPrompt(
     mergedPrompt,
     parentId,
     convertResponseEvents(
-      ctx,
       getChatHistory,
       setChatHistoryStore,
       model,
@@ -198,10 +182,8 @@ export async function editPrompt(
     ),
   );
 
-  if (ctx.responseIndex >= 0) {
-    setChatHistoryStore("chatHistory", "chats", ctx.responseIndex, {
-      status: "sent",
-      dateSent: ret.dateCreated,
-    });
-  }
+  setChatHistoryStore("chatHistory", "chats", getChatHistory()!.chats.length - 1, {
+    status: "sent",
+    dateSent: ret.dateCreated,
+  });
 }
