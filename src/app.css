@@ -207,20 +207,6 @@
   button {
     @apply cursor-pointer;
   }
-
-  .markdown-block {
-    @apply space-y-4;
-
-    &.__dev-flash {
-      & span, & p {
-        @apply animate-flash-out;
-      }
-    }
-  }
-
-  .code-block pre > code > .code-line {
-    @apply min-h-5;
-  }
 }
 
 @utilities {

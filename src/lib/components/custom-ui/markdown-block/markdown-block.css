@@ -1,0 +1,61 @@
+@reference "../../../../app.css";
+
+@layer components {
+  .markdown-block {
+    @apply space-y-4;
+
+    &.__dev-flash {
+      & * {
+        @apply animate-flash-out;
+      }
+    }
+
+    &  ul {
+      @apply list-disc space-y-2;
+    }
+
+    & ol {
+      @apply list-decimal space-y-2;
+    }
+
+    & :is(ul, ol) ul {
+      list-style-type: circle;
+    }
+
+    & :is(ul, ol) {
+      @apply ml-6;
+    }
+
+    & h1 {
+      @apply text-2xl font-bold border-b;
+    }
+
+    & h2 {
+      @apply text-xl font-bold;
+    }
+
+    & h3 {
+      @apply text-lg font-bold;
+    }
+
+    & h4 {
+      @apply font-bold;
+    }
+
+    & h5 {
+      @apply text-sm font-bold;
+    }
+
+    & h6 {
+      @apply text-sm italic;
+    }
+
+    & .code-container {
+      @apply overflow-x-hidden;
+    }
+
+    & .katex {
+      @apply space-x-3;
+    }
+  }
+}

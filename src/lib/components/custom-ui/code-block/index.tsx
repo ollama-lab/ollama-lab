@@ -10,6 +10,7 @@ import { isDev } from "solid-js/web";
 import { createStore, reconcile } from "solid-js/store";
 import { Root, RootContent } from "hast";
 import { h } from "hastscript";
+import "./code-block.css";
 
 export interface CodeBlockProps {
   code: string;

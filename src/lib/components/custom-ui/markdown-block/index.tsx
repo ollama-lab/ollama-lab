@@ -8,6 +8,7 @@ import { createMemo, Show } from "solid-js";
 import { language } from "../code-block/node-detection";
 import { getDevOptions } from "~/lib/contexts/globals/dev-tools/dev-mode";
 import { Element, Text } from "hast";
+import "./markdown-block.css";
 
 export interface MarkdownBlockProps {
   markdown?: string;
