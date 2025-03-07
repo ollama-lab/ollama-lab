@@ -9,6 +9,7 @@ import { language } from "../code-block/node-detection";
 import { getDevOptions } from "~/lib/contexts/globals/dev-tools/dev-mode";
 import { Element, Text } from "hast";
 import "./markdown-block.css";
+import { Dynamic } from "solid-js/web";
 
 export const MarkdownBlock: Component<{
   markdown?: string;
@@ -51,7 +52,8 @@ export const MarkdownBlock: Component<{
                       const t = textElement();
 
                       return t.type === "text" && (
-                        <CodeBlock
+                        <Dynamic
+                          component={CodeBlock}
                           code={t.value}
                           collapsible
                           stickyToolbar
