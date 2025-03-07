@@ -20,18 +20,29 @@ export const CodeBlock: Component<{
 }> = (props) => {
   const code = () => props.code;
   const autoGuess = () => props.autoGuess ?? false;
-  const lang = createMemo(() => (!props.lang ? (autoGuess() ? null : "plaintext") : props.lang));
+  const lang = () => props.lang;
   const stickyToolbar = () => props.stickyToolbar;
   const collapsible = () => props.collapsible;
   const stickyOffset = () => props.stickyOffset;
+
+  const detectedLang = createMemo(() => lang() ? hljs.getLanguage(lang()!) : null);
 
   const lowlight = createLowlight(all);
 
   const [hastTree, setHastTree] = createStore<Root>({ type: "root", children: [] });
 
   createRenderEffect(() => {
-    const detectedLang = lang();
-    const tree = detectedLang ? lowlight.highlight(detectedLang, code()) : lowlight.highlightAuto(code());
+    const langName = detectedLang()?.name;
+
+    let tree = undefined;
+    //const tree = langName ? lowlight.highlight(langName, code()) : autoGuess() ?  ;
+    if (langName) {
+      tree = lowlight.highlight(langName, code());
+    } else if (autoGuess()) {
+      tree = lowlight.highlightAuto(code());
+    } else {
+      tree = lowlight.highlight("plaintext", code());
+    }
 
     tree.children = tree.children
       .reduce((acc, cur) => {
@@ -62,12 +73,9 @@ export const CodeBlock: Component<{
     setHastTree(reconcile(tree));
   });
 
-  const detectedLang = createMemo(() => hastTree.data?.language);
+  const highlightAsLang = createMemo(() => hastTree.data?.language);
 
-  const langName = createMemo(() => {
-    const language = detectedLang();
-    return language ? hljs.getLanguage(language)?.name : null;
-  });
+  const langName = createMemo(() => detectedLang()?.name ?? lang());
 
   const [wrapText, setWrapText] = createSignal(false);
   const [collapsed, setCollapsed] = createSignal(false);
@@ -121,7 +129,7 @@ export const CodeBlock: Component<{
                   "relative overflow-x-auto grid! grid-cols-1",
                   wrapText() ? "whitespace-pre-wrap" : "whitespace-pre",
                   "hljs",
-                  detectedLang() ? `language-${detectedLang()!}` : "",
+                  highlightAsLang() ? `language-${highlightAsLang()!}` : "",
                 )}
               >
                 <CodeBlockRenderer tree={hastTree} />
