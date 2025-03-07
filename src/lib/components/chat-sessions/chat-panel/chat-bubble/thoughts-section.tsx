@@ -75,18 +75,16 @@ export const ThoughtsSection: Component = () => {
             </CollapsibleTrigger>
           </div>
 
-          <Presence exitBeforeEnter>
-            <CollapsibleContent
-              as={Motion.div}
-              transition={{ duration: 0.3 }}
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -20, opacity: 0 }}
-              class="bg-muted text-muted-foreground text-sm px-4 py-2.5 rounded"
-            >
-              <MarkdownBlock markdown={chat?.().thoughts ?? undefined} />
-            </CollapsibleContent>
-          </Presence>
+          <CollapsibleContent
+            as={Motion.div}
+            transition={{ duration: 0.3 }}
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            class="bg-muted text-muted-foreground text-sm px-4 py-2.5 rounded"
+          >
+            <MarkdownBlock markdown={chat?.().thoughts ?? undefined} />
+          </CollapsibleContent>
         </Collapsible>
       </div>
     </Show>
