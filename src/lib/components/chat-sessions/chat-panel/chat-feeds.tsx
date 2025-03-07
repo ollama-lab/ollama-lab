@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, For, Index, Match, Switch } from "solid-js";
+import { createEffect, createMemo, createSignal, For, Index, Match, Show, Switch } from "solid-js";
 import { ChatEntryProvider } from "~/lib/contexts/chat-entry";
 import { getChatHistory } from "~/lib/contexts/globals/chat-history";
 import { cn } from "~/lib/utils/class-names";
@@ -68,11 +68,13 @@ export function ChatFeeds() {
     return chatHistory.chats.length > 0;
   });
 
+  const chats = createMemo(() => getChatHistory()?.chats ?? []);
+
   return (
     <div
       ref={setRootRef}
       class={cn(
-        "flex flex-col flex-wrap text-wrap max-w-5xl mx-auto pb-4",
+        "flex flex-col flex-wrap text-wrap max-w-5xl mx-auto pb-4 select-none",
         !hasChatHistory() && "h-full place-content-center items-center",
       )}
       onWheel={(ev) => {
@@ -88,7 +90,10 @@ export function ChatFeeds() {
         }
       }}
     >
-      <Index each={getChatHistory()?.chats} fallback={<WelcomeText />}>
+      <Show when={chats().length < 1}>
+        <WelcomeText />
+      </Show>
+      <Index each={chats()}>
         {(chat) => (
           <ChatEntryProvider value={chat}>
             <BubbleSector />

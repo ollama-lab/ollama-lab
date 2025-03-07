@@ -5,7 +5,7 @@ import { LoaderSpin } from "~/lib/components/loader-spin";
 import { Button } from "~/lib/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader } from "~/lib/components/ui/dialog";
 import { clearChatHistory } from "~/lib/contexts/globals/chat-history";
-import { currentSession } from "~/lib/contexts/globals/current-session";
+import { currentSessionId } from "~/lib/contexts/globals/current-session";
 import { reloadSessions } from "~/lib/contexts/globals/sessions";
 
 export const DeletionDialog: Component<{
@@ -13,15 +13,14 @@ export const DeletionDialog: Component<{
   open?: Accessor<boolean>;
   onOpenChange?: (value: boolean) => void;
 }> = (props) => {
-  const sessionId = () => props.sessionId;
   const onOpenChange = (value: boolean) => props.onOpenChange?.(value);
 
   const [proceeding, setProceeding] = createSignal(false);
 
-  const afterDeletion = () => {
+  const afterDeletion = (id: number | null) => {
     onOpenChange(false);
 
-    if (currentSession()?.id === sessionId()) {
+    if (currentSessionId() === id) {
       clearChatHistory();
     }
 

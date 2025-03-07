@@ -47,9 +47,9 @@ export async function reloadChatHistory() {
   }
 }
 
-export async function clearChatHistory() {
+export function clearChatHistory() {
   setCurrentSessionId(null);
-  reloadChatHistory();
+  setChatHistoryStore("chatHistory", null);
 }
 
 export async function submitChat(
