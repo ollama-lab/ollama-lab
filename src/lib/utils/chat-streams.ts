@@ -27,16 +27,12 @@ export function convertResponseEvents(
   let currentChatId: number | undefined = undefined;
 
   function getOrCreateHistory() {
-    let ch = chatHistory();
+    const ch = chatHistory();
     if (!ch) {
-      ch = {
-        chats: [],
-      };
-
-      setChatHistoryStore("chatHistory", ch);
+      setChatHistoryStore("chatHistory", { chats: [] });
     }
 
-    return ch;
+    return chatHistory()!;
   }
 
   return {
