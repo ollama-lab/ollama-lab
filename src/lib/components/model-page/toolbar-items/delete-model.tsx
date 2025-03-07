@@ -5,7 +5,8 @@ import { Button } from "../../ui/button";
 import { LoaderSpin } from "../../loader-spin";
 import { deleteModel } from "~/lib/commands/models";
 import { toast } from "solid-sonner";
-import { reloadModelStates, setCurrentModel } from "~/lib/contexts/globals/model-states";
+import { reloadModelStates } from "~/lib/contexts/globals/model-states";
+import { setCurrentModelPageModel } from "~/lib/contexts/globals/model-page";
 
 const DeleteModel: Component<{
   model: Accessor<string>;
@@ -47,7 +48,7 @@ const DeleteModel: Component<{
                 const deletionPromise = deleteModel(props.model())
                   .then(async () => {
                     setOpen(false);
-                    setCurrentModel(null);
+                    setCurrentModelPageModel(null);
                     await reloadModelStates();
                   })
                   .finally(() => setSubmitting(false));

@@ -15,7 +15,8 @@ import { copyModel } from "~/lib/commands/models";
 import { completeModelName } from "~/lib/utils/model-name";
 import { toast } from "solid-sonner";
 import { TextField, TextFieldInput } from "../../ui/text-field";
-import { reloadModelStates, setCurrentModel } from "~/lib/contexts/globals/model-states";
+import { reloadModelStates } from "~/lib/contexts/globals/model-states";
+import { setCurrentModelPageModel } from "~/lib/contexts/globals/model-page";
 
 export const DuplicateModel: Component<{
   model: Accessor<string>;
@@ -60,7 +61,7 @@ export const DuplicateModel: Component<{
                 }
 
                 const toModel = completeModelName(newModelName);
-                setCurrentModel(toModel);
+                setCurrentModelPageModel(toModel);
                 toast.success(`Model copied to ${toModel}`);
               }}
             >
