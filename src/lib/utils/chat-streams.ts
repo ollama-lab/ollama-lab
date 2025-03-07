@@ -26,16 +26,22 @@ export function convertResponseEvents(
 ): PromptResponseEvents {
   let currentChatId: number | undefined = undefined;
 
+  function getOrCreateHistory() {
+    let ch = chatHistory();
+    if (!ch) {
+      ch = {
+        chats: [],
+      };
+
+      setChatHistoryStore("chatHistory", ch);
+    }
+
+    return ch;
+  }
+
   return {
     afterUserPromptSubmitted(id: number, date: Date): void {
-      let ch = chatHistory();
-      if (!ch) {
-        ch = {
-          chats: [],
-        };
-
-        setChatHistoryStore("chatHistory", ch);
-      }
+      const ch = getOrCreateHistory();
 
       if (regenerateFor !== undefined) {
         const chatIndex = ch.chats.findIndex((value) => value.id === regenerateFor);
@@ -80,49 +86,47 @@ export function convertResponseEvents(
 
       currentChatId = id;
 
-      const ch = chatHistory();
+      const ch = getOrCreateHistory();
 
-      if (ch) {
-        if (regenerateFor !== undefined) {
-          const i = ch.chats.findIndex((value) => value.id === regenerateFor);
-          if (i < 0) {
-            return;
-          }
+      if (regenerateFor !== undefined) {
+        const i = ch.chats.findIndex((value) => value.id === regenerateFor);
+        if (i < 0) {
+          return;
+        }
 
-          const versions = ch.chats[i].versions;
+        const versions = ch.chats[i].versions;
 
-          setChatHistoryStore(
-            "chatHistory",
-            "chats",
-            reconcile([
-              ...ch.chats.slice(0, i),
-              {
-                ...ch.chats[i],
-                id,
-                status: "preparing",
-                content: "",
-                model: model ?? ch.chats[i].model,
-                versions: versions ? [...versions, id] : [ch.chats[i].id, id]
-              },
-            ]),
-          );
+        setChatHistoryStore(
+          "chatHistory",
+          "chats",
+          reconcile([
+            ...ch.chats.slice(0, i),
+            {
+              ...ch.chats[i],
+              id,
+              status: "preparing",
+              content: "",
+              model: model ?? ch.chats[i].model,
+              versions: versions ? [...versions, id] : [ch.chats[i].id, id]
+            },
+          ]),
+        );
 
-          context.responseIndex = ch.chats.length - 1;
-        } else {
-          const length = ch.chats.length;
-          setChatHistoryStore("chatHistory", "chats", length, {
-            id,
-            status: "preparing",
-            role: "assistant",
-            content: "",
-            model,
-            versions: null,
-            imageCount: 0,
-          });
+        context.responseIndex = ch.chats.length - 1;
+      } else {
+        const length = ch.chats.length;
+        setChatHistoryStore("chatHistory", "chats", length, {
+          id,
+          status: "preparing",
+          role: "assistant",
+          content: "",
+          model,
+          versions: null,
+          imageCount: 0,
+        });
 
-          if (length !== undefined) {
-            context.responseIndex = length;
-          }
+        if (length !== undefined) {
+          context.responseIndex = length;
         }
       }
 
@@ -130,10 +134,7 @@ export function convertResponseEvents(
       onScrollDown?.();
     },
     afterSystemPromptCreated(id: number, text: string): void {
-      const ch = chatHistory();
-      if (!ch) {
-        return;
-      }
+      const ch = getOrCreateHistory();
 
       setChatHistoryStore("chatHistory", "chats", ch.chats.length, {
         id,
@@ -148,10 +149,7 @@ export function convertResponseEvents(
         return;
       }
 
-      const ch = chatHistory();
-      if (!ch) {
-        return;
-      }
+      const ch = getOrCreateHistory();
 
       const chat = ch.chats.at(context.responseIndex);
       if (!chat || currentChatId !== chat.id) {
@@ -174,10 +172,7 @@ export function convertResponseEvents(
         return;
       }
 
-      const ch = chatHistory();
-      if (!ch) {
-        return;
-      }
+      const ch = getOrCreateHistory();
 
       const chat = ch.chats.at(context.responseIndex);
       if (chat && chat.id === currentChatId) {
@@ -191,10 +186,7 @@ export function convertResponseEvents(
         return;
       }
 
-      const ch = chatHistory();
-      if (!ch) {
-        return;
-      }
+      const ch = getOrCreateHistory();
 
       const chat = ch.chats.at(context.responseIndex);
       if (chat && chat.id === currentChatId) {
@@ -212,10 +204,7 @@ export function convertResponseEvents(
         return;
       }
 
-      const ch = chatHistory();
-      if (!ch) {
-        return;
-      }
+      const ch = getOrCreateHistory();
 
       const chat = ch.chats.at(context.responseIndex);
       if (chat && chat.id === currentChatId) {
@@ -229,10 +218,7 @@ export function convertResponseEvents(
         return;
       }
 
-      const ch = chatHistory();
-      if (!ch) {
-        return;
-      }
+      const ch = getOrCreateHistory();
 
       const chat = ch.chats.at(context.responseIndex);
       if (chat && chat.id === currentChatId) {
@@ -247,10 +233,7 @@ export function convertResponseEvents(
         return;
       }
 
-      const ch = chatHistory();
-      if (!ch) {
-        return;
-      }
+      const ch = getOrCreateHistory();
 
       const chat = ch.chats.at(context.responseIndex);
       if (chat && chat.id === currentChatId) {
