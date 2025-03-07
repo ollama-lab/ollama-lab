@@ -109,7 +109,7 @@ export function convertResponseEvents(
           ]),
         );
 
-        context.responseIndex = ch.chats.length - 1;
+        context.responseIndex = i;
       } else {
         const length = ch.chats.length;
         setChatHistoryStore("chatHistory", "chats", length, {
