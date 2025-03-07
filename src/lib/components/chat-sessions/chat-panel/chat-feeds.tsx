@@ -50,9 +50,6 @@ export function ChatFeeds() {
 
   createEffect(() => {
     const chat = getChatHistory()?.chats.at(-1)
-    if (chat) {
-      console.log(JSON.parse(JSON.stringify(chat)))
-    }
 
     if (chat?.content || chat?.thoughts) {
       const root = rootRef();
