@@ -1,6 +1,6 @@
 import { createStore } from "solid-js/store";
 import type { ChatHistory } from "~/lib/models/session";
-import { createMemo } from "solid-js";
+import { createEffect, createMemo } from "solid-js";
 import { reloadSession } from "./sessions";
 import { getCurrentBranch } from "~/lib/commands/chat-history";
 import { EditUserPrompt, IncomingUserPrompt } from "~/lib/models/chat";
@@ -47,9 +47,12 @@ export async function reloadChatHistory() {
   }
 }
 
+createEffect(() => {
+  reloadChatHistory();
+});
+
 export async function clearChatHistory() {
   setCurrentSessionId(null);
-  reloadChatHistory();
 }
 
 export async function submitChat(
