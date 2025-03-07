@@ -68,11 +68,13 @@ export const ThoughtsSection: Component = () => {
     <Show when={hasThoughts()}>
       <div>
         <Collapsible open={open()} onOpenChange={setOpen}>
-          <div class="flex items-center gap-2 text-sm text-muted-foreground relative z-20">
-            <ThinkingHints />
-            <CollapsibleTrigger title={open() ? "Collapse" : "Expand"}>
-              <ChevronDownIcon class={cn("size-4 duration-300", open() && "-rotate-180")} />
-            </CollapsibleTrigger>
+          <div class="sticky -top-2 flex z-20">
+            <div class="flex items-center gap-2 text-sm text-muted-foreground bg-background z-20 px-1.5 py-1 rounded">
+              <ThinkingHints />
+              <CollapsibleTrigger title={open() ? "Collapse" : "Expand"}>
+                <ChevronDownIcon class={cn("size-4 duration-300", open() && "-rotate-180")} />
+              </CollapsibleTrigger>
+            </div>
           </div>
 
           <CollapsibleContent
