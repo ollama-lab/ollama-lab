@@ -61,7 +61,7 @@ export function StatusLine(props: StatusLineProps) {
           {(info) => (
             <>
               <hr class="bg-border h-full w-[2pt]" />
-              <span class="space-x-1" title={info().expires_at.toLocaleString()}>
+              <span class="flex gap-1" title={info().expires_at.toLocaleString()}>
                 Session expires in
                 <Countdown
                   seconds={expiresInSec}
