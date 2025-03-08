@@ -16,7 +16,7 @@ export function Bubble() {
   });
 
   return (
-    <Show when={isNotEmpty()}>
+    <Show when={isNotEmpty() || status() === "sent"}>
       <div class={cn(
         "py-2",
         role() === "user" && "bg-secondary text-secondary-foreground px-5 rounded-2xl",
