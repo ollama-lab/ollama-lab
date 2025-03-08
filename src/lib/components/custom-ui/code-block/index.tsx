@@ -35,7 +35,6 @@ export const CodeBlock: Component<{
     const langName = detectedLang();
 
     let tree = undefined;
-    //const tree = langName ? lowlight.highlight(langName, code()) : autoGuess() ?  ;
     if (langName) {
       tree = lowlight.highlight(lang()!, code());
     } else if (autoGuess()) {
