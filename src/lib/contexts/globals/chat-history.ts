@@ -9,6 +9,8 @@ import { regenerateResponse, submitUserPrompt } from "~/lib/commands/chats";
 import { convertResponseEvents } from "~/lib/utils/chat-streams";
 import { switchBranch as switchBranchCommand } from "~/lib/commands/chat-history";
 import { currentSession, isNewSession, setCurrentSessionId, setNewSession } from "./current-session";
+import { getCurrentModel } from "./current-model";
+import { setCandidate } from "./candidate-model";
 
 export interface PromptSubmissionEvents {
   onRespond?: () => void;
@@ -53,8 +55,14 @@ createEffect(() => {
   }
 });
 
-export async function clearChatHistory() {
+export async function clearChatHistory(reserveSelectedModel?: boolean) {
+  const selected = reserveSelectedModel ? getCurrentModel() : undefined;
+
   setCurrentSessionId(null);
+
+  if (reserveSelectedModel && selected) {
+    setCandidate(selected);
+  }
 }
 
 export async function submitChat(
