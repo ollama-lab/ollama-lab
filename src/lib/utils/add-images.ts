@@ -10,8 +10,8 @@ export async function launchPromptImageSelector() {
     title: "Select images",
     filters: [
       {
-        name: "Image format",
-        extensions: ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "svg", "heif", "ico"],
+        name: "Supported image format",
+        extensions: ["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "heif", "ico"],
       },
     ],
   });

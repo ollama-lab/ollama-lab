@@ -54,13 +54,18 @@ pub async fn get_chat_images(
     Ok(ret)
 }
 
+pub fn get_image_cache_path() -> Option<PathBuf> {
+    let mut data_dir = local_data_dir()?;
+    data_dir.push("images");
+
+    Some(data_dir)
+}
+
 pub fn resolve_stored_image_path(path: &str) -> Option<PathBuf> {
     let path = PathBuf::from(path);
     let trimmed_path = path.file_name()?;
 
-    let mut data_dir = local_data_dir()?;
-
-    data_dir.push("images");
+    let mut data_dir = get_image_cache_path()?;
     data_dir.push(trimmed_path);
     Some(data_dir)
 }

@@ -1,9 +1,7 @@
 use tauri::State;
 
 use crate::{
-    app_state::AppState,
-    errors::Error,
-    models::session::{Session, SessionCurrentModelReturn, SessionNameReturn},
+    app_state::AppState, errors::Error, image::cleanup::remove_orphans, models::session::{Session, SessionCurrentModelReturn, SessionNameReturn}
 };
 
 #[tauri::command]
@@ -143,6 +141,8 @@ pub async fn delete_session(state: State<'_, AppState>, id: i64) -> Result<Optio
     if result.rows_affected() < 1 {
         return Ok(None);
     }
+
+    remove_orphans(&mut conn).await?;
 
     Ok(Some(id))
 }

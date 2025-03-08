@@ -4,6 +4,8 @@ use image::{imageops::FilterType, DynamicImage, ImageFormat, ImageReader};
 
 use crate::errors::Error;
 
+pub mod cleanup;
+
 pub const MODEL_IMAGE_SIZE: (u32, u32) = (1024, 1024);
 pub const THUMBNAIL_SIZE: (u32, u32) = (200, 200);
 
