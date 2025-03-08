@@ -83,12 +83,14 @@ export async function submitUserPrompt(
   prompt: IncomingUserPrompt,
   parentId: number | null,
   events: PromptResponseEvents = {},
+  reuseSiblingImages: boolean = false,
 ): Promise<ChatGenerationReturn> {
   return await invoke<InternalChatGenerationReturn>("submit_user_prompt", {
     sessionId,
     prompt,
     onStream: newTextStreamChannel(events),
     parentId,
+    reuseSiblingImages,
   }).then(({ id, dateCreated }) => ({
     id,
     dateCreated: new Date(dateCreated),

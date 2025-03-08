@@ -5,17 +5,13 @@ use tauri::{ipc::Channel, AppHandle, Listener, State};
 use tokio::sync::{mpsc, oneshot};
 
 use crate::{
-    app_state::AppState,
-    errors::Error,
-    events::StreamingResponseEvent,
-    models::{
+    app_state::AppState, errors::Error, events::StreamingResponseEvent, image::get_image_paths_of_last_sibling, models::{
         chat::{ChatGenerationReturn, IncomingUserPrompt},
         session::Session,
-    },
-    responses::{
+    }, responses::{
         llm_streams::stream_response,
         tree::{models::NewChildNode, ChatTree},
-    }, utils::system_prompt::get_system_prompt,
+    }, utils::system_prompt::get_system_prompt
 };
 
 pub mod chat_history;
@@ -28,6 +24,7 @@ pub async fn submit_user_prompt(
     parent_id: Option<i64>,
     prompt: IncomingUserPrompt,
     on_stream: Channel<StreamingResponseEvent>,
+    reuse_sibling_images: bool,
 ) -> Result<ChatGenerationReturn, Error> {
     let ollama = &state.ollama;
     let profile_id = state.profile;
@@ -79,13 +76,23 @@ pub async fn submit_user_prompt(
         }
     }
 
-    let image_ref_paths = prompt.image_paths
+    let sibling_image_paths: Option<Vec<String>>;
+    let mut image_ref_paths = prompt.image_paths
         .as_ref()
         .and_then(|path_list| Some(
             path_list.iter()
                 .map(|s| s.as_str())
                 .collect::<Vec<&str>>()
         ));
+
+    if reuse_sibling_images && image_ref_paths.as_ref().is_none_or(|list| list.is_empty()) {
+        sibling_image_paths = Some(get_image_paths_of_last_sibling(&pool, parent_id).await?);
+        image_ref_paths = sibling_image_paths
+            .as_ref()
+            .map(|paths| {
+                paths.iter().map(|s| s.as_str()).collect()
+            });
+    }
 
     let user_chat_ret = tree
         .new_child(

@@ -190,6 +190,7 @@ export async function editPrompt(
       { onRespond, onScrollDown },
       { regenerateFor: ch.chats[curIndex].id },
     ),
+    true,
   );
 
   setChatHistoryStore("chatHistory", "chats", getChatHistory()!.chats.length - 1, {

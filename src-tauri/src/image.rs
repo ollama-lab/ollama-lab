@@ -1,6 +1,7 @@
 use std::{io::Cursor, path::Path};
 
 use image::{imageops::FilterType, DynamicImage, ImageFormat, ImageReader};
+use sqlx::{Executor, Sqlite};
 
 use crate::errors::Error;
 
@@ -30,4 +31,26 @@ impl ToFormattedBytes for DynamicImage {
 
         Ok(bytes)
     }
+}
+
+pub async fn get_image_paths_of_last_sibling<'a>(
+    executor: impl Executor<'a, Database = Sqlite>,
+    parent_id: Option<i64>,
+) -> Result<Vec<String>, Error> {
+    Ok(sqlx::query_as::<_, (String,)>(r#"
+        SELECT path
+        FROM prompt_images
+        WHERE chat_id IN (
+            SELECT id FROM chats
+            WHERE parent_id IS $1
+            ORDER BY date_created DESC, id DESC
+            LIMIT 1
+        );
+    "#)
+        .bind(parent_id)
+        .fetch_all(executor)
+        .await?
+        .into_iter()
+        .map(|tuple| tuple.0)
+        .collect())
 }
