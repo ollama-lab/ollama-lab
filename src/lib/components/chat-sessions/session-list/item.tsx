@@ -21,18 +21,20 @@ export const SessionListItem: Component<{
   const [optimisticTitle, setOptimisticTitle] = createSignal<string | undefined>(undefined);
 
   const Title = () => (
-    <>
-      <div class="w-full truncate">{optimisticTitle() ?? title() ?? "New Chat"}</div>
+    <div class="flex items-center">
+      <div class="overflow-auto max-w-sm">
+        <span class="">{optimisticTitle() ?? title() ?? "New Chat"}</span>
+      </div>
       <Show when={currentSession()?.id === sessionId() && getChatHistoryStore()?.loading}>
         <LoaderSpin class="size-4" />
       </Show>
-    </>
+    </div>
   );
 
   return (
     <div
       class={cn(
-        "flex items-center px-3 py-2 rounded cursor-pointer min-h-12",
+        "flex items-center px-3 py-2 rounded cursor-pointer",
         currentSession()?.id === sessionId() ? "bg-primary text-primary-foreground" : "hover:bg-secondary",
       )}
       onClick={() => {
@@ -46,7 +48,7 @@ export const SessionListItem: Component<{
       tabindex={sessionId()}
       onDblClick={() => setRenameMode(true)}
     >
-      <div class="grow select-none truncate text-sm flex gap-2 items-center">
+      <div class="grow select-none text-sm gap-2 flex items-center overflow-y-auto h-8">
         <Switch fallback={<Title />}>
           <Match when={renameMode()}>
             <TextField defaultValue={title() ?? ""} class="w-full">
