@@ -10,18 +10,25 @@ export function Bubble() {
   const content = createMemo(() => chat?.().content);
   const status = () => chat?.().status;
 
+  const isNotEmpty = createMemo(() => {
+    const text = content();
+    return text && text.length > 1;
+  });
+
   return (
-    <div class={cn(
-      "py-2",
-      role() === "user" && "bg-secondary text-secondary-foreground px-5 rounded-2xl",
-    )}>
-      <MarkdownBlock markdown={content()} />
-      <Show when={status() === "preparing"}>
-        <Progress
-          value={null}
-          class="w-full max-w-md"
-        />
-      </Show>
-    </div>
+    <Show when={isNotEmpty()}>
+      <div class={cn(
+        "py-2",
+        role() === "user" && "bg-secondary text-secondary-foreground px-5 rounded-2xl",
+      )}>
+        <MarkdownBlock markdown={content()} />
+        <Show when={status() === "preparing"}>
+          <Progress
+            value={null}
+            class="w-full max-w-md"
+          />
+        </Show>
+      </div>
+    </Show>
   );
 }
