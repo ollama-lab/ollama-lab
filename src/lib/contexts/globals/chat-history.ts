@@ -75,7 +75,11 @@ export async function submitChat(
   if (!session) {
     // TODO: Add settings option for default session name: 1) no name, 2) first prompt, 3) generated after first response
     // Currently it is `first prompt`
-    const sessionTitle = prompt.text.split("\n").at(0);
+    let sessionTitle = prompt.text.split("\n").at(0) ?? null;
+    if ((!sessionTitle || sessionTitle.length < 1) && prompt.imagePaths && prompt.imagePaths.length > 0) {
+      sessionTitle = `Image${prompt.imagePaths.length > 1 ? "s" : ""}`;
+    }
+
     session = await createSession(model, sessionTitle);
 
     await reloadSession(session.id);
