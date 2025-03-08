@@ -185,7 +185,7 @@ impl ChatTree {
 
         if let Some(images) = create_info.images {
             for image_path in images.into_iter() {
-                let dest = save_image(image_path)?;
+                let dest = save_image(image_path, true)?;
 
                 sqlx::query(r#"
                     INSERT INTO prompt_images (chat_id, origin, path)

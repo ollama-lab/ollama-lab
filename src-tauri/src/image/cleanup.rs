@@ -9,7 +9,7 @@ use crate::{errors::Error, utils::images::get_image_cache_path};
 /// Since 0.3.0
 pub async fn remove_orphans(conn: &mut PoolConnection<Sqlite>) -> Result<(), Error> {
     let existing_image_entires = sqlx::query_as::<_, (String,)>(r#"
-        SELECT path FROM prompt_images;
+        SELECT DISTINCT path FROM prompt_images;
     "#)
         .fetch_all(&mut **conn)
         .await?

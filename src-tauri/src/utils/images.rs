@@ -70,7 +70,22 @@ pub fn resolve_stored_image_path(path: &str) -> Option<PathBuf> {
     Some(data_dir)
 }
 
-pub fn save_image(origin: &str) -> Result<String, Error> {
+pub fn save_image(origin: &str, reuse_local: bool) -> Result<String, Error> {
+    if reuse_local {
+        if let Some(mut assumed_path) = get_image_cache_path() {
+            if let Some(origin_file_name) = PathBuf::from(origin).file_name() {
+                assumed_path.push(origin_file_name);
+                if assumed_path.try_exists().unwrap_or(false) {
+                    if let Some(file_name) = assumed_path.file_name() {
+                        if let Some(file_name) = file_name.to_str() {
+                            return Ok(file_name.to_string());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     let path = PathBuf::from(origin);
 
     let file_uuid = Uuid::new_v7(Timestamp::now(ContextV7::new()));
