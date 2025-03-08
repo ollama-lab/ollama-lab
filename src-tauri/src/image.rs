@@ -1,7 +1,6 @@
 use std::{io::Cursor, path::Path};
 
 use image::{imageops::FilterType, DynamicImage, ImageFormat, ImageReader};
-use sqlx::{Executor, Sqlite};
 
 use crate::errors::Error;
 
@@ -31,17 +30,4 @@ impl ToFormattedBytes for DynamicImage {
 
         Ok(bytes)
     }
-}
-
-pub async fn get_chat_image_paths(conn: impl Executor<'_, Database = Sqlite>, chat_id: i64) -> Result<Vec<String>, Error> {
-    Ok(sqlx::query_as::<_, (String,)>(r#"
-        SELECT path FROM prompt_images
-        WHERE chat_id = $1;
-    "#)
-        .bind(chat_id)
-        .fetch_all(conn)
-        .await?
-        .into_iter()
-        .map(|tuple| tuple.0)
-        .collect())
 }

@@ -5,13 +5,17 @@ use tauri::{ipc::Channel, AppHandle, Listener, State};
 use tokio::sync::{mpsc, oneshot};
 
 use crate::{
-    app_state::AppState, errors::Error, events::StreamingResponseEvent, image::get_chat_image_paths, models::{
+    app_state::AppState,
+    errors::Error,
+    events::StreamingResponseEvent,
+    models::{
         chat::{ChatGenerationReturn, IncomingUserPrompt},
         session::Session,
-    }, responses::{
+    },
+    responses::{
         llm_streams::stream_response,
         tree::{models::NewChildNode, ChatTree},
-    }, utils::system_prompt::get_system_prompt
+    }, utils::system_prompt::get_system_prompt,
 };
 
 pub mod chat_history;
@@ -205,15 +209,6 @@ pub async fn regenerate_response(
     .await?
     .ok_or(Error::NotExists)?;
 
-    let image_paths = get_chat_image_paths(&pool, chat_id).await?;
-    let image_paths_ref: Vec<&str> = image_paths.as_slice()
-        .into_iter()
-        .map(|s| s.as_str())
-        .collect();
-
-    let image_paths_ref_slice = image_paths_ref.as_slice();
-    let image_paths_len = image_paths.len();
-
     let tree = ChatTree::new(session_id);
     let mut tx = pool.begin().await?;
 
@@ -241,7 +236,7 @@ pub async fn regenerate_response(
                     model: Some(first_sibling_chat.0.as_str()),
                     content: "",
                     completed: false,
-                    images: if image_paths_len > 0 { Some(image_paths_ref_slice) } else { None },
+                    images: None,
                 },
             )
             .await
