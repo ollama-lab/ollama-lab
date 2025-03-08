@@ -19,7 +19,7 @@ export function Bubble() {
     <Show when={isNotEmpty() || status() !== "sent"}>
       <div class={cn(
         "py-2",
-        role() === "user" && "bg-secondary text-secondary-foreground px-5 rounded-2xl",
+        role() === "user" && "bg-secondary/50 text-secondary-foreground px-5 rounded-2xl",
       )}>
         <MarkdownBlock markdown={content()} />
         <Show when={status() === "preparing"}>
