@@ -32,12 +32,12 @@ export const CodeBlock: Component<{
   const [hastTree, setHastTree] = createStore<Root>({ type: "root", children: [] });
 
   createRenderEffect(() => {
-    const langName = detectedLang()?.name;
+    const langName = detectedLang();
 
     let tree = undefined;
     //const tree = langName ? lowlight.highlight(langName, code()) : autoGuess() ?  ;
     if (langName) {
-      tree = lowlight.highlight(langName, code());
+      tree = lowlight.highlight(lang()!, code());
     } else if (autoGuess()) {
       tree = lowlight.highlightAuto(code());
     } else {
