@@ -98,5 +98,8 @@
       }
     }
 
+    & blockquote {
+      @apply border-l-3 px-4 py-2 border-primary/30 bg-muted/50 text-muted-foreground;
+    }
   }
 }
