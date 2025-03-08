@@ -10,7 +10,7 @@
       }
     }
 
-    &  ul {
+    & ul {
       @apply list-disc space-y-2;
     }
 
@@ -18,12 +18,24 @@
       @apply list-decimal space-y-2;
     }
 
-    & :is(ul, ol) ul {
+    & :is(ul, ol) > ul {
       list-style-type: circle;
     }
 
     & :is(ul, ol) {
       @apply ml-6;
+    }
+
+    & :is(ul, ol) > :is(ul, ol) {
+      @apply ml-10;
+    }
+
+    & :is(ul, ol) > :is(ul, ol) > :is(ul, ol) {
+      @apply ml-14;
+    }
+
+    & :is(ul, ol) > :is(ul, ol) ul {
+      list-style-type: square;
     }
 
     & h1 {
@@ -50,12 +62,44 @@
       @apply text-sm italic;
     }
 
-    & .code-container {
-      @apply overflow-x-hidden;
+    & a {
+      @apply text-blue-600 dark:text-blue-400 hover:underline cursor-pointer;
     }
 
-    & .katex {
-      @apply space-x-3;
+    & :not(pre) code {
+      @apply rounded bg-secondary text-secondary-foreground py-0.5 px-1 text-sm;
+    }
+
+    & table {
+      @apply border-collapse;
+
+      & th {
+        @apply text-accent-foreground px-3 py-2 font-bold;
+      }
+
+      & tbody > tr {
+        @apply border-t;
+
+        &:nth-child(odd) {
+          @apply bg-accent/30 text-accent-foreground;
+        }
+
+        &:nth-child(even) {
+          @apply bg-background text-foreground;
+        }
+      }
+
+      & thead > tr {
+        @apply bg-accent/60;
+      }
+
+      & td {
+        @apply px-3 py-2;
+      }
+    }
+
+    & blockquote {
+      @apply border-l-3 px-4 py-2 border-primary/30 bg-muted/50 text-muted-foreground;
     }
   }
 }
