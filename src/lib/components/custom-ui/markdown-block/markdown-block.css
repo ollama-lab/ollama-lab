@@ -71,23 +71,32 @@
     }
 
     & table {
-      @apply rounded overflow-hidden;
+      @apply border-collapse;
+
+      & th {
+        @apply text-accent-foreground px-3 py-2 font-bold;
+      }
+
+      & tbody > tr {
+        @apply border-t;
+
+        &:nth-child(odd) {
+          @apply bg-accent/30 text-accent-foreground;
+        }
+
+        &:nth-child(even) {
+          @apply bg-background text-foreground;
+        }
+      }
+
+      & thead > tr {
+        @apply bg-accent/60;
+      }
+
+      & td {
+        @apply px-3 py-2;
+      }
     }
 
-    & table th {
-      @apply bg-primary text-primary-foreground px-3 py-2 font-bold;
-    }
-
-    & table tr:nth-child(odd) {
-      @apply bg-accent text-accent-foreground;
-    }
-
-    & table tr:nth-child(even) {
-      @apply bg-background text-foreground;
-    }
-
-    & table td {
-      @apply px-3 py-2;
-    }
   }
 }
