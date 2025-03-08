@@ -14,7 +14,7 @@ const RelativeTime: Component<{
     return dayjs(date()).fromNow();
   };
 
-  const [timerId, setTimerId] = createSignal<Timer>();
+  const [timerId, setTimerId] = createSignal<number>();
   const [display, setDisplay] = createSignal<string>(updateRelativeTime());
 
   const getNextUpdateInterval = () => {

@@ -11,7 +11,7 @@ export const Countdown: Component<{
   const expiresAt = () => props.expiresAt();
   const onExpire = () => props.onExpire?.();
 
-  const [expirationTimerId, setExpirationTimerId] = createSignal<Timer>();
+  const [expirationTimerId, setExpirationTimerId] = createSignal<number>();
 
   const countdown = () => {
     onTick?.(Math.floor((expiresAt().getTime() - Date.now()) / 1000));
