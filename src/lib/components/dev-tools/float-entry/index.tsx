@@ -3,8 +3,9 @@ import { Badge } from "../../ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { SwitchControl, SwitchDescription, SwitchLabel, SwitchRoot } from "../../ui/switch";
 import { getDevOptions, setDevOptions } from "~/lib/contexts/globals/dev-tools/dev-mode";
+import { Component } from "solid-js";
 
-export function FloatEntry() {
+export const FloatEntry: Component = () => {
   return (
     <Dialog>
       <DialogTrigger as={Badge} class="absolute bottom-0 right-0 z-[500] flex bg-background text-foreground border border-border rounded items-center gap-1 hover:bg-secondary cursor-pointer">
