@@ -13,6 +13,7 @@ import { EditModeProvider } from "~/lib/contexts/edit-mode";
 import { LoaderSpin } from "~/lib/components/loader-spin";
 import { TriangleAlertIcon } from "lucide-solid";
 import { SystemPromptBlock } from "./bubble-sector/system-prompt-block";
+import { getCurrentModel } from "~/lib/contexts/globals/current-model";
 
 export function BubbleSector() {
   const chat = useChatEntry();
@@ -82,9 +83,9 @@ export function BubbleSector() {
                       onSubmit={(newValue) => {
                         const c = chat?.();
                         const id = c?.id;
-                        const model = c?.model;
+                        const model = getCurrentModel();
 
-                        if (id === undefined || model === undefined) {
+                        if (id === undefined || !model) {
                           return;
                         }
 

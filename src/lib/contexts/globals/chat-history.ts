@@ -177,7 +177,7 @@ export async function editPrompt(
   const parentId = curIndex === 0 ? null : ch.chats[curIndex - 1].id;
 
   const curPrompt: IncomingUserPrompt = {
-    text: ch.chats[chatId].content,
+    text: ch.chats[curIndex].content,
   };
 
   const mergedPrompt: IncomingUserPrompt = { ...curPrompt, ...prompt };

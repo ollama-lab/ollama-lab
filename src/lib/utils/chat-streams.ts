@@ -46,6 +46,7 @@ export function convertResponseEvents(
               ...ch.chats.slice(0, chatIndex),
               {
                 ...ch.chats[chatIndex],
+                id,
                 model: model ?? ch.chats[chatIndex].model,
                 status: "sent",
                 content: prompt?.text ?? "",
