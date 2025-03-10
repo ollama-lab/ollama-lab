@@ -35,14 +35,14 @@ impl ChatTree {
             sqlx::query_as::<_, Chat>(r#"
                 WITH RECURSIVE rec_chats (
                     id, session_id, role, content, image_count, completed, date_created, date_edited, model, parent_id, priority,
-                    thoughts, thought_for
+                    thoughts, thought_for, agent_id
                 )
                 AS (
                     SELECT *
                     FROM (
                         SELECT
                             id, session_id, role, content, image_count, completed, date_created, date_edited, model, parent_id, priority,
-                            thoughts, thought_for
+                            thoughts, thought_for, agent_id
                         FROM v_complete_chats
                         WHERE
                             session_id = $1
@@ -101,8 +101,8 @@ impl ChatTree {
 
         let new_chat = sqlx::query_as::<_, (i64,)>(
             r#"
-            INSERT INTO chats (session_id, role, content, parent_id, completed, priority)
-            SELECT session_id, role, IFNULL($3, content), parent_id, $4, 1
+            INSERT INTO chats (session_id, role, content, parent_id, completed, priority, h2h_agent_id)
+            SELECT session_id, role, IFNULL($3, content), parent_id, $4, 1, h2h_agent_id
             FROM chats
             WHERE session_id = $1 AND id = $2
             RETURNING id;
@@ -157,8 +157,8 @@ impl ChatTree {
 
         let ret = sqlx::query_as::<_, (i64, i64)>(
             r#"
-            INSERT INTO chats (session_id, role, content, parent_id, completed, priority)
-            VALUES ($1, $2, $3, $4, $5, 1)
+            INSERT INTO chats (session_id, role, content, parent_id, completed, priority, h2h_agent_id)
+            VALUES ($1, $2, $3, $4, $5, 1, $6)
             RETURNING id, date_created;
         "#,
         )
@@ -167,6 +167,7 @@ impl ChatTree {
         .bind(create_info.content)
         .bind(parent_id)
         .bind(create_info.completed)
+        .bind(create_info.h2h_agent_id)
         .fetch_one(&mut **tx)
         .await?;
 
