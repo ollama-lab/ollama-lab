@@ -64,6 +64,7 @@ pub async fn submit_user_prompt(
                         model: None,
                         completed: true,
                         images: None,
+                        h2h_agent_id: None,
                     },
                 )
                 .await?;

@@ -61,3 +61,18 @@ pub async fn set_system_prompt(
         None
     })
 }
+
+pub async fn get_session_system_prompt(
+    session_id: i64,
+    executor: impl Executor<'_, Database = Sqlite>,
+) -> Result<Option<String>, Error> {
+    Ok(sqlx::query_as::<_, (String,)>(r#"
+        SELECT content
+        FROM session_system_prompts
+        WHERE session_id = $1;
+    "#)
+        .bind(session_id)
+        .fetch_optional(executor)
+        .await?
+        .map(|tuple| tuple.0))
+}

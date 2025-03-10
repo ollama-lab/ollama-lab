@@ -12,8 +12,7 @@ CREATE TABLE h2h_agents (
 CREATE TABLE h2h_session_system_prompts (
     id              INTEGER NOT NULL PRIMARY KEY,
     session_id      INTEGER NOT NULL REFERENCES sessions (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    content         TEXT NOT NULL,
-    date_created    INTEGER NOT NULL DEFAULT (unixepoch())
+    content         TEXT NOT NULL
 );
 
 ALTER TABLE chats
