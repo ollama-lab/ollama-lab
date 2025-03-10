@@ -50,6 +50,11 @@ pub fn run() {
             commands::images::get_compressed_image_base64,
             commands::images::get_thumbnail_base64,
             commands::images::get_images_by_chat_id,
+            commands::agents::get_all_agents,
+            commands::agents::get_agent,
+            commands::agents::add_agent,
+            commands::agents::update_agent,
+            commands::agents::delete_agent,
         ])
         .setup(|app| {
             app.manage(AppState::init()?);
