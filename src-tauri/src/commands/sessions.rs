@@ -1,7 +1,11 @@
 use tauri::State;
 
 use crate::{
-    app_state::AppState, errors::Error, image::cleanup::remove_orphans, models::session::{Session, SessionCurrentModelReturn, SessionNameReturn}
+    app_state::AppState,
+    errors::Error,
+    image::cleanup::remove_orphans,
+    models::session::{Session, SessionCurrentModelReturn, SessionNameReturn},
+    utils::sessions::get_session as get_session_,
 };
 
 #[tauri::command]
@@ -30,20 +34,7 @@ pub async fn get_session(state: State<'_, AppState>, id: i64) -> Result<Option<S
     let profile_id = state.profile;
     let mut conn = state.conn_pool.acquire().await?;
 
-    let session = sqlx::query_as::<_, Session>(
-        "\
-        SELECT id, profile_id, title, date_created, current_model, is_h2h
-        FROM sessions
-        WHERE profile_id = $1 AND id = $2
-        ORDER BY date_created DESC;
-    ",
-    )
-    .bind(profile_id)
-    .bind(id)
-    .fetch_optional(&mut *conn)
-    .await?;
-
-    Ok(session)
+    Ok(get_session_(&mut *conn, profile_id, id).await?)
 }
 
 #[tauri::command]

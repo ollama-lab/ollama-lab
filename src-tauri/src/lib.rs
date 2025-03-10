@@ -3,6 +3,7 @@ use paths::local_config_dir;
 use tauri::Manager;
 
 pub mod app_state;
+pub mod chat_gen;
 pub mod commands;
 pub mod encoding;
 pub mod errors;
