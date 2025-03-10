@@ -31,15 +31,7 @@ export function ImageAddition() {
         <DialogHeader>
           <DialogTitle>Select image source</DialogTitle>
           <DialogDescription>
-            <p>NOTE: Only <b>multimodal</b> models can read images.</p>
-            <p>
-              <button
-                class="hover:underline text-blue-500"
-                on:click={onMultimodalHelpLinkClick}
-              >
-                What is a multimodal model?
-              </button>
-            </p>
+            <p>NOTE: Only <a onClick={onMultimodalHelpLinkClick} class="hover:underline text-blue-500 cursor-pointer">multimodal models</a> can read images.</p>
           </DialogDescription>
         </DialogHeader>
 
