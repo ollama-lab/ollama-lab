@@ -41,7 +41,7 @@ pub async fn update_agent(
     id: i64,
     update_info: &H2hAgentUpdate<'_>,
     executor: impl Executor<'_, Database = Sqlite>,
-) -> Result<H2hAgent, Error> {
+) -> Result<Option<H2hAgent>, Error> {
     Ok(sqlx::query_as::<_, H2hAgent>(r#"
         UPDATE h2h_agents
         SET name = NULLIF(COALESCE($2, name)),
@@ -56,7 +56,7 @@ pub async fn update_agent(
             .map(|model| model.trim())
             .and_then(|trimmed| if trimmed.is_empty() { None } else { Some(trimmed) }))
         .bind(update_info.system_prompt.map(|value| value.trim()))
-        .fetch_one(executor)
+        .fetch_optional(executor)
         .await?)
 }
 
