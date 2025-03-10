@@ -40,12 +40,12 @@ const ThinkingHints: Component = () => {
     <div class="flex items-center gap-2 text-sm text-muted-foreground">
       <Presence exitBeforeEnter>
         <Switch fallback={(
-          <HintSpan>Thought for {thoughtForString()}</HintSpan>
+          <HintSpan>Reasoning complete in {thoughtForString()}</HintSpan>
         )}>
           <Match when={thinking() && status() === "sending"}>
             <HintSpan>
               <LoaderSpin class="size-4 duration-500" />
-              <span>Thinking...</span>
+              <span>Reasoning...</span>
             </HintSpan>
           </Match>
         </Switch>
