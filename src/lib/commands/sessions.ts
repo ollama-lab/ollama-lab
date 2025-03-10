@@ -7,10 +7,11 @@ interface InternalSession {
   title: string | null;
   dateCreated: string;
   currentModel: string;
+  isH2h: boolean;
 }
 
-export async function listSessions(): Promise<Session[]> {
-  return await invoke<InternalSession[]>("list_sessions").then((sessions) =>
+export async function listSessions(isH2h: boolean = false): Promise<Session[]> {
+  return await invoke<InternalSession[]>("list_sessions", { isH2h }).then((sessions) =>
     sessions.map(
       (session) =>
         ({
@@ -46,10 +47,11 @@ export async function setSessionModel(id: number, model: string): Promise<Sessio
   });
 }
 
-export async function createSession(currentModel: string, title?: string | null): Promise<Session> {
+export async function createSession(currentModel: string, title?: string | null, isH2h: boolean = false): Promise<Session> {
   return await invoke<InternalSession>("create_session", {
     currentModel,
     title,
+    isH2h,
   }).then(
     (session) =>
       ({

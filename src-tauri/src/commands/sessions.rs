@@ -5,19 +5,20 @@ use crate::{
 };
 
 #[tauri::command]
-pub async fn list_sessions(state: State<'_, AppState>) -> Result<Vec<Session>, Error> {
+pub async fn list_sessions(state: State<'_, AppState>, is_h2h: Option<bool>) -> Result<Vec<Session>, Error> {
     let profile_id = state.profile;
     let mut conn = state.conn_pool.acquire().await?;
 
     let sessions = sqlx::query_as::<_, Session>(
         "\
-        SELECT id, profile_id, title, date_created, current_model
+        SELECT id, profile_id, title, date_created, current_model, is_h2h
         FROM sessions
-        WHERE profile_id = $1
+        WHERE profile_id = $1 AND is_h2h = IFNULL($2, is_h2h)
         ORDER BY date_created DESC;
     ",
     )
     .bind(profile_id)
+    .bind(is_h2h)
     .fetch_all(&mut *conn)
     .await?;
 
@@ -31,7 +32,7 @@ pub async fn get_session(state: State<'_, AppState>, id: i64) -> Result<Option<S
 
     let session = sqlx::query_as::<_, Session>(
         "\
-        SELECT id, profile_id, title, date_created, current_model
+        SELECT id, profile_id, title, date_created, current_model, is_h2h
         FROM sessions
         WHERE profile_id = $1 AND id = $2
         ORDER BY date_created DESC;
@@ -152,20 +153,22 @@ pub async fn create_session(
     state: State<'_, AppState>,
     current_model: String,
     title: Option<String>,
+    is_h2h: bool,
 ) -> Result<Session, Error> {
     let profile_id = state.profile;
     let mut conn = state.conn_pool.acquire().await?;
 
     let session = sqlx::query_as::<_, Session>(
         r#"
-        INSERT INTO sessions (profile_id, current_model, title)
-        VALUES ($1, $2, $3)
-        RETURNING id, profile_id, title, date_created, current_model;
+        INSERT INTO sessions (profile_id, current_model, title, is_h2h)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, profile_id, title, date_created, current_model, is_h2h;
     "#,
     )
     .bind(profile_id)
     .bind(current_model)
     .bind(title)
+    .bind(is_h2h)
     .fetch_one(&mut *conn)
     .await?;
 
