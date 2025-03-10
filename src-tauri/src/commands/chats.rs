@@ -32,7 +32,7 @@ pub async fn submit_user_prompt(
 
     let session = sqlx::query_as::<_, Session>(
         r#"
-        SELECT id, profile_id, title, date_created, current_model
+        SELECT id, profile_id, title, date_created, current_model, is_h2h
         FROM sessions
         WHERE id = $1 AND profile_id = $2;
     "#,
