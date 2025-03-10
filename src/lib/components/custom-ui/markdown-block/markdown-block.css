@@ -66,7 +66,7 @@
       @apply text-blue-600 dark:text-blue-400 hover:underline cursor-pointer;
     }
 
-    & :not(pre) code {
+    & :not(pre) > code {
       @apply rounded bg-secondary text-secondary-foreground py-0.5 px-1 text-sm;
     }
 

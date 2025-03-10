@@ -23,7 +23,7 @@ const SetDefault: Component<{
         });
       }}
     >
-      Set default
+      Set as default
     </Button>
   );
 }
