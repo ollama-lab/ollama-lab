@@ -1,5 +1,5 @@
 import { Section } from "~/lib/models/section";
-import { BotMessageSquareIcon, PackageIcon, SettingsIcon } from "lucide-solid";
+import { BotMessageSquareIcon, MessagesSquareIcon, PackageIcon, SettingsIcon } from "lucide-solid";
 import { TabLink } from "./tab-link";
 import { useLocation } from "@solidjs/router";
 import { createMemo, For } from "solid-js";
@@ -10,6 +10,12 @@ const tabs: Section[] = [
     icon: <BotMessageSquareIcon />,
     href: "/",
     activePattern: /^\/?$/,
+  },
+  {
+    name: "Head-to-head",
+    icon: <MessagesSquareIcon />,
+    href: "/h2h",
+    activePattern: /^\/h2h(\/*.)?$/,
   },
   {
     name: "Models",
