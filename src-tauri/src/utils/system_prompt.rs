@@ -76,3 +76,23 @@ pub async fn get_session_system_prompt(
         .await?
         .map(|tuple| tuple.0))
 }
+
+pub async fn set_session_system_prompt(
+    session_id: i64,
+    content: Option<&str>,
+    executor: impl Executor<'_, Database = Sqlite>,
+) -> Result<Option<String>, Error> {
+    Ok(sqlx::query_as::<_, (String,)>(r#"
+        UPDATE session_system_prompts
+        SET content = $2
+        WHERE session_id = $1;
+    "#)
+        .bind(session_id)
+        .bind(content
+            .map(|value| value.trim())
+            .and_then(|value| if value.is_empty() { None } else { Some(value) }))
+        .fetch_optional(executor)
+        .await?
+        .map(|tuple| tuple.0))
+}
+
