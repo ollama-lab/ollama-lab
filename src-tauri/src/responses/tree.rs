@@ -163,7 +163,7 @@ impl ChatTree {
         "#,
         )
         .bind(self.session_id)
-        .bind(create_info.role.to_string())
+        .bind(create_info.role.as_str())
         .bind(create_info.content)
         .bind(parent_id)
         .bind(create_info.completed)
