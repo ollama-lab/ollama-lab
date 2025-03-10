@@ -1,9 +1,9 @@
 import AppearanceSection from "./builtin-sections/appearance";
 import OllamaSection from "./builtin-sections/ollama";
 import { createSignal, Match, Show, Switch } from "solid-js";
-import { Button } from "../../ui/button";
+import { Button } from "~/lib/components/ui/button";
 import { relaunch } from "@tauri-apps/plugin-process";
-import { LoaderSpin } from "../../loader-spin";
+import { LoaderSpin } from "~/lib/components/loader-spin";
 import { restartVotes } from "~/lib/contexts/globals/settings";
 import { DevModeSection } from "./builtin-sections/dev-mode";
 
