@@ -11,6 +11,8 @@ import { switchBranch as switchBranchCommand } from "~/lib/commands/chat-history
 import { currentSession, isNewSession, setCurrentSessionId, setNewSession } from "./current-session";
 import { getCurrentModel } from "./current-model";
 import { setCandidate } from "./candidate-model";
+import { getCandidateSessionSystemPrompt, setCandidateSessionSystemPrompt } from "./candidate-session-system-prompt";
+import { getCurrentSettings } from "./settings";
 
 export interface PromptSubmissionEvents {
   onRespond?: () => void;
@@ -80,10 +82,16 @@ export async function submitChat(
       sessionTitle = `Image${prompt.imagePaths.length > 1 ? "s" : ""}`;
     }
 
-    session = await createSession(model, sessionTitle);
+    const sessionSystemPrompt = getCandidateSessionSystemPrompt();
+
+    session = await createSession(model, sessionTitle, getCurrentSettings().h2h ?? false);
 
     await reloadSession(session.id);
     await setNewSession(session.id);
+
+    if (sessionSystemPrompt) {
+      await setCandidateSessionSystemPrompt(sessionSystemPrompt);
+    }
   }
 
   const parentId = lastChat()?.id;

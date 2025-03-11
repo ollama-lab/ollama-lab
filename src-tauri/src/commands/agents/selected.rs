@@ -11,6 +11,7 @@ use crate::{
     },
 };
 
+#[tauri::command]
 pub async fn get_selected_agents(
     state: State<'_, AppState>,
     session_id: i64,
@@ -20,6 +21,7 @@ pub async fn get_selected_agents(
     Ok(get_selected_agents_(session_id, pool).await?)
 }
 
+#[tauri::command]
 pub async fn add_selected_agent(
     state: State<'_, AppState>,
     session_id: i64,
@@ -31,6 +33,7 @@ pub async fn add_selected_agent(
     Ok(())
 }
 
+#[tauri::command]
 pub async fn remove_selected_agent(
     state: State<'_, AppState>,
     session_id: i64,

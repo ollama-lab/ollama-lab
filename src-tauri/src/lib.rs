@@ -48,6 +48,8 @@ pub fn run() {
             commands::settings::default_settings,
             commands::system_prompts::get_model_system_prompt,
             commands::system_prompts::set_model_system_prompt,
+            commands::system_prompts::get_session_system_prompt,
+            commands::system_prompts::set_session_system_prompt,
             commands::images::get_compressed_image_base64,
             commands::images::get_thumbnail_base64,
             commands::images::get_images_by_chat_id,
@@ -56,6 +58,9 @@ pub fn run() {
             commands::agents::add_agent,
             commands::agents::update_agent,
             commands::agents::delete_agent,
+            commands::agents::selected::get_selected_agents,
+            commands::agents::selected::add_selected_agent,
+            commands::agents::selected::remove_selected_agent,
         ])
         .setup(|app| {
             app.manage(AppState::init()?);
