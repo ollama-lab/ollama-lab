@@ -3,6 +3,7 @@ import { ModelListItem, RunningModel } from "~/lib/models/model-item";
 import { getDefaultModel, listLocalModels, listRunningModels } from "~/lib/commands/models";
 import { createEffect } from "solid-js";
 import { toast } from "solid-sonner";
+import { setDefaultModel as setDefaultModelCommand } from "~/lib/commands/models";
 
 export type FetchingStatus = "unfetched" | "fetching" | "error" | "fetched";
 
@@ -57,7 +58,7 @@ createEffect(() => {
 });
 
 export async function setDefaultModel(newModel: string) {
-  await setDefaultModel(newModel);
+  await setDefaultModelCommand(newModel);
   setStore("defaultModel", newModel);
 }
 
