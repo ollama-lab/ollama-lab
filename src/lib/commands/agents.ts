@@ -38,3 +38,15 @@ export async function updateAgent(id: number, updateInfo: AgentUpdate): Promise<
 export async function deleteAgent(id: number): Promise<number | undefined> {
   return (await invoke<number | null>("delete_agent", { id })) ?? undefined;
 }
+
+export async function getSelectedAgents(sessionId: number): Promise<Agent[]> {
+  return (await invoke<InternalAgent[]>("get_selected_agents", { sessionId })).map((item) => toAgent(item));
+}
+
+export async function addSelectedAgent(sessionId: number, agentId: number): Promise<void> {
+  await invoke<void>("add_selected_agent", { sessionId, agentId });
+}
+
+export async function removeSelectedAgent(sessionId: number, agentId: number): Promise<void> {
+  await invoke<void>("remove_selected_agent", { sessionId, agentId });
+}
