@@ -181,9 +181,10 @@ pub async fn stream_via_channel(
     session_id: i64,
     model: String,
     channel: &ResponseStreamingChannel,
-) -> Result<(), Error> {
+) -> Result<bool, Error> {
     // Text streaming channel
     let (tx, mut rx) = mpsc::channel(32);
+    let mut is_finished = false;
 
     tokio::spawn(async move {
         stream_response(
@@ -201,8 +202,11 @@ pub async fn stream_via_channel(
 
     while let Some(event) = rx.recv().await {
         match event {
-            StreamingResponseEvent::Done
-            | StreamingResponseEvent::Failure { .. }
+            StreamingResponseEvent::Done => {
+                is_finished = true;
+                rx.close();
+            }
+            StreamingResponseEvent::Failure { .. }
             | StreamingResponseEvent::Canceled { .. } => {
                 rx.close();
             }
@@ -212,5 +216,5 @@ pub async fn stream_via_channel(
         channel.send(event)?;
     }
 
-    Ok(())
+    Ok(is_finished)
 }

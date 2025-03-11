@@ -2,6 +2,7 @@ import { createStore } from "solid-js/store";
 import { createMemo, createSignal } from "solid-js";
 import { IncomingUserPrompt } from "~/lib/models/chat";
 import { getCurrentModel } from "./current-model";
+import { getCurrentSettings } from "./settings";
 
 const [inputPrompt, setInputPrompt] = createStore<IncomingUserPrompt>({ text: "" });
 const [hidePromptBar, setHidePromptBar] = createSignal(false);
@@ -11,7 +12,7 @@ export const isSubmittable = createMemo(() => {
     return false;
   }
 
-  if (inputPrompt.text.length > 0) {
+  if (inputPrompt.text.length > 0 || getCurrentSettings().h2h) {
     return true;
   }
 

@@ -11,8 +11,7 @@ CREATE TABLE agents (
 );
 
 CREATE TABLE session_system_prompts (
-    id              INTEGER NOT NULL PRIMARY KEY,
-    session_id      INTEGER NOT NULL REFERENCES sessions (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    session_id      INTEGER NOT NULL PRIMARY KEY REFERENCES sessions (id) ON DELETE CASCADE ON UPDATE CASCADE,
     content         TEXT NOT NULL
 );
 

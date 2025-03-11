@@ -21,8 +21,8 @@ export function getCandidateSessionSystemPrompt() {
   return candidate();
 }
 
-export async function setCandidateSessionSystemPrompt(value?: string) {
-  const id = sessionId();
+export async function setCandidateSessionSystemPrompt(value?: string, otherId?: number) {
+  const id = otherId ?? sessionId();
   if (id !== undefined) {
     await setSessionSystemPrompt(id, value ?? null);
   }

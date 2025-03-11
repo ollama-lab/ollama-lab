@@ -66,19 +66,21 @@ pub async fn submit_user_prompt(
         }
     }
 
-    let user_chat_ret = add_user_prompt(
-        &mut tx,
-        &tree,
-        parent_id,
-        prompt.text.as_str(),
-        prompt.image_paths,
-        &on_stream,
-        reuse_sibling_images,
-    ).await?;
+    if !prompt.text.is_empty() {
+        let user_chat_ret = add_user_prompt(
+            &mut tx,
+            &tree,
+            parent_id,
+            prompt.text.as_str(),
+            prompt.image_paths,
+            &on_stream,
+            reuse_sibling_images,
+        ).await?;
+
+        parent_id = Some(user_chat_ret.id);
+    }
 
     tx.commit().await?;
-
-    parent_id = Some(user_chat_ret.id);
 
     let mut response_ret: AssistantPromptAdditionReturn;
 
@@ -125,7 +127,9 @@ pub async fn submit_user_prompt(
 
         tx.commit().await?;
 
-        stream_via_channel(
+        parent_id = Some(response_ret.id);
+
+        let is_finished = stream_via_channel(
             ollama.clone(),
             pool2,
             response_ret.id,
@@ -136,6 +140,10 @@ pub async fn submit_user_prompt(
         ).await?;
 
         app.unlisten(event_id);
+
+        if !is_finished {
+            break;
+        }
 
         if !is_h2h {
             break;

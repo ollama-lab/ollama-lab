@@ -91,7 +91,7 @@ export async function submitChat(
     await setNewSession(session.id);
 
     if (sessionSystemPrompt) {
-      await setCandidateSessionSystemPrompt(sessionSystemPrompt);
+      await setCandidateSessionSystemPrompt(sessionSystemPrompt, session.id);
     }
   }
 
