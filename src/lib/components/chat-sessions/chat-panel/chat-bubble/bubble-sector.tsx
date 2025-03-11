@@ -14,6 +14,7 @@ import { LoaderSpin } from "~/lib/components/loader-spin";
 import { TriangleAlertIcon } from "lucide-solid";
 import { SystemPromptBlock } from "./bubble-sector/system-prompt-block";
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
+import { getAgentList } from "~/lib/contexts/globals/agents";
 
 export function BubbleSector() {
   const chat = useChatEntry();
@@ -23,6 +24,25 @@ export function BubbleSector() {
   const status = createMemo(() => chat?.().status);
 
   const [editMode, setEditMode] = createSignal(false);
+
+  const name = createMemo(() => {
+    const c = chat?.();
+    if (!c) {
+      return undefined;
+    }
+
+    const agentId = c.agentId;
+    if (agentId === undefined) {
+      return model();
+    }
+
+    const agent = getAgentList().find((item) => item.id === agentId);
+    if (!agent) {
+      return model();
+    }
+
+    return agent.name ?? model();
+  });
 
   return (
     <Switch>
@@ -51,7 +71,7 @@ export function BubbleSector() {
                 <span class="text-xs font-bold">
                   <Switch>
                     <Match when={role() === "assistant"}>
-                      {model()}
+                      {name()}
                     </Match>
                     <Match when={role() === "user"}>
                       You

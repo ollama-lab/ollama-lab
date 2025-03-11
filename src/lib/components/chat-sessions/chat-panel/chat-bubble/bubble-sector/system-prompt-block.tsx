@@ -12,7 +12,7 @@ export function SystemPromptBlock() {
 
   return (
     <Collapsible
-      class="bg-muted text-muted-foreground rounded px-2 py-2 md:px-3"
+      class="bg-muted text-muted-foreground rounded px-2 py-2 md:px-3 my-2"
       open={open()}
       onOpenChange={setOpen}
     >
