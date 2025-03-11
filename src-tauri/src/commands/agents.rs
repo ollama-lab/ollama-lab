@@ -13,6 +13,8 @@ use crate::{
     },
 };
 
+pub mod selected;
+
 #[tauri::command]
 pub async fn get_all_agents(state: State<'_, AppState>) -> Result<Vec<Agent>, Error> {
     let pool = state.conn_pool.clone();

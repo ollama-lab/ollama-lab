@@ -71,3 +71,50 @@ pub async fn delete_agent(id: i64, executor: impl Executor<'_, Database = Sqlite
         .await?
         .map(|tuple| tuple.0))
 }
+
+pub async fn get_selected_agents(
+    session_id: i64,
+    executor: impl Executor<'_, Database = Sqlite>
+) -> Result<Vec<Agent>, Error> {
+    Ok(sqlx::query_as::<_, Agent>(r#"
+        SELECT a.id, a.name, a.model, a.system_prompt, a.date_created
+        FROM selected_agents sa
+        INNER JOIN agents a ON sa.agent_id = a.id
+        WHERE sa.session_id = $1;
+    "#)
+        .bind(session_id)
+        .fetch_all(executor)
+        .await?)
+}
+
+pub async fn add_selected_agent(
+    session_id: i64,
+    agent_id: i64,
+    executor: impl Executor<'_, Database = Sqlite>,
+) -> Result<(), Error> {
+    sqlx::query(r#"
+        INSERT INTO selected_agents (session_id, agent_id)
+        VALUES ($1, $2);
+    "#)
+        .bind(session_id).bind(agent_id)
+        .execute(executor)
+        .await?;
+
+    Ok(())
+}
+
+pub async fn remove_selected_agent(
+    session_id: i64,
+    agent_id: i64,
+    executor: impl Executor<'_, Database = Sqlite>,
+) -> Result<(), Error> {
+    sqlx::query(r#"
+        DELETE FROM selected_agents
+        WHERE session_id = $1 AND agent_id = $2;
+    "#)
+        .bind(session_id).bind(agent_id)
+        .execute(executor)
+        .await?;
+
+    Ok(())
+}
