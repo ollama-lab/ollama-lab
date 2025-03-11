@@ -46,3 +46,9 @@ LEFT OUTER JOIN (
 ) ic ON ic.chat_id = c.id
 LEFT OUTER JOIN agents ha ON c.agent_id = ha.id
 INNER JOIN sessions s ON c.session_id = s.id;
+
+CREATE TABLE selected_agents (
+    session_id      INTEGER NOT NULL REFERENCES sessions (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    agent_id        INTEGER NOT NULL REFERENCES agents (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    PRIMARY KEY (session_id, agent_id)
+);
