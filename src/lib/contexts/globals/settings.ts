@@ -13,6 +13,7 @@ const [settingsStore, setSettingsStore] = createStore<Settings>({
   ollama: {
     uri: null,
   },
+  h2h: null,
 });
 
 const [restartVotes, setRestartVotes] = createSignal<string[]>([]);
