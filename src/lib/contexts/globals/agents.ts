@@ -9,7 +9,7 @@ export function getAgentList() {
 }
 
 export async function reloadAgentList() {
-  setAgentList(await getAllAgents());
+  setAgentList(reconcile(await getAllAgents()));
 }
 
 export async function addAgent(createInfo: AgentCreation) {

@@ -54,7 +54,7 @@ impl ChatTree {
                     UNION
                     SELECT
                         c1.id, c1.session_id, c1.role, c1.content, c1.image_count, c1.completed, c1.date_created,
-                        c1.date_edited, c1.model, c1.parent_id, c1.priority, c1.thoughts, c1.thought_for
+                        c1.date_edited, c1.model, c1.parent_id, c1.priority, c1.thoughts, c1.thought_for, c1.agent_id
                     FROM v_complete_chats AS c1, rec_chats
                     WHERE c1.session_id = $1
                         AND c1.parent_id = rec_chats.id
