@@ -1,5 +1,5 @@
 product-name = "ollama-lab"
-version = "0.3.2"
+version = "0.3.3"
 identifier = "org.ollamalab.tauri"
 
 [build]
