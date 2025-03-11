@@ -82,9 +82,10 @@ export async function submitChat(
       sessionTitle = `Image${prompt.imagePaths.length > 1 ? "s" : ""}`;
     }
 
-    const sessionSystemPrompt = getCandidateSessionSystemPrompt();
+    const isH2h = getCurrentSettings().h2h ?? false;
+    const sessionSystemPrompt = isH2h ? getCandidateSessionSystemPrompt() : undefined;
 
-    session = await createSession(model, sessionTitle, getCurrentSettings().h2h ?? false);
+    session = await createSession(model, sessionTitle, isH2h);
 
     await reloadSession(session.id);
     await setNewSession(session.id);

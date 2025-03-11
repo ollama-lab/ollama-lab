@@ -7,13 +7,13 @@ use tokio::sync::oneshot;
 use crate::{
     app_state::AppState,
     chat_gen::utils::{
-        add_assistent_prompt, add_system_prompt, add_user_prompt, stream_via_channel,
+        add_assistent_prompt, add_generic_system_prompt, add_model_system_prompt, add_user_prompt, stream_via_channel, AssistantPromptAdditionReturn
     },
     errors::Error,
     events::StreamingResponseEvent,
     models::chat::{ChatGenerationReturn, IncomingUserPrompt},
-    responses::tree::ChatTree,
-    utils::sessions::get_session,
+    responses::tree::{models::NewChildNode, ChatTree},
+    utils::{h2h::list_agents, sessions::get_session, system_prompt::get_session_system_prompt},
 };
 
 pub mod chat_history;
@@ -27,6 +27,7 @@ pub async fn submit_user_prompt(
     prompt: IncomingUserPrompt,
     on_stream: Channel<StreamingResponseEvent>,
     reuse_sibling_images: bool,
+    is_h2h: bool,
 ) -> Result<ChatGenerationReturn, Error> {
     let ollama = &state.ollama;
     let profile_id = state.profile;
@@ -43,11 +44,25 @@ pub async fn submit_user_prompt(
     let mut parent_id = parent_id;
 
     if prompt.use_system_prompt.unwrap_or(false) && parent_id.is_none() {
-        let ret = add_system_prompt(&tree, &mut tx, &on_stream, profile_id, session.current_model.as_str())
+        let ret = add_model_system_prompt(&tree, &mut tx, &on_stream, profile_id, session.current_model.as_str())
             .await?;
 
         if let Some(new_parent_id) = ret.parent_id {
             parent_id = Some(new_parent_id);
+        }
+    }
+
+    if is_h2h {
+        if let Some(system_prompt) = get_session_system_prompt(session_id, &mut *tx).await? {
+            let ret = add_generic_system_prompt(
+                &tree,
+                &mut tx,
+                &on_stream,
+                parent_id,
+                system_prompt
+            ).await?;
+
+            parent_id = ret.parent_id;
         }
     }
 
@@ -61,34 +76,75 @@ pub async fn submit_user_prompt(
         reuse_sibling_images,
     ).await?;
 
-    let response_ret = add_assistent_prompt(
-        &mut tx,
-        &tree,
-        Some(user_chat_ret.id),
-        None,
-        session.current_model.as_str(),
-        &on_stream,
-    ).await?;
-
     tx.commit().await?;
 
-    let (cancel_tx, cancel_rx) = oneshot::channel();
+    parent_id = Some(user_chat_ret.id);
 
-    let event_id = app.once("cancel-gen", move |_| {
-        cancel_tx.send(()).unwrap();
-    });
+    let mut response_ret: AssistantPromptAdditionReturn;
 
-    stream_via_channel(
-        ollama.clone(),
-        pool,
-        response_ret.id,
-        cancel_rx,
-        session.id,
-        session.current_model,
-        &on_stream,
-    ).await?;
+    let agents = list_agents(profile_id, &pool).await?;
+    let mut agent_index = 0;
 
-    app.unlisten(event_id);
+    loop {
+        let model = session.current_model.clone();
+
+        let pool2 = pool.clone();
+
+        let (cancel_tx, cancel_rx) = oneshot::channel();
+
+        let event_id = app.once("cancel-gen", move |_| {
+            cancel_tx.send(()).unwrap();
+        });
+
+        let mut tx = pool2.begin().await?;
+        
+        if is_h2h && !agents.is_empty() {
+            if let Some(cur_agent) = agents.get(agent_index) {
+                if let Some(prompt) = cur_agent.system_prompt.clone() {
+                    let ret = add_generic_system_prompt(
+                        &tree,
+                        &mut tx,
+                        &on_stream,
+                        parent_id,
+                        prompt,
+                    ).await?;
+
+                    parent_id = ret.parent_id;
+                }
+            }
+        }
+
+        response_ret = add_assistent_prompt(
+            &mut tx,
+            &tree,
+            parent_id,
+            None,
+            model.as_str(),
+            &on_stream,
+        ).await?;
+
+        tx.commit().await?;
+
+        stream_via_channel(
+            ollama.clone(),
+            pool2,
+            response_ret.id,
+            cancel_rx,
+            session.id,
+            model,
+            &on_stream,
+        ).await?;
+
+        app.unlisten(event_id);
+
+        if !is_h2h {
+            break;
+        }
+        
+        if !agents.is_empty() {
+            agent_index = (agent_index + 1) % agents.len();
+        }
+    }
 
     Ok(ChatGenerationReturn {
         id: response_ret.id,
@@ -104,6 +160,7 @@ pub async fn regenerate_response(
     chat_id: i64,
     model: Option<String>,
     on_stream: Channel<StreamingResponseEvent>,
+    is_h2h: bool,
 ) -> Result<ChatGenerationReturn, Error> {
     let ollama = &state.ollama;
     let profile_id = state.profile;

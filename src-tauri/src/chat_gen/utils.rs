@@ -20,7 +20,7 @@ pub struct SystemPromptAdditionReturn {
     pub parent_id: Option<i64>,
 }
 
-pub async fn add_system_prompt(
+pub async fn add_model_system_prompt(
     tree: &ChatTree,
     tx: &mut Transaction<'_, Sqlite>,
     channel: &ResponseStreamingChannel,
@@ -58,6 +58,34 @@ pub async fn add_system_prompt(
     }
 
     Ok(ret)
+}
+
+pub async fn add_generic_system_prompt(
+    tree: &ChatTree,
+    tx: &mut Transaction<'_, Sqlite>,
+    channel: &ResponseStreamingChannel,
+    parent_id: Option<i64>,
+    system_prompt: String,
+) -> Result<SystemPromptAdditionReturn, Error> {
+    let ret = tree.new_child(
+        tx,
+        parent_id,
+        NewChildNode {
+            content: system_prompt.as_str(),
+            role: Role::System,
+            model: None,
+            completed: true,
+            images: None,
+            agent_id: None,
+        },
+    ).await?;
+
+    channel.send(StreamingResponseEvent::SystemPrompt {
+        id: ret.0,
+        text: system_prompt,
+    })?;
+
+    Ok(SystemPromptAdditionReturn{ parent_id: Some(ret.0) })
 }
 
 pub struct UserPromptAdditionReturn {
