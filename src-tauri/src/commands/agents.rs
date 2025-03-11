@@ -19,21 +19,21 @@ pub mod selected;
 pub async fn get_all_agents(state: State<'_, AppState>) -> Result<Vec<Agent>, Error> {
     let pool = state.conn_pool.clone();
 
-    Ok(list_agents(&pool).await?)
+    Ok(list_agents(state.profile, &pool).await?)
 }
 
 #[tauri::command]
 pub async fn get_agent(state: State<'_, AppState>, id: i64) -> Result<Option<Agent>, Error> {
     let pool = state.conn_pool.clone();
 
-    Ok(get_agent_(id, &pool).await?)
+    Ok(get_agent_(state.profile, id, &pool).await?)
 }
 
 #[tauri::command]
 pub async fn add_agent(state: State<'_, AppState>, model: String) -> Result<Agent, Error> {
     let pool = state.conn_pool.clone();
 
-    Ok(create_agent(&AgentCreation{ model: model.as_str() }, &pool).await?)
+    Ok(create_agent(state.profile, &AgentCreation{ model: model.as_str() }, &pool).await?)
 }
 
 #[tauri::command]
@@ -44,12 +44,12 @@ pub async fn update_agent(
 ) -> Result<Option<Agent>, Error> {
     let pool = state.conn_pool.clone();
 
-    Ok(update_agent_(id, &update_info, &pool).await?)
+    Ok(update_agent_(state.profile, id, &update_info, &pool).await?)
 }
 
 #[tauri::command]
 pub async fn delete_agent(state: State<'_, AppState>, id: i64) -> Result<Option<i64>, Error> {
     let pool = state.conn_pool.clone();
 
-    Ok(delete_agent_(id, &pool).await?)
+    Ok(delete_agent_(state.profile, id, &pool).await?)
 }

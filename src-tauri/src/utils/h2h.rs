@@ -3,41 +3,48 @@ use sqlx::{Executor, Sqlite};
 use crate::{errors::Error, models::agent::{Agent, AgentCreation, AgentUpdate}};
 
 pub async fn get_agent(
+    profile_id: i64,
     agent_id: i64,
     executor: impl Executor<'_, Database = Sqlite>,
 ) -> Result<Option<Agent>, Error> {
     Ok(sqlx::query_as::<_, Agent>(r#"
         SELECT id, name, model, system_prompt, date_created
         FROM agents
-        WHERE id = $1;
+        WHERE id = $1 AND profile_id = $2;
     "#)
-        .bind(agent_id)
+        .bind(agent_id).bind(profile_id)
         .fetch_optional(executor)
         .await?)
 }
 
-pub async fn list_agents(executor: impl Executor<'_, Database = Sqlite>) -> Result<Vec<Agent>, Error> {
+pub async fn list_agents(
+    profile_id: i64,
+    executor: impl Executor<'_, Database = Sqlite>,
+) -> Result<Vec<Agent>, Error> {
     Ok(sqlx::query_as::<_, Agent>(r#"
         SELECT id, name, model, system_prompt, date_created
-        FROM agents;
-    "#).fetch_all(executor).await?)
+        FROM agents
+        WHERE profile_id = $1;
+    "#).bind(profile_id).fetch_all(executor).await?)
 }
 
 pub async fn create_agent(
+    profile_id: i64,
     create_info: &AgentCreation<'_>,
     executor: impl Executor<'_, Database = Sqlite>,
 ) -> Result<Agent, Error> {
     Ok(sqlx::query_as::<_, Agent>(r#"
-        INSERT INTO agents (model)
-        VALUES ($1)
+        INSERT INTO agents (model, profile_id)
+        VALUES ($1, $2)
         RETURNING id, name, model, system_prompt, date_created;
     "#)
-        .bind(create_info.model)
+        .bind(create_info.model).bind(profile_id)
         .fetch_one(executor)
         .await?)
 }
 
 pub async fn update_agent(
+    profile_id: i64,
     id: i64,
     update_info: &AgentUpdate<'_>,
     executor: impl Executor<'_, Database = Sqlite>,
@@ -47,7 +54,7 @@ pub async fn update_agent(
         SET name = NULLIF(COALESCE($2, name)),
             model = COALESCE($3, model),
             system_prompt = NULLIF(COALESCE($4, system_prompt), '')
-        WHERE id = $1
+        WHERE id = $1 AND profile_id = $5
         RETURNING id, name, model, system_prompt, date_created;
     "#)
         .bind(id)
@@ -56,17 +63,23 @@ pub async fn update_agent(
             .map(|model| model.trim())
             .and_then(|trimmed| if trimmed.is_empty() { None } else { Some(trimmed) }))
         .bind(update_info.system_prompt.map(|value| value.trim()))
+        .bind(profile_id)
         .fetch_optional(executor)
         .await?)
 }
 
-pub async fn delete_agent(id: i64, executor: impl Executor<'_, Database = Sqlite>) -> Result<Option<i64>, Error> {
+pub async fn delete_agent(
+    profile_id: i64,
+    id: i64,
+    executor: impl Executor<'_, Database = Sqlite>,
+) -> Result<Option<i64>, Error> {
     Ok(sqlx::query_as::<_, (i64,)>(r#"
         DELETE FROM agents
-        WHERE id = $1
+        WHERE id = $1 AND profile_id = $2
         RETURNING id;
     "#)
         .bind(id)
+        .bind(profile_id)
         .fetch_optional(executor)
         .await?
         .map(|tuple| tuple.0))

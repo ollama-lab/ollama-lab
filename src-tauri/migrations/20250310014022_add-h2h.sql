@@ -6,6 +6,7 @@ CREATE TABLE agents (
     name            TEXT,
     model           TEXT NOT NULL,
     system_prompt   TEXT,
+    profile_id      INTEGER NOT NULL REFERENCES profiles (id) ON DELETE CASCADE ON UPDATE CASCADE,
     date_created    INTEGER NOT NULL DEFAULT (unixepoch())
 );
 
