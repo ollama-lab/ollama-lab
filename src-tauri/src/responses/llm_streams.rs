@@ -9,7 +9,13 @@ use ollama_rest::{
 use sqlx::{Pool, Sqlite};
 use tokio::sync::{mpsc, oneshot, Mutex};
 
-use crate::{errors::Error, events::StreamingResponseEvent, responses::tree::ChatTree, utils::images::get_chat_images};
+use crate::{
+    chat_gen::ego::IntoEgoOf,
+    errors::Error,
+    events::StreamingResponseEvent,
+    responses::tree::ChatTree,
+    utils::images::get_chat_images
+};
 
 pub async fn stream_response(
     ollama: &Ollama,
@@ -19,13 +25,18 @@ pub async fn stream_response(
     cancel_receiver: Option<oneshot::Receiver<()>>,
     session_id: i64,
     current_model: &str,
+    agent_id: Option<i64>,
 ) -> Result<(), Error> {
     let tx = chan_sender.clone();
     let tx2 = chan_sender.clone();
 
-    let chat_history = ChatTree::new(session_id)
+    let mut chat_history = ChatTree::new(session_id)
         .current_branch(pool, None, true)
         .await?;
+
+    if let Some(agent_id) = agent_id {
+        chat_history = chat_history.into_ego_of(agent_id);
+    }
 
     let mut image_map: HashMap<i64, Vec<String>> = HashMap::new();
 

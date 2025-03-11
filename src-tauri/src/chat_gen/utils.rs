@@ -66,6 +66,9 @@ pub async fn add_generic_system_prompt(
     channel: &ResponseStreamingChannel,
     parent_id: Option<i64>,
     system_prompt: String,
+    completed: bool,
+    agent_id: Option<i64>,
+    agent_name: Option<&str>,
 ) -> Result<SystemPromptAdditionReturn, Error> {
     let ret = tree.new_child(
         tx,
@@ -74,15 +77,19 @@ pub async fn add_generic_system_prompt(
             content: system_prompt.as_str(),
             role: Role::System,
             model: None,
-            completed: true,
+            completed,
             images: None,
-            agent_id: None,
+            agent_id,
         },
     ).await?;
 
     channel.send(StreamingResponseEvent::SystemPrompt {
         id: ret.0,
-        text: system_prompt,
+        text: if let Some(agent_name) = agent_name {
+            format!("{}: {}", agent_name, system_prompt)
+        } else {
+            system_prompt
+        },
     })?;
 
     Ok(SystemPromptAdditionReturn{ parent_id: Some(ret.0) })
@@ -180,6 +187,7 @@ pub async fn stream_via_channel(
     cancel_rx: oneshot::Receiver<()>,
     session_id: i64,
     model: String,
+    agent_id: Option<i64>,
     channel: &ResponseStreamingChannel,
 ) -> Result<bool, Error> {
     // Text streaming channel
@@ -195,6 +203,7 @@ pub async fn stream_via_channel(
             Some(cancel_rx),
             session_id,
             model.as_str(),
+            agent_id,
         )
         .await
         .unwrap();
@@ -217,4 +226,17 @@ pub async fn stream_via_channel(
     }
 
     Ok(is_finished)
+}
+
+pub async fn set_complete(chat_id: i64, tx: &mut Transaction<'_, Sqlite>) -> Result<(), Error> {
+    sqlx::query(r#"
+        UPDATE chats
+        SET completed = TRUE
+        WHERE id = $1;
+    "#)
+        .bind(chat_id)
+        .execute(&mut **tx)
+        .await?;
+
+    Ok(())
 }

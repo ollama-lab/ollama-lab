@@ -89,7 +89,7 @@ pub async fn set_session_system_prompt(
             .and_then(|value| if value.is_empty() { None } else { Some(value) }) {
         ret = sqlx::query_as::<_, (String,)>(r#"
             INSERT INTO session_system_prompts (session_id, content)
-            VALUE ($1, $2)
+            VALUES ($1, $2)
             ON CONFLICT (session_id)
             DO UPDATE SET content = excluded.content;
         "#)

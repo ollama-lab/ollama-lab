@@ -1,6 +1,6 @@
 use std::{collections::HashMap, future::Future};
 
-use ollama_rest::chrono::{DateTime, Utc};
+use ollama_rest::{chrono::{DateTime, Utc}, models::chat::Role};
 use serde::{Deserialize, Serialize};
 use sqlx::{pool::PoolConnection, Sqlite};
 

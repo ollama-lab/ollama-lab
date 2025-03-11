@@ -59,7 +59,10 @@ pub async fn submit_user_prompt(
                 &mut tx,
                 &on_stream,
                 parent_id,
-                system_prompt
+                system_prompt,
+                true,
+                None,
+                None,
             ).await?;
 
             parent_id = ret.parent_id;
@@ -80,14 +83,34 @@ pub async fn submit_user_prompt(
         parent_id = Some(user_chat_ret.id);
     }
 
-    tx.commit().await?;
-
     let mut response_ret: AssistantPromptAdditionReturn;
 
     let agents = list_agents(profile_id, &pool).await?;
     let mut agent_index = 0;
 
+    if is_h2h && !agents.is_empty() {
+        for agent in agents.iter() {
+            if let Some(prompt) = agent.system_prompt.clone() {
+                let ret = add_generic_system_prompt(
+                    &tree,
+                    &mut tx,
+                    &on_stream,
+                    parent_id,
+                    prompt,
+                    true,
+                    Some(agent.id),
+                    Some(agent.display_name()),
+                ).await?;
+
+                parent_id = ret.parent_id;
+            }
+        }
+    }
+
+    tx.commit().await?;
+
     loop {
+        let cur_agent = agents.get(agent_index);
         let model = session.current_model.clone();
 
         let pool2 = pool.clone();
@@ -99,28 +122,27 @@ pub async fn submit_user_prompt(
         });
 
         let mut tx = pool2.begin().await?;
-        
-        if is_h2h && !agents.is_empty() {
-            if let Some(cur_agent) = agents.get(agent_index) {
-                if let Some(prompt) = cur_agent.system_prompt.clone() {
-                    let ret = add_generic_system_prompt(
-                        &tree,
-                        &mut tx,
-                        &on_stream,
-                        parent_id,
-                        prompt,
-                    ).await?;
 
-                    parent_id = ret.parent_id;
-                }
-            }
+        if let Some(indicator) = cur_agent.map(|item| format!("({} is talking)", item.display_name())) {
+            let indicator_ret = add_generic_system_prompt(
+                &tree,
+                &mut tx,
+                &on_stream,
+                parent_id,
+                indicator,
+                true,
+                None,
+                None,
+            ).await?;
+
+            parent_id = indicator_ret.parent_id;
         }
-
+        
         response_ret = add_assistent_prompt(
             &mut tx,
             &tree,
             parent_id,
-            None,
+            cur_agent.map(|agent| agent.id),
             model.as_str(),
             &on_stream,
         ).await?;
@@ -136,6 +158,7 @@ pub async fn submit_user_prompt(
             cancel_rx,
             session.id,
             model,
+            cur_agent.map(|agent| agent.id),
             &on_stream,
         ).await?;
 
@@ -253,6 +276,7 @@ pub async fn regenerate_response(
         cancel_rx,
         session.id,
         model.unwrap_or(session.current_model),
+        None,
         &on_stream,
     ).await?;
 

@@ -11,6 +11,12 @@ pub struct Agent {
     pub date_created: DateTime<Utc>,
 }
 
+impl Agent {
+    pub fn display_name(&self) -> &str {
+        self.name.as_ref().map(|s| s.as_str()).unwrap_or_else(|| &self.model)
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 #[serde(rename_all = "camelCase")]
 pub struct AgentCreation<'a> {
