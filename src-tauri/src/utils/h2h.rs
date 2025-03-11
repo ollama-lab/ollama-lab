@@ -51,7 +51,7 @@ pub async fn update_agent(
 ) -> Result<Option<Agent>, Error> {
     Ok(sqlx::query_as::<_, Agent>(r#"
         UPDATE agents
-        SET name = NULLIF(COALESCE($2, name)),
+        SET name = NULLIF(COALESCE($2, name), ''),
             model = COALESCE($3, model),
             system_prompt = NULLIF(COALESCE($4, system_prompt), '')
         WHERE id = $1 AND profile_id = $5

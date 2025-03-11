@@ -1,7 +1,7 @@
 import { Component } from "solid-js";
 import { SectionRoot } from "../section-root";
 import { SwitchRoot, SwitchControl } from "~/lib/components/ui/switch";
-import { getCurrentSettings, setCurrentSettings } from "~/lib/contexts/globals/settings";
+import { getCurrentSettings, saveSettings, setCurrentSettings } from "~/lib/contexts/globals/settings";
 
 export const HeadToHeadSection: Component = () => {
   const h2hEnabled = () => getCurrentSettings().h2h ?? false;
@@ -12,7 +12,10 @@ export const HeadToHeadSection: Component = () => {
 
       <SwitchRoot
         checked={h2hEnabled()}
-        onChange={(value) => setCurrentSettings("h2h", value)}
+        onChange={(value) => {
+          setCurrentSettings("h2h", value);
+          saveSettings();
+        }}
       >
         <SwitchControl />
       </SwitchRoot>
