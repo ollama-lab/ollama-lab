@@ -13,7 +13,6 @@ const SetDefault: Component<{
         const prev = defaultModel();
         const m = props.model();
 
-        setDefaultModel(m);
         setDefaultModel(m).catch((err) => {
           if (prev) {
             setDefaultModel(prev);

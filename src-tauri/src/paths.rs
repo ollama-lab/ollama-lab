@@ -3,7 +3,10 @@ use std::path::PathBuf;
 use dirs::{config_local_dir, data_local_dir};
 
 pub(crate) const APP_NAME: &str = "ollama-lab";
+#[cfg(not(debug_assertions))]
 pub(crate) const DB_NAME: &str = "data.sqlite";
+#[cfg(debug_assertions)]
+pub(crate) const DB_NAME: &str = "data-dev.sqlite";
 
 pub(crate) fn local_config_dir() -> Option<PathBuf> {
     config_local_dir().map(|mut dir| {
