@@ -133,7 +133,7 @@ pub async fn regenerate_response(
         Role::User => {
             let first_sibling_chat = sqlx::query_as::<_, (String, Option<i64>)>(
                 r#"
-                SELECT model, h2h_agent_id
+                SELECT model, agent_id
                 FROM chats
                 WHERE parent_id = $1 AND session_id = $2
                 LIMIT 1;

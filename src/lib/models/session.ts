@@ -11,7 +11,7 @@ export type Role = "system" | "assistant" | "user" | "tool";
 
 export type TransmissionStatus = "preparing" | "sending" | "sent" | "not sent";
 
-export interface ChatBubble {
+export interface Chat {
   id: number;
   role: Role;
   content: string;
@@ -19,6 +19,7 @@ export interface ChatBubble {
   dateSent?: Date;
   dateEdited?: Date;
   status: TransmissionStatus;
+  agentId?: number;
 
   model?: string;
 
@@ -30,7 +31,7 @@ export interface ChatBubble {
 }
 
 export interface ChatHistory {
-  chats: ChatBubble[];
+  chats: Chat[];
 }
 
 export type SessionRenameReturn = null | {

@@ -45,7 +45,7 @@ pub async fn add_system_prompt(
                     model: None,
                     completed: true,
                     images: None,
-                    h2h_agent_id: None,
+                    agent_id: None,
                 },
             )
             .await?;
@@ -100,7 +100,7 @@ pub async fn add_user_prompt(
             content: prompt_text,
             completed: true,
             images: image_ref_paths.as_ref().map(|inner| inner.as_slice()),
-            h2h_agent_id: None,
+            agent_id: None,
         },
     )
     .await?;
@@ -136,7 +136,7 @@ pub async fn add_assistent_prompt(
                 model: Some(model),
                 completed: false,
                 images: None,
-                h2h_agent_id: agent_id,
+                agent_id,
             },
         )
         .await?;

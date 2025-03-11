@@ -7,5 +7,5 @@ pub struct NewChildNode<'a, 'b, 'c> {
     pub model: Option<&'b str>,
     pub completed: bool,
     pub images: Option<&'c [&'c str]>,
-    pub h2h_agent_id: Option<i64>,
+    pub agent_id: Option<i64>,
 }

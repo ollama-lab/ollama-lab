@@ -1,7 +1,7 @@
 ALTER TABLE sessions
 ADD COLUMN is_h2h INTEGER NOT NULL DEFAULT FALSE;
 
-CREATE TABLE h2h_agents (
+CREATE TABLE agents (
     id              INTEGER NOT NULL PRIMARY KEY,
     name            TEXT,
     model           TEXT NOT NULL,
@@ -9,14 +9,14 @@ CREATE TABLE h2h_agents (
     date_created    INTEGER NOT NULL DEFAULT (unixepoch())
 );
 
-CREATE TABLE h2h_session_system_prompts (
+CREATE TABLE session_system_prompts (
     id              INTEGER NOT NULL PRIMARY KEY,
     session_id      INTEGER NOT NULL REFERENCES sessions (id) ON DELETE CASCADE ON UPDATE CASCADE,
     content         TEXT NOT NULL
 );
 
 ALTER TABLE chats
-ADD COLUMN h2h_agent_id INTEGER REFERENCES h2h_agents (id) ON DELETE CASCADE ON UPDATE CASCADE;
+ADD COLUMN agent_id INTEGER REFERENCES agents (id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 DROP VIEW IF EXISTS v_complete_chats;
 CREATE VIEW v_complete_chats
@@ -35,7 +35,7 @@ SELECT
     cm.model AS model,
     ct.content AS thoughts,
     ct.thought_for_milli AS thought_for,
-    ha.id AS h2h_agent_id
+    ha.id AS agent_id
 FROM chats c
 LEFT OUTER JOIN chat_models cm ON c.id = cm.chat_id
 LEFT OUTER JOIN cot_thoughts ct ON c.id = ct.chat_id
@@ -44,5 +44,5 @@ LEFT OUTER JOIN (
     FROM prompt_images
     GROUP BY chat_id
 ) ic ON ic.chat_id = c.id
-LEFT OUTER JOIN h2h_agents ha ON c.h2h_agent_id = ha.id
+LEFT OUTER JOIN agents ha ON c.agent_id = ha.id
 INNER JOIN sessions s ON c.session_id = s.id;
