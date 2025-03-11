@@ -76,7 +76,7 @@ export function ModelDetails() {
                 <div class="grow" />
                 <div class="flex gap-2 items-center">
                   <Show when={!downloadInfo()}>
-                    <Show when={defaultModel?.() !== model?.()}>
+                    <Show when={defaultModel?.() !== m()}>
                       <SetDefault model={m} />
                     </Show>
                     <DuplicateModel model={m} />
