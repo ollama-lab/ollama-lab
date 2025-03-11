@@ -12,7 +12,7 @@ use crate::{
     errors::Error,
     events::StreamingResponseEvent,
     models::chat::{ChatGenerationReturn, IncomingUserPrompt},
-    responses::tree::{models::NewChildNode, ChatTree},
+    responses::tree::ChatTree,
     utils::{h2h::list_agents, sessions::get_session, system_prompt::get_session_system_prompt},
 };
 
@@ -160,7 +160,6 @@ pub async fn regenerate_response(
     chat_id: i64,
     model: Option<String>,
     on_stream: Channel<StreamingResponseEvent>,
-    is_h2h: bool,
 ) -> Result<ChatGenerationReturn, Error> {
     let ollama = &state.ollama;
     let profile_id = state.profile;

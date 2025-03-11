@@ -84,6 +84,7 @@ export async function submitUserPrompt(
   parentId: number | null,
   events: PromptResponseEvents = {},
   reuseSiblingImages: boolean = false,
+  isH2h: boolean = false,
 ): Promise<ChatGenerationReturn> {
   return await invoke<InternalChatGenerationReturn>("submit_user_prompt", {
     sessionId,
@@ -91,6 +92,7 @@ export async function submitUserPrompt(
     onStream: newTextStreamChannel(events),
     parentId,
     reuseSiblingImages,
+    isH2h,
   }).then(({ id, dateCreated }) => ({
     id,
     dateCreated: new Date(dateCreated),

@@ -73,6 +73,7 @@ export async function submitChat(
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
 ) {
   let session = currentSession() ?? undefined;
+  const isH2h = getCurrentSettings().h2h ?? false;
 
   if (!session) {
     // TODO: Add settings option for default session name: 1) no name, 2) first prompt, 3) generated after first response
@@ -82,7 +83,6 @@ export async function submitChat(
       sessionTitle = `Image${prompt.imagePaths.length > 1 ? "s" : ""}`;
     }
 
-    const isH2h = getCurrentSettings().h2h ?? false;
     const sessionSystemPrompt = isH2h ? getCandidateSessionSystemPrompt() : undefined;
 
     session = await createSession(model, sessionTitle, isH2h);
@@ -105,6 +105,8 @@ export async function submitChat(
       onRespond,
       onScrollDown,
     }),
+    true,
+    isH2h,
   );
 
   setChatHistoryStore("chatHistory", "chats", getChatHistory()!.chats.length - 1, {
