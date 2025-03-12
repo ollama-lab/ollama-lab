@@ -6,7 +6,7 @@ import { relaunch } from "@tauri-apps/plugin-process";
 import { LoaderSpin } from "~/lib/components/loader-spin";
 import { restartVotes } from "~/lib/contexts/globals/settings";
 import { DevModeSection } from "~/lib/components/settings/builtin-sections/dev-mode";
-import { HeadToHeadSection } from "~/lib/components/settings/builtin-sections/head-to-head";
+import { ExperimentalSection } from "~/lib/components/settings/builtin-sections/experimental";
 
 export default function SettingsPage() {
   const [restarting, setRestarting] = createSignal(false);
@@ -16,7 +16,7 @@ export default function SettingsPage() {
       <div class="overflow-y-auto flex flex-col gap-3.5 grow px-2 py-2">
         <AppearanceSection />
         <OllamaSection />
-        <HeadToHeadSection />
+        <ExperimentalSection />
         <DevModeSection />
       </div>
       <div class="flex">
