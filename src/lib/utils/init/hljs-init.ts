@@ -5,7 +5,7 @@ const langs = {
   "text/template": (await import("~/lib/highlight/languages/go-template")).default,
   "modelfile": (await import("~/lib/highlight/languages/modelfile")).default,
   "ollama/template": (await import("~/lib/highlight/languages/ollama-template")).default,
-  "zig": (await import("~/lib/highlight/languages/ollama-template")).default,
+  "zig": (await import("~/lib/highlight/languages/zig")).default,
 };
 
 for (const [lang, fn] of Object.entries(langs)) {
