@@ -111,10 +111,10 @@ const zigFn: LanguageFn = (hljs) => {
         scope: "number",
         variants: [
           {
-            begin: /(0[bo])?[\d_]+/,
+            begin: /(0[bo])?(\d+|\d+[_\d]*\d+)/,
           },
           {
-            begin: /0x[\d_a-fA-F]+/,
+            begin: /0x([\da-fA-F]+|[\da-fA-F][\d_a-fA-F]*[\da-fA-F])/,
           },
         ],
         relevance: 0,
