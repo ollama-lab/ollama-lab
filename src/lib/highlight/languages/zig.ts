@@ -103,12 +103,12 @@ const zigFn: LanguageFn = (hljs) => {
       },
       hljs.COMMENT("//", "\n"),
       {
-        className: "string",
+        scope: "string",
         begin: "\\\\",
         end: "\n",
       },
       {
-        className: "number",
+        scope: "number",
         variants: [
           {
             begin: /(0[bo])?[\d_]+/,
@@ -120,12 +120,12 @@ const zigFn: LanguageFn = (hljs) => {
         relevance: 0,
       },
       {
-        className: "type",
+        scope: "type",
         begin: /[iuf]\d+/,
         relevance: 1,
       },
       {
-        className: "built_in",
+        scope: "built_in",
         begin: /@[\d\w_]+/,
       },
     ],

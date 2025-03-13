@@ -180,7 +180,7 @@ export function ModelDetails() {
                           <Show when={info().template}>
                             {(t) => (
                               <TabsContent value="template">
-                                <CodeBlock code={t()} />
+                                <CodeBlock code={t()} lang="ollama/template" />
                               </TabsContent>
                             )}
                           </Show>
