@@ -1,7 +1,7 @@
 @reference "../../../../app.css";
 
 @layer components {
-  .code-block pre > code > .code-line {
-    @apply min-h-5;
+  .code-container > pre {
+    @apply px-2 py-2 lg:px-3.5 lg:py-3.5;
   }
 }

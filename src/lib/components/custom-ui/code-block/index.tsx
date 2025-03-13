@@ -1,81 +1,55 @@
 import { Component, createMemo, createRenderEffect, createSignal, Match, Show, Switch } from "solid-js";
-import { createLowlight } from "lowlight";
-import hljs from "highlight.js";
 import { cn } from "~/lib/utils/class-names";
 import { CodeBlockToolbar } from "./toolbar";
 import { createStore, reconcile } from "solid-js/store";
-import { Root, RootContent } from "hast";
+import { Root } from "hast";
 import { h } from "hastscript";
 import "./code-block.css";
 import { CodeBlockRenderer } from "./renderer";
-import { allLangs } from "~/lib/utils/init/hljs-init";
+import { placeholderProcessor } from "~/lib/highlight/placeholder-processor";
+import { getDisplayNames, highlighter, highlightTheme } from "~/lib/contexts/globals/highlight";
 
 export const CodeBlock: Component<{
   code: string;
   lang?: string;
-  autoGuess?: boolean;
   class?: string;
   stickyToolbar?: boolean;
   collapsible?: boolean;
   stickyOffset?: number;
 }> = (props) => {
   const code = () => props.code;
-  const autoGuess = () => props.autoGuess ?? false;
   const lang = () => props.lang;
   const stickyToolbar = () => props.stickyToolbar;
   const collapsible = () => props.collapsible;
   const stickyOffset = () => props.stickyOffset;
 
-  const detectedLang = createMemo(() => lang() ? hljs.getLanguage(lang()!) : null);
-
-  const lowlight = createLowlight(allLangs);
-
   const [hastTree, setHastTree] = createStore<Root>({ type: "root", children: [] });
 
-  createRenderEffect(() => {
-    const langName = detectedLang();
 
-    let tree = undefined;
-    if (langName) {
-      tree = lowlight.highlight(lang()!, code());
-    } else if (autoGuess()) {
-      tree = lowlight.highlightAuto(code());
-    } else {
-      tree = lowlight.highlight("plaintext", code());
+  const displayName = createMemo(() => {
+    const names = getDisplayNames();
+    if (names && lang()) {
+      return names[lang()!];
     }
 
-    tree.children = tree.children
-      .reduce((acc, cur) => {
-        let lastChild = acc.at(-1);
-        if (cur.type === "text") {
-          for (const line of cur.value.split("\n")) {
-            const lineNode = h("span.code-line", line);
+    return undefined;
+  });
 
-            if (lastChild && lastChild.type === "element") {
-              lastChild.children.push(lineNode);
-              lastChild = undefined;
-              continue;
-            }
+  createRenderEffect(() => {
+    let tree;
 
-            acc.push(lineNode);
-          }
-        } else if (cur.type === "element") {
-          if (!lastChild || lastChild.type !== "element") {
-            acc.push(h("span.code-line", {}, [cur]));
-          } else {
-            lastChild.children.push(cur);
-          }
-        }
-
-        return acc;
-      }, [] as RootContent[]);
+    const hl = highlighter();
+    if (hl && lang()) {
+      tree = hl.codeToHast(code(), {
+        lang: lang()!,
+        theme: highlightTheme(),
+      });
+    } else {
+      tree = h(null, ...placeholderProcessor(code()));
+    }
 
     setHastTree(reconcile(tree));
   });
-
-  const highlightAsLang = createMemo(() => hastTree.data?.language);
-
-  const langName = createMemo(() => detectedLang()?.name ?? lang());
 
   const [wrapText, setWrapText] = createSignal(false);
   const [collapsed, setCollapsed] = createSignal(false);
@@ -113,7 +87,7 @@ export const CodeBlock: Component<{
         </div>
       </Show>
       <div class="flex py-1 items-center bg-secondary text-secondary-foreground px-2 rounded-t">
-        <div class="shrink-0 text-sm px-1">{langName()}</div>
+        <div class="shrink-0 text-sm px-1">{displayName()}</div>
         <div class="grow" />
         <Show when={!stickyToolbar()}>
           <ToolbarTemplate class="shrink-0" />
@@ -123,18 +97,9 @@ export const CodeBlock: Component<{
       <div class="relative text-sm rounded-b overflow-hidden">
         <Switch fallback={<div class="bg-muted text-muted-foreground px-2 py-1">{lineCount()} lines hidden</div>}>
           <Match when={!collapsible() || !collapsed()}>
-            <pre class="min-w-full">
-              <code
-                class={cn(
-                  "relative overflow-x-auto grid! grid-cols-1",
-                  wrapText() ? "whitespace-pre-wrap" : "whitespace-pre",
-                  "hljs",
-                  highlightAsLang() ? `language-${highlightAsLang()!}` : "",
-                )}
-              >
-                <CodeBlockRenderer tree={hastTree} />
-              </code>
-            </pre>
+            <div class="code-container min-w-full">
+              <CodeBlockRenderer tree={hastTree} />
+            </div>
           </Match>
         </Switch>
       </div>
