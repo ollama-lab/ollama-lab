@@ -1,4 +1,4 @@
-import { createMemo, createResource, createSignal, Match, onMount, Show, Suspense, Switch } from "solid-js";
+import { Component, createMemo, createResource, createSignal, Match, onMount, Show, Suspense, Switch } from "solid-js";
 import { PlaceholderTitle } from "./placeholder-title";
 import { Badge } from "../ui/badge";
 import { getModel } from "~/lib/commands/models";
@@ -62,6 +62,36 @@ export function ModelDetails() {
 
   const [tabValue, setTabValue] = createSignal<string>("details");
 
+  const DownloadContent: Component = () => {
+    const progress = createMemo(() => {
+      const obj = downloadInfo();
+      if (obj?.type === "inProgress") {
+        return {
+          total: obj.total,
+          completed: obj.completed,
+        };
+      }
+
+      return undefined;
+    });
+
+    return (
+      <Show when={progress()}>
+        {(infoObj) => (
+          <div class="flex text-sm gap-2 md:gap-3.5 items-center">
+            <Progress
+              minValue={0}
+              maxValue={infoObj().total ?? undefined}
+              value={infoObj().completed}
+              class="w-48 md:w-56 lg:w-72 xl:w-96"
+            />
+            <ProgressSize completed={infoObj().completed ?? undefined} total={infoObj().total ?? undefined} />
+          </div>
+        )}
+      </Show>
+    );
+  }
+
   return (
     <Switch fallback={<PlaceholderPage />}>
       <Match when={model?.()}>
@@ -91,24 +121,8 @@ export function ModelDetails() {
               <Show when={modelInfo.loading}>
                 <LoaderSpin text="Loading..." />
               </Show>
-              <Show when={downloadInfo()}>
-                {(info) => {
-                  const infoObj = info();
-                  return (
-                    infoObj.type === "inProgress" && (
-                      <div class="flex text-sm gap-2 md:gap-3.5 items-center">
-                        <Progress
-                          minValue={0}
-                          maxValue={infoObj.total ?? undefined}
-                          value={infoObj.completed}
-                          class="w-48 md:w-56 lg:w-72 xl:w-96"
-                        />
-                        <ProgressSize completed={infoObj.completed ?? undefined} total={infoObj.total ?? undefined} />
-                      </div>
-                    )
-                  );
-                }}
-              </Show>
+
+              <DownloadContent />
 
               <Suspense>
                 <Tabs value={tabValue()} onChange={setTabValue}>
