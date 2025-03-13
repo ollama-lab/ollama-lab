@@ -40,7 +40,7 @@ async function fetcher({ modelName, downloadInfo }: FetchingProps) {
   return await getModel(modelName);
 }
 
-export function ModelDetails() {
+export const ModelDetails: Component = () => {
   const model = () => currentModelPageModel();
 
   const downloadInfo = createMemo(() => {
