@@ -4,6 +4,7 @@ import { Route, Router } from "@solidjs/router";
 import { Layout } from "./layout";
 import IndexPage from "./routes";
 import { lazy } from "solid-js";
+import "~/lib/utils/init";
 
 render(
   () => (

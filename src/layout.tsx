@@ -4,7 +4,6 @@ import "@fontsource-variable/inter/wght.css";
 import { AppBar } from "./lib/components/app-bar";
 import { Component, Show, Suspense } from "solid-js";
 import Providers from "./lib/components/providers";
-import "~/lib/utils/dayjs-init";
 import { LoadingScreen } from "./lib/components/custom-ui/loading-screen";
 import { DefaultToaster } from "./lib/components/default-toaster";
 import { Portal } from "solid-js/web";
