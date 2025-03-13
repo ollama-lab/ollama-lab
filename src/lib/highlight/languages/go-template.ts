@@ -1,6 +1,6 @@
 import { LanguageFn } from "highlight.js";
 
-export const goTextTemplateFn: LanguageFn = (hljs) => {
+const goTextTemplateFn: LanguageFn = (hljs) => {
   return {
     name: "Go text/template",
     contains: [
@@ -119,3 +119,5 @@ export const goTextTemplateFn: LanguageFn = (hljs) => {
     ],
   };
 };
+
+export default goTextTemplateFn;

@@ -1,6 +1,6 @@
 import { LanguageFn } from "highlight.js";
 
-const chatmlFn: LanguageFn = (hljs) => {
+const chatmlFn: LanguageFn = () => {
   return {
     name: "ChatML",
     contains: [

@@ -1,5 +1,5 @@
 import { LanguageFn } from "highlight.js";
-import { goTextTemplateFn } from "./go-template";
+import goTextTemplateFn from "./go-template";
 import chatmlFn from "./chatml";
 
 const ollamaTemplateFn: LanguageFn = (hljs) => {

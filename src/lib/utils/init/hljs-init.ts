@@ -1,17 +1,11 @@
 import hljs from "highlight.js";
-import { all } from "lowlight";
-import chatmlFn from "~/lib/highlight/languages/chatml";
-import { goTextTemplateFn } from "~/lib/highlight/languages/go-template";
-import modelfileFn from "~/lib/highlight/languages/modelfile";
-import ollamaTemplateFn from "~/lib/highlight/languages/ollama-template";
-import zigFn from "~/lib/highlight/languages/zig";
 
 const langs = {
-  "chatml": chatmlFn,
-  "text/template": goTextTemplateFn,
-  "modelfile": modelfileFn,
-  "ollama/template": ollamaTemplateFn,
-  "zig": zigFn,
+  "chatml": (await import("~/lib/highlight/languages/chatml")).default,
+  "text/template": (await import("~/lib/highlight/languages/go-template")).default,
+  "modelfile": (await import("~/lib/highlight/languages/modelfile")).default,
+  "ollama/template": (await import("~/lib/highlight/languages/ollama-template")).default,
+  "zig": (await import("~/lib/highlight/languages/ollama-template")).default,
 };
 
 for (const [lang, fn] of Object.entries(langs)) {
@@ -19,6 +13,6 @@ for (const [lang, fn] of Object.entries(langs)) {
 }
 
 export const allLangs = {
-  ...all,
+  ...(await import("lowlight")).all,
   ...langs,
 };
