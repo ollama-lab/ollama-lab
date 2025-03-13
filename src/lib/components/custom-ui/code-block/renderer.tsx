@@ -12,6 +12,7 @@ const ElementNode: Component<{
   return (
     <Dynamic
       component={node().tagName}
+      tabIndex={props.index}
       {...node().properties}
     >
       <CodeBlockChildren node={node()} />

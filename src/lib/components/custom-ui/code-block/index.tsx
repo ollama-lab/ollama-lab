@@ -7,7 +7,7 @@ import { h } from "hastscript";
 import "./code-block.css";
 import { CodeBlockRenderer } from "./renderer";
 import { placeholderProcessor } from "~/lib/highlight/placeholder-processor";
-import { getDisplayNames, highlighter, highlightTheme } from "~/lib/contexts/globals/highlight";
+import { displayNames, highlighter, highlightTheme } from "~/lib/contexts/globals/highlight";
 
 export const CodeBlock: Component<{
   code: string;
@@ -27,7 +27,7 @@ export const CodeBlock: Component<{
 
 
   const displayName = createMemo(() => {
-    const names = getDisplayNames();
+    const names = displayNames();
     if (names && lang()) {
       return names[lang()!];
     }

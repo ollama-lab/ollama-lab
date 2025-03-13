@@ -321,7 +321,7 @@ const langs = [
   import("@shikijs/langs/zsh"),
 ];
 
-export const highlighter = await createHighlighterCore({
+export const highlighter = createHighlighterCore({
   langs,
   themes: [
     import("@shikijs/themes/one-light"),
@@ -330,7 +330,8 @@ export const highlighter = await createHighlighterCore({
   engine: createOnigurumaEngine(import("shiki/wasm")),
 });
 
-export const displayNames = (await Promise.all(langs))
+export const displayNames = Promise.all(langs)
+  .then((res) => res
   .reduce((acc, cur) => {
     const item = cur.default[0];
 
@@ -341,4 +342,4 @@ export const displayNames = (await Promise.all(langs))
     }
 
     return acc;
-  }, {} as Record<string, string>);
+  }, {} as Record<string, string>));

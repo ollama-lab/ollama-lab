@@ -27,5 +27,5 @@ title = "Ollama Lab"
 width = 800
 maximized = true
 
-[app.security]
-csp = ""
+[app.security.csp]
+script-src = "'self' 'wasm-unsafe-eval'"
