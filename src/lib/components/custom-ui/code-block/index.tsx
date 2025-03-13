@@ -1,5 +1,5 @@
 import { Component, createMemo, createRenderEffect, createSignal, Match, Show, Switch } from "solid-js";
-import { all, createLowlight } from "lowlight";
+import { createLowlight } from "lowlight";
 import hljs from "highlight.js";
 import { cn } from "~/lib/utils/class-names";
 import { CodeBlockToolbar } from "./toolbar";
@@ -8,6 +8,7 @@ import { Root, RootContent } from "hast";
 import { h } from "hastscript";
 import "./code-block.css";
 import { CodeBlockRenderer } from "./renderer";
+import { allLangs } from "~/lib/utils/init/hljs-init";
 
 export const CodeBlock: Component<{
   code: string;
@@ -27,7 +28,7 @@ export const CodeBlock: Component<{
 
   const detectedLang = createMemo(() => lang() ? hljs.getLanguage(lang()!) : null);
 
-  const lowlight = createLowlight(all);
+  const lowlight = createLowlight(allLangs);
 
   const [hastTree, setHastTree] = createStore<Root>({ type: "root", children: [] });
 
