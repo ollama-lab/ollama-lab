@@ -130,7 +130,7 @@ const zigFn: LanguageFn = (hljs) => {
       },
       {
         scope: "operator",
-        match: /(\+|-|\*|\/|!|>>|<<|==|!=|>|<|<=|>=)/,
+        match: /(\+|-|\*|\/|!|>>|<<|==|!=|>|<|<=|>=|=)/,
       },
     ],
   } satisfies Language;
