@@ -128,6 +128,10 @@ const zigFn: LanguageFn = (hljs) => {
         scope: "built_in",
         begin: /@[\d\w_]+/,
       },
+      {
+        scope: "operator",
+        match: /(\+|-|\*|\/|!|>>|<<|==|!=|>|<|<=|>=)/,
+      },
     ],
   } satisfies Language;
 };
