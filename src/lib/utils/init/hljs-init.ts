@@ -10,7 +10,7 @@ const langs = {
   "chatml": chatmlFn,
   "text/template": goTextTemplateFn,
   "modelfile": modelfileFn,
-  "ollama/template": goTextTemplateFn,
+  "ollama/template": ollamaTemplateFn,
   "zig": zigFn,
 };
 

@@ -5,7 +5,7 @@ export const goTextTemplateFn: LanguageFn = (hljs) => {
     name: "Go text/template",
     contains: [
       {
-        begin: /\{\{/,
+        starts: /\{\{/,
         end: /\}\}/,
         keywords: {
           keyword: [

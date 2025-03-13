@@ -152,7 +152,7 @@ export function ModelDetails() {
                           <Show when={info().modelfile}>
                             {(content) => (
                               <TabsContent value="modelfile">
-                                <CodeBlock code={content()} />
+                                <CodeBlock code={content()} lang="modelfile" />
                               </TabsContent>
                             )}
                           </Show>
