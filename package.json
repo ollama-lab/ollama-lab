@@ -8,13 +8,17 @@
     "bun": ">=1.2"
   },
   "scripts": {
+    "init": "bun install && bun run bindgen",
+    "predev": "bun run bindgen",
     "dev": "vite dev",
+    "prebuild": "bun run bindgen",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "fmt": "prettier . --write",
     "lint": "eslint",
     "tauri": "tauri",
-    "update-all": "bun update && bun install && cargo update"
+    "update-all": "bun update && bun install && cargo update",
+    "bindgen": "bun ./scripts/bindgen.ts"
   },
   "license": "MIT",
   "dependencies": {
