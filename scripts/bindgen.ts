@@ -2,8 +2,13 @@
 
 import { readdir } from "node:fs/promises";
 
-async function shikiBindgen() {
+async function shikiBindgen(force: boolean = false) {
   const target = Bun.file("./src/lib/highlight/langs.ts");
+  if (!force && await target.exists()) {
+    console.log("Shiki.js Bindgen skipped");
+    return;
+  }
+
   await target.write("");
 
   const writer = target.writer();
@@ -72,7 +77,25 @@ export const langs: Record<string, (() => Promise<LanguageRegistration[]>) | und
 }
 
 async function main() {
-  await shikiBindgen();
+  let force = false;
+
+  const args = process.argv;
+  args.shift();
+
+  while (args.length > 0) {
+    const arg = args.shift();
+    switch (arg) {
+      case "--force":
+      case "-f":
+        force = true;
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  await shikiBindgen(force);
 }
 
 if (import.meta.main) {

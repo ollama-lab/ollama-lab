@@ -8,7 +8,7 @@
     "bun": ">=1.2"
   },
   "scripts": {
-    "init": "bun install && bun run bindgen",
+    "init": "bun install && bun run bindgen --force",
     "predev": "bun run bindgen",
     "dev": "vite dev",
     "prebuild": "bun run bindgen",
