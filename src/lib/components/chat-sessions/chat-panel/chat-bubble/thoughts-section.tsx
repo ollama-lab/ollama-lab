@@ -1,6 +1,6 @@
 import convert from "convert";
 import { ChevronDownIcon } from "lucide-solid";
-import { createMemo, createSignal, Component, JSX, Match, Show, Switch } from "solid-js";
+import { createMemo, createSignal, Component, JSX, Show } from "solid-js";
 import { Motion, Presence } from "solid-motionone";
 import { MarkdownBlock } from "~/lib/components/custom-ui/markdown-block";
 import { LoaderSpin } from "~/lib/components/loader-spin";
@@ -39,16 +39,17 @@ const ThinkingHints: Component = () => {
   return (
     <div class="flex items-center gap-2 text-sm text-muted-foreground">
       <Presence exitBeforeEnter>
-        <Switch fallback={(
-          <HintSpan>Reasoning complete in {thoughtForString()}</HintSpan>
-        )}>
-          <Match when={thinking() && status() === "sending"}>
-            <HintSpan>
-              <LoaderSpin class="size-4 duration-500" />
-              <span>Reasoning...</span>
-            </HintSpan>
-          </Match>
-        </Switch>
+        <Show
+          when={thinking() && status() === "sending"}
+          fallback={(
+            <HintSpan>Reasoning complete in {thoughtForString()}</HintSpan>
+          )}
+        >
+          <HintSpan>
+            <LoaderSpin class="size-4 duration-500" />
+            <span>Reasoning...</span>
+          </HintSpan>
+        </Show>
       </Presence>
     </div>
   );

@@ -1,4 +1,4 @@
-import { Accessor, Component, createSignal, Match, Switch } from "solid-js";
+import { Accessor, Component, createSignal, Show } from "solid-js";
 import { toast } from "solid-sonner";
 import { deleteSession } from "~/lib/commands/sessions";
 import { LoaderSpin } from "~/lib/components/loader-spin";
@@ -63,11 +63,9 @@ export const DeletionDialog: Component<{
                 .finally(() => setProceeding(false));
             }}
           >
-            <Switch fallback={"Confirm"}>
-              <Match when={proceeding()}>
-                <LoaderSpin text="Deleting..." />
-              </Match>
-            </Switch>
+            <Show when={proceeding()} fallback={"Confirm"}>
+              <LoaderSpin text="Deleting..." />
+            </Show>
           </Button>
         </DialogFooter>
       </DialogContent>
