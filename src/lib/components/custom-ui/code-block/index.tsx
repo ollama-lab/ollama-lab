@@ -1,4 +1,4 @@
-import { Component, createMemo, createRenderEffect, createSignal, Match, Show, Switch } from "solid-js";
+import { Component, createMemo, createRenderEffect, createResource, createSignal, Match, Show, Switch } from "solid-js";
 import { cn } from "~/lib/utils/class-names";
 import { CodeBlockToolbar } from "./toolbar";
 import { createStore, reconcile } from "solid-js/store";
@@ -7,7 +7,8 @@ import { h } from "hastscript";
 import "./code-block.css";
 import { CodeBlockRenderer } from "./renderer";
 import { placeholderProcessor } from "~/lib/highlight/placeholder-processor";
-import { displayNames, highlighter, highlightTheme } from "~/lib/contexts/globals/highlight";
+import { highlightTheme } from "~/lib/contexts/globals/highlight";
+import { LoaderSpin } from "../../loader-spin";
 
 export const CodeBlock: Component<{
   code: string;
@@ -25,8 +26,14 @@ export const CodeBlock: Component<{
 
   const [hastTree, setHastTree] = createStore<Root>({ type: "root", children: [] });
 
+  const [displayNames] = createResource(async () => (await import("~/lib/highlight")).displayNames);
+  const [highlighter] = createResource(async () => (await import("~/lib/highlight")).highlighter);
 
   const displayName = createMemo(() => {
+    if (displayNames.loading) {
+      return undefined;
+    }
+
     const names = displayNames();
     if (names && lang()) {
       return names[lang()!];
@@ -38,7 +45,7 @@ export const CodeBlock: Component<{
   createRenderEffect(() => {
     let tree;
 
-    const hl = highlighter();
+    const hl = highlighter.loading ? undefined : highlighter();
     if (hl && lang()) {
       tree = hl.codeToHast(code(), {
         lang: lang()!,
@@ -80,29 +87,31 @@ export const CodeBlock: Component<{
   });
 
   return (
-    <div class={cn("code-block relative rounded flex flex-col", props.class)}>
-      <Show when={stickyToolbar()}>
-        <div class="sticky z-10" style={{ "top": `${props.stickyOffset ?? 0}px` }}>
-          <ToolbarTemplate class="absolute top-0 right-0 px-3 py-0.5" />
-        </div>
-      </Show>
-      <div class="flex py-1 items-center bg-secondary text-secondary-foreground px-2 rounded-t">
-        <div class="shrink-0 text-sm px-1">{displayName()}</div>
-        <div class="grow" />
-        <Show when={!stickyToolbar()}>
-          <ToolbarTemplate class="shrink-0" />
+    <Show when={!highlighter.loading && !displayNames.loading} fallback={<LoaderSpin text="Initializing..." />}>
+      <div class={cn("code-block relative rounded flex flex-col", props.class)}>
+        <Show when={stickyToolbar()}>
+          <div class="sticky z-10" style={{ "top": `${props.stickyOffset ?? 0}px` }}>
+            <ToolbarTemplate class="absolute top-0 right-0 px-3 py-0.5" />
+          </div>
         </Show>
-      </div>
+        <div class="flex py-1 items-center bg-secondary text-secondary-foreground px-2 rounded-t">
+          <div class="shrink-0 text-sm px-1">{displayName()}</div>
+          <div class="grow" />
+          <Show when={!stickyToolbar()}>
+            <ToolbarTemplate class="shrink-0" />
+          </Show>
+        </div>
 
-      <div class="relative text-sm rounded-b overflow-hidden">
-        <Switch fallback={<div class="bg-muted text-muted-foreground px-2 py-1">{lineCount()} lines hidden</div>}>
-          <Match when={!collapsible() || !collapsed()}>
-            <div class="code-container min-w-full">
-              <CodeBlockRenderer tree={hastTree} />
-            </div>
-          </Match>
-        </Switch>
+        <div class="relative text-sm rounded-b overflow-hidden">
+          <Switch fallback={<div class="bg-muted text-muted-foreground px-2 py-1">{lineCount()} lines hidden</div>}>
+            <Match when={!collapsible() || !collapsed()}>
+              <div class="code-container min-w-full">
+                <CodeBlockRenderer tree={hastTree} />
+              </div>
+            </Match>
+          </Switch>
+        </div>
       </div>
-    </div>
+    </Show>
   );
 }
