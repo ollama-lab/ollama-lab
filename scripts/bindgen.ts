@@ -55,7 +55,7 @@ export const langs: Record<string, (() => Promise<LanguageRegistration[]>) | und
       }
 
       writtenFileTypes.add(ft);
-      console.write(`\rAdding mapping: ${ft} - @shikijs/langs/${filename}`);
+      console.write(`\rAdding mapping: ${filename} (${ft})`);
 
       writer.write(`  "${ft}": async () => (await import("@shikijs/langs/${filename}")).default,\n`);
     }
