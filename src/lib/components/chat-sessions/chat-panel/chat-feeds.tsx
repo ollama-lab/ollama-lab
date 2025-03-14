@@ -1,8 +1,9 @@
-import { createEffect, createMemo, createSignal, For, Index, Match, Switch } from "solid-js";
+import { createEffect, createMemo, createSignal, For, Index, Match, Suspense, Switch } from "solid-js";
 import { ChatEntryProvider } from "~/lib/contexts/chat-entry";
 import { getChatHistory } from "~/lib/contexts/globals/chat-history";
 import { cn } from "~/lib/utils/class-names";
 import { BubbleSector } from "./chat-bubble/bubble-sector";
+import { LoadingScreen } from "../../custom-ui/loading-screen";
 
 function Hints() {
   const keyHints: Record<string, string> = {
@@ -69,32 +70,34 @@ export function ChatFeeds() {
   });
 
   return (
-    <div
-      ref={setRootRef}
-      class={cn(
-        "flex flex-col flex-wrap text-wrap max-w-5xl mx-auto pb-4",
-        !hasChatHistory() && "h-full place-content-center items-center",
-      )}
-      onWheel={(ev) => {
-        if (ev.deltaY < 0) {
-          setAutoScroll(false);
-        } else {
-          const scrollArea = ev.currentTarget.parentElement;
-          if (scrollArea) {
-            if (ev.currentTarget.scrollHeight - scrollArea.scrollTop - scrollArea.clientHeight <= 0) {
-              setAutoScroll(true);
+    <Suspense fallback={<LoadingScreen />}>
+      <div
+        ref={setRootRef}
+        class={cn(
+          "flex flex-col flex-wrap text-wrap max-w-5xl mx-auto pb-4",
+          !hasChatHistory() && "h-full place-content-center items-center",
+        )}
+        onWheel={(ev) => {
+          if (ev.deltaY < 0) {
+            setAutoScroll(false);
+          } else {
+            const scrollArea = ev.currentTarget.parentElement;
+            if (scrollArea) {
+              if (ev.currentTarget.scrollHeight - scrollArea.scrollTop - scrollArea.clientHeight <= 0) {
+                setAutoScroll(true);
+              }
             }
           }
-        }
-      }}
-    >
-      <Index each={getChatHistory()?.chats} fallback={<WelcomeText />}>
-        {(chat) => (
-          <ChatEntryProvider value={chat}>
-            <BubbleSector />
-          </ChatEntryProvider>
-        )}
-      </Index>
-    </div>
+        }}
+      >
+        <Index each={getChatHistory()?.chats} fallback={<WelcomeText />}>
+          {(chat) => (
+            <ChatEntryProvider value={chat}>
+              <BubbleSector />
+            </ChatEntryProvider>
+          )}
+        </Index>
+      </div>
+    </Suspense>
   );
 }
