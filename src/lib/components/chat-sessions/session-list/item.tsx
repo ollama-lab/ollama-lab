@@ -1,4 +1,4 @@
-import { Component, Match, Show, Switch } from "solid-js";
+import { Component, Show } from "solid-js";
 import { createSignal } from "solid-js";
 import { toast } from "solid-sonner";
 import { getChatHistoryStore } from "~/lib/contexts/globals/chat-history";
