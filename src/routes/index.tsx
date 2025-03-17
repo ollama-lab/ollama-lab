@@ -6,11 +6,11 @@ import { Resizable, ResizableHandle, ResizablePanel } from "~/lib/components/ui/
 const IndexPage: Component = () => {
   return (
     <Resizable orientation="horizontal">
-      <ResizablePanel initialSize={0.25} collapsible>
+      <ResizablePanel initialSize={0.25} collapsible class="overflow-hidden">
         <SessionList />
       </ResizablePanel>
       <ResizableHandle />
-      <ResizablePanel initialSize={0.75}>
+      <ResizablePanel initialSize={0.75} class="overflow-hidden">
         <ChatPanel />
       </ResizablePanel>
     </Resizable>
