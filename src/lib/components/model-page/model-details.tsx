@@ -1,4 +1,4 @@
-import { Component, createMemo, createResource, createSignal, onMount, Show, Suspense } from "solid-js";
+import { Component, createMemo, createResource, createSignal, lazy, onMount, Show, Suspense } from "solid-js";
 import { PlaceholderTitle } from "./placeholder-title";
 import { Badge } from "../ui/badge";
 import { getModel } from "~/lib/commands/models";
@@ -10,7 +10,6 @@ import { LoaderSpin } from "../loader-spin";
 import { Progress } from "../ui/progress";
 import ProgressSize from "../custom-ui/progress-size";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { CodeBlock } from "../custom-ui/code-block";
 import { Details } from "./sections/details";
 import { SystemPromptSection } from "./sections/system-prompt";
 import { currentModelPageModel } from "~/lib/contexts/globals/model-page";
@@ -91,6 +90,8 @@ export const ModelDetails: Component = () => {
       </Show>
     );
   }
+
+  const CodeBlock = lazy(() => import("~/lib/components/custom-ui/code-block"));
 
   return (
     <Show when={model?.()} fallback={<PlaceholderPage />}>
