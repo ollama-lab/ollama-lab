@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, For, Index, Match, Switch } from "solid-js";
+import { createEffect, createMemo, createSignal, For, Index, Show } from "solid-js";
 import { ChatEntryProvider } from "~/lib/contexts/chat-entry";
 import { getChatHistory } from "~/lib/contexts/globals/chat-history";
 import { cn } from "~/lib/utils/class-names";
@@ -18,11 +18,9 @@ function Hints() {
             <div class="text-end">
               <For each={key.split(" ")}>
                 {(key) => (
-                  <Switch fallback={key}>
-                    <Match when={key !== "+" && key !== "/"}>
-                      <kbd>{key}</kbd>
-                    </Match>
-                  </Switch>
+                  <Show when={key !== "+" && key !== "/"} fallback={key}>
+                    <kbd>{key}</kbd>
+                  </Show>
                 )}
               </For>
             </div>

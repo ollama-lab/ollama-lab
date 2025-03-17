@@ -1,5 +1,5 @@
 import { RefreshCwIcon } from "lucide-solid";
-import { createMemo, For, Match, Switch } from "solid-js";
+import { createMemo, For, Show } from "solid-js";
 import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent } from "~/lib/components/ui/dropdown-menu";
 import { useChatEntry } from "~/lib/contexts/chat-entry";
 import { regenerate } from "~/lib/contexts/globals/chat-history";
@@ -45,33 +45,31 @@ export function RegenDropdown() {
   };
 
   return (
-    <Switch fallback={<NormalButton />}>
-      <Match when={dropdownNeeded()}>
-        <DropdownMenu>
-          <DropdownMenuTrigger title="Regeneratel">
-            <RefreshCwIcon class="size-4" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <For each={candidates()}>
-              {(modelName) => (
-                <DropdownMenuItem
-                  class="cursor-pointer"
-                  onClick={() => {
-                    const id = chatId();
-                    if (!id) {
-                      return;
-                    }
+    <Show when={dropdownNeeded()} fallback={<NormalButton />}>
+      <DropdownMenu>
+        <DropdownMenuTrigger title="Regeneratel">
+          <RefreshCwIcon class="size-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <For each={candidates()}>
+            {(modelName) => (
+              <DropdownMenuItem
+                class="cursor-pointer"
+                onClick={() => {
+                  const id = chatId();
+                  if (!id) {
+                    return;
+                  }
 
-                    regenerate(id, modelName);
-                  }}
-                >
-                  Use {modelName}
-                </DropdownMenuItem>
-              )}
-            </For>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </Match>
-    </Switch>
+                  regenerate(id, modelName);
+                }}
+              >
+                Use {modelName}
+              </DropdownMenuItem>
+            )}
+          </For>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </Show>
   );
 }

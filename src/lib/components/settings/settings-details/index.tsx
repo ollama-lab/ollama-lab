@@ -1,6 +1,6 @@
 import AppearanceSection from "./builtin-sections/appearance";
 import OllamaSection from "./builtin-sections/ollama";
-import { createSignal, Match, Show, Switch } from "solid-js";
+import { createSignal, Show } from "solid-js";
 import { Button } from "../../ui/button";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { LoaderSpin } from "../../loader-spin";
@@ -26,11 +26,9 @@ export function SettingsDetails() {
                 relaunch();
               }}
             >
-              <Switch fallback={"Restart"}>
-                <Match when={restarting()}>
-                  <LoaderSpin class="size-4" />
-                </Match>
-              </Switch>
+              <Show when={restarting()} fallback={"Restart"}>
+                <LoaderSpin class="size-4" />
+              </Show>
             </Button>
           </div>
         </Show>

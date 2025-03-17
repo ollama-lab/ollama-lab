@@ -1,4 +1,4 @@
-import { createEffect, createSignal, Match, onCleanup, Switch } from "solid-js";
+import { createEffect, createSignal, onCleanup, Show } from "solid-js";
 
 const TRIGGER_IN_TIMES = 10;
 
@@ -52,9 +52,9 @@ export function PlaceholderTitle() {
         setClickedTimes((cur) => cur + 1);
       }}
     >
-      <Switch fallback={defaultText}>
-        <Match when={eggTriggered()}>{atob(eggTextBase64) + " 😏"}</Match>
-      </Switch>
+      <Show when={eggTriggered()} fallback={defaultText}>
+        {atob(eggTextBase64) + " 😏"}
+      </Show>
     </span>
   );
 }

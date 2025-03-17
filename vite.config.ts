@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import solid from "vite-plugin-solid";
 import path from "node:path";
-import lucideOptimizer from "./lucide-optimizer";
+import lucideOptimizer from "./scripts/lucide-optimizer";
 
 const host = process.env.TAURI_DEV_HOST;
 
