@@ -7,5 +7,5 @@ import { h } from "hastscript";
  * Used when Shiki has not yet been loaded onto the edge.
  */
 export function placeholderProcessor(code: string) {
-  return code.split("\n").map((line) => h("span.line", line));
+  return [h("pre", h("code", code))];
 }
