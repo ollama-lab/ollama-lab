@@ -1,4 +1,4 @@
-import { Component, createEffect, createMemo, createRenderEffect, createResource, createSignal, Match, Show, Switch } from "solid-js";
+import { Component, createMemo, createRenderEffect, createResource, createSignal, Match, Show, Switch } from "solid-js";
 import { cn } from "~/lib/utils/class-names";
 import { CodeBlockToolbar } from "./toolbar";
 import { createStore, reconcile } from "solid-js/store";
@@ -44,40 +44,23 @@ const CodeBlock: Component<{
     return languageEntry()![0].displayName;
   });
 
-  const [entryLoaded, setEntryLoaded] = createSignal(false);
-
-  const langLoaded = createMemo(() => {
-    return !highlighter.loading && !languageEntry.loading && highlighter() && entryLoaded();
-  });
-
-  createEffect(() => {
-    const hl = highlighter.loading || languageEntry.loading ? undefined : highlighter();
-
-    if (hl) {
-      const entry = languageEntry();
-      if (entry) {
-        hl.loadLanguageSync(entry);
-      }
-
-      setEntryLoaded(true);
-    }
-  });
-
   createRenderEffect(() => {
-    let tree;
-
     const hl = highlighter.loading || languageEntry.loading ? undefined : highlighter();
 
-    if (hl && lang()) {
-      tree = hl.codeToHast(code(), {
-        lang: langLoaded() ? lang()! : "text",
-        theme: highlightTheme(),
-      });
-    } else {
-      tree = h(null, ...placeholderProcessor(code()));
+    const entry = languageEntry();
+    if (entry) {
+      hl?.loadLanguageSync(entry);
     }
 
-    setHastTree(reconcile(tree));
+    const usedLang = lang() ?? "text";
+
+    setHastTree(reconcile(
+      hl ? hl.codeToHast(code(), {
+        lang: usedLang,
+        theme: highlightTheme(),
+      }) : 
+      h(null, ...placeholderProcessor(code()))
+    ));
   });
 
   const [wrapText, setWrapText] = createSignal(false);
