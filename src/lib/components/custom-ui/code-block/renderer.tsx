@@ -1,34 +1,31 @@
-import { Element, Root, Text } from "hast";
+import { Element, ElementContent, Root, RootContent, Text } from "hast";
 import { Component, For, Match, Switch } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
 const ElementNode: Component<{
   node: Element;
-  parent: Element | Root;
-  index: number;
 }> = (props) => {
   const node = () => props.node;
 
   return (
     <Dynamic
       component={node().tagName}
-      tabIndex={props.index}
       {...node().properties}
     >
-      <CodeBlockChildren node={node()} />
+      <CodeBlockChildren children={node().children} />
     </Dynamic>
   );
 }
 
 const CodeBlockChildren: Component<{
-  node: Element | Root,
+  children: RootContent[] | ElementContent[];
 }> = (props) => {
   return (
-    <For each={props.node.children}>
-      {(child, i) => (
+    <For each={props.children}>
+      {(child) => (
         <Switch>
           <Match when={child.type === "element"}>
-            <ElementNode node={child as Element} index={i()} parent={props.node} />
+            <ElementNode node={child as Element} />
           </Match>
 
           <Match when={child.type === "text"}>
@@ -47,6 +44,6 @@ export const CodeBlockRenderer: Component<{
   tree: Root,
 }> = (props) => {
   return (
-    <Dynamic component={CodeBlockChildren} node={props.tree} />
+    <CodeBlockChildren children={props.tree.children} />
   );
 }

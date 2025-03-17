@@ -1,4 +1,4 @@
-import { Component, createMemo, createRenderEffect, createResource, createSignal, Match, Show, Switch } from "solid-js";
+import { Component, createEffect, createMemo, createRenderEffect, createResource, createSignal, Match, Show, Switch } from "solid-js";
 import { cn } from "~/lib/utils/class-names";
 import { CodeBlockToolbar } from "./toolbar";
 import { createStore, reconcile } from "solid-js/store";
@@ -44,15 +44,35 @@ const CodeBlock: Component<{
     return languageEntry()![0].displayName;
   });
 
+  const [langLoaded, setLangLoaded] = createSignal(false);
+
+  createEffect(() => {
+    if (highlighter()) {
+      setLangLoaded(false);
+    }
+  });
+
+  createEffect(() => {
+    const hl = highlighter.loading || languageEntry.loading ? undefined : highlighter();
+
+    if (hl) {
+      const entry = languageEntry();
+      if (entry) {
+        hl.loadLanguageSync(entry);
+      }
+
+      setLangLoaded(true);
+    }
+  });
+
   createRenderEffect(() => {
+    if (!langLoaded()) {
+      return;
+    }
+
     let tree;
 
     const hl = highlighter.loading || languageEntry.loading ? undefined : highlighter();
-
-    const entry = languageEntry();
-    if (entry) {
-      hl?.loadLanguageSync(entry);
-    }
 
     if (hl && lang()) {
       tree = hl.codeToHast(code(), {

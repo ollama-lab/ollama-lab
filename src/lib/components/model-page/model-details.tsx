@@ -10,7 +10,7 @@ import { LoaderSpin } from "../loader-spin";
 import { Progress } from "../ui/progress";
 import ProgressSize from "../custom-ui/progress-size";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { CodeBlock } from "../custom-ui/code-block";
+import CodeBlock from "../custom-ui/code-block";
 import { Details } from "./sections/details";
 import { SystemPromptSection } from "./sections/system-prompt";
 import { currentModelPageModel } from "~/lib/contexts/globals/model-page";

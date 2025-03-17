@@ -8,13 +8,14 @@ import { language } from "../code-block/node-detection";
 import { getDevOptions } from "~/lib/contexts/globals/dev-tools/dev-mode";
 import { Element, Text, Comment } from "hast";
 import "./markdown-block.css";
-import { Dynamic } from "solid-js/web";
 
 export const MarkdownBlock: Component<{
   markdown?: string;
   class?: string;
 }> = (props) => {
   const markdown = () => props.markdown;
+
+  const CodeBlock = lazy(() => import("../code-block"));
 
   const FencedBlock: Component<{ element: NonNullable<Element | Text | Comment> }> = (props) => {
     const element = () => props.element;
@@ -34,8 +35,7 @@ export const MarkdownBlock: Component<{
             {(textElement) => (
               <Show when={textElement().type === "text"}>
                 <Suspense>
-                  <Dynamic
-                    component={lazy(() => import("../code-block"))}
+                  <CodeBlock
                     code={(textElement() as NonNullable<Text>).value}
                     collapsible
                     stickyToolbar
