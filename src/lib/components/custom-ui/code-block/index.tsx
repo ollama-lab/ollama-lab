@@ -10,7 +10,7 @@ import "./code-block.css";
 import { CodeBlockRenderer } from "./renderer";
 import { allLangs } from "~/lib/utils/init/hljs-init";
 
-export const CodeBlock: Component<{
+const CodeBlock: Component<{
   code: string;
   lang?: string;
   autoGuess?: boolean;
@@ -142,3 +142,5 @@ export const CodeBlock: Component<{
     </div>
   );
 }
+
+export default CodeBlock;
