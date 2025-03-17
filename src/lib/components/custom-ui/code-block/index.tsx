@@ -47,12 +47,6 @@ const CodeBlock: Component<{
   const [langLoaded, setLangLoaded] = createSignal(false);
 
   createEffect(() => {
-    if (highlighter()) {
-      setLangLoaded(false);
-    }
-  });
-
-  createEffect(() => {
     const hl = highlighter.loading || languageEntry.loading ? undefined : highlighter();
 
     if (hl) {
