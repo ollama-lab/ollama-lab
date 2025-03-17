@@ -19,6 +19,22 @@ export const StatusLine: Component<{
     return activeModels()?.find(({ name }) => modelName === name);
   });
 
+  const message = createMemo(() => {
+    const info = downloadInfo();
+    if (info) {
+      switch (info.type) {
+        case "inProgress":
+          return info.message;
+
+        case "failure":
+          return `Error: ${info.message}`;
+
+        default:
+          return "";
+      }
+    }
+  });
+
   return (
     <div class="flex gap-2 items-center text-sm">
       <span class="flex items-center select-none">
@@ -33,19 +49,7 @@ export const StatusLine: Component<{
         </Switch>
         <span>
           <Show when={downloadInfo()}>
-            {(info) => {
-              const infoObj = info();
-              switch (infoObj.type) {
-                case "inProgress":
-                  return infoObj.message;
-
-                case "failure":
-                  return `Error: ${infoObj.message}`;
-
-                default:
-                  return "";
-              }
-            }}
+            {message()}
           </Show>
 
           <Show when={!downloadInfo() || downloadInfo()?.type === "success"}>

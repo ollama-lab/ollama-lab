@@ -1,4 +1,4 @@
-import { Accessor, Component, createSignal, Match, Show, Switch } from "solid-js";
+import { Accessor, Component, createSignal, Show } from "solid-js";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { TrashIcon } from "lucide-solid";
 import { Button } from "../../ui/button";
@@ -23,11 +23,9 @@ const DeleteModel: Component<{
       <DialogContent>
         <DialogHeader>
           <DialogTitle class="text-red-700 dark:text-red-500">
-            <Switch fallback={"Confirm deletion"}>
-              <Match when={submitting()}>
-                <LoaderSpin text="Deleting model..." />
-              </Match>
-            </Switch>
+            <Show when={submitting()} fallback={"Confirm deletion"}>
+              <LoaderSpin text="Deleting model..." />
+            </Show>
           </DialogTitle>
         </DialogHeader>
 

@@ -1,4 +1,4 @@
-import { Match, Show, Switch, createEffect, createMemo, createSignal, onCleanup } from "solid-js";
+import { Show, createEffect, createMemo, createSignal, onCleanup } from "solid-js";
 import { getChatHistory, submitChat } from "~/lib/contexts/globals/chat-history";
 import {
   clearInputPrompt,
@@ -74,11 +74,9 @@ export function PromptInput() {
       disabled={!!status() || !isSubmittable()}
       title="Send prompt"
     >
-      <Switch fallback={<ArrowUpIcon class="size-6!" />}>
-        <Match when={status() === "submitting"}>
-          <LoaderSpin class="size-6!" />
-        </Match>
-      </Switch>
+      <Show when={status() === "submitting"} fallback={<ArrowUpIcon class="size-6!" />}>
+        <LoaderSpin class="size-6!" />
+      </Show>
     </Button>
   );
 
@@ -141,19 +139,17 @@ export function PromptInput() {
         </div>
 
         <div class="shrink-0">
-          <Switch fallback={<SubmitButton />}>
-            <Match when={busy()}>
-              <Button
-                size="icon"
-                class="rounded-full"
-                type="button"
-                title="Stop generation"
-                onClick={stopGeneration}
-              >
-                <img src="/stop-solid.svg" alt="🔲" class="size-5 invert dark:invert-0" />
-              </Button>
-            </Match>
-          </Switch>
+          <Show when={busy()} fallback={<SubmitButton />}>
+            <Button
+              size="icon"
+              class="rounded-full"
+              type="button"
+              title="Stop generation"
+              onClick={stopGeneration}
+            >
+              <img src="/stop-solid.svg" alt="🔲" class="size-5 invert dark:invert-0" />
+            </Button>
+          </Show>
         </div>
       </div>
     </form>

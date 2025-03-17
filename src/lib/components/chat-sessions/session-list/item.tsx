@@ -1,4 +1,4 @@
-import { Component, Match, Show, Switch } from "solid-js";
+import { Component, Show } from "solid-js";
 import { createSignal } from "solid-js";
 import { toast } from "solid-sonner";
 import { getChatHistoryStore } from "~/lib/contexts/globals/chat-history";
@@ -49,52 +49,50 @@ export const SessionListItem: Component<{
       onDblClick={() => setRenameMode(true)}
     >
       <div class="grow select-none text-sm gap-2 flex items-center overflow-y-auto h-8">
-        <Switch fallback={<Title />}>
-          <Match when={renameMode()}>
-            <TextField defaultValue={title() ?? ""} class="w-full">
-              <TextFieldInput
-                class="text-foreground bg-background w-full"
-                onLoad={(ev) => ev.currentTarget.focus()}
-                on:keydown={(ev) => {
-                  switch (ev.key) {
-                    case "Enter":
-                      if (!ev.ctrlKey && !ev.metaKey && !ev.altKey && !ev.shiftKey) {
-                        ev.currentTarget.blur();
-                      }
-
-                      break;
-
-                    default:
-                      break;
-                  }
-                }}
-                on:blur={(ev) => {
-                  setRenameMode(false);
-
-                  const newTitle = ev.currentTarget.value.trim();
-                  if (newTitle.length < 1 || newTitle === title()) {
-                    return;
-                  }
-
-                  setOptimisticTitle(title());
-
-                  const s = sessionId();
-
-                  (async () => {
-                    try {
-                      await renameSession(s, newTitle);
-                      await reloadSession(s);
-                    } catch (err) {
-                      toast.error(`Error: ${err}`);
-                    } finally {
-                      setOptimisticTitle(undefined);
+        <Show when={renameMode()} fallback={<Title />}>
+          <TextField defaultValue={title() ?? ""} class="w-full">
+            <TextFieldInput
+              class="text-foreground bg-background w-full"
+              onLoad={(ev) => ev.currentTarget.focus()}
+              on:keydown={(ev) => {
+                switch (ev.key) {
+                  case "Enter":
+                    if (!ev.ctrlKey && !ev.metaKey && !ev.altKey && !ev.shiftKey) {
+                      ev.currentTarget.blur();
                     }
-                  })();
-                }}
-              />
-            </TextField>
-          </Match>
-        </Switch>
+
+                    break;
+
+                  default:
+                    break;
+                }
+              }}
+              on:blur={(ev) => {
+                setRenameMode(false);
+
+                const newTitle = ev.currentTarget.value.trim();
+                if (newTitle.length < 1 || newTitle === title()) {
+                  return;
+                }
+
+                setOptimisticTitle(title());
+
+                const s = sessionId();
+
+                (async () => {
+                  try {
+                    await renameSession(s, newTitle);
+                    await reloadSession(s);
+                  } catch (err) {
+                    toast.error(`Error: ${err}`);
+                  } finally {
+                    setOptimisticTitle(undefined);
+                  }
+                })();
+              }}
+            />
+          </TextField>
+        </Show>
       </div>
       <Show when={!renameMode()}>
         <div class="shrink-0 flex items-center">

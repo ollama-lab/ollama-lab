@@ -5,7 +5,7 @@ import { SwitchControl, SwitchDescription, SwitchLabel, SwitchRoot } from "../..
 import { getDevOptions, setDevOptions } from "~/lib/contexts/globals/dev-tools/dev-mode";
 import { Component } from "solid-js";
 
-export const FloatEntry: Component = () => {
+const FloatEntry: Component = () => {
   return (
     <Dialog>
       <DialogTrigger as={Badge} class="absolute bottom-0 right-0 z-[500] flex bg-background text-foreground border border-border rounded items-center gap-1 hover:bg-secondary cursor-pointer">
@@ -37,3 +37,5 @@ export const FloatEntry: Component = () => {
     </Dialog>
   );
 }
+
+export default FloatEntry;

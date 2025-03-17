@@ -95,29 +95,27 @@ export function BubbleSector() {
                   <ThoughtsSection />
                 </Show>
 
-                <Switch fallback={<Bubble />}>
-                  <Match when={editMode()}>
-                    <BubbleInlineEditor
-                      defaultValue={chat?.().content}
-                      onCancel={() => setEditMode(false)}
-                      onSubmit={(newValue) => {
-                        const c = chat?.();
-                        const id = c?.id;
-                        const model = getCurrentModel();
+                <Show when={editMode()} fallback={<Bubble />}>
+                  <BubbleInlineEditor
+                    defaultValue={chat?.().content}
+                    onCancel={() => setEditMode(false)}
+                    onSubmit={(newValue) => {
+                      const c = chat?.();
+                      const id = c?.id;
+                      const model = getCurrentModel();
 
-                        if (id === undefined || !model) {
-                          return;
-                        }
+                      if (id === undefined || !model) {
+                        return;
+                      }
 
-                        editPrompt({ text: newValue }, id, model, {
-                          onRespond() {
-                            setEditMode(false);
-                          },
-                        });
-                      }}
-                    />
-                  </Match>
-                </Switch>
+                      editPrompt({ text: newValue }, id, model, {
+                        onRespond() {
+                          setEditMode(false);
+                        },
+                      });
+                    }}
+                  />
+                </Show>
 
                 <Show when={chat?.().versions}>
                   <VersionPagination />

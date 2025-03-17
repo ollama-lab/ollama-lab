@@ -1,5 +1,5 @@
-import { Component, createMemo, createRenderEffect, createSignal, Match, Show, Switch } from "solid-js";
-import { all, createLowlight } from "lowlight";
+import { Component, createMemo, createRenderEffect, createSignal, Show } from "solid-js";
+import { createLowlight } from "lowlight";
 import hljs from "highlight.js";
 import { cn } from "~/lib/utils/class-names";
 import { CodeBlockToolbar } from "./toolbar";
@@ -8,8 +8,9 @@ import { Root, RootContent } from "hast";
 import { h } from "hastscript";
 import "./code-block.css";
 import { CodeBlockRenderer } from "./renderer";
+import { allLangs } from "~/lib/utils/init/hljs-init";
 
-export const CodeBlock: Component<{
+const CodeBlock: Component<{
   code: string;
   lang?: string;
   autoGuess?: boolean;
@@ -27,7 +28,7 @@ export const CodeBlock: Component<{
 
   const detectedLang = createMemo(() => lang() ? hljs.getLanguage(lang()!) : null);
 
-  const lowlight = createLowlight(all);
+  const lowlight = createLowlight(allLangs);
 
   const [hastTree, setHastTree] = createStore<Root>({ type: "root", children: [] });
 
@@ -120,23 +121,26 @@ export const CodeBlock: Component<{
       </div>
 
       <div class="relative text-sm rounded-b overflow-hidden">
-        <Switch fallback={<div class="bg-muted text-muted-foreground px-2 py-1">{lineCount()} lines hidden</div>}>
-          <Match when={!collapsible() || !collapsed()}>
-            <pre class="min-w-full">
-              <code
-                class={cn(
-                  "relative overflow-x-auto grid! grid-cols-1",
-                  wrapText() ? "whitespace-pre-wrap" : "whitespace-pre",
-                  "hljs",
-                  highlightAsLang() ? `language-${highlightAsLang()!}` : "",
-                )}
-              >
-                <CodeBlockRenderer tree={hastTree} />
-              </code>
-            </pre>
-          </Match>
-        </Switch>
+        <Show
+          when={!collapsible() || !collapsed()}
+          fallback={<div class="bg-muted text-muted-foreground px-2 py-1">{lineCount()} lines hidden</div>}
+        >
+          <pre class="min-w-full">
+            <code
+              class={cn(
+                "relative overflow-x-auto grid! grid-cols-1",
+                wrapText() ? "whitespace-pre-wrap" : "whitespace-pre",
+                "hljs",
+                highlightAsLang() ? `language-${highlightAsLang()!}` : "",
+              )}
+            >
+              <CodeBlockRenderer tree={hastTree} />
+            </code>
+          </pre>
+        </Show>
       </div>
     </div>
   );
 }
+
+export default CodeBlock;
