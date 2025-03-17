@@ -9,7 +9,7 @@ import { CodeBlockRenderer } from "./renderer";
 import { placeholderProcessor } from "~/lib/highlight/placeholder-processor";
 import { highlightTheme } from "~/lib/contexts/globals/highlight";
 
-export const CodeBlock: Component<{
+const CodeBlock: Component<{
   code: string;
   lang?: string;
   class?: string;
@@ -121,3 +121,5 @@ export const CodeBlock: Component<{
     </div>
   );
 }
+
+export default CodeBlock;
