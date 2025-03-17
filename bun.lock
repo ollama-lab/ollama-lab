@@ -12,7 +12,7 @@
         "@tauri-apps/api": "^2.3.0",
         "@tauri-apps/cli": "^2.3.1",
         "@tauri-apps/plugin-dialog": "^2.2.0",
-        "@tauri-apps/plugin-http": "^2.4.0",
+        "@tauri-apps/plugin-http": "^2.4.2",
         "@tauri-apps/plugin-opener": "^2.2.6",
         "@tauri-apps/plugin-os": "^2.2.1",
         "@tauri-apps/plugin-process": "^2.2.0",
@@ -353,7 +353,7 @@
 
     "@tauri-apps/plugin-dialog": ["@tauri-apps/plugin-dialog@2.2.0", "", { "dependencies": { "@tauri-apps/api": "^2.0.0" } }, "sha512-6bLkYK68zyK31418AK5fNccCdVuRnNpbxquCl8IqgFByOgWFivbiIlvb79wpSXi0O+8k8RCSsIpOquebusRVSg=="],
 
-    "@tauri-apps/plugin-http": ["@tauri-apps/plugin-http@2.4.0", "", { "dependencies": { "@tauri-apps/api": "^2.0.0" } }, "sha512-Y3D7ymHDQA/OtdFbDWFUQRaevxaAUbQPbBS9UWlgphwXrjoebT7gVKgKymM617dAgT5MpaIG1Nagx/x17gImRg=="],
+    "@tauri-apps/plugin-http": ["@tauri-apps/plugin-http@2.4.2", "", { "dependencies": { "@tauri-apps/api": "^2.0.0" } }, "sha512-deoafidYelei/fmd4AQoHa2aCA9N2DvnnQrF/91QNjE0xCCTuVpPhIQdVRgdHDhFehEal9uI14OTvERBpcfHrg=="],
 
     "@tauri-apps/plugin-opener": ["@tauri-apps/plugin-opener@2.2.6", "", { "dependencies": { "@tauri-apps/api": "^2.0.0" } }, "sha512-bSdkuP71ZQRepPOn8BOEdBKYJQvl6+jb160QtJX/i2H9BF6ZySY/kYljh76N2Ne5fJMQRge7rlKoStYQY5Jq1w=="],
 
@@ -663,7 +663,7 @@
 
     "lru-cache": ["lru-cache@5.1.1", "", { "dependencies": { "yallist": "^3.0.2" } }, "sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w=="],
 
-    "lucide-solid": ["lucide-solid@0.479.0", "", { "peerDependencies": { "solid-js": "^1.4.7" } }, "sha512-e7e6r0eWLE90c7flMrzzwwXOS3E1zemoQB9c4LUB3i4v/xH3UdhaNX5Y4FIdXSrBxMSaLCVm6rCqg9qdT9ugzw=="],
+    "lucide-solid": ["lucide-solid@0.482.0", "", { "peerDependencies": { "solid-js": "^1.4.7" } }, "sha512-0FJcPFr7EOIat8KHlLfNJOajPb5CMwXnfJt5OKeDCFhRZAH1iL72I9qZ+TDzvVUPmJekLn6LVvNY02qupwD3bA=="],
 
     "magic-string": ["magic-string@0.30.17", "", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.0" } }, "sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA=="],
 
