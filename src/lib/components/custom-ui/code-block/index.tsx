@@ -44,7 +44,11 @@ const CodeBlock: Component<{
     return languageEntry()![0].displayName;
   });
 
-  const [langLoaded, setLangLoaded] = createSignal(false);
+  const [entryLoaded, setEntryLoaded] = createSignal(false);
+
+  const langLoaded = createMemo(() => {
+    return !highlighter.loading && !languageEntry.loading && highlighter() && entryLoaded();
+  });
 
   createEffect(() => {
     const hl = highlighter.loading || languageEntry.loading ? undefined : highlighter();
@@ -55,7 +59,7 @@ const CodeBlock: Component<{
         hl.loadLanguageSync(entry);
       }
 
-      setLangLoaded(true);
+      setEntryLoaded(true);
     }
   });
 
