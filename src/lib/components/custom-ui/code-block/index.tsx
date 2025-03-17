@@ -84,10 +84,13 @@ const CodeBlock: Component<{
 
   const lineCount = createMemo(() => {
     return hastTree.children.reduce((acc, cur) => {
-      if (cur.type === "text" || cur.type === "comment") {
+      if (cur.type === "element" && cur.tagName === "pre") {
+        const assumedCode = cur.children.at(0);
+        if (assumedCode && assumedCode.type === "element" && assumedCode.tagName === "code") {
+          acc += assumedCode.children.length;
+        }
+      } else if (cur.type === "text") {
         acc += cur.value.split("\n").length;
-      } else {
-        acc++;
       }
 
       return acc;
