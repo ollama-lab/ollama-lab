@@ -9,7 +9,6 @@ import { getDevOptions } from "~/lib/contexts/globals/dev-tools/dev-mode";
 import { Element, Text, Comment } from "hast";
 import "./markdown-block.css";
 import { Dynamic } from "solid-js/web";
-import { LoaderSpin } from "../../loader-spin";
 
 export const MarkdownBlock: Component<{
   markdown?: string;
@@ -34,7 +33,7 @@ export const MarkdownBlock: Component<{
           <Show when={(element() as Element).children.at(0)}>
             {(textElement) => (
               <Show when={textElement().type === "text"}>
-                <Suspense fallback={<LoaderSpin text="Loading code block..." />}>
+                <Suspense>
                   <Dynamic
                     component={lazy(() => import("../code-block"))}
                     code={(textElement() as NonNullable<Text>).value}
