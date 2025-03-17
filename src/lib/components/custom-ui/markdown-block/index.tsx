@@ -30,7 +30,7 @@ export const MarkdownBlock: Component<{
         <Match when={element().type === "text"}>
           <pre>{(element() as Text).value}</pre>
         </Match>
-        <Match when={element().type === "element" && (element() as Element).tagName === "code" }>
+        <Match when={element().type === "element" && (element() as Element).tagName === "code"}>
           <Show when={(element() as Element).children.at(0)}>
             {(textElement) => (
               <Show when={textElement().type === "text"}>
