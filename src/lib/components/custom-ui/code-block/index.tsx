@@ -107,19 +107,22 @@ const CodeBlock: Component<{
         </div>
       </Show>
       <div class="flex py-1 items-center bg-secondary text-secondary-foreground px-2 rounded-t">
-        <div class="shrink-0 text-sm px-1">{displayName()}</div>
+        <div class="text-sm px-1">{displayName()}</div>
         <div class="grow" />
         <Show when={!stickyToolbar()}>
-          <ToolbarTemplate class="shrink-0" />
+          <ToolbarTemplate />
         </Show>
       </div>
 
-      <div class="relative text-sm rounded-b overflow-hidden">
+      <div
+        class={cn(
+          "code-container relative text-sm rounded-b overflow-hidden",
+          wrapText() && "wrap-code",
+        )}
+      >
         <Switch fallback={<div class="bg-muted text-muted-foreground px-2 py-1">{lineCount()} lines hidden</div>}>
           <Match when={!collapsible() || !collapsed()}>
-            <div class="code-container min-w-full">
-              <CodeBlockRenderer tree={hastTree} />
-            </div>
+            <CodeBlockRenderer tree={hastTree} />
           </Match>
         </Switch>
       </div>

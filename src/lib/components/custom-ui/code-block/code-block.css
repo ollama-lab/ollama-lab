@@ -1,11 +1,23 @@
 @reference "../../../../app.css";
 
 @layer components {
-  .code-container > pre {
-    @apply px-2 py-2 lg:px-3.5 lg:py-3.5 overflow-x-auto;
+  .code-block {
+    & .code-container {
+      &.wrap-code > pre {
+        @apply whitespace-pre-wrap;
+      }
 
-    &.placeholder {
-      @apply text-sm;
+      & > pre {
+        @apply px-2 py-2 lg:px-3.5 lg:py-3.5 grid grid-cols-1 overflow-x-auto whitespace-pre;
+
+        & > code > span.line {
+          @apply overflow-hidden;
+        }
+
+        &.placeholder {
+          @apply text-sm;
+        }
+      }
     }
   }
 }
