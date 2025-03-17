@@ -3,12 +3,13 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { SolidMarkdown } from "solid-markdown";
 import { cn } from "~/lib/utils/class-names";
-import { type Component, createMemo, lazy, Match, Show, Switch } from "solid-js";
+import { type Component, createMemo, lazy, Match, Show, Suspense, Switch } from "solid-js";
 import { language } from "../code-block/node-detection";
 import { getDevOptions } from "~/lib/contexts/globals/dev-tools/dev-mode";
 import { Element, Text, Comment } from "hast";
 import "./markdown-block.css";
 import { Dynamic } from "solid-js/web";
+import { LoaderSpin } from "../../loader-spin";
 
 export const MarkdownBlock: Component<{
   markdown?: string;
@@ -33,14 +34,16 @@ export const MarkdownBlock: Component<{
           <Show when={(element() as Element).children.at(0)}>
             {(textElement) => (
               <Show when={textElement().type === "text"}>
-                <Dynamic
-                  component={lazy(() => import("../code-block"))}
-                  code={(textElement() as NonNullable<Text>).value}
-                  collapsible
-                  stickyToolbar
-                  lang={lang()}
-                  stickyOffset={-10}
-                />
+                <Suspense fallback={<LoaderSpin text="Loading code block..." />}>
+                  <Dynamic
+                    component={lazy(() => import("../code-block"))}
+                    code={(textElement() as NonNullable<Text>).value}
+                    collapsible
+                    stickyToolbar
+                    lang={lang()}
+                    stickyOffset={-10}
+                  />
+                </Suspense>
               </Show>
             )}
           </Show>
