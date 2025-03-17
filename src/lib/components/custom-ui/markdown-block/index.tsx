@@ -48,12 +48,10 @@ export const MarkdownBlock: Component<{
                 ) : element().type === "element" && (element() as Element).tagName === "code" && (
                   <Show when={(element() as Element).children.at(0)}>
                     {(textElement) => {
-                      const t = textElement();
-
-                      return t.type === "text" && (
+                      return textElement().type === "text" && (
                         <Dynamic
                           component={lazy(() => import("../code-block"))}
-                          code={t.value}
+                          code={(textElement() as NonNullable<Text>).value}
                           collapsible
                           stickyToolbar
                           lang={lang()}
