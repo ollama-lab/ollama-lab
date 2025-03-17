@@ -1,12 +1,29 @@
+CREATE TABLE session_modes (
+    name            TEXT NOT NULL PRIMARY KEY
+);
+
+INSERT INTO session_modes
+VALUES ('normal'), ('h2h');
+
 ALTER TABLE sessions
-ADD COLUMN is_h2h INTEGER NOT NULL DEFAULT FALSE;
+ADD COLUMN mode TEXT NOT NULL DEFAULT 'normal' REFERENCES session_modes (name);
+
+CREATE TABLE agent_templates (
+    id              INTEGER NOT NULL PRIMARY KEY,
+    name            TEXT,
+    model           TEXT NOT NULL,
+    system_prompt   TEXT,
+    profile_id      INTEGER NOT NULL REFERENCES profiles (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    date_created    INTEGER NOT NULL DEFAULT (unixepoch())
+);
 
 CREATE TABLE agents (
     id              INTEGER NOT NULL PRIMARY KEY,
     name            TEXT,
     model           TEXT NOT NULL,
     system_prompt   TEXT,
-    profile_id      INTEGER NOT NULL REFERENCES profiles (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    session_id      INTEGER NOT NULL REFERENCES sessions (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    template_id     TEXT REFERENCES agent_templates (id) ON DELETE SET NULL ON UPDATE CASCADE,
     date_created    INTEGER NOT NULL DEFAULT (unixepoch())
 );
 
@@ -46,9 +63,3 @@ LEFT OUTER JOIN (
 ) ic ON ic.chat_id = c.id
 LEFT OUTER JOIN agents ha ON c.agent_id = ha.id
 INNER JOIN sessions s ON c.session_id = s.id;
-
-CREATE TABLE selected_agents (
-    session_id      INTEGER NOT NULL REFERENCES sessions (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    agent_id        INTEGER NOT NULL REFERENCES agents (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    PRIMARY KEY (session_id, agent_id)
-);
