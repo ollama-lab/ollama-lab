@@ -47,8 +47,8 @@ export const MarkdownBlock: Component<{
                   <pre>{(element() as Text).value}</pre>
                 ) : element().type === "element" && (element() as Element).tagName === "code" && (
                   <Show when={(element() as Element).children.at(0)}>
-                    {(textElement) => {
-                      return textElement().type === "text" && (
+                    {(textElement) => (
+                      <Show when={textElement().type === "text"}>
                         <Dynamic
                           component={lazy(() => import("../code-block"))}
                           code={(textElement() as NonNullable<Text>).value}
@@ -57,8 +57,8 @@ export const MarkdownBlock: Component<{
                           lang={lang()}
                           stickyOffset={-10}
                         />
-                      );
-                    }}
+                      </Show>
+                    )}
                   </Show>
                 );
               }}
