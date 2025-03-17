@@ -64,17 +64,13 @@ const CodeBlock: Component<{
   });
 
   createRenderEffect(() => {
-    if (!langLoaded()) {
-      return;
-    }
-
     let tree;
 
     const hl = highlighter.loading || languageEntry.loading ? undefined : highlighter();
 
     if (hl && lang()) {
       tree = hl.codeToHast(code(), {
-        lang: lang()!,
+        lang: langLoaded() ? lang()! : "text",
         theme: highlightTheme(),
       });
     } else {
