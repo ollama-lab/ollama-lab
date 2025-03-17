@@ -91,6 +91,8 @@ const CodeBlock: Component<{
         }
       } else if (cur.type === "text") {
         acc += cur.value.split("\n").length;
+      } else {
+        acc++;
       }
 
       return acc;
