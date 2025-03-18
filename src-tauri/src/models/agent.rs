@@ -24,18 +24,20 @@ impl AgentTemplate {
         session_id: i64,
         executor: impl Executor<'_, Database = Sqlite>,
     ) -> Result<Agent, Error> {
-        Ok(sqlx::query_as::<_, Agent>(r#"
-            INSERT INTO agents (name, model, system_prompt, session_id, template_id)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING id, name, model, system_prompt, session_id, template_id, date_created;
-        "#)
+        Ok(
+            sqlx::query_as::<_, Agent>(r#"
+                INSERT INTO agents (name, model, system_prompt, session_id, template_id)
+                VALUES ($1, $2, $3, $4, $5)
+                RETURNING id, name, model, system_prompt, session_id, template_id, date_created;
+            "#)
             .bind(self.name.as_ref().map(|s| s.as_str()))
             .bind(&self.model)
-            .bind(&self.system_prompt)
+            .bind(&self.system_prompt.as_ref().map(|s| s.as_str()))
             .bind(session_id)
             .bind(self.id)
             .fetch_one(executor)
-            .await?)
+            .await?
+        )
     }
 }
 
