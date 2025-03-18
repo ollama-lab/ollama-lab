@@ -44,8 +44,13 @@ pub trait OperateCrud<'t>: Sized {
         model: &Self::Update,
     ) -> impl Future<Output = Result<Option<Self>, Error>>;
 
-    fn delete<'a>(
+    fn delete_model<'a>(
         self,
         executor: impl Executor<'a, Database = Sqlite>,
+    ) -> impl Future<Output = Result<Option<Self::Id>, Error>>;
+
+    fn delete<'a>(
+        executor: impl Executor<'a, Database = Sqlite>,
+        id: Self::Id,
     ) -> impl Future<Output = Result<Option<Self::Id>, Error>>;
 }

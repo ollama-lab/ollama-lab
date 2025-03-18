@@ -9,7 +9,7 @@ pub struct Session {
     pub title: Option<String>,
     pub date_created: DateTime<Utc>,
     pub current_model: String,
-    pub is_h2h: bool,
+    pub mode: String,
 }
 
 #[derive(Debug, Serialize)]

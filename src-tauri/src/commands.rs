@@ -1,3 +1,4 @@
+pub mod agent_templates;
 pub mod agents;
 pub mod chats;
 pub mod images;

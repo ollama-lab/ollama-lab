@@ -9,20 +9,18 @@ use crate::{
 };
 
 #[tauri::command]
-pub async fn list_sessions(state: State<'_, AppState>, is_h2h: Option<bool>) -> Result<Vec<Session>, Error> {
+pub async fn list_sessions(state: State<'_, AppState>, mode: Option<String>) -> Result<Vec<Session>, Error> {
     let profile_id = state.profile;
     let mut conn = state.conn_pool.acquire().await?;
 
-    let sessions = sqlx::query_as::<_, Session>(
-        "\
+    let sessions = sqlx::query_as::<_, Session>(r#"
         SELECT id, profile_id, title, date_created, current_model, is_h2h
         FROM sessions
-        WHERE profile_id = $1 AND is_h2h = IFNULL($2, is_h2h)
+        WHERE profile_id = $1 AND mode = IFNULL($2, mode)
         ORDER BY date_created DESC;
-    ",
-    )
+    "#)
     .bind(profile_id)
-    .bind(is_h2h)
+    .bind(mode)
     .fetch_all(&mut *conn)
     .await?;
 

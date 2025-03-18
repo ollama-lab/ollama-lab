@@ -19,27 +19,13 @@ impl AgentTemplate {
         self.name.as_ref().map(|s| s.as_str()).unwrap_or_else(|| &self.model)
     }
 
-    pub async fn create_agent(
+    #[inline]
+    pub async fn to_agent(
         &self,
-        session_id: i64,
         executor: impl Executor<'_, Database = Sqlite>,
-    ) -> Result<Agent, Error> {
-        Ok(
-            sqlx::query_as::<_, Agent>(r#"
-                INSERT INTO agents (name, model, system_prompt, session_id, template_id, profile_id)
-                SELECT $1, $2, $3, $4, $5, profile_id
-                FROM sessions
-                WHERE id = $4
-                RETURNING id, name, model, system_prompt, session_id, template_id, date_created;
-            "#)
-            .bind(self.name.as_ref().map(|s| s.as_str()))
-            .bind(&self.model)
-            .bind(&self.system_prompt.as_ref().map(|s| s.as_str()))
-            .bind(session_id)
-            .bind(self.id)
-            .fetch_one(executor)
-            .await?
-        )
+        session_id: i64,
+    ) -> Result<Option<Agent>, Error> {
+        Agent::create_from_template(executor, self.id, session_id).await
     }
 }
 
@@ -185,7 +171,7 @@ impl<'t> OperateCrud<'t> for AgentTemplate {
         )
     }
 
-    async fn delete<'a>(
+    async fn delete_model<'a>(
         self,
         executor: impl Executor<'a, Database = Sqlite>,
     ) -> Result<Option<Self::Id>, Error> {
@@ -196,6 +182,23 @@ impl<'t> OperateCrud<'t> for AgentTemplate {
                 RETURNING id;
             "#)
             .bind(self.id)
+            .fetch_optional(executor)
+            .await?
+            .map(|(id,)| id)
+        )
+    }
+
+    async fn delete<'a>(
+        executor: impl Executor<'a, Database = Sqlite>,
+        id: i64,
+    ) -> Result<Option<Self::Id>, Error> {
+        Ok(
+            sqlx::query_as::<_, (i64,)>(r#"
+                DELETE FROM agent_templates
+                WHERE id = $1
+                RETURNING id;
+            "#)
+            .bind(id)
             .fetch_optional(executor)
             .await?
             .map(|(id,)| id)
@@ -218,6 +221,26 @@ pub struct Agent {
 impl Agent {
     pub fn display_name(&self) -> &str {
         self.name.as_ref().map(|s| s.as_str()).unwrap_or_else(|| &self.model)
+    }
+
+    pub async fn create_from_template(
+        executor: impl Executor<'_, Database = Sqlite>,
+        template_id: i64,
+        session_id: i64,
+    ) -> Result<Option<Self>, Error> {
+        Ok(
+            sqlx::query_as::<_, Self>(r#"
+                INSERT INTO agents (name, model, system_prompt, session_id, template_id)
+                SELECT name, model, system_prompt, $2, id
+                FROM agent_templates
+                WHERE id = $1
+                RETURNING id, name, model, system_prompt, session_id, template_id, date_created;
+            "#)
+            .bind(template_id)
+            .bind(session_id)
+            .fetch_optional(executor)
+            .await?
+        )
     }
 }
 
@@ -424,7 +447,7 @@ impl<'t> OperateCrud<'t> for Agent {
         )
     }
 
-    async fn delete<'a>(
+    async fn delete_model<'a>(
         self,
         executor: impl Executor<'a, Database = Sqlite>,
     ) -> Result<Option<Self::Id>, Error> {
@@ -435,6 +458,23 @@ impl<'t> OperateCrud<'t> for Agent {
                 RETURNING id;
             "#)
             .bind(self.id)
+            .fetch_optional(executor)
+            .await?
+            .map(|(id,)| id)
+        )
+    }
+
+    async fn delete<'a>(
+        executor: impl Executor<'a, Database = Sqlite>,
+        id: Self::Id,
+    ) -> Result<Option<Self::Id>, Error> {
+        Ok(
+            sqlx::query_as::<_, (i64,)>(r#"
+                DELETE FROM agents
+                WHERE id = $1
+                RETURNING id;
+            "#)
+            .bind(id)
             .fetch_optional(executor)
             .await?
             .map(|(id,)| id)
