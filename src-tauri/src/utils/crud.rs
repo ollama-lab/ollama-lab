@@ -1,21 +1,51 @@
+use std::future::Future;
+
+use sqlx::{Executor, Sqlite};
+
 use crate::errors::Error;
 
-pub trait OperateCrud : Sized {
+pub trait OperateCrud<'t>: Sized {
     type Id;
     type Create;
     type Update;
+    type Selector;
 
-    fn create(create_info: Self::Create) -> Result<Self, Error>;
+    fn create<'a>(
+        executor: impl Executor<'a, Database = Sqlite>,
+        create_info: &Self::Create,
+    ) -> impl Future<Output = Result<Self, Error>>;
 
-    fn get(id: Self::Id) -> Result<Self, Error>;
+    fn get<'a>(
+        executor: impl Executor<'a, Database = Sqlite>,
+        id: Self::Id,
+        selector: Self::Selector,
+    ) -> impl Future<Output = Result<Option<Self>, Error>>;
 
-    fn list_all() -> Result<Vec<Self>, Error>;
+    fn list_all<'a>(
+        executor: impl Executor<'a, Database = Sqlite>,
+        selector: Self::Selector,
+    ) -> impl Future<Output = Result<Vec<Self>, Error>>;
 
-    fn list_paged(page: u32, size: u32) -> Result<Vec<Self>, Error>;
+    fn list_paged<'a>(
+        executor: impl Executor<'a, Database = Sqlite>,
+        page_index: u32,
+        size: u32,
+        selector: Self::Selector,
+    ) -> impl Future<Output = Result<Vec<Self>, Error>>;
 
-    fn save(&mut self) -> Result<(), Error>;
+    fn save<'a>(
+        &mut self,
+        executor: impl Executor<'a, Database = Sqlite>,
+    ) -> impl Future<Output = Result<(), Error>>;
 
-    fn update(model: Self::Update) -> Result<Self, Error>;
+    fn update<'a>(
+        executor: impl Executor<'a, Database = Sqlite>,
+        id: Self::Id,
+        model: &Self::Update,
+    ) -> impl Future<Output = Result<Option<Self>, Error>>;
 
-    fn delete(self) -> Result<Self::Id, Error>;
+    fn delete<'a>(
+        self,
+        executor: impl Executor<'a, Database = Sqlite>,
+    ) -> impl Future<Output = Result<Option<Self::Id>, Error>>;
 }
