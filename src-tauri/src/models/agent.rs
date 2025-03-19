@@ -314,7 +314,7 @@ pub struct AgentUpdate<'a> {
     pub model: Option<&'a str>,
     pub system_prompt: Option<&'a str>,
     pub session_id: Option<i64>,
-    pub template_id: Option<Option<i64>>,
+    pub template_id: Option<(Option<i64>,)>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -497,7 +497,7 @@ impl<'t> OperateCrud<'t> for Agent {
             .bind(model.model)
             .bind(model.system_prompt)
             .bind(model.session_id)
-            .bind(model.template_id.and_then(|inner| inner))
+            .bind(model.template_id.and_then(|(inner,)| inner))
             .bind(model.template_id.is_none())
             .fetch_optional(executor)
             .await?

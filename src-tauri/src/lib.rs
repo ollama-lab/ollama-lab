@@ -53,15 +53,18 @@ pub fn run() {
             commands::images::get_compressed_image_base64,
             commands::images::get_thumbnail_base64,
             commands::images::get_images_by_chat_id,
-            commands::agents::get_agent,
-            commands::agents::add_agent,
-            commands::agents::update_agent,
-            commands::agents::delete_agent,
+            commands::agents::add_session_agent,
+            commands::agents::update_session_agent,
+            commands::agents::delete_session_agent,
             commands::agents::selected::get_selected_agents,
             commands::agents::selected::add_selected_agent,
             commands::agents::selected::remove_selected_agent,
+            commands::agents::list_all_agents,
             commands::agent_templates::list_all_agent_templates,
-            commands::agent_templates::list_all_agents,
+            commands::agent_templates::get_agent_template,
+            commands::agent_templates::add_agent_template,
+            commands::agent_templates::update_agent_template,
+            commands::agent_templates::delete_agent_template,
         ])
         .setup(|app| {
             app.manage(AppState::init()?);

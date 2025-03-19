@@ -20,34 +20,22 @@ function toAgent(internal: InternalAgent): Agent {
   };
 }
 
-export async function getAgent(id: number): Promise<Agent | undefined> {
-  return await invoke<InternalAgent | null>("get_agent", { id })
+export async function getSessionAgent(id: number): Promise<Agent | undefined> {
+  return await invoke<InternalAgent | null>("get_session_agent", { id })
     .then((item) => item ? toAgent(item) : undefined);
 }
 
-export async function addAgent(model: string): Promise<Agent> {
-  return toAgent(await invoke<InternalAgent>("add_agent", { model }));
+export async function addSessionAgent(templateId: number, sessionId: number): Promise<Agent> {
+  return toAgent(await invoke<InternalAgent>("add_session_agent", { templateId, sessionId }));
 }
 
-export async function updateAgent(id: number, updateInfo: AgentUpdate): Promise<Agent | undefined> {
-  return await invoke<InternalAgent | null>("update_agent", { id, updateInfo })
+export async function updateSessionAgent(id: number, updateInfo: AgentUpdate): Promise<Agent | undefined> {
+  return await invoke<InternalAgent | null>("update_session_agent", { id, updateInfo })
     .then((item) => item ? toAgent(item) : undefined);
 }
 
-export async function deleteAgent(id: number): Promise<number | undefined> {
-  return (await invoke<number | null>("delete_agent", { id })) ?? undefined;
-}
-
-export async function getSelectedAgents(sessionId: number): Promise<Agent[]> {
-  return (await invoke<InternalAgent[]>("get_selected_agents", { sessionId })).map((item) => toAgent(item));
-}
-
-export async function addSelectedAgent(sessionId: number, agentId: number): Promise<void> {
-  await invoke<void>("add_selected_agent", { sessionId, agentId });
-}
-
-export async function removeSelectedAgent(sessionId: number, agentId: number): Promise<void> {
-  await invoke<void>("remove_selected_agent", { sessionId, agentId });
+export async function deleteSessionAgent(id: number): Promise<number | undefined> {
+  return (await invoke<number | null>("delete_session_agent", { id })) ?? undefined;
 }
 
 export async function listAllAgents(sessionId?: number): Promise<AgentListItem[]> {

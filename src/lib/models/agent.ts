@@ -13,7 +13,7 @@ export interface AgentUpdate {
   model?: string;
   systemPrompt?: string;
   sessionId?: number,
-  templateId?: number | null,
+  templateId?: [number | null],
 }
 
 export interface AgentListItem {
