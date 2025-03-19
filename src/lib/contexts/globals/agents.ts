@@ -3,8 +3,13 @@ import { listAllAgentTemplates } from "~/lib/commands/agent-templates";
 import { AgentListItem } from "~/lib/models/agent";
 import { AgentTemplateCreation, AgentTemplateUpdate } from "~/lib/models/agent-template";
 import {
-  
+  addAgentTemplate as addAgentTemplate_,
+  updateAgentTemplate as updateAgentTemplate_,
+  deleteAgentTemplate as deleteAgentTemplate_,
 } from "~/lib/commands/agent-templates";
+import { createSignal } from "solid-js";
+
+const [selectedAgentTemplate, setSelectedAgentTemplate] = createSignal<number>();
 
 const [agentTemplates, setAgentTemplates] = createStore<AgentListItem[]>([]);
 
@@ -17,7 +22,9 @@ export async function reloadAgentTemplateList() {
 }
 
 export async function addAgentTemplate(createInfo: AgentTemplateCreation) {
-  setAgentTemplates(agentTemplates.length, await addAgent_(createInfo.model));
+  const item = await addAgentTemplate_(createInfo);
+  setAgentTemplates(agentTemplates.length, item);
+  return item.id;
 }
 
 export async function updateAgentTemplate(id: number, updateInfo: AgentTemplateUpdate) {
@@ -26,9 +33,9 @@ export async function updateAgentTemplate(id: number, updateInfo: AgentTemplateU
     return;
   }
 
-  const newValue = await updateAgent_(id, updateInfo);
+  const newValue = await updateAgentTemplate_(id, updateInfo);
   if (newValue) {
-    setAgentTemplates(index, reconcile(newValue));
+    setAgentTemplates(index, reconcile({ id: newValue.id, name: newValue.name ?? null, model: newValue.model }));
   }
 }
 
@@ -38,10 +45,12 @@ export async function deleteAgentTemplate(id: number) {
     return;
   }
 
-  const deletedId = await deleteAgent_(id);
+  const deletedId = await deleteAgentTemplate_(id);
   if (deletedId !== null) {
     setAgentTemplates(produce((list) => {
       list.splice(index, 1);
     }));
   }
 }
+
+export { selectedAgentTemplate, setSelectedAgentTemplate };
