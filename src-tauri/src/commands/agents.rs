@@ -10,13 +10,6 @@ use crate::{
 pub mod selected;
 
 #[tauri::command]
-pub async fn get_all_agents(state: State<'_, AppState>) -> Result<Vec<Agent>, Error> {
-    let pool = &state.conn_pool;
-
-    Ok(Agent::list_all(pool, AgentSelector::ByProfile(state.profile)).await?)
-}
-
-#[tauri::command]
 pub async fn get_session_agents(state: State<'_, AppState>, session_id: i64) -> Result<Vec<Agent>, Error> {
     let pool = &state.conn_pool;
 

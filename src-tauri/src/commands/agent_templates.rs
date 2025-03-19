@@ -13,6 +13,7 @@ pub async fn list_all_agent_templates(state: State<'_, AppState>) -> Result<Vec<
     Ok(AgentListItem::list_all_templates(pool, state.profile).await?)
 }
 
+#[tauri::command]
 pub async fn list_all_agents(state: State<'_, AppState>, session_id: Option<i64>) -> Result<Vec<AgentListItem>, Error> {
     let pool = &state.conn_pool;
 

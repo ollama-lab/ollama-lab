@@ -10,8 +10,8 @@ interface InternalSession {
   isH2h: boolean;
 }
 
-export async function listSessions(isH2h?: boolean): Promise<Session[]> {
-  return await invoke<InternalSession[]>("list_sessions", { isH2h }).then((sessions) =>
+export async function listSessions(mode?: string): Promise<Session[]> {
+  return await invoke<InternalSession[]>("list_sessions", { mode }).then((sessions) =>
     sessions.map(
       (session) =>
         ({

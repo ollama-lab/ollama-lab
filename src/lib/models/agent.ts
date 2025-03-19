@@ -1,10 +1,10 @@
 export interface Agent {
   id: number;
-  name: string | null;
+  name?: string;
   model: string;
-  systemPrompt: string | null;
+  systemPrompt?: string;
   sessionId: number,
-  templateId: number | null,
+  templateId?: number,
   dateCreated: Date,
 }
 

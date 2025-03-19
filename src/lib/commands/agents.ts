@@ -1,11 +1,13 @@
 import { invoke } from "@tauri-apps/api/core";
-import { Agent, AgentUpdate } from "../models/agent";
+import { Agent, AgentListItem, AgentUpdate } from "../models/agent";
 
 interface InternalAgent {
   id: number;
   name: string | null;
   model: string;
   systemPrompt: string | null;
+  sessionId: number,
+  templateId?: number,
   dateCreated: Date,
 }
 
@@ -14,11 +16,8 @@ function toAgent(internal: InternalAgent): Agent {
     ...internal,
     name: internal.name ?? undefined,
     systemPrompt: internal.systemPrompt ?? undefined,
+    templateId: internal.templateId ?? undefined,
   };
-}
-
-export async function getAllAgents(): Promise<Agent[]> {
-  return (await invoke<InternalAgent[]>("get_all_agents")).map((item) => toAgent(item));
 }
 
 export async function getAgent(id: number): Promise<Agent | undefined> {
@@ -49,4 +48,8 @@ export async function addSelectedAgent(sessionId: number, agentId: number): Prom
 
 export async function removeSelectedAgent(sessionId: number, agentId: number): Promise<void> {
   await invoke<void>("remove_selected_agent", { sessionId, agentId });
+}
+
+export async function listAllAgents(sessionId?: number): Promise<AgentListItem[]> {
+  return await invoke<AgentListItem[]>("list_all_agents", { sessionId });
 }
