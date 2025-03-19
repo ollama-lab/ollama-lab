@@ -663,7 +663,7 @@
 
     "lru-cache": ["lru-cache@5.1.1", "", { "dependencies": { "yallist": "^3.0.2" } }, "sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w=="],
 
-    "lucide-solid": ["lucide-solid@0.482.0", "", { "peerDependencies": { "solid-js": "^1.4.7" } }, "sha512-0FJcPFr7EOIat8KHlLfNJOajPb5CMwXnfJt5OKeDCFhRZAH1iL72I9qZ+TDzvVUPmJekLn6LVvNY02qupwD3bA=="],
+    "lucide-solid": ["lucide-solid@0.483.0", "", { "peerDependencies": { "solid-js": "^1.4.7" } }, "sha512-eIDOr1FtctYkqOOlpt/0aCmM48cRJsyU+jdVGqxpMv+M27f2xN4ty09vQfZc/xt+JtWGBTmVtZjNAczIeXC+KQ=="],
 
     "magic-string": ["magic-string@0.30.17", "", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.0" } }, "sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA=="],
 
