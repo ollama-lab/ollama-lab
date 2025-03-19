@@ -61,6 +61,7 @@ pub fn run() {
             commands::agents::selected::get_selected_agents,
             commands::agents::selected::add_selected_agent,
             commands::agents::selected::remove_selected_agent,
+            commands::agent_templates::list_all_agent_templates,
         ])
         .setup(|app| {
             app.manage(AppState::init()?);

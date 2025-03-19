@@ -6,6 +6,61 @@ use crate::{errors::Error, utils::crud::OperateCrud};
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 #[serde(rename_all = "camelCase")]
+pub struct AgentListItem {
+    pub id: i64,
+    pub name: Option<String>,
+    pub model: String,
+}
+
+impl AgentListItem {
+    pub async fn list_all_templates(
+        executor: impl Executor<'_, Database = Sqlite>,
+        profile_id: i64,
+    ) -> Result<Vec<Self>, Error> {
+        Ok(
+            sqlx::query_as::<_, Self>(r#"
+                SELECT id, name, model
+                FROM agent_templates
+                WHERE profile_id = $1;
+            "#)
+            .bind(profile_id)
+            .fetch_all(executor)
+            .await?
+        )
+    }
+
+    pub async fn list_agents(
+        executor: impl Executor<'_, Database = Sqlite>,
+        selector: AgentSelector,
+    ) -> Result<Vec<Self>, Error> {
+        let ret = match selector {
+            AgentSelector::BySession(session_id) => {
+                sqlx::query_as::<_, Self>(r#"
+                    SELECT id, name, model
+                    FROM agents
+                    WHERE session_id = $1;
+                "#)
+                .bind(session_id)
+            }
+
+            AgentSelector::ByProfile(profile_id) => {
+                sqlx::query_as::<_, Self>(r#"
+                    SELECT a.id, a.name, a.model
+                    FROM agents a
+                    INNER JOIN sessions s ON a.session_id = s.id
+                    WHERE s.profile_id = $1;
+                "#)
+                .bind(profile_id)
+            }
+        }.fetch_all(executor).await?;
+
+        Ok(ret)
+    }
+
+}
+
+#[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
+#[serde(rename_all = "camelCase")]
 pub struct AgentTemplate {
     pub id: i64,
     pub name: Option<String>,
@@ -262,6 +317,8 @@ pub struct AgentUpdate<'a> {
     pub template_id: Option<Option<i64>>,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case", tag = "type", content = "id")]
 pub enum AgentSelector {
     BySession(i64),
     ByProfile(i64),
