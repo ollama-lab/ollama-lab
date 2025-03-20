@@ -2,5 +2,3 @@
 
 resolver = "2"
 members = ["src-tauri"]
-
-[workspace.packages]
