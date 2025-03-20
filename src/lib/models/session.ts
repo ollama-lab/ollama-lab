@@ -4,7 +4,7 @@ export interface Session {
   title: string | null;
   dateCreated: Date;
   currentModel: string;
-  isH2h: boolean,
+  mode: SessionMode;
 }
 
 export type Role = "system" | "assistant" | "user" | "tool";
