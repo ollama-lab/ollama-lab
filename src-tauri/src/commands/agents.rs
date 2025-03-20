@@ -7,8 +7,6 @@ use crate::{
     utils::crud::OperateCrud,
 };
 
-pub mod selected;
-
 #[tauri::command]
 pub async fn get_session_agents(state: State<'_, AppState>, session_id: i64) -> Result<Vec<Agent>, Error> {
     let pool = &state.conn_pool;
@@ -17,7 +15,14 @@ pub async fn get_session_agents(state: State<'_, AppState>, session_id: i64) -> 
 }
 
 #[tauri::command]
-pub async fn get_session_agent(state: State<'_, AppState>, id: i64) -> Result<Option<Agent>, Error> {
+pub async fn get_session_agent(state: State<'_, AppState>, id: i64, session_id: i64) -> Result<Option<Agent>, Error> {
+    let pool = &state.conn_pool;
+
+    Ok(Agent::get(pool, id, AgentSelector::BySession(session_id)).await?)
+}
+
+#[tauri::command]
+pub async fn get_global_session_agent(state: State<'_, AppState>, id: i64) -> Result<Option<Agent>, Error> {
     let pool = &state.conn_pool;
 
     Ok(Agent::get(pool, id, AgentSelector::ByProfile(state.profile)).await?)
