@@ -10,7 +10,7 @@ interface InternalSession {
   mode: SessionMode,
 }
 
-export async function listSessions(mode?: string): Promise<Session[]> {
+export async function listSessions(mode: string = "normal"): Promise<Session[]> {
   return await invoke<InternalSession[]>("list_sessions", { mode }).then((sessions) =>
     sessions.map(
       (session) =>
