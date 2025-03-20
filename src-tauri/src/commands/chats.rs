@@ -11,9 +11,9 @@ use crate::{
     },
     errors::Error,
     events::StreamingResponseEvent,
-    models::chat::{ChatGenerationReturn, IncomingUserPrompt},
+    models::{agent::{Agent, AgentSelector}, chat::{ChatGenerationReturn, IncomingUserPrompt}},
     responses::tree::ChatTree,
-    utils::{h2h::list_agents, sessions::get_session, system_prompt::get_session_system_prompt},
+    utils::{crud::OperateCrud, sessions::get_session, system_prompt::get_session_system_prompt},
 };
 
 pub mod chat_history;
@@ -31,9 +31,9 @@ pub async fn submit_user_prompt(
 ) -> Result<ChatGenerationReturn, Error> {
     let ollama = &state.ollama;
     let profile_id = state.profile;
-    let pool = state.conn_pool.clone();
+    let pool = &state.conn_pool;
 
-    let session = get_session(&pool, profile_id, session_id)
+    let session = get_session(pool, profile_id, session_id)
         .await?
         .ok_or(Error::NotExists)?;
 
@@ -85,7 +85,7 @@ pub async fn submit_user_prompt(
 
     let mut response_ret: AssistantPromptAdditionReturn;
 
-    let agents = list_agents(profile_id, &pool).await?;
+    let agents = Agent::list_all(pool, AgentSelector::BySession(session_id)).await?;
     let mut agent_index = 0;
 
     if is_h2h && !agents.is_empty() {
