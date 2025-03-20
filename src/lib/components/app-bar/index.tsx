@@ -60,7 +60,7 @@ const TopTabList: Component = () => {
           activePattern: /^\/h2h(\/*.)?/,
         },
         {
-          name: "Agents",
+          name: "Agents Personas",
           icon: <BotIcon />,
           href: "/agent-templates",
           activePattern: /^\/agent-templates(\/*.)?/,

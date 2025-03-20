@@ -25,7 +25,7 @@ export const AgentTemplateList: Component = () => {
 
   return (
     <div class="w-full h-full flex flex-col">
-      <HeaderBar title="Agents">
+      <HeaderBar title="Agents Personas">
         <Button
           variant="outline"
           size="icon"
