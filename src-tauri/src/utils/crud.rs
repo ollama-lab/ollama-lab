@@ -1,6 +1,5 @@
 use std::future::Future;
 
-use serde::{Deserialize, Serialize};
 use sqlx::{Executor, Sqlite};
 
 use crate::errors::Error;
