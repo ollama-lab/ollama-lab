@@ -13,6 +13,7 @@ export type TransmissionStatus = "preparing" | "sending" | "sent" | "not sent";
 
 export interface Chat {
   id: number;
+  sessionId: number;
   role: Role;
   content: string;
   imageCount: number;

@@ -17,10 +17,6 @@ export function currentSession() {
   return currentSessionStore.session;
 }
 
-export function currentSessionId() {
-  return currentSessionStore.session;
-}
-
 export async function setCurrentSessionId(id: number | null) {
   if (id === null) {
     setCurrentSession(reconcile({

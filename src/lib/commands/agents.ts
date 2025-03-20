@@ -20,8 +20,13 @@ function toAgent(internal: InternalAgent): Agent {
   };
 }
 
-export async function getSessionAgent(id: number): Promise<Agent | undefined> {
-  return await invoke<InternalAgent | null>("get_session_agent", { id })
+export async function getSessionAgent(id: number, sessionId: number): Promise<Agent | undefined> {
+  return await invoke<InternalAgent | null>("get_session_agent", { id, sessionId })
+    .then((item) => item ? toAgent(item) : undefined);
+}
+
+export async function getGlobalSessionAgent(id: number): Promise<Agent | undefined> {
+  return await invoke<InternalAgent | null>("get_global_session_agent", { id })
     .then((item) => item ? toAgent(item) : undefined);
 }
 
