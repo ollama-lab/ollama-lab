@@ -44,3 +44,5 @@ export type SessionCurrentModelReturn = null | {
   id: number;
   currentModel: string | null;
 };
+
+export type SessionMode = "normal" | "h2h";

@@ -27,11 +27,13 @@ pub async fn submit_user_prompt(
     prompt: IncomingUserPrompt,
     on_stream: Channel<StreamingResponseEvent>,
     reuse_sibling_images: bool,
-    is_h2h: bool,
+    mode: Option<String>,
 ) -> Result<ChatGenerationReturn, Error> {
     let ollama = &state.ollama;
     let profile_id = state.profile;
     let pool = &state.conn_pool;
+
+    let mode = mode.unwrap_or_else(|| "normal".to_string());
 
     let session = get_session(pool, profile_id, session_id)
         .await?
@@ -42,6 +44,8 @@ pub async fn submit_user_prompt(
     let mut tx = pool.begin().await?;
 
     let mut parent_id = parent_id;
+
+    let is_h2h = mode == "h2h";
 
     if prompt.use_system_prompt.unwrap_or(false) && parent_id.is_none() {
         let ret = add_model_system_prompt(&tree, &mut tx, &on_stream, profile_id, session.current_model.as_str())
