@@ -6,8 +6,10 @@ import { deleteAgentTemplate } from "~/lib/contexts/globals/agents";
 export const OperationDropdown: Component<{ id: number }> = (props) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <EllipsisVerticalIcon class="size-4 opacity-0 group-hover:opacity-100" />
+      <DropdownMenuTrigger
+        class="group-[selected]:bg-primary group-[selected]:text-primary-foreground"
+      >
+        <EllipsisVerticalIcon class="size-4" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent>

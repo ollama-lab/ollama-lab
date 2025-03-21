@@ -50,6 +50,8 @@ export async function deleteAgentTemplate(id: number) {
     setAgentTemplates(produce((list) => {
       list.splice(index, 1);
     }));
+
+    setSelectedAgentTemplate((cur) => cur === deletedId ? undefined : cur);
   }
 }
 

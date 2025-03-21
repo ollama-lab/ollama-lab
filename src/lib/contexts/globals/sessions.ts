@@ -6,7 +6,7 @@ import { createEffect } from "solid-js";
 const [sessions, setSessions] = createStore<Session[]>([]);
 
 export async function reloadSessions() {
-  setSessions(await listSessions());
+  setSessions(await listSessions("normal"));
 }
 
 createEffect(() => {

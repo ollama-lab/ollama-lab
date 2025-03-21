@@ -24,7 +24,12 @@ export const AgentTemplateList: Component = () => {
   };
 
   return (
-    <div class="w-full h-full flex flex-col">
+    <div
+      class="w-full h-full flex flex-col"
+      onClick={() => {
+        setSelectedAgentTemplate(undefined);
+      }}
+    >
       <HeaderBar title="Agent Personas">
         <Button
           variant="outline"

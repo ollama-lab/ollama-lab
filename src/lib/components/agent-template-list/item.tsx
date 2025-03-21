@@ -13,18 +13,21 @@ export const AgentTemplateListItem: Component<{
 
   const isSelected = createMemo(() => selectedAgentTemplate() === id());
 
+  const itemClicked = () => setSelectedAgentTemplate(id());
+
   return (
     <div
-      onClick={() => {
-        setSelectedAgentTemplate(id());
+      on:click={(ev) => {
+        ev.stopPropagation();
+        itemClicked();
       }}
       class={cn(
-        "rounded px-1.5 py-1",
-        isSelected() && "bg-primary text-primary-foreground",
+        "group flex rounded px-2 py-2 cursor-pointer",
+        isSelected() && "selected bg-primary text-primary-foreground",
       )}
     >
       <div class="flex gap-2 items-center text-sm grow truncate">
-        {names().displayName}
+        <b>{names().displayName}</b>
         <Show when={names().displayModel}>
           {(model) => (
             <span class="text-muted-foreground text-xs">{model()}</span>

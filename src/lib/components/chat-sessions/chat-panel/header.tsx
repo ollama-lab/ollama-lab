@@ -9,4 +9,4 @@ export const ChatPanelHeader: Component = () => {
       </div>
     </div>
   );
-}
+};
