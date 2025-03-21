@@ -171,7 +171,7 @@ pub async fn launch_h2h_chat(
 
         let mut tx = conn_pool.begin().await?;
 
-        if let Some(indicator) = cur_agent.map(|item| format!("({} is talking)", item.display_name())) {
+        if let Some(indicator) = cur_agent.map(|item| format!("{} starts talking", item.display_name())) {
             let indicator_ret = add_generic_system_prompt(
                 &tree,
                 &mut tx,
