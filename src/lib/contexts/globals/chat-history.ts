@@ -12,7 +12,7 @@ import { currentSession, isNewSession, setCurrentSessionId, setNewSession } from
 import { getCurrentModel } from "./current-model";
 import { setCandidate } from "./candidate-model";
 import { getCandidateSessionSystemPrompt, setCandidateSessionSystemPrompt } from "./candidate-session-system-prompt";
-import { getCurrentSettings } from "./settings";
+import { isH2h } from "./settings";
 
 export interface PromptSubmissionEvents {
   onRespond?: () => void;
@@ -74,8 +74,6 @@ export async function submitChat(
   mode: SessionMode = "normal",
 ) {
   let session = currentSession() ?? undefined;
-  const isH2h = getCurrentSettings().h2h ?? false;
-
   if (!session) {
     // TODO: Add settings option for default session name: 1) no name, 2) first prompt, 3) generated after first response
     // Currently it is `first prompt`
@@ -84,7 +82,7 @@ export async function submitChat(
       sessionTitle = `Image${prompt.imagePaths.length > 1 ? "s" : ""}`;
     }
 
-    const sessionSystemPrompt = isH2h ? getCandidateSessionSystemPrompt() : undefined;
+    const sessionSystemPrompt = isH2h() ? getCandidateSessionSystemPrompt() : undefined;
 
     session = await createSession(model, sessionTitle, mode);
 

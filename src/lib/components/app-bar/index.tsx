@@ -4,7 +4,7 @@ import { TabLink } from "./tab-link";
 import { useLocation } from "@solidjs/router";
 import { Component, createMemo, For, JSX } from "solid-js";
 import { cn } from "~/lib/utils/class-names";
-import { getCurrentSettings } from "~/lib/contexts/globals/settings";
+import { isH2h } from "~/lib/contexts/globals/settings";
 
 const TabList: Component<{
   tabs: Section[];
@@ -33,8 +33,6 @@ const TopTabList: Component = () => {
   const pathname = createMemo(() => loc.pathname);
 
   const tabs = createMemo<Section[]>(() => {
-    const h2hEnabled = getCurrentSettings().h2h ?? false;
-
     const tabList = [
       {
         name: "Sessions",
@@ -50,7 +48,7 @@ const TopTabList: Component = () => {
       },
     ];
 
-    if (h2hEnabled) {
+    if (isH2h()) {
       tabList.splice(
         1, 0,
         {
