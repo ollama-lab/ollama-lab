@@ -1,5 +1,5 @@
 import { createStore } from "solid-js/store";
-import type { ChatHistory } from "~/lib/models/session";
+import type { ChatHistory, SessionMode } from "~/lib/models/session";
 import { createEffect, createMemo } from "solid-js";
 import { reloadSession } from "./sessions";
 import { getCurrentBranch } from "~/lib/commands/chat-history";
@@ -71,6 +71,7 @@ export async function submitChat(
   prompt: IncomingUserPrompt,
   model: string,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
+  mode: SessionMode = "normal",
 ) {
   let session = currentSession() ?? undefined;
   const isH2h = getCurrentSettings().h2h ?? false;
@@ -85,7 +86,7 @@ export async function submitChat(
 
     const sessionSystemPrompt = isH2h ? getCandidateSessionSystemPrompt() : undefined;
 
-    session = await createSession(model, sessionTitle, isH2h);
+    session = await createSession(model, sessionTitle, mode);
 
     await reloadSession(session.id);
     await setNewSession(session.id);
@@ -106,7 +107,7 @@ export async function submitChat(
       onScrollDown,
     }),
     true,
-    isH2h,
+    mode,
   );
 
   setChatHistoryStore("chatHistory", "chats", getChatHistory()!.chats.length - 1, {
