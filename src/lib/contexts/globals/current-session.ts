@@ -1,56 +1,58 @@
 import { createStore, reconcile } from "solid-js/store";
 import { getSession } from "~/lib/commands/sessions";
 import { reloadSession } from "~/lib/contexts/globals/sessions";
-import { Session } from "~/lib/models/session";
+import { Session, SessionMode } from "~/lib/models/session";
 
-export interface SessionStore {
-  session: Session | null;
+export type SessionStore = Record<SessionMode, {
+  session: Session;
   newSession: boolean;
-}
+} | undefined>;
 
 const [currentSessionStore, setCurrentSession] = createStore<SessionStore>({
-  session: null,
-  newSession: false,
+  normal: undefined,
+  h2h: undefined,
 });
 
-export function currentSession() {
-  return currentSessionStore.session;
+export function currentSession(mode: SessionMode = "normal") {
+  return currentSessionStore[mode]?.session;
 }
 
-export async function setCurrentSessionId(id: number | null) {
+export async function setCurrentSessionId(id: number | null, mode: SessionMode = "normal") {
   if (id === null) {
-    setCurrentSession(reconcile({
-      session: null,
-      newSession: false,
-    }));
+    setCurrentSession(mode, undefined);
     return;
   }
 
-  setCurrentSession(reconcile({
-    session: await getSession(id),
+  const session = await getSession(id);
+
+  setCurrentSession(mode, session ? reconcile({
+    session,
     newSession: false,
-  }));
+  }) : undefined);
 }
 
-export async function setNewSession(id: number) {
-  setCurrentSession(reconcile({
-    session: await getSession(id),
+export async function setNewSession(id: number, mode: SessionMode = "normal") {
+  const session = await getSession(id);
+
+  setCurrentSession(mode, session ? reconcile({
+    session,
     newSession: true,
-  }));
+  }) : undefined);
 }
 
-export async function reloadCurrentSession() {
-  const id = currentSessionStore.session?.id;
+export async function reloadCurrentSession(mode: SessionMode = "normal") {
+  const id = currentSessionStore[mode]?.session?.id;
   if (id === undefined) {
     return;
   }
 
-  setCurrentSession(reconcile({
-    session: await reloadSession(id) ?? null,
+  const session = await reloadSession(id);
+  setCurrentSession(mode, session ? reconcile({
+    session,
     newSession: false,
-  }));
+  }) : undefined);
 }
 
-export function isNewSession() {
-  return currentSessionStore.newSession;
+export function isNewSession(mode: SessionMode = "normal") {
+  return currentSessionStore[mode]?.newSession ?? true;
 }

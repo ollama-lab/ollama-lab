@@ -1,17 +1,37 @@
-import { clearChatHistory } from "~/lib/contexts/globals/chat-history";
 import { Button } from "../../ui/button";
 import { PlusIcon } from "lucide-solid";
-import { Component, For, Suspense } from "solid-js";
-import { getAllSessions } from "~/lib/contexts/globals/sessions";
+import { Component, createEffect, For, Suspense } from "solid-js";
 import { SessionListItem } from "./item";
 import { LoaderSpin } from "../../loader-spin";
 import { HeaderBar } from "../../custom-ui/header-bar";
+import { Session, SessionMode } from "~/lib/models/session";
+import { clearChatHistory } from "~/lib/contexts/globals/chat-history";
+import { currentSession, isNewSession } from "~/lib/contexts/globals/current-session";
+import { reloadSession } from "~/lib/contexts/globals/sessions";
 
-export const SessionList: Component = () => {
+export const SessionList: Component<{
+  sessionList: Session[];
+  title: string;
+  mode?: SessionMode;
+}> = (props) => {
+  const mode = () => props.mode ?? "normal";
+
+  const onNewSession = () => {
+    clearChatHistory(true, mode());
+  };
+
+  createEffect(() => {
+    const currentId = currentSession(mode())?.id;
+
+    if (!isNewSession(mode()) && currentId !== undefined) {
+      reloadSession(currentId, mode());
+    }
+  });
+
   return (
     <div class="w-full h-full flex flex-col">
-      <HeaderBar title="Sessions">
-        <Button size="icon" variant="outline" title="New session" onClick={() => clearChatHistory(true)}>
+      <HeaderBar title={props.title}>
+        <Button size="icon" variant="outline" title="New session" onClick={onNewSession}>
           <PlusIcon />
         </Button>
       </HeaderBar>
@@ -19,7 +39,7 @@ export const SessionList: Component = () => {
       <div class="grow overflow-y-auto">
         <Suspense fallback={<LoaderSpin class="size-4" />}>
           <div class="flex flex-col gap-2 px-2">
-            <For each={getAllSessions()}>
+            <For each={props.sessionList}>
               {(session) => (
                 <SessionListItem sessionId={session.id} title={session.title ?? undefined} />
               )}
