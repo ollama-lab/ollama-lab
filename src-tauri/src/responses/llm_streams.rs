@@ -7,7 +7,7 @@ use ollama_rest::{
     Ollama,
 };
 use sqlx::{Pool, Sqlite};
-use tokio::sync::{mpsc, oneshot, Mutex};
+use tokio::sync::{broadcast, mpsc, Mutex};
 
 use crate::{
     chat_gen::ego::IntoEgoOf,
@@ -22,7 +22,7 @@ pub async fn stream_response(
     pool: &Pool<Sqlite>,
     chan_sender: mpsc::Sender<StreamingResponseEvent>,
     response_id: i64,
-    cancel_receiver: Option<oneshot::Receiver<()>>,
+    cancel_receiver: Option<broadcast::Receiver<()>>,
     session_id: i64,
     current_model: &str,
     agent_id: Option<i64>,
@@ -156,7 +156,7 @@ pub async fn stream_response(
 
         Some(res) = async move {
             match cancel_receiver {
-                Some(rx) => Some(rx.await),
+                Some(mut rx) => Some(rx.recv().await),
                 None => None,
             }
         } => {
