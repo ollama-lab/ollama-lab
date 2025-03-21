@@ -17,6 +17,11 @@ const AgentDetails: Component<{
 
   const onEditClick = () => props.onActivateEditMode?.();
 
+  const hasSystemPrompt = () => {
+    const prompt = props.content.systemPrompt;
+    return !!prompt && prompt.length > 0;
+  };
+
   return (
     <div class="flex flex-col px-2 py-2 md:px-4 md:py-4 gap-2">
       <div class="flex items-center">
@@ -35,10 +40,12 @@ const AgentDetails: Component<{
           </Button>
         </div>
       </div>
-      <div class="flex flex-col px-2 py-2 bg-secondary text-secondary-foreground rounded">
+      <div class="flex flex-col px-2 py-2 bg-secondary text-secondary-foreground rounded gap-2">
         <div class="text-sm font-bold">System prompt</div>
-        <div class="whitespace-pre">
-          {props.content.systemPrompt}
+        <div class="whitespace-pre text-sm">
+          <Show when={hasSystemPrompt()} fallback={<span class="italic">(Empty)</span>}>
+            {props.content.systemPrompt}
+          </Show>
         </div>
       </div>
     </div>
