@@ -30,7 +30,7 @@ export const AgentTemplateList: Component = () => {
         setSelectedAgentTemplate(undefined);
       }}
     >
-      <HeaderBar title="Agent Personas">
+      <HeaderBar title="Agent Seeds">
         <Button
           variant="outline"
           size="icon"

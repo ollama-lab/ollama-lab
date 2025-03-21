@@ -1,5 +1,5 @@
 import { Section } from "~/lib/models/section";
-import { BotIcon, BotMessageSquareIcon, MessagesSquareIcon, PackageIcon, SettingsIcon } from "lucide-solid";
+import { BeanIcon, BotMessageSquareIcon, MessagesSquareIcon, PackageIcon, SettingsIcon } from "lucide-solid";
 import { TabLink } from "./tab-link";
 import { useLocation } from "@solidjs/router";
 import { Component, createMemo, For, JSX } from "solid-js";
@@ -60,8 +60,8 @@ const TopTabList: Component = () => {
           activePattern: /^\/h2h(\/*.)?/,
         },
         {
-          name: "Agent Personas",
-          icon: <BotIcon />,
+          name: "Agent Seeds",
+          icon: <BeanIcon />,
           href: "/agent-templates",
           activePattern: /^\/agent-templates(\/*.)?/,
         },
