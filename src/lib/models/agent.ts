@@ -3,17 +3,18 @@ export interface Agent {
   name?: string;
   model: string;
   systemPrompt?: string;
-  sessionId: number,
-  templateId?: number,
-  dateCreated: Date,
+  sessionId: number;
+  templateId?: number;
+  dateCreated: Date;
 }
 
 export interface AgentUpdate {
   name?: string;
   model?: string;
   systemPrompt?: string;
-  sessionId?: number,
-  templateId?: [number | null],
+  sessionId?: number;
+  templateId?: [number | null];
+  order?: number;
 }
 
 export interface AgentListItem {

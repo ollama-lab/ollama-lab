@@ -24,6 +24,7 @@ CREATE TABLE agents (
     system_prompt   TEXT,
     session_id      INTEGER NOT NULL REFERENCES sessions (id) ON DELETE CASCADE ON UPDATE CASCADE,
     template_id     TEXT REFERENCES agent_templates (id) ON DELETE SET NULL ON UPDATE CASCADE,
+    order           INTEGER NOT NULL DEFAULT 0,
     date_created    INTEGER NOT NULL DEFAULT (unixepoch())
 );
 
