@@ -61,17 +61,17 @@ impl AgentListItem {
 
     pub async fn reorder_agent_list<'a>(
         conn: &mut PoolConnection<Sqlite>,
-        list: &'a Vec<AgentListItem>,
+        list: &'a Vec<Self>,
         session_id: i64,
         src_index: i64,
         dest_index: i64,
-    ) -> Result<Vec<&'a AgentListItem>, Error> {
+    ) -> Result<Vec<&'a Self>, Error> {
         let len = list.len();
 
         let src_index = src_index.into_length_index(len) as usize;
         let dest_index = dest_index.into_length_index(len) as usize;
 
-        let mut new_orders: Vec<&AgentListItem> = list.iter().collect();
+        let mut new_orders: Vec<&Self> = list.iter().collect();
         new_orders.move_element(src_index, dest_index);
 
         let mut order_num = 0;
@@ -81,7 +81,7 @@ impl AgentListItem {
         let mut order_result: Vec<(i64, i64)> = Vec::with_capacity(new_orders.len());
 
         let mut order_iter = new_orders.iter();
-        while let Some(&&AgentListItem{ id, .. }) = order_iter.next() {
+        while let Some(&&Self{ id, .. }) = order_iter.next() {
             if let Some(prev_id) = prev_id {
                 if prev_id > id {
                     order_num -= 1;
