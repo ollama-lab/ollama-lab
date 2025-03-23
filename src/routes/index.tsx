@@ -2,7 +2,6 @@ import { Component } from "solid-js";
 import { ChatPanel } from "~/lib/components/chat-sessions/chat-panel";
 import { SessionList } from "~/lib/components/chat-sessions/session-list";
 import { Resizable, ResizableHandle, ResizablePanel } from "~/lib/components/ui/resizable";
-import { getAllSessions } from "~/lib/contexts/globals/sessions";
 
 const IndexPage: Component = () => {
   return (
@@ -10,7 +9,7 @@ const IndexPage: Component = () => {
       <ResizablePanel initialSize={0.25} collapsible class="overflow-hidden">
         <SessionList
           title="Sessions"
-          sessionList={getAllSessions()}
+          mode="normal"
         />
       </ResizablePanel>
       <ResizableHandle />
