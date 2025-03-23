@@ -1,14 +1,13 @@
 import { createStore } from "solid-js/store";
-import { createMemo, createSignal } from "solid-js";
 import { IncomingUserPrompt } from "~/lib/models/chat";
 import { getCurrentModel } from "./current-model";
 import { isH2h } from "./settings";
+import { SessionMode } from "~/lib/models/session";
 
 const [inputPrompt, setInputPrompt] = createStore<IncomingUserPrompt>({ text: "" });
-const [hidePromptBar, setHidePromptBar] = createSignal(false);
 
-export const isSubmittable = createMemo(() => {
-  if (!getCurrentModel()) {
+export const isSubmittable = (mode: SessionMode) => {
+  if (!getCurrentModel(mode)) {
     return false;
   }
 
@@ -21,9 +20,9 @@ export const isSubmittable = createMemo(() => {
   }
 
   return false;
-});
+};
 
 export const getInputPrompt = () => inputPrompt;
 export const clearInputPrompt = () => setInputPrompt({ text: "", imagePaths: [] });
 
-export { setInputPrompt, hidePromptBar, setHidePromptBar };
+export { setInputPrompt };
