@@ -31,6 +31,8 @@ async function fetcher({ modelName, downloadInfo }: FetchingProps) {
   return await getModel(modelName);
 }
 
+const [tabValue, setTabValue] = createSignal<string>("details");
+
 export const ModelDetails: Component = () => {
   const model = () => currentModelPageModel();
 
@@ -50,8 +52,6 @@ export const ModelDetails: Component = () => {
   onMount(() => {
     reloadActiveModels();
   });
-
-  const [tabValue, setTabValue] = createSignal<string>("details");
 
   const DownloadContent: Component = () => {
     const progress = createMemo(() => {
