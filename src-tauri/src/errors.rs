@@ -24,6 +24,7 @@ pub enum Error {
     InvalidRole,
     Image(ImageError),
     Message(String),
+    ChatHalted,
 }
 
 impl Display for Error {
@@ -83,6 +84,7 @@ impl Display for Error {
                     cache.as_ref().unwrap().as_str()
                 }
                 Self::Message(msg) => msg,
+                Self::ChatHalted => "Chat stopped by user",
             }
         )
     }

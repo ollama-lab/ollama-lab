@@ -3,13 +3,14 @@ import { currentSession, reloadCurrentSession } from "./current-session";
 import { defaultModel, modelList } from "./model-states";
 import { setSessionModel as setSessionModelCommand } from "~/lib/commands/sessions";
 import { reloadSession } from "./sessions";
+import { SessionMode } from "~/lib/models/session";
 
 function checkExistence(model: string) {
   return modelList().find((item) => item.name === model);
 }
 
-export function getCurrentModel() {
-  const sessionModel = currentSession()?.currentModel;
+export function getCurrentModel(mode: SessionMode) {
+  const sessionModel = currentSession(mode)?.currentModel;
   if (sessionModel && checkExistence(sessionModel)) {
     return sessionModel;
   }

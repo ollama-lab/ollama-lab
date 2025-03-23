@@ -1,43 +1,58 @@
 import { createStore, produce, reconcile } from "solid-js/store";
-import { getAllAgents, addAgent as addAgent_, updateAgent as updateAgent_, deleteAgent as deleteAgent_ } from "~/lib/commands/agents";
-import { Agent, AgentCreation, AgentUpdate } from "~/lib/models/agent";
+import { listAllAgentTemplates } from "~/lib/commands/agent-templates";
+import { AgentListItem } from "~/lib/models/agent";
+import { AgentTemplateCreation, AgentTemplateUpdate } from "~/lib/models/agent-template";
+import {
+  addAgentTemplate as addAgentTemplate_,
+  updateAgentTemplate as updateAgentTemplate_,
+  deleteAgentTemplate as deleteAgentTemplate_,
+} from "~/lib/commands/agent-templates";
+import { createSignal } from "solid-js";
 
-const [agentList, setAgentList] = createStore<Agent[]>([]);
+const [selectedAgentTemplate, setSelectedAgentTemplate] = createSignal<number>();
 
-export function getAgentList() {
-  return agentList;
+const [agentTemplates, setAgentTemplates] = createStore<AgentListItem[]>([]);
+
+export function getAgentTemplateList() {
+  return agentTemplates;
 }
 
-export async function reloadAgentList() {
-  setAgentList(reconcile(await getAllAgents()));
+export async function reloadAgentTemplateList() {
+  setAgentTemplates(reconcile(await listAllAgentTemplates()));
 }
 
-export async function addAgent(createInfo: AgentCreation) {
-  setAgentList(agentList.length, await addAgent_(createInfo.model));
+export async function addAgentTemplate(createInfo: AgentTemplateCreation) {
+  const item = await addAgentTemplate_(createInfo);
+  setAgentTemplates(agentTemplates.length, item);
+  return item.id;
 }
 
-export async function updateAgent(id: number, updateInfo: AgentUpdate) {
-  const index = agentList.findIndex((item) => item.id === id);
+export async function updateAgentTemplate(id: number, updateInfo: AgentTemplateUpdate) {
+  const index = agentTemplates.findIndex((item) => item.id === id);
   if (index < 0) {
     return;
   }
 
-  const newValue = await updateAgent_(id, updateInfo);
+  const newValue = await updateAgentTemplate_(id, updateInfo);
   if (newValue) {
-    setAgentList(index, reconcile(newValue));
+    setAgentTemplates(index, reconcile({ id: newValue.id, name: newValue.name ?? null, model: newValue.model }));
   }
 }
 
-export async function deleteAgent(id: number) {
-  const index = agentList.findIndex((item) => item.id === id);
+export async function deleteAgentTemplate(id: number) {
+  const index = agentTemplates.findIndex((item) => item.id === id);
   if (index < 0) {
     return;
   }
 
-  const deletedId = await deleteAgent_(id);
+  const deletedId = await deleteAgentTemplate_(id);
   if (deletedId !== null) {
-    setAgentList(produce((list) => {
+    setAgentTemplates(produce((list) => {
       list.splice(index, 1);
     }));
+
+    setSelectedAgentTemplate((cur) => cur === deletedId ? undefined : cur);
   }
 }
+
+export { selectedAgentTemplate, setSelectedAgentTemplate };

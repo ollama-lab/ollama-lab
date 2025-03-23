@@ -1,11 +1,9 @@
-import { Show, createEffect, createMemo, createSignal, onCleanup } from "solid-js";
+import { Component, Show, createEffect, createMemo, createSignal, onCleanup } from "solid-js";
 import { getChatHistory, submitChat } from "~/lib/contexts/globals/chat-history";
 import {
   clearInputPrompt,
   getInputPrompt,
-  hidePromptBar,
-  isSubmittable,
-  setHidePromptBar,
+  isSubmittable as isSubmittable_,
   setInputPrompt,
 } from "~/lib/contexts/globals/prompt-input";
 import { Button } from "../../ui/button";
@@ -20,8 +18,15 @@ import { emit } from "@tauri-apps/api/event";
 import autosize from "autosize";
 import { toSrcString } from "~/lib/utils/images";
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
+import { SessionMode } from "~/lib/models/session";
 
-export function PromptInput() {
+const [hidePromptBar, setHidePromptBar] = createSignal(false);
+
+export const PromptInput: Component<{ mode?: SessionMode }> = (props) => {
+  const mode = () => props.mode ?? "normal";
+
+  const isSubmittable = createMemo(() => isSubmittable_(mode()));
+
   const [formRef, setFormRef] = createSignal<HTMLFormElement | undefined>(undefined);
   const [textEntryRef, setTextEntryRef] = createSignal<HTMLTextAreaElement | undefined>(undefined);
 
@@ -96,14 +101,14 @@ export function PromptInput() {
           return;
         }
 
-        const model = getCurrentModel();
+        const model = getCurrentModel(mode());
         if (!model) {
           return;
         }
 
         setStatus("submitting");
 
-        submitChat(getInputPrompt(), model, { onRespond }).finally(clearStatus);
+        submitChat(getInputPrompt(), model, { onRespond }, mode()).finally(clearStatus);
       }}
     >
       <Button variant="ghost" class="h-4 rounded-none -mx-3 py-0" onClick={() => setHidePromptBar((cur) => !cur)}>
@@ -154,4 +159,4 @@ export function PromptInput() {
       </div>
     </form>
   );
-}
+};

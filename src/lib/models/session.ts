@@ -4,7 +4,7 @@ export interface Session {
   title: string | null;
   dateCreated: Date;
   currentModel: string;
-  isH2h: boolean,
+  mode: SessionMode;
 }
 
 export type Role = "system" | "assistant" | "user" | "tool";
@@ -13,6 +13,7 @@ export type TransmissionStatus = "preparing" | "sending" | "sent" | "not sent";
 
 export interface Chat {
   id: number;
+  sessionId: number;
   role: Role;
   content: string;
   imageCount: number;
@@ -43,3 +44,5 @@ export type SessionCurrentModelReturn = null | {
   id: number;
   currentModel: string | null;
 };
+
+export type SessionMode = "normal" | "h2h";

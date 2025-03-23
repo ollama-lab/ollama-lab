@@ -1,5 +1,4 @@
 import { Component, createMemo, createResource, createSignal, lazy, onMount, Show, Suspense } from "solid-js";
-import { PlaceholderTitle } from "./placeholder-title";
 import { Badge } from "../ui/badge";
 import { getModel } from "~/lib/commands/models";
 import SetDefault from "./toolbar-items/set-default";
@@ -17,14 +16,7 @@ import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";
 import { defaultModel, reloadActiveModels } from "~/lib/contexts/globals/model-states";
 import { ProgressEvent } from "~/lib/models/events/progress";
 import { ModelInfo } from "./sections/model-info";
-
-function PlaceholderPage() {
-  return (
-    <div class="flex flex-col items-center place-content-center h-full">
-      <PlaceholderTitle />
-    </div>
-  );
-}
+import { PlaceholderPage } from "./placeholder-title";
 
 interface FetchingProps {
   modelName: string | null;
@@ -38,6 +30,8 @@ async function fetcher({ modelName, downloadInfo }: FetchingProps) {
 
   return await getModel(modelName);
 }
+
+const [tabValue, setTabValue] = createSignal<string>("details");
 
 export const ModelDetails: Component = () => {
   const model = () => currentModelPageModel();
@@ -58,8 +52,6 @@ export const ModelDetails: Component = () => {
   onMount(() => {
     reloadActiveModels();
   });
-
-  const [tabValue, setTabValue] = createSignal<string>("details");
 
   const DownloadContent: Component = () => {
     const progress = createMemo(() => {

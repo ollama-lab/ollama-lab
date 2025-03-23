@@ -4,25 +4,23 @@ use crate::{
     app_state::AppState,
     errors::Error,
     image::cleanup::remove_orphans,
-    models::session::{Session, SessionCurrentModelReturn, SessionNameReturn},
+    models::session::{mode::SessionMode, Session, SessionCurrentModelReturn, SessionNameReturn},
     utils::sessions::get_session as get_session_,
 };
 
 #[tauri::command]
-pub async fn list_sessions(state: State<'_, AppState>, is_h2h: Option<bool>) -> Result<Vec<Session>, Error> {
+pub async fn list_sessions(state: State<'_, AppState>, mode: SessionMode) -> Result<Vec<Session>, Error> {
     let profile_id = state.profile;
     let mut conn = state.conn_pool.acquire().await?;
 
-    let sessions = sqlx::query_as::<_, Session>(
-        "\
-        SELECT id, profile_id, title, date_created, current_model, is_h2h
+    let sessions = sqlx::query_as::<_, Session>(r#"
+        SELECT id, profile_id, title, date_created, current_model, mode
         FROM sessions
-        WHERE profile_id = $1 AND is_h2h = IFNULL($2, is_h2h)
+        WHERE profile_id = $1 AND mode = IFNULL($2, mode)
         ORDER BY date_created DESC;
-    ",
-    )
+    "#)
     .bind(profile_id)
-    .bind(is_h2h)
+    .bind(mode.as_str())
     .fetch_all(&mut *conn)
     .await?;
 
@@ -144,22 +142,22 @@ pub async fn create_session(
     state: State<'_, AppState>,
     current_model: String,
     title: Option<String>,
-    is_h2h: bool,
+    mode: SessionMode,
 ) -> Result<Session, Error> {
     let profile_id = state.profile;
     let mut conn = state.conn_pool.acquire().await?;
 
     let session = sqlx::query_as::<_, Session>(
         r#"
-        INSERT INTO sessions (profile_id, current_model, title, is_h2h)
+        INSERT INTO sessions (profile_id, current_model, title, mode)
         VALUES ($1, $2, $3, $4)
-        RETURNING id, profile_id, title, date_created, current_model, is_h2h;
+        RETURNING id, profile_id, title, date_created, current_model, mode;
     "#,
     )
     .bind(profile_id)
     .bind(current_model)
     .bind(title)
-    .bind(is_h2h)
+    .bind(mode.as_str())
     .fetch_one(&mut *conn)
     .await?;
 

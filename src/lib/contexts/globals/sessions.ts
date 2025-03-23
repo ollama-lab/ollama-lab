@@ -1,36 +1,31 @@
 import { createStore, produce, reconcile } from "solid-js/store";
 import { getSession, listSessions } from "../../commands/sessions";
-import { Session } from "~/lib/models/session";
-import { createEffect } from "solid-js";
+import { Session, SessionMode } from "~/lib/models/session";
 
-const [sessions, setSessions] = createStore<Session[]>([]);
+const [sessions, setSessions] = createStore<Record<SessionMode, Session[]>>({ normal: [], h2h: [] });
 
-export async function reloadSessions() {
-  setSessions(await listSessions());
+export async function reloadSessions(mode: SessionMode = "normal") {
+  setSessions(mode, await listSessions(mode));
 }
 
-createEffect(() => {
-  reloadSessions();
-});
-
-export async function reloadSession(id: number) {
+export async function reloadSession(id: number, mode: SessionMode = "normal") {
   const session = await getSession(id);
-  if (!session) {
+  if (!session || session.mode !== mode) {
     return;
   }
 
-  const index = sessions.findIndex((value) => value.id === session.id);
+  const index = sessions[mode].findIndex((value) => value.id === session.id);
   if (index < 0) {
-    setSessions(produce((cur) => {
+    setSessions(mode, produce((cur) => {
       cur.unshift(session);
     }));
     return;
   }
 
-  setSessions(index, reconcile(session));
+  setSessions(mode, index, reconcile(session));
   return session;
 }
 
-export function getAllSessions() {
-  return sessions;
+export function getAllSessions(mode: SessionMode = "normal") {
+  return sessions[mode];
 }

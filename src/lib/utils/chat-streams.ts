@@ -3,7 +3,7 @@ import type { IncomingUserPrompt } from "~/lib/models/chat";
 import { emit } from "@tauri-apps/api/event";
 import { toast } from "solid-sonner";
 import { Accessor } from "solid-js";
-import { ChatHistory } from "../models/session";
+import { ChatHistory, SessionMode } from "../models/session";
 import { reconcile, SetStoreFunction } from "solid-js/store";
 import { ChatHistoryStore, PromptSubmissionEvents } from "../contexts/globals/chat-history";
 
@@ -12,19 +12,20 @@ export interface ConvertResponseEventsProps {
 }
 
 export function convertResponseEvents(
-  chatHistory: Accessor<ChatHistory | null>,
+  chatHistory: Accessor<ChatHistory | undefined>,
   setChatHistoryStore: SetStoreFunction<ChatHistoryStore>,
   model?: string,
   prompt?: IncomingUserPrompt,
   { onScrollDown, onRespond }: PromptSubmissionEvents = {},
   { regenerateFor }: ConvertResponseEventsProps = {},
+  mode: SessionMode = "normal",
 ): PromptResponseEvents {
   let currentChatId: number | undefined = undefined;
 
   function getOrCreateHistory() {
     const ch = chatHistory();
     if (!ch) {
-      setChatHistoryStore("chatHistory", { chats: [] });
+      setChatHistoryStore("chatHistory", mode, { chats: [] });
     }
 
     return chatHistory()!;
@@ -41,6 +42,7 @@ export function convertResponseEvents(
 
           setChatHistoryStore(
             "chatHistory",
+            mode,
             "chats",
             reconcile([
               ...ch.chats.slice(0, chatIndex),
@@ -58,7 +60,7 @@ export function convertResponseEvents(
         }
         regenerateFor = undefined;
       } else {
-        setChatHistoryStore("chatHistory", "chats", ch.chats.length, {
+        setChatHistoryStore("chatHistory", mode, "chats", ch.chats.length, {
           id,
           status: "sent",
           content: prompt?.text ?? "",
@@ -86,6 +88,7 @@ export function convertResponseEvents(
 
         setChatHistoryStore(
           "chatHistory",
+          mode,
           "chats",
           reconcile([
             ...ch.chats.slice(0, i),
@@ -102,7 +105,7 @@ export function convertResponseEvents(
         );
       } else {
         const length = ch.chats.length;
-        setChatHistoryStore("chatHistory", "chats", length, {
+        setChatHistoryStore("chatHistory", mode, "chats", length, {
           id,
           status: "preparing",
           role: "assistant",
@@ -119,7 +122,7 @@ export function convertResponseEvents(
     afterSystemPromptCreated(id: number, text: string): void {
       const ch = getOrCreateHistory();
 
-      setChatHistoryStore("chatHistory", "chats", ch.chats.length, {
+      setChatHistoryStore("chatHistory", mode, "chats", ch.chats.length, {
         id,
         content: text,
         role: "system",
@@ -138,12 +141,12 @@ export function convertResponseEvents(
 
       const index = ch.chats.length - 1;
 
-      setChatHistoryStore("chatHistory", "chats", index, "status", reconcile("sending"));
+      setChatHistoryStore("chatHistory", mode, "chats", index, "status", reconcile("sending"));
 
       if (chat.thinking) {
-        setChatHistoryStore("chatHistory", "chats", index, "thoughts", (t) => (t ?? "") + chunk);
+        setChatHistoryStore("chatHistory", mode, "chats", index, "thoughts", (t) => (t ?? "") + chunk);
       } else {
-        setChatHistoryStore("chatHistory", "chats", index, "content", (t) => (t ?? "") + chunk);
+        setChatHistoryStore("chatHistory", mode, "chats", index, "content", (t) => (t ?? "") + chunk);
       }
 
       onScrollDown?.();
@@ -154,7 +157,7 @@ export function convertResponseEvents(
       const chat = ch.chats.at(-1);
       const index = ch.chats.length - 1;
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore("chatHistory", "chats", index, "status", "sent");
+        setChatHistoryStore("chatHistory", mode, "chats", index, "status", "sent");
       }
 
       currentChatId = undefined;
@@ -165,7 +168,7 @@ export function convertResponseEvents(
       const chat = ch.chats.at(-1);
       const index = ch.chats.length - 1;
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore("chatHistory", "chats", index, "status", "not sent");
+        setChatHistoryStore("chatHistory", mode, "chats", index, "status", "not sent");
       }
 
       currentChatId = undefined;
@@ -180,7 +183,7 @@ export function convertResponseEvents(
       const chat = ch.chats.at(-1);
       const index = ch.chats.length - 1;
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore("chatHistory", "chats", index, "status", "not sent");
+        setChatHistoryStore("chatHistory", mode, "chats", index, "status", "not sent");
       }
 
       currentChatId = undefined;
@@ -191,7 +194,7 @@ export function convertResponseEvents(
       const chat = ch.chats.at(-1);
       const index = ch.chats.length - 1;
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore("chatHistory", "chats", index, {
+        setChatHistoryStore("chatHistory", mode, "chats", index, {
           thinking: true,
           status: "sending",
         });
@@ -203,7 +206,7 @@ export function convertResponseEvents(
       const chat = ch.chats.at(-1);
       const index = ch.chats.length - 1;
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore("chatHistory", "chats", index, {
+        setChatHistoryStore("chatHistory", mode, "chats", index, {
           thinking: false,
           thoughtFor: thoughtFor,
         });

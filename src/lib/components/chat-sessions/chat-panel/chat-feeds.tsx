@@ -1,10 +1,11 @@
-import { createEffect, createMemo, createSignal, For, Index, Show } from "solid-js";
+import { Component, createEffect, createMemo, createSignal, For, Index, Show } from "solid-js";
 import { ChatEntryProvider } from "~/lib/contexts/chat-entry";
 import { getChatHistory } from "~/lib/contexts/globals/chat-history";
 import { cn } from "~/lib/utils/class-names";
 import { BubbleSector } from "./chat-bubble/bubble-sector";
+import { SessionMode } from "~/lib/models/session";
 
-function Hints() {
+const Hints: Component = () => {
   const keyHints: Record<string, string> = {
     "Enter": "Send prompt",
     "Shift + Enter": "New line",
@@ -30,18 +31,20 @@ function Hints() {
       </For>
     </div>
   );
-}
+};
 
-function WelcomeText() {
+const WelcomeText: Component = () => {
   return (
     <div class="text-center flex flex-col gap-3.5">
       <span class="select-none font-bold text-2xl">Hello there! 👋</span>
       <Hints />
     </div>
   );
-}
+};
 
-export function ChatFeeds() {
+export const ChatFeeds: Component<{ mode?: SessionMode }> = (props) => {
+  const mode = () => props.mode ?? "normal";
+
   const [rootRef, setRootRef] = createSignal<HTMLDivElement>();
 
   const [autoScroll, setAutoScroll] = createSignal(true);
@@ -86,7 +89,7 @@ export function ChatFeeds() {
         }
       }}
     >
-      <Index each={getChatHistory()?.chats} fallback={<WelcomeText />}>
+      <Index each={getChatHistory(mode())?.chats} fallback={<WelcomeText />}>
         {(chat) => (
           <ChatEntryProvider value={chat}>
             <BubbleSector />
@@ -95,4 +98,4 @@ export function ChatFeeds() {
       </Index>
     </div>
   );
-}
+};

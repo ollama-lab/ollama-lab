@@ -1,16 +1,14 @@
 import { Component } from "solid-js";
 import { SectionRoot } from "../section-root";
 import { SwitchControl, SwitchDescription, SwitchLabel, SwitchRoot } from "../../ui/switch";
-import { getCurrentSettings, saveSettings, setCurrentSettings } from "~/lib/contexts/globals/settings";
+import { isH2h, saveSettings, setCurrentSettings } from "~/lib/contexts/globals/settings";
 
 export const ExperimentalSection: Component = () => {
-  const h2hEnabled = () => getCurrentSettings().h2h ?? false;
-
   return (
     <SectionRoot title="Experimental">
       <SwitchRoot
         class="flex gap-2.5 items-center"
-        checked={h2hEnabled()}
+        checked={isH2h()}
         onChange={(value) => {
           setCurrentSettings("h2h", value);
           saveSettings();

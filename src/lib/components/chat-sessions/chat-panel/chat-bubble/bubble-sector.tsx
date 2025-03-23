@@ -1,4 +1,4 @@
-import { createMemo, createSignal, Match, Show, Switch } from "solid-js";
+import { Component, createSignal, Match, Show, Switch } from "solid-js";
 import { ChatImagePreview } from "~/lib/components/custom-ui/image-preview";
 import { Avatar, AvatarImage } from "~/lib/components/ui/avatar";
 import { useChatEntry } from "~/lib/contexts/chat-entry";
@@ -14,35 +14,19 @@ import { LoaderSpin } from "~/lib/components/loader-spin";
 import { TriangleAlertIcon } from "lucide-solid";
 import { SystemPromptBlock } from "./bubble-sector/system-prompt-block";
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
-import { getAgentList } from "~/lib/contexts/globals/agents";
+import { createDisplayNames, InputNames } from "~/lib/utils/agents";
 
-export function BubbleSector() {
+export const BubbleSector: Component<{ agentNames?: InputNames }> = (props) => {
   const chat = useChatEntry();
 
-  const role = createMemo(() => chat?.().role);
-  const model = createMemo(() => chat?.().model);
-  const status = createMemo(() => chat?.().status);
+  const role = () => chat?.().role;
+  const model = () => chat?.().model;
+  const status = () => chat?.().status;
 
   const [editMode, setEditMode] = createSignal(false);
 
-  const name = createMemo(() => {
-    const c = chat?.();
-    if (!c) {
-      return undefined;
-    }
-
-    const agentId = c.agentId;
-    if (agentId === undefined) {
-      return model();
-    }
-
-    const agent = getAgentList().find((item) => item.id === agentId);
-    if (!agent) {
-      return model();
-    }
-
-    return agent.name ?? model();
-  });
+  const agentNames = createDisplayNames(() => props.agentNames);
+  const displayName = () => agentNames()?.displayName ?? model();
 
   return (
     <Switch>
@@ -71,7 +55,7 @@ export function BubbleSector() {
                 <span class="text-xs font-bold">
                   <Switch>
                     <Match when={role() === "assistant"}>
-                      {name()}
+                      {displayName()}
                     </Match>
                     <Match when={role() === "user"}>
                       You

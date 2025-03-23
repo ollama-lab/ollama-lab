@@ -1,6 +1,7 @@
 import type { ChatGenerationReturn, IncomingUserPrompt } from "~/lib/models/chat";
 import type { StreamingResponseEvent } from "~/lib/models/events/text-streams";
 import { Channel, invoke } from "@tauri-apps/api/core";
+import { SessionMode } from "../models/session";
 
 interface InternalChatGenerationReturn {
   id: number;
@@ -84,7 +85,7 @@ export async function submitUserPrompt(
   parentId: number | null,
   events: PromptResponseEvents = {},
   reuseSiblingImages: boolean = false,
-  isH2h: boolean = false,
+  mode: SessionMode = "normal",
 ): Promise<ChatGenerationReturn> {
   return await invoke<InternalChatGenerationReturn>("submit_user_prompt", {
     sessionId,
@@ -92,7 +93,7 @@ export async function submitUserPrompt(
     onStream: newTextStreamChannel(events),
     parentId,
     reuseSiblingImages,
-    isH2h,
+    mode,
   }).then(({ id, dateCreated }) => ({
     id,
     dateCreated: new Date(dateCreated),

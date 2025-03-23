@@ -1,7 +1,7 @@
 use ollama_rest::{models::chat::Role, Ollama};
 use sqlx::{Pool, Sqlite, Transaction};
 use tauri::ipc::Channel;
-use tokio::sync::{mpsc, oneshot};
+use tokio::sync::{broadcast, mpsc};
 
 use crate::{
     errors::Error,
@@ -184,12 +184,12 @@ pub async fn stream_via_channel(
     ollama: Ollama,
     pool: Pool<Sqlite>,
     response_id: i64,
-    cancel_rx: oneshot::Receiver<()>,
+    cancel_rx: Option<broadcast::Receiver<()>>,
     session_id: i64,
     model: String,
     agent_id: Option<i64>,
     channel: &ResponseStreamingChannel,
-) -> Result<bool, Error> {
+) -> Result<(), Error> {
     // Text streaming channel
     let (tx, mut rx) = mpsc::channel(32);
     let mut is_finished = false;
@@ -200,7 +200,7 @@ pub async fn stream_via_channel(
             &pool,
             tx.clone(),
             response_id,
-            Some(cancel_rx),
+            cancel_rx,
             session_id,
             model.as_str(),
             agent_id,
@@ -225,7 +225,11 @@ pub async fn stream_via_channel(
         channel.send(event)?;
     }
 
-    Ok(is_finished)
+    if is_finished {
+        Ok(())
+    } else {
+        Err(Error::ChatHalted)
+    }
 }
 
 pub async fn set_complete(chat_id: i64, tx: &mut Transaction<'_, Sqlite>) -> Result<(), Error> {
