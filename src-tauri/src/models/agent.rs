@@ -39,7 +39,7 @@ impl AgentListItem {
                     SELECT id, name, model
                     FROM agents
                     WHERE session_id = $1
-                    ORDER BY order DESC, id;
+                    ORDER BY "order" DESC, id;
                 "#)
                 .bind(session_id)
             }
@@ -50,7 +50,7 @@ impl AgentListItem {
                     FROM agents a
                     INNER JOIN sessions s ON a.session_id = s.id
                     WHERE s.profile_id = $1
-                    ORDER BY a.order DESC, a.id;
+                    ORDER BY a."order" DESC, a.id;
                 "#)
                 .bind(profile_id)
             }
@@ -100,7 +100,7 @@ impl AgentListItem {
         for (id, order) in order_result {
             sqlx::query(r#"
                 UPDATE agents
-                SET order = $1
+                SET "order" = $1
                 WHERE id = $2, session_id = $3;
             "#)
             .bind(order).bind(id).bind(session_id)
@@ -344,7 +344,7 @@ impl Agent {
                 SELECT name, model, system_prompt, $2, id
                 FROM agent_templates
                 WHERE id = $1
-                RETURNING id, name, model, system_prompt, session_id, template_id, date_created;
+                RETURNING id, name, model, system_prompt, session_id, template_id, "order", date_created;
             "#)
             .bind(template_id)
             .bind(session_id)
@@ -412,7 +412,7 @@ impl<'t> OperateCrud<'t> for Agent {
         let ret = match selector {
             AgentSelector::BySession(session_id) => {
                 sqlx::query_as::<_, Self>(r#"
-                    SELECT id, name, model, system_prompt, session_id, template_id, order, date_created
+                    SELECT id, name, model, system_prompt, session_id, template_id, "order", date_created
                     FROM agents
                     WHERE id = $1 AND session_id = $2;
                 "#)
@@ -421,7 +421,7 @@ impl<'t> OperateCrud<'t> for Agent {
             }
             AgentSelector::ByProfile(profile_id) => {
                 sqlx::query_as::<_, Self>(r#"
-                    SELECT a.id, a.name, a.model, a.system_prompt, a.session_id, a.template_id, a.order, a.date_created
+                    SELECT a.id, a.name, a.model, a.system_prompt, a.session_id, a.template_id, a."order", a.date_created
                     FROM agents a
                     INNER JOIN sessions s ON a.session_id = s.id
                     WHERE a.id = $1 AND s.profile_id = $2;
@@ -441,21 +441,21 @@ impl<'t> OperateCrud<'t> for Agent {
         let ret = match selector {
             AgentSelector::BySession(session_id) => {
                 sqlx::query_as::<_, Self>(r#"
-                    SELECT id, name, model, system_prompt, session_id, template_id, order, date_created
+                    SELECT id, name, model, system_prompt, session_id, template_id, "order", date_created
                     FROM agents
                     WHERE session_id = $1
-                    ORDER BY order DESC, id;
+                    ORDER BY "order" DESC, id;
                 "#)
                 .bind(session_id)
             }
 
             AgentSelector::ByProfile(profile_id) => {
                 sqlx::query_as::<_, Self>(r#"
-                    SELECT a.id, a.name, a.model, a.system_prompt, a.session_id, a.template_id, a.order, a.date_created
+                    SELECT a.id, a.name, a.model, a.system_prompt, a.session_id, a.template_id, a."order", a.date_created
                     FROM agents a
                     INNER JOIN sessions s ON a.session_id = s.id
                     WHERE s.profile_id = $1
-                    ORDER BY a.order DESC, a.id;
+                    ORDER BY a."order" DESC, a.id;
                 "#)
                 .bind(profile_id)
             }
@@ -473,10 +473,10 @@ impl<'t> OperateCrud<'t> for Agent {
         let ret = match selector {
             AgentSelector::BySession(session_id) => {
                 sqlx::query_as::<_, Self>(r#"
-                    SELECT id, name, model, system_prompt, session_id, template_id, order, date_created
+                    SELECT id, name, model, system_prompt, session_id, template_id, "order", date_created
                     FROM agents
                     WHERE session_id = $1
-                    ORDER BY order DESC, id
+                    ORDER BY "order" DESC, id
                     LIMIT $3
                     OFFSET $4;
                 "#)
@@ -485,11 +485,11 @@ impl<'t> OperateCrud<'t> for Agent {
 
             AgentSelector::ByProfile(profile_id) => {
                 sqlx::query_as::<_, Self>(r#"
-                    SELECT a.id, a.name, a.model, a.system_prompt, a.session_id, a.template_id, a.order, a.date_created
+                    SELECT a.id, a.name, a.model, a.system_prompt, a.session_id, a.template_id, a."order", a.date_created
                     FROM agents a
                     INNER JOIN sessions s ON a.session_id = s.id
                     WHERE s.profile_id = $1
-                    ORDER BY a.order DESC, a.id
+                    ORDER BY a."order" DESC, a.id
                     LIMIT $3
                     OFFSET $4;
                 "#)
@@ -511,7 +511,7 @@ impl<'t> OperateCrud<'t> for Agent {
         let (name, model, system_prompt, session_id, template_id, order, date_created) = sqlx::query_as::<_, (
             Option<String>, String, Option<String>, i64, Option<i64>, i64, DateTime<Utc>,
         )>(r#"
-            INSERT INTO agents (id, name, model, system_prompt, session_id, template_id, order)
+            INSERT INTO agents (id, name, model, system_prompt, session_id, template_id, "order")
             VALUES ($1, NULLIF($2, ''), $3, NULLIF($4, ''), $5, $6, $7)
             ON CONFLICT (id) DO UPDATE SET
                 name = excluded.name,
@@ -519,9 +519,9 @@ impl<'t> OperateCrud<'t> for Agent {
                 system_prompt = excluded.system_prompt,
                 session_id = excluded.session_id,
                 template_id = excluded.template_id,
-                order = excluded.order
+                "order" = excluded."order"
             WHERE id = excluded.id
-            RETURNING name, model, system_prompt, session_id, template_id, order, date_created;
+            RETURNING name, model, system_prompt, session_id, template_id, "order", date_created;
         "#)
         .bind(self.name.as_ref().map(|s| s.trim()))
         .bind(self.model.trim())
@@ -556,7 +556,7 @@ impl<'t> OperateCrud<'t> for Agent {
                     system_prompt = NULLIF(IFNULL($4, system_prompt), ''),
                     session_id = IFNULL($5, session_id),
                     template_id = IF($7, template_id, $6),
-                    order = IFNULL($8, order)
+                    "order" = IFNULL($8, "order")
                 WHERE id = $1
                 RETURNING *;
             "#)
