@@ -39,7 +39,7 @@ impl AgentListItem {
                     SELECT id, name, model
                     FROM agents
                     WHERE session_id = $1
-                    ORDER BY order, id;
+                    ORDER BY order DESC, id;
                 "#)
                 .bind(session_id)
             }
@@ -50,7 +50,7 @@ impl AgentListItem {
                     FROM agents a
                     INNER JOIN sessions s ON a.session_id = s.id
                     WHERE s.profile_id = $1
-                    ORDER BY a.order, a.id;
+                    ORDER BY a.order DESC, a.id;
                 "#)
                 .bind(profile_id)
             }
@@ -444,7 +444,7 @@ impl<'t> OperateCrud<'t> for Agent {
                     SELECT id, name, model, system_prompt, session_id, template_id, order, date_created
                     FROM agents
                     WHERE session_id = $1
-                    ORDER BY order, id;
+                    ORDER BY order DESC, id;
                 "#)
                 .bind(session_id)
             }
@@ -455,7 +455,7 @@ impl<'t> OperateCrud<'t> for Agent {
                     FROM agents a
                     INNER JOIN sessions s ON a.session_id = s.id
                     WHERE s.profile_id = $1
-                    ORDER BY a.order, a.id;
+                    ORDER BY a.order DESC, a.id;
                 "#)
                 .bind(profile_id)
             }
@@ -476,7 +476,7 @@ impl<'t> OperateCrud<'t> for Agent {
                     SELECT id, name, model, system_prompt, session_id, template_id, order, date_created
                     FROM agents
                     WHERE session_id = $1
-                    ORDER BY order, id
+                    ORDER BY order DESC, id
                     LIMIT $3
                     OFFSET $4;
                 "#)
@@ -489,7 +489,7 @@ impl<'t> OperateCrud<'t> for Agent {
                     FROM agents a
                     INNER JOIN sessions s ON a.session_id = s.id
                     WHERE s.profile_id = $1
-                    ORDER BY a.order, a.id
+                    ORDER BY a.order DESC, a.id
                     LIMIT $3
                     OFFSET $4;
                 "#)
