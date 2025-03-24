@@ -5,12 +5,12 @@ import { deleteSessionAgent, getSessionAgent, updateSessionAgent } from "~/lib/c
 import { currentSession } from "~/lib/contexts/globals/current-session";
 import { createDisplayNames } from "~/lib/utils/agents";
 import { Motion } from "solid-motionone";
-import AgentNameGroup from "../../custom-ui/agent-name-group";
 import { LoaderSpin } from "../../loader-spin";
 import { Button } from "../../ui/button";
 import { TrashIcon } from "lucide-solid";
-import { TextField, TextFieldLabel, TextFieldTextArea } from "../../ui/text-field";
+import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from "../../ui/text-field";
 import { reconcile } from "solid-js/store";
+import { AgentUpdate } from "~/lib/models/agent";
 
 export const AgentDetails: Component<{ agentId: number }> = (props) => {
   const agentId = () => props.agentId;
@@ -36,8 +36,8 @@ export const AgentDetails: Component<{ agentId: number }> = (props) => {
     await refetch();
   };
 
-  const updateSystemPrompt = async (id: number, value: string) => {
-    const result = await updateSessionAgent(id, { systemPrompt: value });
+  const updateAgentInfo = async (id: number, value: AgentUpdate) => {
+    const result = await updateSessionAgent(id, value);
     if (result) {
       mutate(reconcile(result));
     }
@@ -74,7 +74,27 @@ export const AgentDetails: Component<{ agentId: number }> = (props) => {
               <>
                 <div class="flex items-center gap-2">
                   <div class="flex items-center gap-2 grow">
-                    <AgentNameGroup item={item()} />
+                    <TextField
+                      defaultValue={item().name}
+                    >
+                      <TextFieldLabel>Name</TextFieldLabel>
+                      <TextFieldInput
+                        onBlur={(ev) => {
+                          updateAgentInfo(item().id, { name: ev.currentTarget.value });
+                        }}
+                      />
+                    </TextField>
+
+                    <TextField
+                      defaultValue={item().model}
+                    >
+                      <TextFieldLabel>Model</TextFieldLabel>
+                      <TextFieldInput
+                        onBlur={(ev) => {
+                          updateAgentInfo(item().id, { model: ev.currentTarget.value });
+                        }}
+                      />
+                    </TextField>
                   </div>
 
                   <Button
@@ -92,7 +112,7 @@ export const AgentDetails: Component<{ agentId: number }> = (props) => {
                   <TextFieldLabel>System prompt</TextFieldLabel>
                   <TextFieldTextArea
                     onBlur={(ev) => {
-                      updateSystemPrompt(item().id, ev.currentTarget.value);
+                      updateAgentInfo(item().id, { systemPrompt: ev.currentTarget.value });
                     }}
                   />
                 </TextField>
