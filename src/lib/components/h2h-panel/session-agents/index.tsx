@@ -1,6 +1,6 @@
 import { Component, createMemo, createResource, createSignal, For } from "solid-js";
 import { addSessionAgent, listAllAgents } from "~/lib/commands/agents";
-import { currentSession, setCurrentSessionId } from "~/lib/contexts/globals/current-session";
+import { currentSession, setNewSession } from "~/lib/contexts/globals/current-session";
 import { SessionAgentsItem } from "./item";
 import { Button } from "../../ui/button";
 import { PlusIcon } from "lucide-solid";
@@ -32,7 +32,7 @@ const SessionAgents: Component = () => {
 
       const session = await reloadSession(sessionId2, "h2h");
       if (session) {
-        await setCurrentSessionId(session.id, "h2h");
+        await setNewSession(session.id, "h2h");
       }
     }
 
