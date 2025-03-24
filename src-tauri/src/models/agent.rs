@@ -555,7 +555,7 @@ impl<'t> OperateCrud<'t> for Agent {
                     model = IFNULL(NULLIF($3, ''), model),
                     system_prompt = NULLIF(IFNULL($4, system_prompt), ''),
                     session_id = IFNULL($5, session_id),
-                    template_id = IF($7, template_id, $6),
+                    template_id = IIF($7, template_id, $6),
                     "order" = IFNULL($8, "order")
                 WHERE id = $1
                 RETURNING *;
