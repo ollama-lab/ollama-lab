@@ -11,7 +11,7 @@ import { LoaderSpin } from "../../loader-spin";
 export const AgentDetails: Component<{ agentId: number }> = (props) => {
   const agentId = () => props.agentId;
 
-  const [agent] = createResource(() => [agentId(), currentSession()?.id], async ([agentId, sessionId]) => {
+  const [agent] = createResource(() => [agentId(), currentSession("h2h")?.id], async ([agentId, sessionId]) => {
     if (agentId === undefined || sessionId === undefined) {
       return undefined;
     }
