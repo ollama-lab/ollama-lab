@@ -83,9 +83,9 @@ export async function submitUserPrompt(
   sessionId: number,
   prompt: IncomingUserPrompt,
   parentId: number | null,
+  mode: SessionMode,
   events: PromptResponseEvents = {},
   reuseSiblingImages: boolean = false,
-  mode: SessionMode = "normal",
 ): Promise<ChatGenerationReturn> {
   return await invoke<InternalChatGenerationReturn>("submit_user_prompt", {
     sessionId,

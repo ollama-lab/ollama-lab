@@ -1,5 +1,5 @@
-import { candidate, setCandidate } from "./candidate-model";
-import { currentSession, reloadCurrentSession } from "./current-session";
+import { getCandidate, setCandidate } from "./candidate-model";
+import { currentSession, deselectModel, reloadCurrentSession } from "./current-session";
 import { defaultModel, modelList } from "./model-states";
 import { setSessionModel as setSessionModelCommand } from "~/lib/commands/sessions";
 import { reloadSession } from "./sessions";
@@ -15,7 +15,7 @@ export function getCurrentModel(mode: SessionMode) {
     return sessionModel;
   }
 
-  const candidateModel = candidate();
+  const candidateModel = getCandidate(mode);
   if (candidateModel && checkExistence(candidateModel)) {
     return candidateModel;
   }
@@ -33,28 +33,22 @@ export function getCurrentModel(mode: SessionMode) {
   return null;
 }
 
-export async function setSessionModel(model: string) {
-  const session = currentSession();
+export async function setSessionModel(model: string, mode: SessionMode) {
+  const session = currentSession(mode);
   if (!session) {
-    setCandidate(model);
+    setCandidate(mode, model);
     return;
   }
 
   await setSessionModelCommand(session.id, model);
-  await reloadSession(session.id);
-  await reloadCurrentSession();
+  await reloadSession(session.id, mode);
+  await reloadCurrentSession(mode);
 }
 
 export async function resetModelSelection(model: string) {
   const defaultModelReturn = defaultModel();
 
-  if (candidate() === model) {
-    setCandidate(null);
-  }
-
-  if (currentSession()?.currentModel === model) {
-    if (defaultModelReturn) {
-      await setSessionModel(defaultModelReturn);
-    }
+  if (defaultModelReturn) {
+    await deselectModel(model, defaultModelReturn);
   }
 }

@@ -7,28 +7,29 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader } from "~/lib/compone
 import { clearChatHistory } from "~/lib/contexts/globals/chat-history";
 import { currentSession } from "~/lib/contexts/globals/current-session";
 import { reloadSessions } from "~/lib/contexts/globals/sessions";
-import { SessionMode } from "~/lib/models/session";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 export const DeletionDialog: Component<{
   sessionId: number;
   open?: Accessor<boolean>;
   onOpenChange?: (value: boolean) => void;
-  mode: SessionMode;
 }> = (props) => {
   const sessionId = () => props.sessionId;
   const onOpenChange = (value: boolean) => props.onOpenChange?.(value);
 
   const [proceeding, setProceeding] = createSignal(false);
 
+  const mode = useSessionMode();
+
   const afterDeletion = () => {
     onOpenChange(false);
 
-    if (currentSession()?.id === sessionId()) {
-      clearChatHistory(true, props.mode);
+    if (currentSession(mode())?.id === sessionId()) {
+      clearChatHistory(mode(), true);
     }
 
     toast.success("Session successfully deleted");
-    reloadSessions(props.mode);
+    reloadSessions(mode());
   };
 
   return (

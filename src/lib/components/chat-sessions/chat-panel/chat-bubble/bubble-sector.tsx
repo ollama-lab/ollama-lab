@@ -15,8 +15,11 @@ import { TriangleAlertIcon } from "lucide-solid";
 import { SystemPromptBlock } from "./bubble-sector/system-prompt-block";
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
 import { createDisplayNames, InputNames } from "~/lib/utils/agents";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 export const BubbleSector: Component<{ agentNames?: InputNames }> = (props) => {
+  const mode = useSessionMode();
+
   const chat = useChatEntry();
 
   const role = () => chat?.().role;
@@ -86,13 +89,13 @@ export const BubbleSector: Component<{ agentNames?: InputNames }> = (props) => {
                     onSubmit={(newValue) => {
                       const c = chat?.();
                       const id = c?.id;
-                      const model = getCurrentModel();
+                      const model = getCurrentModel(mode());
 
                       if (id === undefined || !model) {
                         return;
                       }
 
-                      editPrompt({ text: newValue }, id, model, {
+                      editPrompt({ text: newValue }, id, model, mode(), {
                         onRespond() {
                           setEditMode(false);
                         },

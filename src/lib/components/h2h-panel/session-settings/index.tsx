@@ -3,9 +3,12 @@ import { TextField, TextFieldLabel, TextFieldTextArea } from "../../ui/text-fiel
 import { currentSession, setNewSession } from "~/lib/contexts/globals/current-session";
 import { getSessionSystemPrompt, setSessionSystemPrompt } from "~/lib/commands/system-prompts";
 import { createSession } from "~/lib/commands/sessions";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 const SessionSettings: Component = () => {
-  const currentH2hSession = createMemo(() => currentSession("h2h"));
+  const mode = useSessionMode();
+
+  const currentH2hSession = createMemo(() => currentSession(mode()));
 
   const [systemPrompt, { refetch }] = createResource(() => [currentH2hSession()], async ([session]) => {
     if (!session) {
@@ -17,10 +20,10 @@ const SessionSettings: Component = () => {
   const updateSystemPrompt = async (content: string) => {
     let id = currentH2hSession()?.id;
     if (id === undefined) {
-      const session = await createSession("", null, "h2h");
+      const session = await createSession(mode(), "", null);
       id = session.id;
 
-      await setNewSession(id, "h2h");
+      await setNewSession(id, mode());
     }
 
     await setSessionSystemPrompt(id, content);

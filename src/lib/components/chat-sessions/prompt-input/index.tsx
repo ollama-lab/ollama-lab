@@ -18,12 +18,12 @@ import { emit } from "@tauri-apps/api/event";
 import autosize from "autosize";
 import { toSrcString } from "~/lib/utils/images";
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
-import { SessionMode } from "~/lib/models/session";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 const [hidePromptBar, setHidePromptBar] = createSignal(false);
 
-export const PromptInput: Component<{ mode?: SessionMode }> = (props) => {
-  const mode = () => props.mode ?? "normal";
+export const PromptInput: Component = () => {
+  const mode = useSessionMode();
 
   const isSubmittable = createMemo(() => isSubmittable_(mode()));
 
@@ -55,7 +55,7 @@ export const PromptInput: Component<{ mode?: SessionMode }> = (props) => {
     }));
   }
 
-  const busy = createMemo(() => status() === "responding" || getChatHistory()?.chats.at(-1)?.status === "sending");
+  const busy = createMemo(() => status() === "responding" || getChatHistory(mode())?.chats.at(-1)?.status === "sending");
 
   createEffect(() => {
     const ref = textEntryRef();
@@ -108,7 +108,7 @@ export const PromptInput: Component<{ mode?: SessionMode }> = (props) => {
 
         setStatus("submitting");
 
-        submitChat(getInputPrompt(), model, { onRespond }, mode()).finally(clearStatus);
+        submitChat(getInputPrompt(), model, mode(), { onRespond }).finally(clearStatus);
       }}
     >
       <Button variant="ghost" class="h-4 rounded-none -mx-3 py-0" onClick={() => setHidePromptBar((cur) => !cur)}>

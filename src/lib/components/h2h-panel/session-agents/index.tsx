@@ -10,9 +10,12 @@ import { getCurrentModel } from "~/lib/contexts/globals/current-model";
 import { reloadSession } from "~/lib/contexts/globals/sessions";
 import { Motion } from "solid-motionone";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "../../ui/breadcrumb";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 const SessionAgents: Component = () => {
-  const sessionId = createMemo(() => currentSession("h2h")?.id);
+  const mode = useSessionMode();
+
+  const sessionId = createMemo(() => currentSession(mode())?.id);
 
   const [items, { refetch }] = createResource(() => [sessionId()], async ([id]) => {
     if (id === undefined) {
@@ -27,12 +30,12 @@ const SessionAgents: Component = () => {
   const createAgent = async (id: number) => {
     let sessionId2 = sessionId();
     if (sessionId2 === undefined) {
-      const newSession = await createSession(getCurrentModel("h2h") ?? "", undefined, "h2h");
+      const newSession = await createSession(mode(), getCurrentModel(mode()) ?? "", undefined);
       sessionId2 = newSession.id;
 
-      const session = await reloadSession(sessionId2, "h2h");
+      const session = await reloadSession(sessionId2, mode());
       if (session) {
-        await setNewSession(session.id, "h2h");
+        await setNewSession(session.id, mode());
       }
     }
 

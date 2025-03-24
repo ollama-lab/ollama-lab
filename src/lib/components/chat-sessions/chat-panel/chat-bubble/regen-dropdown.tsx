@@ -4,8 +4,11 @@ import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuConten
 import { useChatEntry } from "~/lib/contexts/chat-entry";
 import { regenerate } from "~/lib/contexts/globals/chat-history";
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 export function RegenDropdown() {
+  const mode = useSessionMode();
+
   const chat = useChatEntry();
   const chatId = () => chat?.().id;
 
@@ -17,7 +20,7 @@ export function RegenDropdown() {
       models.push(current);
     }
 
-    const sessionModel = getCurrentModel();
+    const sessionModel = getCurrentModel(mode());
     if (sessionModel) {
       models.push(sessionModel);
     }
@@ -35,7 +38,7 @@ export function RegenDropdown() {
           ev.preventDefault();
           const id = chatId();
           if (id) {
-            regenerate(id);
+            regenerate(id, mode());
           }
         }}
       >
@@ -61,7 +64,7 @@ export function RegenDropdown() {
                     return;
                   }
 
-                  regenerate(id, modelName);
+                  regenerate(id, mode(), modelName);
                 }}
               >
                 Use {modelName}

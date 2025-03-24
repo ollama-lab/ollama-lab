@@ -4,11 +4,11 @@ import { Session, SessionMode } from "~/lib/models/session";
 
 const [sessions, setSessions] = createStore<Record<SessionMode, Session[]>>({ normal: [], h2h: [] });
 
-export async function reloadSessions(mode: SessionMode = "normal") {
+export async function reloadSessions(mode: SessionMode) {
   setSessions(mode, await listSessions(mode));
 }
 
-export async function reloadSession(id: number, mode: SessionMode = "normal") {
+export async function reloadSession(id: number, mode: SessionMode) {
   const session = await getSession(id);
   if (!session || session.mode !== mode) {
     return;
@@ -26,6 +26,6 @@ export async function reloadSession(id: number, mode: SessionMode = "normal") {
   return session;
 }
 
-export function getAllSessions(mode: SessionMode = "normal") {
+export function getAllSessions(mode: SessionMode) {
   return sessions[mode];
 }

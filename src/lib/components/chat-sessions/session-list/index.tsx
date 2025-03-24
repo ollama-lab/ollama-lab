@@ -4,18 +4,17 @@ import { Component, createEffect, createMemo, For, Suspense } from "solid-js";
 import { SessionListItem } from "./item";
 import { LoaderSpin } from "../../loader-spin";
 import { HeaderBar } from "../../custom-ui/header-bar";
-import { SessionMode } from "~/lib/models/session";
 import { clearChatHistory } from "~/lib/contexts/globals/chat-history";
 import { getAllSessions, reloadSessions } from "~/lib/contexts/globals/sessions";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 export const SessionList: Component<{
   title: string;
-  mode?: SessionMode;
 }> = (props) => {
-  const mode = () => props.mode ?? "normal";
+  const mode = useSessionMode();
 
   const onNewSession = () => {
-    clearChatHistory(true, mode());
+    clearChatHistory(mode(), true);
   };
 
   createEffect(() => {
@@ -37,7 +36,7 @@ export const SessionList: Component<{
           <div class="flex flex-col gap-2 px-2">
             <For each={sessionList()}>
               {(session) => (
-                <SessionListItem sessionId={session.id} title={session.title ?? undefined} mode={mode()} />
+                <SessionListItem sessionId={session.id} title={session.title ?? undefined} />
               )}
             </For>
           </div>

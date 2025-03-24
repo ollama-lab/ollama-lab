@@ -6,14 +6,17 @@ import { addAgentTemplate, getAgentTemplateList, reloadAgentTemplateList, setSel
 import { toast } from "solid-sonner";
 import { AgentTemplateListItem } from "./item";
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 export const AgentTemplateList: Component = () => {
+  const mode = useSessionMode();
+
   onMount(() => {
     reloadAgentTemplateList().catch((err) => toast.error(String(err)));
   });
 
   const onAddTemplate = async () => {
-    const model = getCurrentModel();
+    const model = getCurrentModel(mode());
     if (model === null) {
       toast.warning("No model selected.");
       return;

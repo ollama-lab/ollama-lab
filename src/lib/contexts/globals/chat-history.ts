@@ -31,7 +31,7 @@ const [chatHistoryStore, setChatHistoryStore] = createStore<ChatHistoryStore>({
 
 export const getChatHistoryStore = () => chatHistoryStore;
 
-export function getChatHistory(mode: SessionMode = "normal") {
+export function getChatHistory(mode: SessionMode) {
   return chatHistoryStore.chatHistory[mode];
 }
 
@@ -42,8 +42,8 @@ const lastChat = createMemo(() => {
   }, {} as Record<string, Chat | undefined>);
 });
 
-export async function reloadChatHistory(mode: SessionMode = "normal") {
-  const session = currentSession();
+export async function reloadChatHistory(mode: SessionMode) {
+  const session = currentSession(mode);
   if (session) {
     setChatHistoryStore("loading", true);
     const result = await getCurrentBranch(session.id);
@@ -56,23 +56,23 @@ export async function reloadChatHistory(mode: SessionMode = "normal") {
   }
 }
 
-export async function clearChatHistory(reserveSelectedModel?: boolean, mode: SessionMode = "normal") {
+export async function clearChatHistory(mode: SessionMode, reserveSelectedModel?: boolean) {
   const selected = reserveSelectedModel ? getCurrentModel(mode) : undefined;
 
   setCurrentSessionId(null, mode);
 
   if (reserveSelectedModel && selected) {
-    setCandidate(selected);
+    setCandidate(mode, selected);
   }
 }
 
 export async function submitChat(
   prompt: IncomingUserPrompt,
   model: string,
+  mode: SessionMode,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
-  mode: SessionMode = "normal",
 ) {
-  let session = currentSession() ?? undefined;
+  let session = currentSession(mode) ?? undefined;
   if (!session) {
     // TODO: Add settings option for default session name: 1) no name, 2) first prompt, 3) generated after first response
     // Currently it is `first prompt`
@@ -83,13 +83,13 @@ export async function submitChat(
 
     const sessionSystemPrompt = isH2h() ? getCandidateSessionSystemPrompt() : undefined;
 
-    session = await createSession(model, sessionTitle, mode);
+    session = await createSession(mode, model, sessionTitle);
 
-    await reloadSession(session.id);
-    await setNewSession(session.id);
+    await reloadSession(session.id, mode);
+    await setNewSession(session.id, mode);
 
     if (sessionSystemPrompt) {
-      await setCandidateSessionSystemPrompt(sessionSystemPrompt, session.id);
+      await setCandidateSessionSystemPrompt(mode, sessionSystemPrompt, session.id);
     }
   }
 
@@ -99,15 +99,15 @@ export async function submitChat(
     session?.id,
     prompt,
     parentId === undefined ? null : parentId,
-    convertResponseEvents(getChatHistory.bind(getChatHistory, mode), setChatHistoryStore, model, prompt, {
+    mode,
+    convertResponseEvents(getChatHistory.bind(getChatHistory, mode), setChatHistoryStore, mode, model, prompt, {
       onRespond,
       onScrollDown,
-    }, undefined, mode),
+    }),
     true,
-    mode,
   );
 
-  setChatHistoryStore("chatHistory", mode, "chats", getChatHistory()!.chats.length - 1, {
+  setChatHistoryStore("chatHistory", mode, "chats", getChatHistory(mode)!.chats.length - 1, {
     status: "sent",
     dateSent: ret.dateCreated,
   });
@@ -115,11 +115,11 @@ export async function submitChat(
 
 export async function regenerate(
   chatId: number,
+  mode: SessionMode,
   model?: string,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
-  mode: SessionMode = "normal",
 ) {
-  const session = currentSession();
+  const session = currentSession(mode);
   if (!session) {
     return;
   }
@@ -129,8 +129,9 @@ export async function regenerate(
     chatId,
     model,
     convertResponseEvents(
-      getChatHistory,
+      getChatHistory.bind(getChatHistory, mode),
       setChatHistoryStore,
+      mode,
       model,
       undefined,
       {
@@ -140,20 +141,19 @@ export async function regenerate(
       {
         regenerateFor: chatId,
       },
-      mode,
     ),
   );
 
-  setChatHistoryStore("chatHistory", mode, "chats", getChatHistory()!.chats.length - 1, {
+  setChatHistoryStore("chatHistory", mode, "chats", getChatHistory(mode)!.chats.length - 1, {
     status: "sent",
     dateSent: ret.dateCreated,
   });
 }
 
-export async function switchBranch(chatId: number, mode: SessionMode = "normal") {
+export async function switchBranch(chatId: number, mode: SessionMode) {
   const [parentId, subbranch] = await switchBranchCommand(chatId);
 
-  const ch = getChatHistory();
+  const ch = getChatHistory(mode);
   if (!ch) {
     return;
   }
@@ -168,15 +168,15 @@ export async function editPrompt(
   prompt: EditUserPrompt,
   chatId: number,
   model: string,
+  mode: SessionMode,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
-  mode: SessionMode = "normal",
 ) {
-  const session = currentSession();
+  const session = currentSession(mode);
   if (!session) {
     return;
   }
 
-  const ch = getChatHistory();
+  const ch = getChatHistory(mode);
   if (!ch) {
     throw new Error("No chat history.");
   }
@@ -198,19 +198,20 @@ export async function editPrompt(
     session.id,
     mergedPrompt,
     parentId,
+    mode,
     convertResponseEvents(
-      getChatHistory,
+      getChatHistory.bind(getChatHistory, mode),
       setChatHistoryStore,
+      mode,
       model,
       mergedPrompt,
       { onRespond, onScrollDown },
       { regenerateFor: ch.chats[curIndex].id },
-      mode,
     ),
     true,
   );
 
-  setChatHistoryStore("chatHistory", mode, "chats", getChatHistory()!.chats.length - 1, {
+  setChatHistoryStore("chatHistory", mode, "chats", getChatHistory(mode)!.chats.length - 1, {
     status: "sent",
     dateSent: ret.dateCreated,
   });

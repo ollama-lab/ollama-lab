@@ -10,7 +10,7 @@ interface InternalSession {
   mode: SessionMode,
 }
 
-export async function listSessions(mode: SessionMode = "normal"): Promise<Session[]> {
+export async function listSessions(mode: SessionMode): Promise<Session[]> {
   return await invoke<InternalSession[]>("list_sessions", { mode }).then((sessions) =>
     sessions.map(
       (session) =>
@@ -47,7 +47,7 @@ export async function setSessionModel(id: number, model: string): Promise<Sessio
   });
 }
 
-export async function createSession(currentModel: string, title?: string | null, mode: SessionMode = "normal"): Promise<Session> {
+export async function createSession(mode: SessionMode, currentModel: string, title?: string | null): Promise<Session> {
   return await invoke<InternalSession>("create_session", {
     currentModel,
     title,

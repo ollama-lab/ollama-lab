@@ -13,9 +13,12 @@ import {
 } from "../../ui/command";
 import { For } from "solid-js";
 import { getCurrentModel, setSessionModel } from "~/lib/contexts/globals/current-model";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 export function ModelSelector() {
   const [open, setOpen] = createSignal(false);
+
+  const mode = useSessionMode();
 
   const groupedModelList = createMemo(() => {
     return modelList().reduce(
@@ -29,14 +32,14 @@ export function ModelSelector() {
   });
 
   const updateSessionModel = async (model: string) => {
-    await setSessionModel(model);
+    await setSessionModel(model, mode());
     setOpen(false);
   };
 
   return (
     <>
       <button class="flex gap-2 px-4 h-full items-center cursor-pointer" onClick={() => setOpen(true)}>
-        <span class="grow truncate text-start w-36 text-sm">{getCurrentModel()}</span>
+        <span class="grow truncate text-start w-36 text-sm">{getCurrentModel(mode())}</span>
         <ChevronsUpDownIcon class="size-4" />
       </button>
 

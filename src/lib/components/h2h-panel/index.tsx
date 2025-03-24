@@ -38,11 +38,11 @@ const H2hPanel: Component = () => {
       <Show when={chatsAllowed()}>
         <TabsContent value="chats" class="flex flex-col grow">
           <div class="grow px-4 py-2 w-full overflow-y-auto">
-            <ChatFeeds mode="h2h" />
+            <ChatFeeds />
           </div>
 
           <div class="max-w-5xl w-full mx-auto -mb-2">
-            <PromptInput mode="h2h" />
+            <PromptInput />
           </div>
         </TabsContent>
       </Show>

@@ -6,10 +6,13 @@ import { SwitchControl, SwitchLabel, SwitchRoot } from "~/lib/components/ui/swit
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
 import { currentSession } from "~/lib/contexts/globals/current-session";
 import { getInputPrompt, setInputPrompt } from "~/lib/contexts/globals/prompt-input";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 export function SystemPromptToggle() {
+  const mode = useSessionMode();
+
   const systemPrompt = createAsync(async () => {
-    const model = getCurrentModel();
+    const model = getCurrentModel(mode());
     if (!model) {
       return null;
     }
@@ -20,7 +23,7 @@ export function SystemPromptToggle() {
   return (
     <div class="px-2">
       <Suspense fallback={<LoaderSpin class="size-4" />}>
-        <Show when={!currentSession() && !!systemPrompt()}>
+        <Show when={!currentSession(mode()) && !!systemPrompt()}>
           <SwitchRoot
             class="flex gap-2 items-center"
             name="use-system-prompt"

@@ -3,7 +3,7 @@ import { ChatEntryProvider } from "~/lib/contexts/chat-entry";
 import { getChatHistory } from "~/lib/contexts/globals/chat-history";
 import { cn } from "~/lib/utils/class-names";
 import { BubbleSector } from "./chat-bubble/bubble-sector";
-import { SessionMode } from "~/lib/models/session";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 const Hints: Component = () => {
   const keyHints: Record<string, string> = {
@@ -42,15 +42,15 @@ const WelcomeText: Component = () => {
   );
 };
 
-export const ChatFeeds: Component<{ mode?: SessionMode }> = (props) => {
-  const mode = () => props.mode ?? "normal";
+export const ChatFeeds: Component = () => {
+  const mode = useSessionMode();
 
   const [rootRef, setRootRef] = createSignal<HTMLDivElement>();
 
   const [autoScroll, setAutoScroll] = createSignal(true);
 
   createEffect(() => {
-    const chat = getChatHistory()?.chats.at(-1)
+    const chat = getChatHistory(mode())?.chats.at(-1)
 
     if (chat?.content || chat?.thoughts) {
       const root = rootRef();
@@ -61,7 +61,7 @@ export const ChatFeeds: Component<{ mode?: SessionMode }> = (props) => {
   });
 
   const hasChatHistory = createMemo(() => {
-    const chatHistory = getChatHistory();
+    const chatHistory = getChatHistory(mode());
     if (!chatHistory) {
       return false;
     }

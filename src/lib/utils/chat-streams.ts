@@ -14,11 +14,11 @@ export interface ConvertResponseEventsProps {
 export function convertResponseEvents(
   chatHistory: Accessor<ChatHistory | undefined>,
   setChatHistoryStore: SetStoreFunction<ChatHistoryStore>,
+  mode: SessionMode,
   model?: string,
   prompt?: IncomingUserPrompt,
   { onScrollDown, onRespond }: PromptSubmissionEvents = {},
   { regenerateFor }: ConvertResponseEventsProps = {},
-  mode: SessionMode = "normal",
 ): PromptResponseEvents {
   let currentChatId: number | undefined = undefined;
 

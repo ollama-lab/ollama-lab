@@ -9,16 +9,15 @@ import { renameSession } from "~/lib/commands/sessions";
 import { reloadSession } from "~/lib/contexts/globals/sessions";
 import { OperationsDropdown } from "./operations";
 import { currentSession, setCurrentSessionId } from "~/lib/contexts/globals/current-session";
-import { SessionMode } from "~/lib/models/session";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 export const SessionListItem: Component<{
   sessionId: number;
   title?: string | undefined;
-  mode: SessionMode;
 }> = (props) => {
   const title = () => props.title;
   const sessionId = () => props.sessionId;
-  const mode = () => props.mode;
+  const mode = useSessionMode();
 
   const [renameMode, setRenameMode] = createSignal(false);
   const [optimisticTitle, setOptimisticTitle] = createSignal<string | undefined>(undefined);
@@ -99,7 +98,7 @@ export const SessionListItem: Component<{
       </div>
       <Show when={!renameMode()}>
         <div class="shrink-0 flex items-center">
-          <OperationsDropdown sessionId={sessionId()} onEdit={() => setRenameMode(true)} mode={props.mode} />
+          <OperationsDropdown sessionId={sessionId()} onEdit={() => setRenameMode(true)} />
         </div>
       </Show>
     </div>
