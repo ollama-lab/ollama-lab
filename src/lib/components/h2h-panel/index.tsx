@@ -9,11 +9,14 @@ import { Presence } from "solid-motionone";
 import { currentSession } from "~/lib/contexts/globals/current-session";
 import { cn } from "~/lib/utils/class-names";
 import SessionSettings from "./session-settings";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 const [tabValue, setTabValue] = createSignal("chats");
 
 const H2hPanel: Component = () => {
-  const currentH2hSession = createMemo(() => currentSession("h2h"));
+  const mode = useSessionMode();
+
+  const currentH2hSession = createMemo(() => currentSession(mode()));
 
   createEffect(() => {
     if (!currentH2hSession() && tabValue() === "chats") {

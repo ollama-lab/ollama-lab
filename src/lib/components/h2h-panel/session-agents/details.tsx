@@ -11,11 +11,14 @@ import { TrashIcon } from "lucide-solid";
 import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from "../../ui/text-field";
 import { reconcile } from "solid-js/store";
 import { AgentUpdate } from "~/lib/models/agent";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 export const AgentDetails: Component<{ agentId: number }> = (props) => {
   const agentId = () => props.agentId;
 
-  const [agent, { mutate, refetch }] = createResource(() => [agentId(), currentSession("h2h")?.id], async ([agentId, sessionId]) => {
+  const mode = useSessionMode();
+
+  const [agent, { mutate, refetch }] = createResource(() => [agentId(), currentSession(mode())?.id], async ([agentId, sessionId]) => {
     if (agentId === undefined || sessionId === undefined) {
       return undefined;
     }
