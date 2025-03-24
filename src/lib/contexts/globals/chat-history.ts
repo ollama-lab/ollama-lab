@@ -1,6 +1,6 @@
-import { createStore } from "solid-js/store";
+import { createStore, reconcile } from "solid-js/store";
 import type { Chat, ChatHistory, SessionMode } from "~/lib/models/session";
-import { createMemo } from "solid-js";
+import { createEffect, createMemo } from "solid-js";
 import { reloadSession } from "./sessions";
 import { getCurrentBranch } from "~/lib/commands/chat-history";
 import { EditUserPrompt, IncomingUserPrompt } from "~/lib/models/chat";
@@ -8,7 +8,7 @@ import { createSession } from "~/lib/commands/sessions";
 import { regenerateResponse, submitUserPrompt } from "~/lib/commands/chats";
 import { convertResponseEvents } from "~/lib/utils/chat-streams";
 import { switchBranch as switchBranchCommand } from "~/lib/commands/chat-history";
-import { currentSession, setCurrentSessionId, setNewSession } from "./current-session";
+import { currentSession, getCurrentSessionStore, setCurrentSessionId, setNewSession } from "./current-session";
 import { getCurrentModel } from "./current-model";
 import { setCandidate } from "./candidate-model";
 import { getCandidateSessionSystemPrompt, setCandidateSessionSystemPrompt } from "./candidate-session-system-prompt";
@@ -42,14 +42,20 @@ const lastChat = createMemo(() => {
   }, {} as Record<string, Chat | undefined>);
 });
 
+export function createReloadChatHistory(mode: SessionMode) {
+  createEffect(() => {
+    reloadChatHistory(mode);
+  });
+}
+
 export async function reloadChatHistory(mode: SessionMode) {
   const session = currentSession(mode);
   if (session) {
     setChatHistoryStore("loading", true);
     const result = await getCurrentBranch(session.id);
-    setChatHistoryStore("chatHistory", mode, {
+    setChatHistoryStore("chatHistory", mode, reconcile({
       chats: result,
-    });
+    }));
     setChatHistoryStore("loading", false);
   } else {
     setChatHistoryStore("chatHistory", mode, undefined);

@@ -14,6 +14,10 @@ const [currentSessionStore, setCurrentSession] = createStore<SessionStore>({
   h2h: undefined,
 });
 
+export function getCurrentSessionStore() {
+  return currentSessionStore;
+}
+
 export function currentSession(mode: SessionMode) {
   return currentSessionStore[mode]?.session;
 }

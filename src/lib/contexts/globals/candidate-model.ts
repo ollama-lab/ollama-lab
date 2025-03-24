@@ -5,18 +5,19 @@ import { SessionMode } from "~/lib/models/session";
 
 const [candidate, setCandidate] = createStore<Record<SessionMode, string | null | undefined>>({} as Record<SessionMode, string | null | undefined>);
 
-createEffect(() => {
-  const session = currentSession("normal");
-  setCandidate("normal", session ? session.currentModel : null);
-});
-
-createEffect(() => {
-  const session = currentSession("h2h");
-  setCandidate("h2h", session ? session.currentModel : null);
-});
+export function initializeCandidate(mode: SessionMode) {
+  const session = currentSession(mode);
+  setCandidate(mode, session ? session.currentModel : null);
+}
 
 export function getCandidate(mode: SessionMode) {
   return candidate[mode];
+}
+
+export function createInitializaCandidate(mode: SessionMode) {
+  createEffect(() => {
+    initializeCandidate(mode);
+  });
 }
 
 export { setCandidate };

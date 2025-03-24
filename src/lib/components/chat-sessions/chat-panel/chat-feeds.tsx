@@ -49,8 +49,10 @@ export const ChatFeeds: Component = () => {
 
   const [autoScroll, setAutoScroll] = createSignal(true);
 
+  const currentChatHistory = createMemo(() => getChatHistory(mode()));
+
   createEffect(() => {
-    const chat = getChatHistory(mode())?.chats.at(-1)
+    const chat = currentChatHistory()?.chats.at(-1)
 
     if (chat?.content || chat?.thoughts) {
       const root = rootRef();
@@ -61,7 +63,7 @@ export const ChatFeeds: Component = () => {
   });
 
   const hasChatHistory = createMemo(() => {
-    const chatHistory = getChatHistory(mode());
+    const chatHistory = currentChatHistory();
     if (!chatHistory) {
       return false;
     }
@@ -89,7 +91,7 @@ export const ChatFeeds: Component = () => {
         }
       }}
     >
-      <Index each={getChatHistory(mode())?.chats} fallback={<WelcomeText />}>
+      <Index each={currentChatHistory()?.chats} fallback={<WelcomeText />}>
         {(chat) => (
           <ChatEntryProvider value={chat}>
             <BubbleSector />
