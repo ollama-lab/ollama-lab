@@ -3,6 +3,7 @@ import { Component, createSignal } from "solid-js";
 import { AgentListItem } from "~/lib/models/agent";
 import { cn } from "~/lib/utils/class-names";
 import AgentNameGroup from "../../custom-ui/agent-name-group";
+import { setSelectedSessionAgent } from "~/lib/contexts/globals/session-agent";
 
 export const SessionAgentsItem: Component<{ item: AgentListItem }> = (props) => {
   const id = () => props.item.id;
@@ -31,6 +32,9 @@ export const SessionAgentsItem: Component<{ item: AgentListItem }> = (props) => 
       }}
       onMouseUp={() => {
         setDragging(false);
+      }}
+      onClick={() => {
+        setSelectedSessionAgent(id());
       }}
     >
       <div

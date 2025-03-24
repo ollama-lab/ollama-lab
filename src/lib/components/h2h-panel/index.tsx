@@ -1,8 +1,11 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createSignal, Show } from "solid-js";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { ChatFeeds } from "../chat-sessions/chat-panel/chat-feeds";
 import { PromptInput } from "../chat-sessions/prompt-input";
 import SessionAgents from "./session-agents";
+import { selectedSessionAgent } from "~/lib/contexts/globals/session-agent";
+import { AgentDetails } from "./session-agents/details";
+import { Presence } from "solid-motionone";
 
 const [tabValue, setTabValue] = createSignal("chats");
 
@@ -24,7 +27,13 @@ const H2hPanel: Component = () => {
         </div>
       </TabsContent>
       <TabsContent value="agents" class="flex flex-col grow">
-        <SessionAgents />
+        <Presence exitBeforeEnter>
+          <Show when={selectedSessionAgent()} fallback={<SessionAgents />}>
+            {(agentId) => (
+              <AgentDetails agentId={agentId()} />
+            )}
+          </Show>
+        </Presence>
       </TabsContent>
     </Tabs>
   );

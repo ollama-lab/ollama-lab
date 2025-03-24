@@ -8,11 +8,17 @@ import AgentCreationCommand from "../agent-creation-command";
 import { createSession } from "~/lib/commands/sessions";
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
 import { reloadSession } from "~/lib/contexts/globals/sessions";
+import { Motion } from "solid-motionone";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "../../ui/breadcrumb";
 
 const SessionAgents: Component = () => {
   const sessionId = createMemo(() => currentSession("h2h")?.id);
 
-  const [items, { refetch }] = createResource(sessionId, async (id) => {
+  const [items, { refetch }] = createResource(() => [sessionId()], async ([id]) => {
+    if (id === undefined) {
+      return undefined;
+    }
+
     return await listAllAgents(id); 
   });
 
@@ -24,8 +30,10 @@ const SessionAgents: Component = () => {
       const newSession = await createSession(getCurrentModel("h2h") ?? "", undefined, "h2h");
       sessionId2 = newSession.id;
 
-      reloadSession(sessionId2, "h2h");
-      setCurrentSessionId(sessionId2, "h2h");
+      const session = await reloadSession(sessionId2, "h2h");
+      if (session) {
+        await setCurrentSessionId(session.id, "h2h");
+      }
     }
 
     await addSessionAgent(id, sessionId2);
@@ -33,7 +41,7 @@ const SessionAgents: Component = () => {
   };
 
   return (
-    <div
+    <Motion.div
       class="flex flex-col gap-2"
       onDrop={(ev) => {
         ev.preventDefault();
@@ -49,7 +57,20 @@ const SessionAgents: Component = () => {
           ev.dataTransfer.dropEffect = "move";
         }
       }}
+      initial={{ x: "-100%" }}
+      animate={{ x: "0%" }}
+      exit={{ x: "-100%" }}
     >
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink current>
+              Session agents
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <For each={items()}>
         {(item) => (
           <SessionAgentsItem item={item} />
@@ -69,7 +90,7 @@ const SessionAgents: Component = () => {
         onOpenChange={setCmdOpen}
         onSelected={createAgent}
       />
-    </div>
+    </Motion.div>
   );
 };
 

@@ -59,7 +59,7 @@ export async function reloadChatHistory(mode: SessionMode = "normal") {
 export async function clearChatHistory(reserveSelectedModel?: boolean, mode: SessionMode = "normal") {
   const selected = reserveSelectedModel ? getCurrentModel(mode) : undefined;
 
-  setCurrentSessionId(null);
+  setCurrentSessionId(null, mode);
 
   if (reserveSelectedModel && selected) {
     setCandidate(selected);

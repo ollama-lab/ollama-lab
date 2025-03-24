@@ -2,10 +2,12 @@ import { Component, createSignal } from "solid-js";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 import { EllipsisVerticalIcon, SquarePenIcon, TrashIcon } from "lucide-solid";
 import { DeletionDialog } from "./operations/deletion-dialog";
+import { SessionMode } from "~/lib/models/session";
 
 export const OperationsDropdown: Component<{
   sessionId: number;
   onEdit?: () => void;
+  mode: SessionMode;
 }> = (props) => {
   const sessionId = () => props.sessionId;
 
@@ -43,7 +45,7 @@ export const OperationsDropdown: Component<{
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <DeletionDialog sessionId={sessionId()} open={deletionDialogOpen} onOpenChange={setDeletionDialogOpen} />
+      <DeletionDialog sessionId={sessionId()} open={deletionDialogOpen} onOpenChange={setDeletionDialogOpen} mode={props.mode} />
     </>
   );
 }

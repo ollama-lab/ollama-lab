@@ -6,8 +6,7 @@ import { LoaderSpin } from "../../loader-spin";
 import { HeaderBar } from "../../custom-ui/header-bar";
 import { SessionMode } from "~/lib/models/session";
 import { clearChatHistory } from "~/lib/contexts/globals/chat-history";
-import { currentSession, isNewSession } from "~/lib/contexts/globals/current-session";
-import { getAllSessions, reloadSession } from "~/lib/contexts/globals/sessions";
+import { getAllSessions, reloadSessions } from "~/lib/contexts/globals/sessions";
 
 export const SessionList: Component<{
   title: string;
@@ -20,11 +19,7 @@ export const SessionList: Component<{
   };
 
   createEffect(() => {
-    const currentId = currentSession(mode())?.id;
-
-    if (!isNewSession(mode()) && currentId !== undefined) {
-      reloadSession(currentId, mode());
-    }
+    reloadSessions(mode());
   });
 
   const sessionList = createMemo(() => getAllSessions(mode()));
@@ -42,7 +37,7 @@ export const SessionList: Component<{
           <div class="flex flex-col gap-2 px-2">
             <For each={sessionList()}>
               {(session) => (
-                <SessionListItem sessionId={session.id} title={session.title ?? undefined} />
+                <SessionListItem sessionId={session.id} title={session.title ?? undefined} mode={mode()} />
               )}
             </For>
           </div>

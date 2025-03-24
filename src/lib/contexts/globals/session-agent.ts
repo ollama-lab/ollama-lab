@@ -1,4 +1,4 @@
-import { createResource } from "solid-js";
+import { createResource, createSignal } from "solid-js";
 import { currentSession } from "./current-session";
 import { listAllAgents } from "~/lib/commands/agents";
 
@@ -6,4 +6,6 @@ const [sessionAgents] = createResource(() => currentSession()?.id, async (sessio
   return await listAllAgents(sessionId);
 });
 
-export { sessionAgents };
+const [selectedSessionAgent, setSelectedSessionAgent] = createSignal<number>();
+
+export { sessionAgents, selectedSessionAgent, setSelectedSessionAgent };
