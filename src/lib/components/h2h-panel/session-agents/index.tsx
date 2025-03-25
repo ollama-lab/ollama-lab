@@ -33,10 +33,8 @@ const SessionAgents: Component = () => {
       const newSession = await createSession(mode(), getCurrentModel(mode()) ?? "", undefined);
       sessionId2 = newSession.id;
 
-      const session = await reloadSession(sessionId2, mode());
-      if (session) {
-        await setNewSession(session.id, mode());
-      }
+      await reloadSession(sessionId2, mode());
+      await setNewSession(sessionId2, mode());
     }
 
     await addSessionAgent(id, sessionId2);
