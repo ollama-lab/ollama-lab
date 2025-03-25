@@ -48,7 +48,7 @@ export const AgentDetails: Component<{ agentId: number }> = (props) => {
 
   return (
     <Motion.div
-      class="flex flex-col gap-2"
+      class="flex flex-col gap-4.5"
       initial={{ x: "100%" }}
       animate={{ x: "0%" }}
       exit={{ x: "100%" }}

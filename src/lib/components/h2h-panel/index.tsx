@@ -27,7 +27,7 @@ const H2hPanel: Component = () => {
   const chatsAllowed = createMemo(() => !!currentH2hSession());
 
   return (
-    <Tabs class="px-2 py-2 h-full flex flex-col" value={tabValue()} onChange={setTabValue}>
+    <Tabs class="px-2 pt-2 h-full flex flex-col" value={tabValue()} onChange={setTabValue}>
       <TabsList class={cn(
         "grid w-full",
         chatsAllowed() ? "grid-cols-3" : "grid-cols-2",
@@ -39,12 +39,12 @@ const H2hPanel: Component = () => {
         <TabsTrigger value="session">Session</TabsTrigger>
       </TabsList>
       <Show when={chatsAllowed()}>
-        <TabsContent value="chats" class="flex flex-col grow">
+        <TabsContent value="chats" class="flex flex-col grow overflow-y-clip">
           <div class="grow px-4 py-2 w-full overflow-y-auto">
             <ChatFeeds />
           </div>
 
-          <div class="max-w-5xl w-full mx-auto -mb-2">
+          <div class="max-w-5xl w-full mx-auto">
             <PromptInput />
           </div>
         </TabsContent>
