@@ -153,7 +153,7 @@ pub struct AssistantPromptAdditionReturn {
     pub id: i64,
 }
 
-pub async fn add_assistent_prompt(
+pub async fn add_assistant_prompt(
     tx: &mut Transaction<'_, Sqlite>,
     tree: &ChatTree,
     parent_id: Option<i64>,

@@ -7,7 +7,7 @@ use tokio::sync::broadcast;
 use crate::{
     app_state::AppState,
     chat_gen::utils::{
-        add_assistent_prompt, stream_via_channel, 
+        add_assistant_prompt, stream_via_channel, 
     },
     errors::Error,
     events::StreamingResponseEvent,
@@ -127,7 +127,7 @@ pub async fn regenerate_response(
             .await?
             .ok_or(Error::NotExists)?;
 
-            let ret = add_assistent_prompt(
+            let ret = add_assistant_prompt(
                 &mut tx,
                 &tree,
                 Some(chat_id),
