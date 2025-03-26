@@ -4,7 +4,21 @@ use tauri::ipc::Channel;
 use tokio::sync::broadcast;
 
 use crate::{
-    chat_gen::utils::{add_assistent_prompt, add_generic_system_prompt, add_model_system_prompt, add_user_prompt, stream_via_channel, AssistantPromptAdditionReturn}, errors::Error, events::StreamingResponseEvent, models::{agent::{Agent, AgentSelector}, chat::{ChatGenerationReturn, IncomingUserPrompt}}, responses::tree::ChatTree
+    chat_gen::utils::{
+        add_assistent_prompt,
+        add_generic_system_prompt,
+        add_model_system_prompt,
+        add_user_prompt,
+        stream_via_channel,
+        AssistantPromptAdditionReturn,
+    },
+    errors::Error,
+    events::StreamingResponseEvent,
+    models::{
+        agent::{Agent, AgentSelector},
+        chat::{ChatGenerationReturn, IncomingUserPrompt},
+    },
+    responses::tree::ChatTree,
 };
 
 use super::{crud::OperateCrud, sessions::get_session, system_prompt::get_session_system_prompt};
