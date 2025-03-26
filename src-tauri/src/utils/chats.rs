@@ -5,7 +5,7 @@ use tokio::sync::broadcast;
 
 use crate::{
     chat_gen::utils::{
-        add_assistent_prompt,
+        add_assistant_prompt,
         add_generic_system_prompt,
         add_model_system_prompt,
         add_user_prompt,
@@ -67,7 +67,7 @@ pub async fn launch_normal_chat(
         parent_id = Some(user_chat_ret.id);
     }
 
-    let response_ret = add_assistent_prompt(
+    let response_ret = add_assistant_prompt(
         &mut tx,
         &tree,
         parent_id,
@@ -200,7 +200,7 @@ pub async fn launch_h2h_chat(
             parent_id = indicator_ret.parent_id;
         }
         
-        response_ret = add_assistent_prompt(
+        response_ret = add_assistant_prompt(
             &mut tx,
             &tree,
             parent_id,
