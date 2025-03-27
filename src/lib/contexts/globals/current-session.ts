@@ -1,60 +1,76 @@
 import { createStore, reconcile } from "solid-js/store";
 import { getSession } from "~/lib/commands/sessions";
 import { reloadSession } from "~/lib/contexts/globals/sessions";
-import { Session } from "~/lib/models/session";
+import { Session, SessionMode } from "~/lib/models/session";
+import { setSessionModel } from "./current-model";
 
-export interface SessionStore {
-  session: Session | null;
+export type SessionStore = Record<SessionMode, {
+  session: Session;
   newSession: boolean;
-}
+} | undefined>;
 
 const [currentSessionStore, setCurrentSession] = createStore<SessionStore>({
-  session: null,
-  newSession: false,
+  normal: undefined,
+  h2h: undefined,
 });
 
-export function currentSession() {
-  return currentSessionStore.session;
+export function getCurrentSessionStore() {
+  return currentSessionStore;
 }
 
-export function currentSessionId() {
-  return currentSessionStore.session;
+export function currentSession(mode: SessionMode) {
+  return currentSessionStore[mode]?.session;
 }
 
-export async function setCurrentSessionId(id: number | null) {
+export async function setCurrentSessionId(id: number | null, mode: SessionMode) {
   if (id === null) {
-    setCurrentSession(reconcile({
-      session: null,
-      newSession: false,
-    }));
+    setCurrentSession(mode, undefined);
     return;
   }
 
-  setCurrentSession(reconcile({
-    session: await getSession(id),
+  const session = await getSession(id);
+
+  setCurrentSession(mode, session ? reconcile({
+    session,
     newSession: false,
-  }));
+  }) : undefined);
 }
 
-export async function setNewSession(id: number) {
-  setCurrentSession(reconcile({
-    session: await getSession(id),
+export async function setNewSession(id: number, mode: SessionMode) {
+  const session = await getSession(id);
+
+  setCurrentSession(mode, session ? reconcile({
+    session,
     newSession: true,
-  }));
+  }) : undefined);
 }
 
-export async function reloadCurrentSession() {
-  const id = currentSessionStore.session?.id;
+export async function reloadCurrentSession(mode: SessionMode) {
+  const id = currentSessionStore[mode]?.session?.id;
   if (id === undefined) {
     return;
   }
 
-  setCurrentSession(reconcile({
-    session: await reloadSession(id) ?? null,
+  const session = await reloadSession(id, mode);
+  setCurrentSession(mode, session ? reconcile({
+    session,
     newSession: false,
-  }));
+  }) : undefined);
 }
 
-export function isNewSession() {
-  return currentSessionStore.newSession;
+export function isNewSession(mode: SessionMode) {
+  return currentSessionStore[mode]?.newSession ?? true;
+}
+
+export async function deselectModel(model: string, toModel: string) {
+  for (const key of Object.keys(currentSessionStore)) {
+    const key_ = key as SessionMode;
+    const s = currentSessionStore[key_];
+    if (s) {
+      const curModel = s.session.currentModel;
+      if (curModel === model) {
+        await setSessionModel(toModel, key_)
+      }
+    }
+  }
 }

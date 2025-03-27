@@ -3,8 +3,11 @@ import { createMemo, createSignal, Show } from "solid-js";
 import { LoaderSpin } from "~/lib/components/loader-spin";
 import { useChatEntry } from "~/lib/contexts/chat-entry";
 import { switchBranch } from "~/lib/contexts/globals/chat-history";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 export function VersionPagination() {
+  const mode = useSessionMode();
+
   const chat = useChatEntry();
 
   const versions = () => chat?.().versions;
@@ -30,7 +33,7 @@ export function VersionPagination() {
     }
 
     setSwitching(true);
-    switchBranch(ver[pageNum - 1])
+    switchBranch(ver[pageNum - 1], mode())
       .finally(() => setSwitching(false));
   };
 

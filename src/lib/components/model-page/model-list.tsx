@@ -11,6 +11,7 @@ import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";
 import { ModelSearchResultProvider } from "~/lib/contexts/model-search-result";
 import { setCurrentModelPageModel } from "~/lib/contexts/globals/model-page";
 import { toast } from "solid-sonner";
+import { HeaderBar } from "../custom-ui/header-bar";
 
 interface DisplayModelListItem {
   name: string;
@@ -71,27 +72,24 @@ export function ModelList() {
 
   return (
     <div class="w-full h-full flex flex-col">
-      <div class="sticky py-4 px-3 shrink-0 flex place-items-center backdrop-blur-lg bg-background/50">
-        <h2 class="text-lg font-bold select-none flex-grow">Models</h2>
-        <div class="shrink-0 flex gap-1">
-          <Button
-            variant="outline"
-            size="icon"
-            disabled={status() === "fetching"}
-            title={status() === "fetching" ? "Refreshing..." : "Refresh model list"}
-            onClick={() => {
-              reloadModelStates()
-                .then(() => toast.success("Model list refreshed."));
-            }}
-          >
-            <RefreshCwIcon class={cn(status?.() === "fetching" && "animate-spin")} />
-          </Button>
+      <HeaderBar title="Models">
+        <Button
+          variant="outline"
+          size="icon"
+          disabled={status() === "fetching"}
+          title={status() === "fetching" ? "Refreshing..." : "Refresh model list"}
+          onClick={() => {
+            reloadModelStates()
+              .then(() => toast.success("Model list refreshed."));
+          }}
+        >
+          <RefreshCwIcon class={cn(status?.() === "fetching" && "animate-spin")} />
+        </Button>
 
-          <ModelSearchResultProvider>
-            <PullModel />
-          </ModelSearchResultProvider>
-        </div>
-      </div>
+        <ModelSearchResultProvider>
+          <PullModel />
+        </ModelSearchResultProvider>
+      </HeaderBar>
 
       <div class="grow overflow-y-auto" onClick={() => setCurrentModelPageModel(null)}>
         <div class="flex flex-col gap-2 px-2">

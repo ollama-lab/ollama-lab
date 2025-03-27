@@ -1,4 +1,4 @@
-import { createMemo, createSignal, Match, Show, Switch } from "solid-js";
+import { Component, createSignal, Match, Show, Switch } from "solid-js";
 import { ChatImagePreview } from "~/lib/components/custom-ui/image-preview";
 import { Avatar, AvatarImage } from "~/lib/components/ui/avatar";
 import { useChatEntry } from "~/lib/contexts/chat-entry";
@@ -14,15 +14,22 @@ import { LoaderSpin } from "~/lib/components/loader-spin";
 import { TriangleAlertIcon } from "lucide-solid";
 import { SystemPromptBlock } from "./bubble-sector/system-prompt-block";
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
+import { createDisplayNames, InputNames } from "~/lib/utils/agents";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
-export function BubbleSector() {
+export const BubbleSector: Component<{ agentNames?: InputNames }> = (props) => {
+  const mode = useSessionMode();
+
   const chat = useChatEntry();
 
-  const role = createMemo(() => chat?.().role);
-  const model = createMemo(() => chat?.().model);
-  const status = createMemo(() => chat?.().status);
+  const role = () => chat?.().role;
+  const model = () => chat?.().model;
+  const status = () => chat?.().status;
 
   const [editMode, setEditMode] = createSignal(false);
+
+  const agentNames = createDisplayNames(() => props.agentNames);
+  const displayName = () => agentNames()?.displayName ?? model();
 
   return (
     <Switch>
@@ -51,7 +58,7 @@ export function BubbleSector() {
                 <span class="text-xs font-bold">
                   <Switch>
                     <Match when={role() === "assistant"}>
-                      {model()}
+                      {displayName()}
                     </Match>
                     <Match when={role() === "user"}>
                       You
@@ -82,13 +89,13 @@ export function BubbleSector() {
                     onSubmit={(newValue) => {
                       const c = chat?.();
                       const id = c?.id;
-                      const model = getCurrentModel();
+                      const model = getCurrentModel(mode());
 
                       if (id === undefined || !model) {
                         return;
                       }
 
-                      editPrompt({ text: newValue }, id, model, {
+                      editPrompt({ text: newValue }, id, model, mode(), {
                         onRespond() {
                           setEditMode(false);
                         },

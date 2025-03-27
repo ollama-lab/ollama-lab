@@ -7,25 +7,84 @@ use ollama_rest::{
     Ollama,
 };
 use sqlx::{Pool, Sqlite};
-use tokio::sync::{mpsc, oneshot, Mutex};
+use tokio::sync::{broadcast, mpsc, Mutex};
 
-use crate::{errors::Error, events::StreamingResponseEvent, responses::tree::ChatTree, utils::images::get_chat_images};
+use crate::{
+    chat_gen::ego::IntoEgoOf,
+    errors::Error,
+    events::StreamingResponseEvent,
+    responses::tree::ChatTree,
+    utils::images::get_chat_images
+};
+
+async fn record_assistant_response(
+    final_date_now: Arc<Mutex<Option<(i64, bool)>>>,
+    pool: &Pool<Sqlite>,
+    response_id: i64,
+    output_buf: Arc<Mutex<String>>,
+    thoughts_buf: Arc<Mutex<String>>,
+    thought_for: Arc<Mutex<Option<i64>>>,
+) -> Result<(), Error> {
+    let (date_now, completed) = final_date_now
+        .lock()
+        .await
+        .unwrap_or_else(|| (Utc::now().timestamp(), true));
+    let mut transaction = pool.begin().await?;
+
+    sqlx::query(
+        r#"
+        UPDATE chats
+        SET date_created = $2, completed = $3, content = $4
+        WHERE id = $1;
+    "#,
+    )
+    .bind(response_id)
+    .bind(date_now)
+    .bind(completed)
+    .bind(output_buf.lock().await.as_str())
+    .execute(&mut *transaction)
+    .await?;
+
+    let thoughts_content_guard = thoughts_buf.lock().await;
+    let trimmed_thoughts = thoughts_content_guard.as_str().trim();
+    if !trimmed_thoughts.is_empty() {
+        sqlx::query(
+            r#"
+            INSERT INTO cot_thoughts (chat_id, content, thought_for_milli)
+            VALUES ($1, $2, $3);
+        "#,
+        )
+        .bind(response_id)
+        .bind(trimmed_thoughts)
+        .bind(thought_for.lock().await.take())
+        .execute(&mut *transaction)
+        .await?;
+    }
+
+    transaction.commit().await?;
+    Ok(())
+}
 
 pub async fn stream_response(
     ollama: &Ollama,
     pool: &Pool<Sqlite>,
     chan_sender: mpsc::Sender<StreamingResponseEvent>,
     response_id: i64,
-    cancel_receiver: Option<oneshot::Receiver<()>>,
+    cancel_receiver: Option<broadcast::Receiver<()>>,
     session_id: i64,
     current_model: &str,
+    agent_id: Option<i64>,
 ) -> Result<(), Error> {
     let tx = chan_sender.clone();
     let tx2 = chan_sender.clone();
 
-    let chat_history = ChatTree::new(session_id)
+    let mut chat_history = ChatTree::new(session_id)
         .current_branch(pool, None, true)
         .await?;
+
+    if let Some(agent_id) = agent_id {
+        chat_history = chat_history.into_ego_of(agent_id);
+    }
 
     let mut image_map: HashMap<i64, Vec<String>> = HashMap::new();
 
@@ -68,12 +127,15 @@ pub async fn stream_response(
 
     let output_buf = Arc::new(Mutex::new(String::new()));
     let output_buf2 = output_buf.clone();
+    let output_buf3 = output_buf.clone();
 
     let thoughts_buf = Arc::new(Mutex::new(String::new()));
     let thoughts_buf2 = thoughts_buf.clone();
+    let thoughts_buf3 = thoughts_buf.clone();
 
     let thought_for = Arc::new(Mutex::new(None::<i64>));
     let thought_for2 = thought_for.clone();
+    let thought_for3 = thought_for.clone();
 
     let final_date_now = Arc::new(Mutex::new(None::<(i64, bool)>));
     let final_date_now2 = final_date_now.clone();
@@ -89,7 +151,8 @@ pub async fn stream_response(
             while let Some(Ok(res)) = stream.next().await {
                 if res.done {
                     chan_sender.send(StreamingResponseEvent::Done).await?;
-                    continue;
+                    date_now = Some(res.created_at.timestamp());
+                    break;
                 }
 
                 let chunk = res.message
@@ -134,6 +197,9 @@ pub async fn stream_response(
                 *final_date_now2.lock().await = Some((date_now, true));
             }
 
+            record_assistant_response(final_date_now, pool, response_id, output_buf, thoughts_buf, thought_for)
+                .await?;
+
             Ok::<(), Error>(())
         } => {
             tx.send(StreamingResponseEvent::Failure {
@@ -145,7 +211,7 @@ pub async fn stream_response(
 
         Some(res) = async move {
             match cancel_receiver {
-                Some(rx) => Some(rx.await),
+                Some(mut rx) => Some(rx.recv().await),
                 None => None,
             }
         } => {
@@ -155,47 +221,12 @@ pub async fn stream_response(
                 }).await?;
 
                 *final_date_now3.lock().await = Some((Utc::now().timestamp(), false));
+
+                record_assistant_response(final_date_now3, pool, response_id, output_buf3, thoughts_buf3, thought_for3)
+                    .await?;
             }
         }
     }
-
-    let (date_now, completed) = final_date_now
-        .lock()
-        .await
-        .unwrap_or_else(|| (Utc::now().timestamp(), true));
-    let mut transaction = pool.begin().await?;
-
-    sqlx::query(
-        r#"
-        UPDATE chats
-        SET date_created = $2, completed = $3, content = $4
-        WHERE id = $1;
-    "#,
-    )
-    .bind(response_id)
-    .bind(date_now)
-    .bind(completed)
-    .bind(output_buf.lock().await.as_str())
-    .execute(&mut *transaction)
-    .await?;
-
-    let thoughts_content_guard = thoughts_buf.lock().await;
-    let trimmed_thoughts = thoughts_content_guard.as_str().trim();
-    if !trimmed_thoughts.is_empty() {
-        sqlx::query(
-            r#"
-            INSERT INTO cot_thoughts (chat_id, content, thought_for_milli)
-            VALUES ($1, $2, $3);
-        "#,
-        )
-        .bind(response_id)
-        .bind(trimmed_thoughts)
-        .bind(thought_for.lock().await.take())
-        .execute(&mut *transaction)
-        .await?;
-    }
-
-    transaction.commit().await?;
 
     Ok(())
 }

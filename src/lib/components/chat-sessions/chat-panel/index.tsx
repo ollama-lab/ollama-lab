@@ -1,8 +1,9 @@
+import { Component } from "solid-js";
 import { PromptInput } from "../prompt-input";
 import { ChatFeeds } from "./chat-feeds";
 import { ChatPanelHeader } from "./header";
 
-export function ChatPanel() {
+export const ChatPanel: Component = () => {
   return (
     <div class="flex flex-col w-full h-full overflow-y-hidden">
       <ChatPanelHeader />

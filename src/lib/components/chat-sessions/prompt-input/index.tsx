@@ -1,11 +1,9 @@
-import { Show, createEffect, createMemo, createSignal, onCleanup } from "solid-js";
+import { Component, Show, createEffect, createMemo, createSignal, onCleanup } from "solid-js";
 import { getChatHistory, submitChat } from "~/lib/contexts/globals/chat-history";
 import {
   clearInputPrompt,
   getInputPrompt,
-  hidePromptBar,
-  isSubmittable,
-  setHidePromptBar,
+  isSubmittable as isSubmittable_,
   setInputPrompt,
 } from "~/lib/contexts/globals/prompt-input";
 import { Button } from "../../ui/button";
@@ -20,8 +18,15 @@ import { emit } from "@tauri-apps/api/event";
 import autosize from "autosize";
 import { toSrcString } from "~/lib/utils/images";
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
-export function PromptInput() {
+const [hidePromptBar, setHidePromptBar] = createSignal(false);
+
+export const PromptInput: Component = () => {
+  const mode = useSessionMode();
+
+  const isSubmittable = createMemo(() => isSubmittable_(mode()));
+
   const [formRef, setFormRef] = createSignal<HTMLFormElement | undefined>(undefined);
   const [textEntryRef, setTextEntryRef] = createSignal<HTMLTextAreaElement | undefined>(undefined);
 
@@ -50,7 +55,7 @@ export function PromptInput() {
     }));
   }
 
-  const busy = createMemo(() => status() === "responding" || getChatHistory()?.chats.at(-1)?.status === "sending");
+  const busy = createMemo(() => status() === "responding" || getChatHistory(mode())?.chats.at(-1)?.status === "sending");
 
   createEffect(() => {
     const ref = textEntryRef();
@@ -96,14 +101,14 @@ export function PromptInput() {
           return;
         }
 
-        const model = getCurrentModel();
+        const model = getCurrentModel(mode());
         if (!model) {
           return;
         }
 
         setStatus("submitting");
 
-        submitChat(getInputPrompt(), model, { onRespond }).finally(clearStatus);
+        submitChat(getInputPrompt(), model, mode(), { onRespond }).finally(clearStatus);
       }}
     >
       <Button variant="ghost" class="h-4 rounded-none -mx-3 py-0" onClick={() => setHidePromptBar((cur) => !cur)}>
@@ -154,4 +159,4 @@ export function PromptInput() {
       </div>
     </form>
   );
-}
+};

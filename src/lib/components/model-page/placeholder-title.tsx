@@ -1,8 +1,8 @@
-import { createEffect, createSignal, onCleanup, Show } from "solid-js";
+import { Component, createEffect, createSignal, onCleanup, Show } from "solid-js";
 
 const TRIGGER_IN_TIMES = 10;
 
-export function PlaceholderTitle() {
+export const PlaceholderTitle: Component = () => {
   const defaultText = "Oh llama, your llama. 🦙";
   const eggTextBase64 = "RGV2aWFudHMsIGZhc2NpbmF0aW5nIGFyZW4ndCB0aGV5Pwo=";
 
@@ -56,5 +56,13 @@ export function PlaceholderTitle() {
         {atob(eggTextBase64) + " 😏"}
       </Show>
     </span>
+  );
+}
+
+export const PlaceholderPage: Component = () => {
+  return (
+    <div class="flex flex-col items-center place-content-center h-full">
+      <PlaceholderTitle />
+    </div>
   );
 }

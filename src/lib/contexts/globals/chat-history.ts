@@ -1,5 +1,5 @@
-import { createStore } from "solid-js/store";
-import type { ChatHistory } from "~/lib/models/session";
+import { createStore, reconcile } from "solid-js/store";
+import type { Chat, ChatHistory, SessionMode } from "~/lib/models/session";
 import { createEffect, createMemo } from "solid-js";
 import { reloadSession } from "./sessions";
 import { getCurrentBranch } from "~/lib/commands/chat-history";
@@ -8,9 +8,11 @@ import { createSession } from "~/lib/commands/sessions";
 import { regenerateResponse, submitUserPrompt } from "~/lib/commands/chats";
 import { convertResponseEvents } from "~/lib/utils/chat-streams";
 import { switchBranch as switchBranchCommand } from "~/lib/commands/chat-history";
-import { currentSession, isNewSession, setCurrentSessionId, setNewSession } from "./current-session";
+import { currentSession, getCurrentSessionStore, setCurrentSessionId, setNewSession } from "./current-session";
 import { getCurrentModel } from "./current-model";
 import { setCandidate } from "./candidate-model";
+import { getCandidateSessionSystemPrompt, setCandidateSessionSystemPrompt } from "./candidate-session-system-prompt";
+import { isH2h } from "./settings";
 
 export interface PromptSubmissionEvents {
   onRespond?: () => void;
@@ -18,60 +20,65 @@ export interface PromptSubmissionEvents {
 }
 
 export interface ChatHistoryStore {
-  chatHistory: ChatHistory | null;
+  chatHistory: Record<SessionMode, ChatHistory | undefined>;
   loading: boolean;
 }
 
 const [chatHistoryStore, setChatHistoryStore] = createStore<ChatHistoryStore>({
-  chatHistory: null,
+  chatHistory: { normal: undefined, h2h: undefined },
   loading: false,
 });
 
 export const getChatHistoryStore = () => chatHistoryStore;
 
-export function getChatHistory() {
-  return chatHistoryStore.chatHistory;
+export function getChatHistory(mode: SessionMode) {
+  return chatHistoryStore.chatHistory[mode];
 }
 
-const lastChat = createMemo(() => getChatHistory()?.chats.at(-1));
+const lastChat = createMemo(() => {
+  return Object.entries(chatHistoryStore.chatHistory).reduce((acc, [key, value]) => {
+    acc[key] = value?.chats.at(-1);
+    return acc;
+  }, {} as Record<string, Chat | undefined>);
+});
 
-export async function reloadChatHistory() {
-  const session = currentSession();
+export function createReloadChatHistory(mode: SessionMode) {
+  createEffect(() => {
+    reloadChatHistory(mode);
+  });
+}
+
+export async function reloadChatHistory(mode: SessionMode) {
+  const session = currentSession(mode);
   if (session) {
     setChatHistoryStore("loading", true);
     const result = await getCurrentBranch(session.id);
-    setChatHistoryStore("chatHistory", {
+    setChatHistoryStore("chatHistory", mode, reconcile({
       chats: result,
-    });
+    }));
     setChatHistoryStore("loading", false);
   } else {
-    setChatHistoryStore("chatHistory", null);
+    setChatHistoryStore("chatHistory", mode, undefined);
   }
 }
 
-createEffect(() => {
-  if (!isNewSession()) {
-    reloadChatHistory();
-  }
-});
+export async function clearChatHistory(mode: SessionMode, reserveSelectedModel?: boolean) {
+  const selected = reserveSelectedModel ? getCurrentModel(mode) : undefined;
 
-export async function clearChatHistory(reserveSelectedModel?: boolean) {
-  const selected = reserveSelectedModel ? getCurrentModel() : undefined;
-
-  setCurrentSessionId(null);
+  setCurrentSessionId(null, mode);
 
   if (reserveSelectedModel && selected) {
-    setCandidate(selected);
+    setCandidate(mode, selected);
   }
 }
 
 export async function submitChat(
   prompt: IncomingUserPrompt,
   model: string,
+  mode: SessionMode,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
 ) {
-  let session = currentSession() ?? undefined;
-
+  let session = currentSession(mode) ?? undefined;
   if (!session) {
     // TODO: Add settings option for default session name: 1) no name, 2) first prompt, 3) generated after first response
     // Currently it is `first prompt`
@@ -80,25 +87,33 @@ export async function submitChat(
       sessionTitle = `Image${prompt.imagePaths.length > 1 ? "s" : ""}`;
     }
 
-    session = await createSession(model, sessionTitle);
+    const sessionSystemPrompt = isH2h() ? getCandidateSessionSystemPrompt() : undefined;
 
-    await reloadSession(session.id);
-    await setNewSession(session.id);
+    session = await createSession(mode, model, sessionTitle);
+
+    await reloadSession(session.id, mode);
+    await setNewSession(session.id, mode);
+
+    if (sessionSystemPrompt) {
+      await setCandidateSessionSystemPrompt(mode, sessionSystemPrompt, session.id);
+    }
   }
 
-  const parentId = lastChat()?.id;
+  const parentId = lastChat()[mode]?.id;
 
   const ret = await submitUserPrompt(
     session?.id,
     prompt,
     parentId === undefined ? null : parentId,
-    convertResponseEvents(getChatHistory, setChatHistoryStore, model, prompt, {
+    mode,
+    convertResponseEvents(getChatHistory.bind(getChatHistory, mode), setChatHistoryStore, mode, model, prompt, {
       onRespond,
       onScrollDown,
     }),
+    true,
   );
 
-  setChatHistoryStore("chatHistory", "chats", getChatHistory()!.chats.length - 1, {
+  setChatHistoryStore("chatHistory", mode, "chats", getChatHistory(mode)!.chats.length - 1, {
     status: "sent",
     dateSent: ret.dateCreated,
   });
@@ -106,10 +121,11 @@ export async function submitChat(
 
 export async function regenerate(
   chatId: number,
+  mode: SessionMode,
   model?: string,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
 ) {
-  const session = currentSession();
+  const session = currentSession(mode);
   if (!session) {
     return;
   }
@@ -119,8 +135,9 @@ export async function regenerate(
     chatId,
     model,
     convertResponseEvents(
-      getChatHistory,
+      getChatHistory.bind(getChatHistory, mode),
       setChatHistoryStore,
+      mode,
       model,
       undefined,
       {
@@ -133,23 +150,23 @@ export async function regenerate(
     ),
   );
 
-  setChatHistoryStore("chatHistory", "chats", getChatHistory()!.chats.length - 1, {
+  setChatHistoryStore("chatHistory", mode, "chats", getChatHistory(mode)!.chats.length - 1, {
     status: "sent",
     dateSent: ret.dateCreated,
   });
 }
 
-export async function switchBranch(chatId: number) {
+export async function switchBranch(chatId: number, mode: SessionMode) {
   const [parentId, subbranch] = await switchBranchCommand(chatId);
 
-  const ch = getChatHistory();
+  const ch = getChatHistory(mode);
   if (!ch) {
     return;
   }
 
   const index = parentId !== null ? ch.chats.findIndex((chat) => chat.id === parentId) + 1 : 0;
   if (index >= 0) {
-    setChatHistoryStore("chatHistory", "chats", (chats) => [...chats.slice(0, index), ...subbranch]);
+    setChatHistoryStore("chatHistory", mode, "chats", (chats) => [...chats.slice(0, index), ...subbranch]);
   }
 }
 
@@ -157,14 +174,15 @@ export async function editPrompt(
   prompt: EditUserPrompt,
   chatId: number,
   model: string,
+  mode: SessionMode,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
 ) {
-  const session = currentSession();
+  const session = currentSession(mode);
   if (!session) {
     return;
   }
 
-  const ch = getChatHistory();
+  const ch = getChatHistory(mode);
   if (!ch) {
     throw new Error("No chat history.");
   }
@@ -186,9 +204,11 @@ export async function editPrompt(
     session.id,
     mergedPrompt,
     parentId,
+    mode,
     convertResponseEvents(
-      getChatHistory,
+      getChatHistory.bind(getChatHistory, mode),
       setChatHistoryStore,
+      mode,
       model,
       mergedPrompt,
       { onRespond, onScrollDown },
@@ -197,7 +217,7 @@ export async function editPrompt(
     true,
   );
 
-  setChatHistoryStore("chatHistory", "chats", getChatHistory()!.chats.length - 1, {
+  setChatHistoryStore("chatHistory", mode, "chats", getChatHistory(mode)!.chats.length - 1, {
     status: "sent",
     dateSent: ret.dateCreated,
   });

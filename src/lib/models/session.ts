@@ -4,20 +4,23 @@ export interface Session {
   title: string | null;
   dateCreated: Date;
   currentModel: string;
+  mode: SessionMode;
 }
 
 export type Role = "system" | "assistant" | "user" | "tool";
 
 export type TransmissionStatus = "preparing" | "sending" | "sent" | "not sent";
 
-export interface ChatBubble {
+export interface Chat {
   id: number;
+  sessionId: number;
   role: Role;
   content: string;
   imageCount: number;
   dateSent?: Date;
   dateEdited?: Date;
   status: TransmissionStatus;
+  agentId?: number;
 
   model?: string;
 
@@ -29,7 +32,7 @@ export interface ChatBubble {
 }
 
 export interface ChatHistory {
-  chats: ChatBubble[];
+  chats: Chat[];
 }
 
 export type SessionRenameReturn = null | {
@@ -41,3 +44,5 @@ export type SessionCurrentModelReturn = null | {
   id: number;
   currentModel: string | null;
 };
+
+export type SessionMode = "normal" | "h2h";

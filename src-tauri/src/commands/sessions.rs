@@ -1,23 +1,26 @@
 use tauri::State;
 
 use crate::{
-    app_state::AppState, errors::Error, image::cleanup::remove_orphans, models::session::{Session, SessionCurrentModelReturn, SessionNameReturn}
+    app_state::AppState,
+    errors::Error,
+    image::cleanup::remove_orphans,
+    models::session::{mode::SessionMode, Session, SessionCurrentModelReturn, SessionNameReturn},
+    utils::sessions::get_session as get_session_,
 };
 
 #[tauri::command]
-pub async fn list_sessions(state: State<'_, AppState>) -> Result<Vec<Session>, Error> {
+pub async fn list_sessions(state: State<'_, AppState>, mode: SessionMode) -> Result<Vec<Session>, Error> {
     let profile_id = state.profile;
     let mut conn = state.conn_pool.acquire().await?;
 
-    let sessions = sqlx::query_as::<_, Session>(
-        "\
-        SELECT id, profile_id, title, date_created, current_model
+    let sessions = sqlx::query_as::<_, Session>(r#"
+        SELECT id, profile_id, title, date_created, current_model, mode
         FROM sessions
-        WHERE profile_id = $1
+        WHERE profile_id = $1 AND mode = IFNULL($2, mode)
         ORDER BY date_created DESC;
-    ",
-    )
+    "#)
     .bind(profile_id)
+    .bind(mode.as_str())
     .fetch_all(&mut *conn)
     .await?;
 
@@ -29,20 +32,7 @@ pub async fn get_session(state: State<'_, AppState>, id: i64) -> Result<Option<S
     let profile_id = state.profile;
     let mut conn = state.conn_pool.acquire().await?;
 
-    let session = sqlx::query_as::<_, Session>(
-        "\
-        SELECT id, profile_id, title, date_created, current_model
-        FROM sessions
-        WHERE profile_id = $1 AND id = $2
-        ORDER BY date_created DESC;
-    ",
-    )
-    .bind(profile_id)
-    .bind(id)
-    .fetch_optional(&mut *conn)
-    .await?;
-
-    Ok(session)
+    Ok(get_session_(&mut *conn, profile_id, id).await?)
 }
 
 #[tauri::command]
@@ -152,20 +142,22 @@ pub async fn create_session(
     state: State<'_, AppState>,
     current_model: String,
     title: Option<String>,
+    mode: SessionMode,
 ) -> Result<Session, Error> {
     let profile_id = state.profile;
     let mut conn = state.conn_pool.acquire().await?;
 
     let session = sqlx::query_as::<_, Session>(
         r#"
-        INSERT INTO sessions (profile_id, current_model, title)
-        VALUES ($1, $2, $3)
-        RETURNING id, profile_id, title, date_created, current_model;
+        INSERT INTO sessions (profile_id, current_model, title, mode)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, profile_id, title, date_created, current_model, mode;
     "#,
     )
     .bind(profile_id)
     .bind(current_model)
     .bind(title)
+    .bind(mode.as_str())
     .fetch_one(&mut *conn)
     .await?;
 

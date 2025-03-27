@@ -1,11 +1,11 @@
 import { Accessor, createContext, JSX, useContext } from "solid-js";
-import { ChatBubble } from "../models/session";
+import { Chat } from "../models/session";
 
-const ChatEntryContext = createContext<Accessor<ChatBubble>>();
+const ChatEntryContext = createContext<Accessor<Chat>>();
 
 export interface ChatEntryProviderProps {
   children?: JSX.Element;
-  value: Accessor<ChatBubble>;
+  value: Accessor<Chat>;
 }
 
 export function ChatEntryProvider(props: ChatEntryProviderProps) {

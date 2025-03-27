@@ -1,11 +1,23 @@
-import { createEffect, createSignal } from "solid-js";
+import { createEffect } from "solid-js";
 import { currentSession } from "./current-session";
+import { createStore } from "solid-js/store";
+import { SessionMode } from "~/lib/models/session";
 
-const [candidate, setCandidate] = createSignal<string | null>(null);
+const [candidate, setCandidate] = createStore<Record<SessionMode, string | null | undefined>>({} as Record<SessionMode, string | null | undefined>);
 
-createEffect(() => {
-  const session = currentSession();
-  setCandidate(session ? session.currentModel : null);
-});
+export function initializeCandidate(mode: SessionMode) {
+  const session = currentSession(mode);
+  setCandidate(mode, session ? session.currentModel : null);
+}
 
-export { candidate, setCandidate };
+export function getCandidate(mode: SessionMode) {
+  return candidate[mode];
+}
+
+export function createInitializaCandidate(mode: SessionMode) {
+  createEffect(() => {
+    initializeCandidate(mode);
+  });
+}
+
+export { setCandidate };

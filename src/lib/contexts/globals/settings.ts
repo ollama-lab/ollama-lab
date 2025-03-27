@@ -3,6 +3,9 @@ import { Settings } from "../../models/settings";
 import { getSettings as getSettingsCommand, setSettings as setSettingsCommand } from "../../commands/settings";
 import { createEffect, createSignal } from "solid-js";
 import { setColorMode } from "./color-mode";
+import { isDev } from "solid-js/web";
+
+export const DEFAULT_H2H = isDev;
 
 const [settingsStore, setSettingsStore] = createStore<Settings>({
   appearance: {
@@ -13,6 +16,7 @@ const [settingsStore, setSettingsStore] = createStore<Settings>({
   ollama: {
     uri: null,
   },
+  h2h: null,
 });
 
 const [restartVotes, setRestartVotes] = createSignal<string[]>([]);
@@ -47,3 +51,7 @@ export function unvoteRestart(id: string) {
 }
 
 export { restartVotes, setSettingsStore as setCurrentSettings };
+
+export function isH2h() {
+  return getCurrentSettings().h2h ?? DEFAULT_H2H;
+}

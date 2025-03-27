@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader } from "~/lib/compone
 import { clearChatHistory } from "~/lib/contexts/globals/chat-history";
 import { currentSession } from "~/lib/contexts/globals/current-session";
 import { reloadSessions } from "~/lib/contexts/globals/sessions";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 export const DeletionDialog: Component<{
   sessionId: number;
@@ -18,15 +19,17 @@ export const DeletionDialog: Component<{
 
   const [proceeding, setProceeding] = createSignal(false);
 
+  const mode = useSessionMode();
+
   const afterDeletion = () => {
     onOpenChange(false);
 
-    if (currentSession()?.id === sessionId()) {
-      clearChatHistory();
+    if (currentSession(mode())?.id === sessionId()) {
+      clearChatHistory(mode(), true);
     }
 
     toast.success("Session successfully deleted");
-    reloadSessions();
+    reloadSessions(mode());
   };
 
   return (

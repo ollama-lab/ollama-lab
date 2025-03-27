@@ -1,11 +1,11 @@
-import AppearanceSection from "./builtin-sections/appearance";
-import OllamaSection from "./builtin-sections/ollama";
+import AppearanceSection from "../builtin-sections/appearance";
+import OllamaSection from "../builtin-sections/ollama";
 import { createSignal, Show } from "solid-js";
 import { Button } from "../../ui/button";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { LoaderSpin } from "../../loader-spin";
 import { restartVotes } from "~/lib/contexts/globals/settings";
-import { DevModeSection } from "./builtin-sections/dev-mode";
+import { DevModeSection } from "../builtin-sections/dev-mode";
 
 export function SettingsDetails() {
   const [restarting, setRestarting] = createSignal(false);

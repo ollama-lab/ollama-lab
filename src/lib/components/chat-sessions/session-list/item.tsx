@@ -9,6 +9,7 @@ import { renameSession } from "~/lib/commands/sessions";
 import { reloadSession } from "~/lib/contexts/globals/sessions";
 import { OperationsDropdown } from "./operations";
 import { currentSession, setCurrentSessionId } from "~/lib/contexts/globals/current-session";
+import { useSessionMode } from "~/lib/contexts/session-mode";
 
 export const SessionListItem: Component<{
   sessionId: number;
@@ -16,6 +17,7 @@ export const SessionListItem: Component<{
 }> = (props) => {
   const title = () => props.title;
   const sessionId = () => props.sessionId;
+  const mode = useSessionMode();
 
   const [renameMode, setRenameMode] = createSignal(false);
   const [optimisticTitle, setOptimisticTitle] = createSignal<string | undefined>(undefined);
@@ -25,7 +27,7 @@ export const SessionListItem: Component<{
       <div class="overflow-auto max-w-sm">
         <span class="">{optimisticTitle() ?? title() ?? "New Chat"}</span>
       </div>
-      <Show when={currentSession()?.id === sessionId() && getChatHistoryStore()?.loading}>
+      <Show when={currentSession(mode())?.id === sessionId() && getChatHistoryStore()?.loading}>
         <LoaderSpin class="size-4" />
       </Show>
     </div>
@@ -35,11 +37,11 @@ export const SessionListItem: Component<{
     <div
       class={cn(
         "flex items-center px-3 py-2 rounded cursor-pointer",
-        currentSession()?.id === sessionId() ? "bg-primary text-primary-foreground" : "hover:bg-secondary",
+        currentSession(mode())?.id === sessionId() ? "bg-primary text-primary-foreground" : "hover:bg-secondary",
       )}
       onClick={() => {
         try {
-          setCurrentSessionId(sessionId());
+          setCurrentSessionId(sessionId(), mode());
         } catch (err) {
           toast.error(`Error: ${err}`);
         }
@@ -82,7 +84,7 @@ export const SessionListItem: Component<{
                 (async () => {
                   try {
                     await renameSession(s, newTitle);
-                    await reloadSession(s);
+                    await reloadSession(s, mode());
                   } catch (err) {
                     toast.error(`Error: ${err}`);
                   } finally {

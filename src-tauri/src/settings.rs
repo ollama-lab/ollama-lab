@@ -18,6 +18,7 @@ pub mod ollama;
 pub struct Settings {
     pub appearance: AppearanceSettings,
     pub ollama: OllamaSettings,
+    pub h2h: Option<bool>,
 }
 
 impl Settings {

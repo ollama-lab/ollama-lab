@@ -13,4 +13,5 @@ export interface OllamaSettings {
 export interface Settings {
   appearance: AppearanceSettings;
   ollama: OllamaSettings;
+  h2h: boolean | null;
 }

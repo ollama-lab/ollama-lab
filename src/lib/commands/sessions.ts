@@ -1,4 +1,4 @@
-import type { Session, SessionCurrentModelReturn, SessionRenameReturn } from "~/lib/models/session";
+import type { Session, SessionCurrentModelReturn, SessionMode, SessionRenameReturn } from "~/lib/models/session";
 import { invoke } from "@tauri-apps/api/core";
 
 interface InternalSession {
@@ -7,10 +7,11 @@ interface InternalSession {
   title: string | null;
   dateCreated: string;
   currentModel: string;
+  mode: SessionMode,
 }
 
-export async function listSessions(): Promise<Session[]> {
-  return await invoke<InternalSession[]>("list_sessions").then((sessions) =>
+export async function listSessions(mode: SessionMode): Promise<Session[]> {
+  return await invoke<InternalSession[]>("list_sessions", { mode }).then((sessions) =>
     sessions.map(
       (session) =>
         ({
@@ -46,10 +47,11 @@ export async function setSessionModel(id: number, model: string): Promise<Sessio
   });
 }
 
-export async function createSession(currentModel: string, title?: string | null): Promise<Session> {
+export async function createSession(mode: SessionMode, currentModel: string, title?: string | null): Promise<Session> {
   return await invoke<InternalSession>("create_session", {
     currentModel,
     title,
+    mode,
   }).then(
     (session) =>
       ({
