@@ -197,7 +197,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans-inter;
+    @apply bg-background text-foreground font-sans-inter transition-[background] duration-500;
   }
 
   kbd {
