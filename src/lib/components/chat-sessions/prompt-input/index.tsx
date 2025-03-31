@@ -74,7 +74,6 @@ export const PromptInput: Component = () => {
   const SubmitButton = () => (
     <Button
       size="icon"
-      class="rounded-full"
       type="submit"
       disabled={!!status() || !isSubmittable()}
       title="Send prompt"
@@ -147,7 +146,6 @@ export const PromptInput: Component = () => {
           <Show when={busy()} fallback={<SubmitButton />}>
             <Button
               size="icon"
-              class="rounded-full"
               type="button"
               title="Stop generation"
               onClick={stopGeneration}
