@@ -1,7 +1,6 @@
 import { createStore } from "solid-js/store";
 import { IncomingUserPrompt } from "~/lib/models/chat";
 import { getCurrentModel } from "./current-model";
-import { isH2h } from "./settings";
 import { SessionMode } from "~/lib/models/session";
 
 const [inputPrompt, setInputPrompt] = createStore<IncomingUserPrompt>({ text: "" });
@@ -11,7 +10,7 @@ export const isSubmittable = (mode: SessionMode) => {
     return false;
   }
 
-  if (inputPrompt.text.length > 0 || isH2h()) {
+  if (inputPrompt.text.length > 0 || mode === "h2h") {
     return true;
   }
 
