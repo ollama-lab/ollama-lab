@@ -28,7 +28,7 @@ const FloatEntry: Component = () => {
             <div class="flex flex-col">
               <SwitchLabel>Re-rendering flash</SwitchLabel>
               <SwitchDescription class="text-xs text-muted-foreground">
-                Show a flash effect when the Markdown contents in chats are re-rendered.
+                Show a flash effect when the Markdown contents in chat are re-rendered.
               </SwitchDescription>
             </div>
           </SwitchRoot>

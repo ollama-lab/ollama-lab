@@ -33,7 +33,7 @@ const H2hPanel: Component = () => {
         chatsAllowed() ? "grid-cols-3" : "grid-cols-2",
       )}>
         <Show when={chatsAllowed()}>
-          <TabsTrigger value="chats">Chats</TabsTrigger>
+          <TabsTrigger value="chats">Chat</TabsTrigger>
         </Show>
         <TabsTrigger value="agents">Agents</TabsTrigger>
         <TabsTrigger value="session">Session</TabsTrigger>
