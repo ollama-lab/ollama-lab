@@ -1,4 +1,4 @@
-use std::{collections::HashMap, future::Future};
+use std::collections::HashMap;
 
 use ollama_rest::chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
