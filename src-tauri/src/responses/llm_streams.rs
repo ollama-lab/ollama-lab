@@ -159,34 +159,38 @@ pub async fn stream_response(
                     .map(|msg| msg.content)
                     .unwrap_or_else(|| String::new());
 
-                if let Some(start_on) = thought_start_on {
-                    // Match closing tag (i.e. `</think>`)
-                    match chunk.as_str() {
-                        "</think>" => {
-                            let tf_milli = res.created_at.timestamp_millis() - start_on.timestamp_millis();
-                            chan_sender.send(StreamingResponseEvent::ThoughtEnd{
-                                thought_for: Some(tf_milli),
-                            }).await?;
-                            thought_start_on = None;
+                match thought_start_on {
+                    Some(start_on) => {
+                        // Match closing tag (i.e. `</think>`)
+                        match chunk.as_str() {
+                            "</think>" => {
+                                let tf_milli = res.created_at.timestamp_millis() - start_on.timestamp_millis();
+                                chan_sender.send(StreamingResponseEvent::ThoughtEnd{
+                                    thought_for: Some(tf_milli),
+                                }).await?;
+                                thought_start_on = None;
 
-                            let mut tf = thought_for2.lock().await;
-                            *tf = Some(tf_milli);
-                            continue;
+                                let mut tf = thought_for2.lock().await;
+                                *tf = Some(tf_milli);
+                                continue;
+                            }
+                            _ => thoughts_buf2.lock().await.push_str(chunk.as_str()),
                         }
-                        _ => thoughts_buf2.lock().await.push_str(chunk.as_str()),
                     }
-                } else if date_now.is_none() {
-                    // Match leading `<think>` tag
-                    match chunk.as_str() {
-                        "<think>" => {
-                            chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
-                            thought_start_on = Some(res.created_at);
-                            continue;
+                    _ if date_now.is_none() => {
+                        // Match leading `<think>` tag
+                        match chunk.as_str() {
+                            "<think>" => {
+                                chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
+                                thought_start_on = Some(res.created_at);
+                                continue;
+                            }
+                            _ => output_buf2.lock().await.push_str(chunk.as_str()),
                         }
-                        _ => output_buf2.lock().await.push_str(chunk.as_str()),
                     }
-                } else {
-                    output_buf2.lock().await.push_str(chunk.as_str());
+                    _ => {
+                        output_buf2.lock().await.push_str(chunk.as_str());
+                    }
                 }
 
                 date_now = Some(res.created_at.timestamp());
