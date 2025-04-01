@@ -2,3 +2,7 @@
 
 resolver = "2"
 members = ["src-tauri"]
+
+[workspace.package]
+authors = ["Charles Dong <chardon_cs@proton.me>"]
+edition = "2024"
