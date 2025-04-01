@@ -1,8 +1,7 @@
 use std::fs::create_dir_all;
 use std::path::PathBuf;
 
-use sqlx::pool::PoolConnection;
-use sqlx::Sqlite;
+use sqlx::{Executor, Sqlite};
 use uuid::{ContextV7, Timestamp, Uuid};
 
 use crate::image::{get_compressed_image, MODEL_IMAGE_SIZE};
@@ -11,7 +10,7 @@ use crate::errors::Error;
 use crate::paths::local_data_dir;
 
 pub async fn get_chat_image(
-    conn: &mut PoolConnection<Sqlite>,
+    executor: impl Executor<'_, Database = Sqlite>,
     image_id: i64,
     resize_to: Option<(u32, u32)>,
 ) -> Result<Option<ImageReturn>, Error> {
@@ -22,7 +21,7 @@ pub async fn get_chat_image(
             WHERE id = $1;
         "#)
             .bind(image_id)
-            .fetch_optional(&mut **conn)
+            .fetch_optional(executor)
             .await?
         {
             Some(entry) => Some(entry.into_image_return(resize_to)?),
@@ -32,7 +31,7 @@ pub async fn get_chat_image(
 }
 
 pub async fn get_chat_images(
-    conn: &mut PoolConnection<Sqlite>,
+    executor: impl Executor<'_, Database = Sqlite>,
     chat_id: i64,
     resize_to: Option<(u32, u32)>,
 ) -> Result<Vec<ImageReturn>, Error> {
@@ -42,7 +41,7 @@ pub async fn get_chat_images(
         WHERE chat_id = $1;
     "#)
         .bind(chat_id)
-        .fetch_all(&mut **conn)
+        .fetch_all(executor)
         .await?;
 
     let mut ret = Vec::with_capacity(entries.len());

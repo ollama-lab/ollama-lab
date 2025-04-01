@@ -88,14 +88,12 @@ pub async fn stream_response(
 
     let mut image_map: HashMap<i64, Vec<String>> = HashMap::new();
 
-    let mut conn = pool.acquire().await?;
-
     for chat in chat_history.iter() {
         if chat.image_count.unwrap_or(0) < 1 {
             continue;
         }
 
-        let images: Vec<String> = get_chat_images(&mut conn, chat.id, None).await?
+        let images: Vec<String> = get_chat_images(pool, chat.id, None).await?
             .into_iter()
             .map(|item| item.base64)
             .collect();
@@ -140,6 +138,7 @@ pub async fn stream_response(
     let final_date_now = Arc::new(Mutex::new(None::<(i64, bool)>));
     let final_date_now2 = final_date_now.clone();
     let final_date_now3 = final_date_now.clone();
+    let final_date_now4 = final_date_now.clone();
 
     tokio::select! {
         Err(err) = async move {
@@ -161,47 +160,49 @@ pub async fn stream_response(
 
                 match thought_start_on {
                     Some(start_on) => {
-                        // Match closing tag (i.e. `</think>`)
                         match chunk.as_str() {
+                            // Match closing tag (i.e. `</think>`)
                             "</think>" => {
                                 let tf_milli = res.created_at.timestamp_millis() - start_on.timestamp_millis();
+                                let mut tf = thought_for2.lock().await;
+                                *tf = Some(tf_milli);
+
+                                thought_start_on = None;
+
                                 chan_sender.send(StreamingResponseEvent::ThoughtEnd{
                                     thought_for: Some(tf_milli),
                                 }).await?;
-                                thought_start_on = None;
-
-                                let mut tf = thought_for2.lock().await;
-                                *tf = Some(tf_milli);
-                                continue;
                             }
-                            _ => thoughts_buf2.lock().await.push_str(chunk.as_str()),
-                        }
-                    }
-                    _ if date_now.is_none() => {
-                        // Match leading `<think>` tag
-                        match chunk.as_str() {
-                            "<think>" => {
-                                chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
-                                thought_start_on = Some(res.created_at);
-                                continue;
+                            _ => {
+                                thoughts_buf2.lock().await.push_str(chunk.as_str());
+                                chan_sender.send(StreamingResponseEvent::Text { chunk }).await?;
                             }
-                            _ => output_buf2.lock().await.push_str(chunk.as_str()),
                         }
                     }
                     _ => {
-                        output_buf2.lock().await.push_str(chunk.as_str());
+                        match if date_now.is_none() { Some(chunk.as_str()) } else { None } {
+                            // Match leading `<think>` tag
+                            Some("<think>") => {
+                                thought_start_on = Some(res.created_at);
+                                chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
+                            }
+                            _ => {
+                                output_buf2.lock().await.push_str(chunk.as_str());
+                                chan_sender.send(StreamingResponseEvent::Text{ chunk }).await?;
+                            }
+                        }
                     }
                 }
 
                 date_now = Some(res.created_at.timestamp());
-                chan_sender.send(StreamingResponseEvent::Text { chunk }).await?;
             }
 
             if let Some(date_now) = date_now {
                 *final_date_now2.lock().await = Some((date_now, true));
             }
 
-            record_assistant_response(final_date_now, pool, response_id, output_buf, thoughts_buf, thought_for)
+            // TODO: Figure out the bug that this is not working in normal mode
+            record_assistant_response(final_date_now4, pool, response_id, output_buf3, thoughts_buf3, thought_for3)
                 .await?;
 
             Ok::<(), Error>(())
@@ -225,12 +226,14 @@ pub async fn stream_response(
                 }).await?;
 
                 *final_date_now3.lock().await = Some((Utc::now().timestamp(), false));
-
-                record_assistant_response(final_date_now3, pool, response_id, output_buf3, thoughts_buf3, thought_for3)
-                    .await?;
             }
         }
     }
+
+    
+    // TODO: Figure out the bug that this is not working in H2H mode
+    record_assistant_response(final_date_now, pool, response_id, output_buf, thoughts_buf, thought_for)
+        .await?;
 
     Ok(())
 }

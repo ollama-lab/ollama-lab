@@ -49,7 +49,7 @@ pub async fn get_images_by_chat_id(
     state: State<'_, AppState>,
     chat_id: i64,
 ) -> Result<Vec<ImageReturn>, Error> {
-    let mut conn = state.conn_pool.acquire().await?;
+    let pool = &state.conn_pool;
 
-    Ok(get_chat_images(&mut conn, chat_id, Some(THUMBNAIL_SIZE)).await?)
+    Ok(get_chat_images(pool, chat_id, Some(THUMBNAIL_SIZE)).await?)
 }
