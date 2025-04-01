@@ -195,7 +195,7 @@ pub async fn stream_via_channel(
     let mut is_finished = false;
 
     tokio::spawn(async move {
-        stream_response(
+        if let Err(err) = stream_response(
             &ollama,
             &pool,
             tx.clone(),
@@ -204,9 +204,9 @@ pub async fn stream_via_channel(
             session_id,
             model.as_str(),
             agent_id,
-        )
-        .await
-        .unwrap();
+        ).await {
+            eprintln!("[Stream] {}", err);
+        }
     });
 
     while let Some(event) = rx.recv().await {
