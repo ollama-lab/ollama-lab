@@ -8,7 +8,7 @@ const listLocalModelsResponseSchema = z.object({
 });
 
 export async function listLocalModels(): Promise<ModelListItem[]> {
-  return listLocalModelsResponseSchema.parse(await invoke("list_local_models")).models;
+  return (await listLocalModelsResponseSchema.parseAsync(await invoke("list_local_models"))).models;
 }
 
 const listRunningModelsResponseSchema = z.object({
@@ -16,7 +16,7 @@ const listRunningModelsResponseSchema = z.object({
 });
 
 export async function listRunningModels(): Promise<RunningModel[]> {
-  return listRunningModelsResponseSchema.parse(await invoke("list_running_models")).models;
+  return (await listRunningModelsResponseSchema.parseAsync(await invoke("list_running_models"))).models;
 }
 
 export async function getModel(name: string): Promise<ModelInfo> {

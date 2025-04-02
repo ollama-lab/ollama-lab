@@ -23,7 +23,7 @@ export const AgentTemplateList: Component = () => {
       return;
     }
 
-    const id = await addAgentTemplate(agentTemplateCreationSchema.parse({ model }));
+    const id = await addAgentTemplate(await agentTemplateCreationSchema.parseAsync({ model }));
     setSelectedAgentTemplate(id);
   };
 

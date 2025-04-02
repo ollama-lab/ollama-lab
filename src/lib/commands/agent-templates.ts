@@ -10,15 +10,15 @@ export async function listAllAgentTemplates(): Promise<AgentListItem[]> {
 }
 
 export async function getAgentTemplate(id: number): Promise<AgentTemplate | undefined> {
-  return optionalAgentTemplateSchema.parse(await invoke("get_agent_template", { id }));
+  return await optionalAgentTemplateSchema.parseAsync(await invoke("get_agent_template", { id }));
 }
 
 export async function addAgentTemplate(createInfo: AgentTemplateCreation): Promise<AgentTemplate> {
-  return agentTemplateSchema.parse(await invoke("add_agent_template", { model: createInfo.model }));
+  return await agentTemplateSchema.parseAsync(await invoke("add_agent_template", { model: createInfo.model }));
 }
 
 export async function updateAgentTemplate(id: number, updateInfo: AgentTemplateUpdate): Promise<AgentTemplate | undefined> {
-  return optionalAgentTemplateSchema.parse(await invoke("update_agent_template", { id, ...updateInfo }));
+  return await optionalAgentTemplateSchema.parseAsync(await invoke("update_agent_template", { id, ...updateInfo }));
 }
 
 export async function deleteAgentTemplate(id: number): Promise<number | undefined> {

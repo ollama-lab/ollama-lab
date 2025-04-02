@@ -82,7 +82,7 @@ export async function submitUserPrompt(
   events: PromptResponseEvents = {},
   reuseSiblingImages: boolean = false,
 ): Promise<ChatGenerationReturn> {
-  return chatGenerationReturnSchema.parse(await invoke("submit_user_prompt", {
+  return await chatGenerationReturnSchema.parseAsync(await invoke("submit_user_prompt", {
     sessionId,
     prompt,
     onStream: newTextStreamChannel(events),
@@ -98,7 +98,7 @@ export async function regenerateResponse(
   model?: string,
   events: PromptResponseEvents = {},
 ): Promise<ChatGenerationReturn> {
-  return chatGenerationReturnSchema.parse(await invoke("regenerate_response", {
+  return await chatGenerationReturnSchema.parseAsync(await invoke("regenerate_response", {
     sessionId,
     chatId,
     model,

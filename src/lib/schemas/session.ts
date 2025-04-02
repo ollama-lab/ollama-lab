@@ -34,9 +34,10 @@ export const chatSchema = z.object({
   role: roleSchema,
   content: z.string().trim(),
   imageCount: z.number().int().nonnegative().nullable(),
-  dateSent: z.coerce.date().nullish().transform(nullIsUndefined),
+  dateCreated: z.coerce.date().nullish().transform(nullIsUndefined),
   dateEdited: z.coerce.date().nullish().transform(nullIsUndefined),
-  status: transmissionStatusSchema.optional(),
+  completed: z.boolean(),
+  status: transmissionStatusSchema.optional().default("sent"),
   agentId: z.number().int().nullable(),
 
   model: z.string().trim().nullish().transform(nullIsUndefined),
@@ -46,6 +47,9 @@ export const chatSchema = z.object({
   thinking: z.boolean().nullish().transform(nullIsUndefined),
   thoughts: z.string().trim().nullish().transform(nullIsUndefined),
   thoughtFor: z.number().int().nonnegative().nullish().transform(nullIsUndefined),
+}).transform((item) => {
+  item.status = item.completed ? "sent" : "not sent";
+  return item;
 });
 
 export type ChatSchema = typeof chatSchema;

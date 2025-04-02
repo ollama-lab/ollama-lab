@@ -52,7 +52,7 @@ export function convertResponseEvents(
                 model: model ?? ch.chats[chatIndex].model,
                 status: "sent",
                 content: prompt?.text ?? "",
-                dateSent: date,
+                dateCreated: date,
                 versions: versions ? [...versions, id] : [ch.chats[chatIndex].id, id],
               },
             ]),
@@ -65,7 +65,7 @@ export function convertResponseEvents(
           status: "sent",
           content: prompt?.text ?? "",
           role: "user",
-          dateSent: date,
+          dateCreated: date,
           versions: [id],
           imageCount: prompt?.imagePaths?.length ?? 0,
         });

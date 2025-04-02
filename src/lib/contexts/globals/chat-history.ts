@@ -115,7 +115,7 @@ export async function submitChat(
 
   setChatHistoryStore("chatHistory", mode, "chats", getChatHistory(mode)!.chats.length - 1, {
     status: "sent",
-    dateSent: ret.dateCreated,
+    dateCreated: ret.dateCreated,
   });
 }
 
@@ -152,7 +152,7 @@ export async function regenerate(
 
   setChatHistoryStore("chatHistory", mode, "chats", getChatHistory(mode)!.chats.length - 1, {
     status: "sent",
-    dateSent: ret.dateCreated,
+    dateCreated: ret.dateCreated,
   });
 }
 
@@ -194,7 +194,7 @@ export async function editPrompt(
 
   const parentId = curIndex === 0 ? null : ch.chats[curIndex - 1].id;
 
-  const curPrompt: IncomingUserPrompt = incomingUserPromptSchema.parse({
+  const curPrompt: IncomingUserPrompt = await incomingUserPromptSchema.parseAsync({
     text: ch.chats[curIndex].content,
   });
 
@@ -219,6 +219,6 @@ export async function editPrompt(
 
   setChatHistoryStore("chatHistory", mode, "chats", getChatHistory(mode)!.chats.length - 1, {
     status: "sent",
-    dateSent: ret.dateCreated,
+    dateCreated: ret.dateCreated,
   });
 }

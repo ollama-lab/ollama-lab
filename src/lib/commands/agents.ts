@@ -5,19 +5,19 @@ import { nullIsUndefined } from "../utils/schemas/transforms";
 const optionalAgentSchema = agentSchema.nullable().transform(nullIsUndefined);
 
 export async function getSessionAgent(id: number, sessionId: number): Promise<Agent | undefined> {
-  return optionalAgentSchema.parse(await invoke("get_session_agent", { id, sessionId }));
+  return await optionalAgentSchema.parseAsync(await invoke("get_session_agent", { id, sessionId }));
 }
 
 export async function getGlobalSessionAgent(id: number): Promise<Agent | undefined> {
-  return optionalAgentSchema.parse(await invoke("get_global_session_agent", { id }));
+  return await optionalAgentSchema.parseAsync(await invoke("get_global_session_agent", { id }));
 }
 
 export async function addSessionAgent(templateId: number, sessionId: number): Promise<Agent> {
-  return agentSchema.parse(await invoke("add_session_agent", { templateId, sessionId }));
+  return await agentSchema.parseAsync(await invoke("add_session_agent", { templateId, sessionId }));
 }
 
 export async function updateSessionAgent(id: number, updateInfo: AgentUpdate): Promise<Agent | undefined> {
-  return optionalAgentSchema.parse(await invoke("update_session_agent", { id, updateInfo }));
+  return await optionalAgentSchema.parseAsync(await invoke("update_session_agent", { id, updateInfo }));
 }
 
 export async function deleteSessionAgent(id: number): Promise<number | undefined> {

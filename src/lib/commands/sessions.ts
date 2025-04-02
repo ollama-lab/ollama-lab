@@ -5,13 +5,13 @@ import { z } from "zod";
 const sessionListSchema = z.array(sessionSchema);
 
 export async function listSessions(mode: SessionMode): Promise<Session[]> {
-  return sessionListSchema.parse(await invoke("list_sessions", { mode }));
+  return await sessionListSchema.parseAsync(await invoke("list_sessions", { mode }));
 }
 
 const nullableSessionSchema = sessionSchema.nullable();
 
 export async function getSession(id: number): Promise<Session | null> {
-  return nullableSessionSchema.parse(await invoke("get_session", { id }));
+  return await nullableSessionSchema.parseAsync(await invoke("get_session", { id }));
 }
 
 export async function deleteSession(id: number): Promise<number | null> {
@@ -27,5 +27,5 @@ export async function setSessionModel(id: number, model: string): Promise<Sessio
 }
 
 export async function createSession(mode: SessionMode, currentModel: string, title?: string | null): Promise<Session> {
-  return sessionSchema.parse(await invoke("create_session", { currentModel, title, mode }));
+  return await sessionSchema.parseAsync(await invoke("create_session", { currentModel, title, mode }));
 }
