@@ -47,7 +47,8 @@
     "solid-markdown": "^2.0.14",
     "solid-motionone": "^1.0.3",
     "solid-sonner": "^0.2.8",
-    "tailwind-merge": "^3.1.0"
+    "tailwind-merge": "^3.1.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.8",
