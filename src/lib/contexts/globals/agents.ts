@@ -1,7 +1,7 @@
 import { createStore, produce, reconcile } from "solid-js/store";
 import { listAllAgentTemplates } from "~/lib/commands/agent-templates";
-import { AgentListItem } from "~/lib/models/agent";
-import { AgentTemplateCreation, AgentTemplateUpdate } from "~/lib/models/agent-template";
+import { AgentListItem } from "~/lib/schemas/agent";
+import { AgentTemplateCreation, AgentTemplateUpdate } from "~/lib/schemas/agent-template";
 import {
   addAgentTemplate as addAgentTemplate_,
   updateAgentTemplate as updateAgentTemplate_,

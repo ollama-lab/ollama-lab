@@ -7,6 +7,7 @@ import { toast } from "solid-sonner";
 import { AgentTemplateListItem } from "./item";
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
 import { useSessionMode } from "~/lib/contexts/session-mode";
+import { agentTemplateCreationSchema } from "~/lib/schemas/agent-template";
 
 export const AgentTemplateList: Component = () => {
   const mode = useSessionMode();
@@ -22,7 +23,7 @@ export const AgentTemplateList: Component = () => {
       return;
     }
 
-    const id = await addAgentTemplate({ model });
+    const id = await addAgentTemplate(await agentTemplateCreationSchema.parseAsync({ model }));
     setSelectedAgentTemplate(id);
   };
 

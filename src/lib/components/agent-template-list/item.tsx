@@ -1,6 +1,6 @@
 import { Component, createMemo, Show } from "solid-js";
 import { OperationDropdown } from "./operations";
-import { AgentListItem } from "~/lib/models/agent";
+import { AgentListItem } from "~/lib/schemas/agent";
 import { selectedAgentTemplate, setSelectedAgentTemplate } from "~/lib/contexts/globals/agents";
 import { cn } from "~/lib/utils/class-names";
 import { createDisplayNames } from "~/lib/utils/agents";

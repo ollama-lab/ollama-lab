@@ -10,7 +10,7 @@ import { Button } from "../../ui/button";
 import { TrashIcon } from "lucide-solid";
 import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from "../../ui/text-field";
 import { reconcile } from "solid-js/store";
-import { AgentUpdate } from "~/lib/models/agent";
+import { AgentUpdate } from "~/lib/schemas/agent";
 import { useSessionMode } from "~/lib/contexts/session-mode";
 
 export const AgentDetails: Component<{ agentId: number }> = (props) => {

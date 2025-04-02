@@ -1,7 +1,7 @@
 import { createStore, produce } from "solid-js/store";
 import { Channel } from "@tauri-apps/api/core";
 import { reloadModelStates } from "./model-states";
-import { ProgressEvent } from "~/lib/models/events/progress";
+import { ProgressEvent } from "~/lib/schemas/events/progress";
 import { resetModelSelection } from "./current-model";
 
 export type TaskMap = Record<string, ProgressEvent>;

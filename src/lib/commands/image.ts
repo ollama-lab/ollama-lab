@@ -1,4 +1,4 @@
-import type { ImagePreview, ImageReturn } from "~/lib/models/images";
+import type { ImagePreview, ImageReturn } from "~/lib/schemas/images";
 import { invoke } from "@tauri-apps/api/core";
 import { CachedItem, getImageCache, setImageCache } from "../contexts/globals/image-cache";
 

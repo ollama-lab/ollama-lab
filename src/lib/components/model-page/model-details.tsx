@@ -14,7 +14,7 @@ import { SystemPromptSection } from "./sections/system-prompt";
 import { currentModelPageModel } from "~/lib/contexts/globals/model-page";
 import { getTaskMap } from "~/lib/contexts/globals/pull-model-tasks";
 import { defaultModel, reloadActiveModels } from "~/lib/contexts/globals/model-states";
-import { ProgressEvent } from "~/lib/models/events/progress";
+import { ProgressEvent } from "~/lib/schemas/events/progress";
 import { ModelInfo } from "./sections/model-info";
 import { PlaceholderPage } from "./placeholder-title";
 

@@ -1,7 +1,7 @@
 import { ChevronsUpDownIcon } from "lucide-solid";
 import { createMemo, createSignal } from "solid-js";
 import { modelList } from "~/lib/contexts/globals/model-states";
-import { ModelListItem } from "~/lib/models/model-item";
+import { ModelListItem } from "~/lib/schemas/model-item";
 import {
   Command,
   CommandDialog,

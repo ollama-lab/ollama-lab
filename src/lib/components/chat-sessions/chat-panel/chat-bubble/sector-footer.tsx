@@ -11,7 +11,7 @@ export function SectorFooter() {
   const role = () => chat?.().role;
   const status = () => chat?.().status;
 
-  const isCompleted = createMemo(() => {
+  const isEnded = createMemo(() => {
     const c = chat?.();
     if (!c) {
       return undefined;
@@ -26,21 +26,21 @@ export function SectorFooter() {
   return (
     <div class="flex items-center gap-2 text-xs text-muted-foreground">
       <Show when={role?.() === "assistant"}>
-        <Show when={status?.() !== "sent"}>
+        <Show when={status() !== "sent"}>
           <BubbleSectorFooterStatus />
         </Show>
 
-        <Show when={isCompleted()}>
+        <Show when={isEnded()}>
           <AssistantBubbleSectorFooterToolbar />
         </Show>
       </Show>
 
-      <Show when={status?.() === "sent" && chat?.().dateSent}>
+      <Show when={status() === "sent" && chat?.().dateCreated}>
         {(dateSent) => (
           <SentDate date={dateSent()} />
         )}
       </Show>
-      <Show when={role() === "user" && isCompleted() && !editMode()}>
+      <Show when={role() === "user" && isEnded() && !editMode()}>
         <UserBubbleSectorFooterToolbar />
       </Show>
     </div>

@@ -4,7 +4,7 @@ import { selectedAgentTemplate, updateAgentTemplate } from "~/lib/contexts/globa
 import { LoadingScreen } from "../custom-ui/loading-screen";
 import { PlaceholderPage } from "../model-page/placeholder-title";
 import { createDisplayNames } from "~/lib/utils/agents";
-import { AgentTemplate, AgentTemplateUpdate } from "~/lib/models/agent-template";
+import { AgentTemplate, AgentTemplateUpdate } from "~/lib/schemas/agent-template";
 import { Button } from "../ui/button";
 import { PenIcon } from "lucide-solid";
 import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from "../ui/text-field";

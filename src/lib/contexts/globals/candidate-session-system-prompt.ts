@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import { currentSession } from "./current-session";
 import { getSessionSystemPrompt, setSessionSystemPrompt } from "~/lib/commands/system-prompts";
-import { SessionMode } from "~/lib/models/session";
+import { SessionMode } from "~/lib/schemas/session";
 
 const [candidate, setCandidate] = createSignal<string>();
 
