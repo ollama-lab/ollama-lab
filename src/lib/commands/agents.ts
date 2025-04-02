@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import { Agent, AgentListItem, AgentUpdate } from "../models/agent";
+import { Agent, AgentListItem, AgentUpdate } from "../schemas/agent";
 
 interface InternalAgent {
   id: number;

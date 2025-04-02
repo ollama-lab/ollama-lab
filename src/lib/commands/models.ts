@@ -1,6 +1,6 @@
-import type { ModelDetails, ModelInfo, ModelListItem, RunningModel } from "~/lib/models/model-item";
+import type { ModelDetails, ModelInfo, ModelListItem, RunningModel } from "~/lib/schemas/model-item";
 import { Channel, invoke } from "@tauri-apps/api/core";
-import { ProgressEvent } from "../models/events/progress";
+import { ProgressEvent } from "../schemas/events/progress";
 
 interface RawModelListItem {
   name: string;

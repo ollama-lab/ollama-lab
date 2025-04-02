@@ -1,5 +1,5 @@
 import { createStore } from "solid-js/store";
-import { ImagePreview } from "~/lib/models/images";
+import { ImagePreview } from "~/lib/schemas/images";
 
 export interface CachedItem {
   data: ImagePreview;

@@ -1,14 +1,14 @@
 import { createStore, reconcile } from "solid-js/store";
-import type { Chat, ChatHistory, SessionMode } from "~/lib/models/session";
+import type { Chat, ChatHistory, SessionMode } from "~/lib/schemas/session";
 import { createEffect, createMemo } from "solid-js";
 import { reloadSession } from "./sessions";
 import { getCurrentBranch } from "~/lib/commands/chat-history";
-import { EditUserPrompt, IncomingUserPrompt } from "~/lib/models/chat";
+import { EditUserPrompt, IncomingUserPrompt } from "~/lib/schemas/chat";
 import { createSession } from "~/lib/commands/sessions";
 import { regenerateResponse, submitUserPrompt } from "~/lib/commands/chats";
 import { convertResponseEvents } from "~/lib/utils/chat-streams";
 import { switchBranch as switchBranchCommand } from "~/lib/commands/chat-history";
-import { currentSession, getCurrentSessionStore, setCurrentSessionId, setNewSession } from "./current-session";
+import { currentSession, setCurrentSessionId, setNewSession } from "./current-session";
 import { getCurrentModel } from "./current-model";
 import { setCandidate } from "./candidate-model";
 import { getCandidateSessionSystemPrompt, setCandidateSessionSystemPrompt } from "./candidate-session-system-prompt";

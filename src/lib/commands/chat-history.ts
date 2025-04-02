@@ -1,4 +1,4 @@
-import type { Chat, Role } from "~/lib/models/session";
+import type { Chat, Role } from "~/lib/schemas/session";
 import { invoke } from "@tauri-apps/api/core";
 
 interface InternalChat {

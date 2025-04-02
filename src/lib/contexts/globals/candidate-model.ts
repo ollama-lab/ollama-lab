@@ -1,7 +1,7 @@
 import { createEffect } from "solid-js";
 import { currentSession } from "./current-session";
 import { createStore } from "solid-js/store";
-import { SessionMode } from "~/lib/models/session";
+import { SessionMode } from "~/lib/schemas/session";
 
 const [candidate, setCandidate] = createStore<Record<SessionMode, string | null | undefined>>({} as Record<SessionMode, string | null | undefined>);
 

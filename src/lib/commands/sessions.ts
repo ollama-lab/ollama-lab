@@ -1,4 +1,4 @@
-import type { Session, SessionCurrentModelReturn, SessionMode, SessionRenameReturn } from "~/lib/models/session";
+import type { Session, SessionCurrentModelReturn, SessionMode, SessionRenameReturn } from "~/lib/schemas/session";
 import { invoke } from "@tauri-apps/api/core";
 
 interface InternalSession {

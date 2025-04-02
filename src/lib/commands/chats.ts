@@ -1,7 +1,7 @@
-import type { ChatGenerationReturn, IncomingUserPrompt } from "~/lib/models/chat";
-import type { StreamingResponseEvent } from "~/lib/models/events/text-streams";
+import type { ChatGenerationReturn, IncomingUserPrompt } from "~/lib/schemas/chat";
+import type { StreamingResponseEvent } from "~/lib/schemas/events/text-streams";
 import { Channel, invoke } from "@tauri-apps/api/core";
-import { SessionMode } from "../models/session";
+import { SessionMode } from "../schemas/session";
 
 interface InternalChatGenerationReturn {
   id: number;

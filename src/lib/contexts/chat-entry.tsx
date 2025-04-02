@@ -1,5 +1,5 @@
 import { Accessor, createContext, JSX, useContext } from "solid-js";
-import { Chat } from "../models/session";
+import { Chat } from "../schemas/session";
 
 const ChatEntryContext = createContext<Accessor<Chat>>();
 

@@ -1,7 +1,7 @@
 import { Accessor, Component, createContext, JSX, useContext } from "solid-js";
-import { SessionMode } from "../models/session";
+import { SessionMode, sessionModeSchema } from "../schemas/session";
 
-const SessionModeContext = createContext<Accessor<SessionMode>>(() => "normal" as SessionMode);
+const SessionModeContext = createContext<Accessor<SessionMode>>(() => sessionModeSchema.parse(undefined));
 
 export const SessionModeProvider: Component<{
   value: SessionMode,

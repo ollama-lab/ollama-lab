@@ -1,7 +1,7 @@
 import { createStore, reconcile } from "solid-js/store";
 import { getSession } from "~/lib/commands/sessions";
 import { reloadSession } from "~/lib/contexts/globals/sessions";
-import { Session, SessionMode } from "~/lib/models/session";
+import { Session, SessionMode } from "~/lib/schemas/session";
 import { setSessionModel } from "./current-model";
 
 export type SessionStore = Record<SessionMode, {

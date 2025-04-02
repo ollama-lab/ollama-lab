@@ -1,6 +1,6 @@
 import { GripVerticalIcon } from "lucide-solid";
 import { Component, createSignal } from "solid-js";
-import { AgentListItem } from "~/lib/models/agent";
+import { AgentListItem } from "~/lib/schemas/agent";
 import { cn } from "~/lib/utils/class-names";
 import AgentNameGroup from "../../custom-ui/agent-name-group";
 import { setSelectedSessionAgent } from "~/lib/contexts/globals/session-agent";

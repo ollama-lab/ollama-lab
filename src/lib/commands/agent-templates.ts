@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
-import { AgentListItem } from "../models/agent";
-import { AgentTemplate, AgentTemplateCreation, AgentTemplateUpdate } from "../models/agent-template";
+import { AgentListItem } from "../schemas/agent";
+import { AgentTemplate, AgentTemplateCreation, AgentTemplateUpdate } from "../schemas/agent-template";
 
 export async function listAllAgentTemplates(): Promise<AgentListItem[]> {
   return await invoke<AgentListItem[]>("list_all_agent_templates");

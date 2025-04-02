@@ -1,9 +1,9 @@
 import type { PromptResponseEvents } from "~/lib/commands/chats";
-import type { IncomingUserPrompt } from "~/lib/models/chat";
+import type { IncomingUserPrompt } from "~/lib/schemas/chat";
 import { emit } from "@tauri-apps/api/event";
 import { toast } from "solid-sonner";
 import { Accessor } from "solid-js";
-import { ChatHistory, SessionMode } from "../models/session";
+import { ChatHistory, SessionMode } from "../schemas/session";
 import { reconcile, SetStoreFunction } from "solid-js/store";
 import { ChatHistoryStore, PromptSubmissionEvents } from "../contexts/globals/chat-history";
 
