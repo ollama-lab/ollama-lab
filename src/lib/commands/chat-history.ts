@@ -5,7 +5,7 @@ import { z } from "zod";
 const chatArraySchema = z.array(chatSchema);
 
 export async function getCurrentBranch(sessionId: number): Promise<Chat[]> {
-  return chatArraySchema.parse(await invoke("get_current_branch", { sessionId }));
+  return await chatArraySchema.parseAsync(await invoke("get_current_branch", { sessionId }));
 }
 
 const tupleReturnSchema = z.tuple([
@@ -14,5 +14,5 @@ const tupleReturnSchema = z.tuple([
 ]);
 
 export async function switchBranch(targetChatId: number): Promise<[number | null, Chat[]]> {
-  return tupleReturnSchema.parse(await invoke("switch_branch", { targetChatId }));
+  return await tupleReturnSchema.parseAsync(await invoke("switch_branch", { targetChatId }));
 }

@@ -33,11 +33,11 @@ export const chatSchema = z.object({
   sessionId: z.number().int(),
   role: roleSchema,
   content: z.string().trim(),
-  imageCount: z.number().int().nonnegative(),
+  imageCount: z.number().int().nonnegative().nullable(),
   dateSent: z.coerce.date().nullish().transform(nullIsUndefined),
   dateEdited: z.coerce.date().nullish().transform(nullIsUndefined),
-  status: transmissionStatusSchema,
-  agentId: z.number().int(),
+  status: transmissionStatusSchema.optional(),
+  agentId: z.number().int().nullable(),
 
   model: z.string().trim().nullish().transform(nullIsUndefined),
 
