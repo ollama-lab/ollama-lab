@@ -97,7 +97,7 @@ export function convertResponseEvents(
               id,
               status: "preparing",
               content: "",
-              thoughts: null,
+              thoughts: undefined,
               model: model ?? ch.chats[i].model,
               versions: versions ? [...versions, id] : [ch.chats[i].id, id]
             },
@@ -208,7 +208,7 @@ export function convertResponseEvents(
       if (chat && chat.id === currentChatId) {
         setChatHistoryStore("chatHistory", mode, "chats", index, {
           thinking: false,
-          thoughtFor: thoughtFor,
+          thoughtFor: thoughtFor ?? undefined,
         });
       }
     },

@@ -3,7 +3,7 @@ import type { Chat, ChatHistory, SessionMode } from "~/lib/schemas/session";
 import { createEffect, createMemo } from "solid-js";
 import { reloadSession } from "./sessions";
 import { getCurrentBranch } from "~/lib/commands/chat-history";
-import { EditUserPrompt, IncomingUserPrompt } from "~/lib/schemas/chat";
+import { EditUserPrompt, IncomingUserPrompt, incomingUserPromptSchema } from "~/lib/schemas/chat";
 import { createSession } from "~/lib/commands/sessions";
 import { regenerateResponse, submitUserPrompt } from "~/lib/commands/chats";
 import { convertResponseEvents } from "~/lib/utils/chat-streams";
@@ -194,9 +194,9 @@ export async function editPrompt(
 
   const parentId = curIndex === 0 ? null : ch.chats[curIndex - 1].id;
 
-  const curPrompt: IncomingUserPrompt = {
+  const curPrompt: IncomingUserPrompt = incomingUserPromptSchema.parse({
     text: ch.chats[curIndex].content,
-  };
+  });
 
   const mergedPrompt: IncomingUserPrompt = { ...curPrompt, ...prompt };
 

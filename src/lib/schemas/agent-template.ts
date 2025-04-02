@@ -16,7 +16,7 @@ export const agentTemplateCreationSchema = z.object({
   model: z.string().trim(),
 });
 
-export type AgentTemplateCreationSchema = typeof agentTemplateSchema;
+export type AgentTemplateCreationSchema = typeof agentTemplateCreationSchema;
 export type AgentTemplateCreation = z.infer<AgentTemplateCreationSchema>;
 
 export const agentTemplateUpdateSchema = z.object({
