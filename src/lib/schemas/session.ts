@@ -60,7 +60,7 @@ export type ChatHistory = z.infer<ChatHistorySchema>;
 
 export const sessionRenameReturnSchema = z.object({
   id: z.number().int(),
-  title: z.string().nullish().transform(nullIsUndefined),
+  title: z.string().nullable(),
 }).nullable();
 
 export type SessionRenameReturnSchema = typeof sessionRenameReturnSchema;
@@ -68,7 +68,7 @@ export type SessionRenameReturn = z.infer<SessionRenameReturnSchema>;
 
 export const sessionCurrentModelReturnSchema = z.object({
   id: z.number().int(),
-  currentModel: z.string().nullish().transform(nullIsUndefined),
+  currentModel: z.string().nullable(),
 }).nullable();
 
 export type SessionCurrentModelReturnSchema = typeof sessionCurrentModelReturnSchema;

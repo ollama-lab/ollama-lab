@@ -1,35 +1,17 @@
-import type { Session, SessionCurrentModelReturn, SessionMode, SessionRenameReturn } from "~/lib/schemas/session";
+import { sessionSchema, type Session, type SessionCurrentModelReturn, type SessionMode, type SessionRenameReturn } from "~/lib/schemas/session";
 import { invoke } from "@tauri-apps/api/core";
+import { z } from "zod";
 
-interface InternalSession {
-  id: number;
-  profileId: number;
-  title: string | null;
-  dateCreated: string;
-  currentModel: string;
-  mode: SessionMode,
-}
+const sessionListSchema = z.array(sessionSchema);
 
 export async function listSessions(mode: SessionMode): Promise<Session[]> {
-  return await invoke<InternalSession[]>("list_sessions", { mode }).then((sessions) =>
-    sessions.map(
-      (session) =>
-        ({
-          ...session,
-          dateCreated: new Date(session.dateCreated),
-        }) satisfies Session,
-    ),
-  );
+  return sessionListSchema.parse(await invoke("list_sessions", { mode }));
 }
 
+const nullableSessionSchema = sessionSchema.nullable();
+
 export async function getSession(id: number): Promise<Session | null> {
-  return await invoke<InternalSession>("get_session", { id }).then(
-    (session) =>
-      ({
-        ...session,
-        dateCreated: new Date(session.dateCreated),
-      }) satisfies Session,
-  );
+  return nullableSessionSchema.parse(await invoke("get_session", { id }));
 }
 
 export async function deleteSession(id: number): Promise<number | null> {
@@ -41,22 +23,9 @@ export async function renameSession(id: number, newName: string | null): Promise
 }
 
 export async function setSessionModel(id: number, model: string): Promise<SessionCurrentModelReturn> {
-  return await invoke<SessionCurrentModelReturn>("set_session_model", {
-    id,
-    model,
-  });
+  return await invoke<SessionCurrentModelReturn>("set_session_model", { id, model });
 }
 
 export async function createSession(mode: SessionMode, currentModel: string, title?: string | null): Promise<Session> {
-  return await invoke<InternalSession>("create_session", {
-    currentModel,
-    title,
-    mode,
-  }).then(
-    (session) =>
-      ({
-        ...session,
-        dateCreated: new Date(session.dateCreated),
-      }) satisfies Session,
-  );
+  return sessionSchema.parse(await invoke("create_session", { currentModel, title, mode }));
 }

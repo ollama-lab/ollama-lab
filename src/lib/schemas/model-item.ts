@@ -1,15 +1,6 @@
 import { z } from "zod";
 import { nullIsUndefined } from "../utils/schemas/transforms";
 
-export const modelListItemSchema = z.object({
-  name: z.string(),
-  modified_at: z.coerce.date(),
-  size: z.number().int(),
-});
-
-export type ModelListItemSchema = typeof modelListItemSchema;
-export type ModelListItem = z.infer<ModelListItemSchema>;
-
 export const modelDetailsSchema = z.object({
   parent_model: z.string(),
   format: z.string(),
@@ -21,6 +12,17 @@ export const modelDetailsSchema = z.object({
 
 export type ModelDetailsSchema = typeof modelDetailsSchema;
 export type ModelDetails = z.infer<ModelDetailsSchema>;
+
+export const modelListItemSchema = z.object({
+  name: z.string(),
+  modified_at: z.coerce.date(),
+  size: z.number().int(),
+  digest: z.string(),
+  details: modelDetailsSchema,
+});
+
+export type ModelListItemSchema = typeof modelListItemSchema;
+export type ModelListItem = z.infer<ModelListItemSchema>;
 
 export const modelSchema = z.object({
   name: z.string(),
@@ -45,6 +47,9 @@ export type ModelInfo = z.infer<ModelInfoSchema>;
 
 export const runningModelSchema = z.object({
   name: z.string(),
+  modified_at: z.coerce.date(),
+  size: z.number(),
+  details: modelDetailsSchema,
   expires_at: z.coerce.date(),
   size_vram: z.number().int(),
 });

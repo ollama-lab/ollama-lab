@@ -1,13 +1,12 @@
 import { z } from "zod";
-import { nullIsUndefined } from "~/lib/utils/schemas/transforms";
 
 export const progressEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("inProgress"),
     id: z.string(),
     message: z.string(),
-    total: z.number().nullish().transform(nullIsUndefined),
-    completed: z.number().nullish().transform(nullIsUndefined),
+    total: z.number().nullable(),
+    completed: z.number().nullable(),
   }),
   z.object({
     type: z.literal("success"),
@@ -16,7 +15,7 @@ export const progressEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.enum(["failure", "canceled"]),
     id: z.string(),
-    message: z.string().nullish().transform(nullIsUndefined),
+    message: z.string().nullable(),
   }),
 ]);
 

@@ -1,12 +1,7 @@
-import type { ChatGenerationReturn, IncomingUserPrompt } from "~/lib/schemas/chat";
+import { chatGenerationReturnSchema, type ChatGenerationReturn, type IncomingUserPrompt } from "~/lib/schemas/chat";
 import type { StreamingResponseEvent } from "~/lib/schemas/events/text-streams";
 import { Channel, invoke } from "@tauri-apps/api/core";
 import { SessionMode } from "../schemas/session";
-
-interface InternalChatGenerationReturn {
-  id: number;
-  dateCreated: string;
-}
 
 export interface PromptResponseEvents {
   afterUserPromptSubmitted?: (id: number, date: Date) => void;
@@ -36,7 +31,7 @@ function newTextStreamChannel({
   channel.onmessage = (ev) => {
     switch (ev.type) {
       case "userPrompt":
-        afterUserPromptSubmitted?.(ev.id, new Date(ev.timestamp * 1000));
+        afterUserPromptSubmitted?.(ev.id, ev.timestamp);
         break;
 
       case "responseInfo":
@@ -87,16 +82,13 @@ export async function submitUserPrompt(
   events: PromptResponseEvents = {},
   reuseSiblingImages: boolean = false,
 ): Promise<ChatGenerationReturn> {
-  return await invoke<InternalChatGenerationReturn>("submit_user_prompt", {
+  return chatGenerationReturnSchema.parse(await invoke("submit_user_prompt", {
     sessionId,
     prompt,
     onStream: newTextStreamChannel(events),
     parentId,
     reuseSiblingImages,
     mode,
-  }).then(({ id, dateCreated }) => ({
-    id,
-    dateCreated: new Date(dateCreated),
   }));
 }
 
@@ -106,13 +98,10 @@ export async function regenerateResponse(
   model?: string,
   events: PromptResponseEvents = {},
 ): Promise<ChatGenerationReturn> {
-  return await invoke<InternalChatGenerationReturn>("regenerate_response", {
+  return chatGenerationReturnSchema.parse(await invoke("regenerate_response", {
     sessionId,
     chatId,
     model,
     onStream: newTextStreamChannel(events),
-  }).then(({ id, dateCreated }) => ({
-    id,
-    dateCreated: new Date(dateCreated),
   }));
 }
