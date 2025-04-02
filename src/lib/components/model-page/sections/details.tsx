@@ -1,4 +1,4 @@
-import { ModelDetails } from "~/lib/models/model-item";
+import { ModelDetails } from "~/lib/schemas/model-item";
 import { Table, TableBody, TableCell, TableRow } from "../../ui/table";
 import { Component, For } from "solid-js";
 

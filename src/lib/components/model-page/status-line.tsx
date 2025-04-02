@@ -1,5 +1,5 @@
 import { Accessor, Component, createMemo, createSignal, Match, Show, Switch } from "solid-js";
-import { ProgressEvent } from "~/lib/models/events/progress";
+import { ProgressEvent } from "~/lib/schemas/events/progress";
 import { LoaderSpin } from "../loader-spin";
 import StatusDot from "../custom-ui/status-dot";
 import { Countdown } from "./countdown";

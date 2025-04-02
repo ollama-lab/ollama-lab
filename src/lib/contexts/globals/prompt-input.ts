@@ -1,9 +1,9 @@
 import { createStore } from "solid-js/store";
-import { IncomingUserPrompt } from "~/lib/models/chat";
+import { IncomingUserPrompt, incomingUserPromptSchema } from "~/lib/schemas/chat";
 import { getCurrentModel } from "./current-model";
-import { SessionMode } from "~/lib/models/session";
+import { SessionMode } from "~/lib/schemas/session";
 
-const [inputPrompt, setInputPrompt] = createStore<IncomingUserPrompt>({ text: "" });
+const [inputPrompt, setInputPrompt] = createStore<IncomingUserPrompt>(incomingUserPromptSchema.parse({ text: "" }));
 
 export const isSubmittable = (mode: SessionMode) => {
   if (!getCurrentModel(mode)) {
@@ -22,6 +22,6 @@ export const isSubmittable = (mode: SessionMode) => {
 };
 
 export const getInputPrompt = () => inputPrompt;
-export const clearInputPrompt = () => setInputPrompt({ text: "", imagePaths: [] });
+export const clearInputPrompt = () => setInputPrompt(incomingUserPromptSchema.parse({ text: "" }));
 
 export { setInputPrompt };

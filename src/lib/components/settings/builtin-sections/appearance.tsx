@@ -1,4 +1,4 @@
-import { ColorMode } from "~/lib/models/settings";
+import { ColorMode } from "~/lib/schemas/settings";
 import SelectionModule from "../modules/selection";
 import { SectionRoot } from "../section-root";
 import { createMemo } from "solid-js";

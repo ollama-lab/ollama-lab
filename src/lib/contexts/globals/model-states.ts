@@ -1,5 +1,5 @@
 import { createStore } from "solid-js/store";
-import { ModelListItem, RunningModel } from "~/lib/models/model-item";
+import { ModelListItem, RunningModel } from "~/lib/schemas/model-item";
 import { getDefaultModel, listLocalModels, listRunningModels } from "~/lib/commands/models";
 import { createEffect } from "solid-js";
 import { toast } from "solid-sonner";

@@ -1,8 +1,12 @@
 import { createStore, produce, reconcile } from "solid-js/store";
 import { getSession, listSessions } from "../../commands/sessions";
-import { Session, SessionMode } from "~/lib/models/session";
+import { SessionMode, sessionModeSchema, sessionSchema } from "~/lib/schemas/session";
+import { z } from "zod";
 
-const [sessions, setSessions] = createStore<Record<SessionMode, Session[]>>({ normal: [], h2h: [] });
+const sessionStoreSchema = z.record(sessionModeSchema, z.array(sessionSchema));
+type SessionStore = z.infer<typeof sessionStoreSchema>;
+
+const [sessions, setSessions] = createStore<SessionStore>(sessionStoreSchema.parse({}));
 
 export async function reloadSessions(mode: SessionMode) {
   setSessions(mode, await listSessions(mode));
@@ -14,15 +18,17 @@ export async function reloadSession(id: number, mode: SessionMode) {
     return;
   }
 
-  const index = sessions[mode].findIndex((value) => value.id === session.id);
-  if (index < 0) {
-    setSessions(mode, produce((cur) => {
-      cur.unshift(session);
-    }));
-    return;
-  }
+  const index = sessions[mode]?.findIndex((value) => value.id === session.id);
+  if (index !== undefined) {
+    if (index < 0) {
+      setSessions(mode, produce((cur) => {
+        cur?.unshift(session);
+      }));
+      return;
+    }
 
-  setSessions(mode, index, reconcile(session));
+    setSessions(mode, index, reconcile(session));
+  }
   return session;
 }
 

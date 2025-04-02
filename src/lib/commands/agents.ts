@@ -1,42 +1,23 @@
 import { invoke } from "@tauri-apps/api/core";
-import { Agent, AgentListItem, AgentUpdate } from "../models/agent";
+import { Agent, AgentListItem, agentSchema, AgentUpdate } from "../schemas/agent";
+import { nullIsUndefined } from "../utils/schemas/transforms";
 
-interface InternalAgent {
-  id: number;
-  name: string | null;
-  model: string;
-  systemPrompt: string | null;
-  sessionId: number,
-  templateId?: number,
-  dateCreated: Date,
-}
-
-function toAgent(internal: InternalAgent): Agent {
-  return {
-    ...internal,
-    name: internal.name ?? undefined,
-    systemPrompt: internal.systemPrompt ?? undefined,
-    templateId: internal.templateId ?? undefined,
-  };
-}
+const optionalAgentSchema = agentSchema.nullable().transform(nullIsUndefined);
 
 export async function getSessionAgent(id: number, sessionId: number): Promise<Agent | undefined> {
-  return await invoke<InternalAgent | null>("get_session_agent", { id, sessionId })
-    .then((item) => item ? toAgent(item) : undefined);
+  return await optionalAgentSchema.parseAsync(await invoke("get_session_agent", { id, sessionId }));
 }
 
 export async function getGlobalSessionAgent(id: number): Promise<Agent | undefined> {
-  return await invoke<InternalAgent | null>("get_global_session_agent", { id })
-    .then((item) => item ? toAgent(item) : undefined);
+  return await optionalAgentSchema.parseAsync(await invoke("get_global_session_agent", { id }));
 }
 
 export async function addSessionAgent(templateId: number, sessionId: number): Promise<Agent> {
-  return toAgent(await invoke<InternalAgent>("add_session_agent", { templateId, sessionId }));
+  return await agentSchema.parseAsync(await invoke("add_session_agent", { templateId, sessionId }));
 }
 
 export async function updateSessionAgent(id: number, updateInfo: AgentUpdate): Promise<Agent | undefined> {
-  return await invoke<InternalAgent | null>("update_session_agent", { id, updateInfo })
-    .then((item) => item ? toAgent(item) : undefined);
+  return await optionalAgentSchema.parseAsync(await invoke("update_session_agent", { id, updateInfo }));
 }
 
 export async function deleteSessionAgent(id: number): Promise<number | undefined> {

@@ -1,5 +1,5 @@
 import { createStore } from "solid-js/store";
-import { ColorMode } from "../../models/settings";
+import { ColorMode } from "../../schemas/settings";
 import { createEffect } from "solid-js";
 
 export type DisplayColorMode = "light" | "dark";

@@ -3,7 +3,7 @@ import { currentSession, deselectModel, reloadCurrentSession } from "./current-s
 import { defaultModel, modelList } from "./model-states";
 import { setSessionModel as setSessionModelCommand } from "~/lib/commands/sessions";
 import { reloadSession } from "./sessions";
-import { SessionMode } from "~/lib/models/session";
+import { SessionMode } from "~/lib/schemas/session";
 
 function checkExistence(model: string) {
   return modelList().find((item) => item.name === model);
