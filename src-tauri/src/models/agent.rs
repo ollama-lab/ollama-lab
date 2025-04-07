@@ -155,11 +155,11 @@ pub struct AgentTemplateUpdate<'a> {
 }
 
 impl Create for AgentTemplate {
-    type Create = AgentTemplateCreation<'_>;
+    type Create<'t> = AgentTemplateCreation<'t>;
 
     async fn create(
         executor: impl Executor<'_, Database = Sqlite>, 
-        create_info: &Self::Create,
+        create_info: &Self::Create<'_>,
     ) -> Result<Self, Error> {
         Ok(
             sqlx::query_as::<_, Self>(r#"
@@ -178,12 +178,12 @@ impl Create for AgentTemplate {
 
 impl Get for AgentTemplate {
     type Id = i64;
-    type Selector = i64;
+    type Selector<'t> = i64;
 
     async fn get(
         executor: impl Executor<'_, Database = Sqlite>,
         id: Self::Id,
-        profile_id: i64,
+        profile_id: Self::Selector<'_>,
     ) -> Result<Option<Self>, Error> {
         Ok(
             sqlx::query_as::<_, Self>(r#"
@@ -201,11 +201,11 @@ impl Get for AgentTemplate {
 }
 
 impl ListAll for AgentTemplate {
-    type Selector = i64;
+    type Selector<'t> = i64;
 
     async fn list_all(
         executor: impl Executor<'_, Database = Sqlite>,
-        profile_id: i64,
+        profile_id: Self::Selector<'_>,
     ) -> Result<Vec<Self>, Error> {
         Ok(
             sqlx::query_as::<_, Self>(r#"
@@ -221,13 +221,13 @@ impl ListAll for AgentTemplate {
 }
 
 impl ListPaginated for AgentTemplate {
-    type Selector = i64;
+    type Selector<'t> = i64;
 
     async fn list_paged<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
         page_index: u32,
         size: u32,
-        profile_id: i64,
+        profile_id: Self::Selector<'_>,
     ) -> Result<Vec<Self>, Error> {
         Ok(
             sqlx::query_as::<_, Self>(r#"
@@ -279,12 +279,12 @@ impl InplaceSave for AgentTemplate {
 
 impl Update for AgentTemplate {
     type Id = i64;
-    type Update = AgentTemplateUpdate<'t>;
+    type Update<'t> = AgentTemplateUpdate<'t>;
 
     async fn update<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
         id: Self::Id,
-        model: &Self::Update,
+        model: &Self::Update<'_>,
     ) -> Result<Option<Self>, Error> {
         Ok(
             sqlx::query_as::<_, Self>(r#"
@@ -409,11 +409,11 @@ pub enum AgentSelector {
 }
 
 impl Create for Agent {
-    type Create = AgentCreation<'_>;
+    type Create<'t> = AgentCreation<'t>;
 
     async fn create<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
-        create_info: &Self::Create,
+        create_info: &Self::Create<'_>,
     ) -> Result<Self, Error> {
         Ok(
             sqlx::query_as::<_, Self>(r#"
@@ -432,12 +432,12 @@ impl Create for Agent {
 
 impl Get for Agent {
     type Id = i64;
-    type Selector = AgentSelector;
+    type Selector<'t> = AgentSelector;
 
     async fn get<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
         id: Self::Id,
-        selector: Self::Selector,
+        selector: Self::Selector<'_>,
     ) -> Result<Option<Self>, Error> {
         let ret = match selector {
             AgentSelector::BySession(session_id) => {
@@ -466,11 +466,11 @@ impl Get for Agent {
 }
 
 impl ListAll for Agent {
-    type Selector = AgentSelector;
+    type Selector<'t> = AgentSelector;
 
     async fn list_all<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
-        selector: Self::Selector,
+        selector: Self::Selector<'_>,
     ) -> Result<Vec<Self>, Error> {
         let ret = match selector {
             AgentSelector::BySession(session_id) => {
@@ -500,13 +500,13 @@ impl ListAll for Agent {
 }
 
 impl ListPaginated for Agent {
-    type Selector = AgentSelector;
+    type Selector<'t> = AgentSelector;
 
     async fn list_paged<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
         page_index: u32,
         size: u32,
-        selector: Self::Selector,
+        selector: Self::Selector<'_>,
     ) -> Result<Vec<Self>, Error> {
         let ret = match selector {
             AgentSelector::BySession(session_id) => {
@@ -586,12 +586,12 @@ impl InplaceSave for Agent {
 
 impl Update for Agent {
     type Id = i64;
-    type Update = AgentUpdate<'t>;
+    type Update<'t> = AgentUpdate<'t>;
 
     async fn update<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
         id: Self::Id,
-        model: &Self::Update,
+        model: &Self::Update<'_>,
     ) -> Result<Option<Self>, Error> {
         Ok(
             sqlx::query_as::<_, Self>(r#"
