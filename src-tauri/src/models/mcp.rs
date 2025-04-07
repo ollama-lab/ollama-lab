@@ -28,6 +28,7 @@ pub struct DefaultMcpSource {
     pub profile_id: i64,
 }
 
+#[derive(Debug)]
 pub struct DefaultMcpSourceCreation<'a, 'b> {
     pub label: Option<&'a str>,
     pub source: &'b str,
@@ -35,6 +36,7 @@ pub struct DefaultMcpSourceCreation<'a, 'b> {
     pub profile_id: i64,
 }
 
+#[derive(Debug)]
 pub struct DefaultMcpSourceUpdate<'a, 'b> {
     pub label: Option<&'a str>,
     pub source: Option<&'b str>,
