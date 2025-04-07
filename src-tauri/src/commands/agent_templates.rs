@@ -3,7 +3,8 @@ use tauri::State;
 use crate::{
     app_state::AppState,
     errors::Error,
-    models::agent::{AgentListItem, AgentTemplate, AgentTemplateCreation, AgentTemplateUpdate}, utils::crud::OperateCrud,
+    models::agent::{AgentListItem, AgentTemplate, AgentTemplateCreation, AgentTemplateUpdate},
+    utils::crud::{Get, Create, Update, Delete},
 };
 
 #[tauri::command]

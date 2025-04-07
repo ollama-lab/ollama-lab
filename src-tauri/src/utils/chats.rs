@@ -21,7 +21,7 @@ use crate::{
     responses::tree::ChatTree,
 };
 
-use super::{crud::OperateCrud, sessions::get_session, system_prompt::get_session_system_prompt};
+use super::{crud::ListAll, sessions::get_session, system_prompt::get_session_system_prompt};
 
 pub async fn launch_normal_chat(
     conn_pool: &Pool<Sqlite>,

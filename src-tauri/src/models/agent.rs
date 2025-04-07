@@ -2,7 +2,12 @@ use ollama_rest::chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::{pool::PoolConnection, Acquire, Executor, Sqlite};
 
-use crate::{errors::Error, utils::{crud::OperateCrud, length_index::ToLengthIndex, vec_move::MoveElement}};
+use crate::{
+    errors::Error,
+    utils::{
+        crud::{Create, Delete, Get, InplaceSave, ListAll, ListPaginated, Update}, length_index::ToLengthIndex, vec_move::MoveElement
+    },
+};
 
 #[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 #[serde(rename_all = "camelCase")]
@@ -149,11 +154,8 @@ pub struct AgentTemplateUpdate<'a> {
     pub system_prompt: Option<&'a str>,
 }
 
-impl<'t> OperateCrud<'t> for AgentTemplate {
-    type Id = i64;
-    type Create = AgentTemplateCreation<'t>;
-    type Update = AgentTemplateUpdate<'t>;
-    type Selector = i64;
+impl Create for AgentTemplate {
+    type Create = AgentTemplateCreation<'_>;
 
     async fn create(
         executor: impl Executor<'_, Database = Sqlite>, 
@@ -171,6 +173,12 @@ impl<'t> OperateCrud<'t> for AgentTemplate {
             .await?
         )
     }
+
+}
+
+impl Get for AgentTemplate {
+    type Id = i64;
+    type Selector = i64;
 
     async fn get(
         executor: impl Executor<'_, Database = Sqlite>,
@@ -190,6 +198,11 @@ impl<'t> OperateCrud<'t> for AgentTemplate {
         )
     }
 
+}
+
+impl ListAll for AgentTemplate {
+    type Selector = i64;
+
     async fn list_all(
         executor: impl Executor<'_, Database = Sqlite>,
         profile_id: i64,
@@ -205,6 +218,10 @@ impl<'t> OperateCrud<'t> for AgentTemplate {
             .await?
         )
     }
+}
+
+impl ListPaginated for AgentTemplate {
+    type Selector = i64;
 
     async fn list_paged<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
@@ -227,7 +244,9 @@ impl<'t> OperateCrud<'t> for AgentTemplate {
             .await?
         )
     }
+}
 
+impl InplaceSave for AgentTemplate {
     async fn save<'a>(
         &mut self,
         executor: impl Executor<'a, Database = Sqlite>,
@@ -256,6 +275,11 @@ impl<'t> OperateCrud<'t> for AgentTemplate {
 
         Ok(())
     }
+}
+
+impl Update for AgentTemplate {
+    type Id = i64;
+    type Update = AgentTemplateUpdate<'t>;
 
     async fn update<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
@@ -279,6 +303,10 @@ impl<'t> OperateCrud<'t> for AgentTemplate {
             .await?
         )
     }
+}
+
+impl Delete for AgentTemplate {
+    type Id = i64;
 
     async fn delete_model<'a>(
         self,
@@ -380,11 +408,8 @@ pub enum AgentSelector {
     ByProfile(i64),
 }
 
-impl<'t> OperateCrud<'t> for Agent {
-    type Id = i64;
-    type Create = AgentCreation<'t>;
-    type Update = AgentUpdate<'t>;
-    type Selector = AgentSelector;
+impl Create for Agent {
+    type Create = AgentCreation<'_>;
 
     async fn create<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
@@ -403,6 +428,11 @@ impl<'t> OperateCrud<'t> for Agent {
             .await?
         )
     }
+}
+
+impl Get for Agent {
+    type Id = i64;
+    type Selector = AgentSelector;
 
     async fn get<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
@@ -433,6 +463,10 @@ impl<'t> OperateCrud<'t> for Agent {
 
         Ok(ret)
     }
+}
+
+impl ListAll for Agent {
+    type Selector = AgentSelector;
 
     async fn list_all<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
@@ -463,6 +497,10 @@ impl<'t> OperateCrud<'t> for Agent {
 
         Ok(ret)
     }
+}
+
+impl ListPaginated for Agent {
+    type Selector = AgentSelector;
 
     async fn list_paged<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
@@ -503,7 +541,9 @@ impl<'t> OperateCrud<'t> for Agent {
 
         Ok(ret)
     }
+}
 
+impl InplaceSave for Agent {
     async fn save<'a>(
         &mut self,
         executor: impl Executor<'a, Database = Sqlite>,
@@ -542,6 +582,11 @@ impl<'t> OperateCrud<'t> for Agent {
 
         Ok(())
     }
+}
+
+impl Update for Agent {
+    type Id = i64;
+    type Update = AgentUpdate<'t>;
 
     async fn update<'a>(
         executor: impl Executor<'a, Database = Sqlite>,
@@ -572,6 +617,10 @@ impl<'t> OperateCrud<'t> for Agent {
             .await?
         )
     }
+}
+
+impl Delete for Agent {
+    type Id = i64;
 
     async fn delete_model<'a>(
         self,

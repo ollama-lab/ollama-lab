@@ -4,7 +4,7 @@ use crate::{
     app_state::AppState,
     errors::Error,
     models::agent::{Agent, AgentListItem, AgentSelector, AgentUpdate},
-    utils::crud::OperateCrud,
+    utils::crud::{ListAll, Get, Update, Delete},
 };
 
 #[tauri::command]
