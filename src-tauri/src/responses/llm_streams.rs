@@ -180,14 +180,15 @@ pub async fn stream_response(
                         }
                     }
                     _ => {
-                        match if date_now.is_none() { Some(chunk.as_str()) } else { None } {
+                        match chunk.as_str() {
                             // Match leading `<think>` tag
-                            Some("<think>") => {
+                            "<think>" if date_now.is_none() => {
                                 thought_start_on = Some(res.created_at);
                                 chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
                             }
-                            _ => {
-                                output_buf2.lock().await.push_str(chunk.as_str());
+
+                            chunk_str => {
+                                output_buf2.lock().await.push_str(chunk_str);
                                 chan_sender.send(StreamingResponseEvent::Text{ chunk }).await?;
                             }
                         }
