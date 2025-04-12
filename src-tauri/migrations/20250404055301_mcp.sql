@@ -22,3 +22,16 @@ CREATE TABLE default_mcp (
     transport_type  TEXT NOT NULL REFERENCES mcp_transport_types (name) ON UPDATE CASCADE,
     profile_id      INTEGER NOT NULL REFERENCES profiles (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+CREATE TABLE chats_tool_calls (
+    id              INTEGER NOT NULL PRIMARY KEY,
+    name            TEXT NOT NULL,
+    chat_id         INTEGER NOT NULL REFERENCES chats (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE chats_tool_calls_args (
+    id              INTEGER NOT NULL PRIMARY KEY,
+    name            TEXT NOT NULL,
+    value_json      TEXT NOT NULL,
+    tool_call_id    INTEGER NOT NULL REFERENCES chats_tool_calls (id) ON DELETE CASCADE ON UPDATE CASCADE
+);
