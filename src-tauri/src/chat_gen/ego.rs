@@ -18,21 +18,16 @@ impl IntoEgoOf for Vec<Chat> {
             .filter_map(|mut chat| {
                 if let Some(cur_agent) = chat.agent_id {
                     match Role::from_str(chat.role.as_str()).unwrap() {
-                        Role::User => {
-                            if cur_agent == agent_id {
-                                chat.role = Role::Assistant.to_string();
-                            }
+                        Role::User if cur_agent == agent_id => {
+                            chat.role = Role::Assistant.to_string();
                         }
-                        Role::Assistant => {
-                            if cur_agent != agent_id {
-                                chat.role = Role::User.to_string();
-                            }
+                        Role::Assistant if cur_agent != agent_id => {
+                            chat.role = Role::User.to_string();
                         }
-                        Role::System => {
-                            if cur_agent != agent_id {
-                                return None;
-                            }
+                        Role::System if cur_agent != agent_id => {
+                            return None;
                         }
+                        _ => {}
                     }
                 }
 
