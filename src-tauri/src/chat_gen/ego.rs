@@ -24,7 +24,7 @@ impl IntoEgoOf for Vec<Chat> {
                         Role::Assistant if cur_agent != agent_id => {
                             chat.role = Role::User.to_string();
                         }
-                        Role::System if cur_agent != agent_id => {
+                        Role::System | Role::Tool if cur_agent != agent_id => {
                             return None;
                         }
                         _ => {}
