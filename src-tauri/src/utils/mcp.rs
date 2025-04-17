@@ -130,12 +130,21 @@ impl IntoJsonSchema for Prompt {
                 name: self.name,
                 description: self.description,
                 parameters: self.arguments.map(|argument_list| {
-                    let mut params = JsonSchema::Object {
-                        properties: BTreeMap::new(),
-                        required: None,
-                    };
+                    let mut properties = BTreeMap::new();
+                    let mut required = Vec::new();
 
-                    Box::new(params)
+                    for arg in argument_list {
+                        if arg.required.unwrap_or(false) {
+                            required.push(arg.name.to_string());
+                        }
+
+                        properties.insert(arg.name, JsonSchema::String {
+                            description: arg.description,
+                            enumeration: None,
+                        });
+                    }
+
+                    Box::new(JsonSchema::Object { properties, required: Some(required) })
                 }),
             },
         }
