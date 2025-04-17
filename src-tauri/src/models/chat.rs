@@ -40,6 +40,7 @@ gen_chat_models! [
     thoughts: Option<String>,
     thought_for: Option<i64>,
     agent_id: Option<i64>,
+    tool_call_json: Option<String>,
 ];
 
 #[derive(Debug, Deserialize)]
@@ -107,6 +108,7 @@ impl<'c> MountChatInfo<'c> for Chat {
             thought_for: self.thought_for,
             versions: Some(versions),
             agent_id: self.agent_id,
+            tool_call_json: self.tool_call_json,
         })
     }
 }
@@ -162,6 +164,7 @@ impl<'c> MountChatInfo<'c> for Vec<Chat> {
                 thought_for: item.thought_for,
                 versions: version_map.remove(&item.parent_id),
                 agent_id: item.agent_id,
+                tool_call_json: item.tool_call_json,
             })
             .collect())
     }
