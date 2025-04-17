@@ -1,11 +1,91 @@
 use std::collections::BTreeMap;
 
 use ollama_rest::models::json_schema::{FunctionDef, JsonSchema};
-use rmcp::{model::{Prompt, Resource, Tool}, Peer, RoleClient};
+use rmcp::{model::{JsonObject, Prompt, Resource, Tool}, Peer, RoleClient};
 use crate::errors::Error;
+
+pub trait TryToJsonSchema {
+    fn try_to_json_schema(&self) -> Option<JsonSchema>;
+}
+
+impl TryToJsonSchema for serde_json::Value {
+    fn try_to_json_schema(&self) -> Option<JsonSchema> {
+        match self {
+            serde_json::Value::Object(schema) => {
+                if let Some(serde_json::Value::String(type_val)) = schema.get("type") {
+                    let description = schema.get("description")
+                        .and_then(|value| match value {
+                            serde_json::Value::String(desc) => Some(desc.to_string()),
+                            _ => None,
+                        });
+
+                    match type_val.as_str() {
+                        "string" => {
+                            let enumeration: Option<Vec<String>> = schema.get("enum")
+                                .and_then(|value| match value {
+                                    serde_json::Value::Array(arr) => {
+                                        Some(arr.iter()
+                                            .filter_map(|item| item.as_str().map(|s| s.to_string()))
+                                            .collect())
+                                    }
+                                    _ => None,
+                                });
+
+                            Some(JsonSchema::String { description, enumeration })
+                        }
+                        "number" => {
+                            Some(JsonSchema::Number { description })
+                        }
+                        "integer" => {
+                            Some(JsonSchema::Integer { description })
+                        }
+                        "object" => {
+                            Some(schema.into_json_schema())
+                        }
+                        _ => None,
+                    }
+                } else {
+                    None
+                }
+            }
+            _ => None,
+        }
+    }
+}
 
 pub trait IntoJsonSchema {
     fn into_json_schema(self) -> JsonSchema;
+}
+
+impl IntoJsonSchema for &JsonObject {
+    fn into_json_schema(self) -> JsonSchema {
+        let mut properties = BTreeMap::new();
+        let mut out_required = None;
+
+        if let Some(serde_json::Value::Object(props)) = self.get("properties") {
+            properties = props.iter()
+                .filter_map(|(key, val)| {
+                    match val.try_to_json_schema() {
+                        Some(val) => Some((key.to_string(), val)),
+                        _ => None,
+                    }
+                })
+                .collect();
+        }
+
+        if let Some(serde_json::Value::Array(required)) = self.get("required") {
+            out_required = Some(required.iter()
+                .filter_map(|item| {
+                    match item {
+                        serde_json::Value::String(item) => Some(item.to_string()),
+                        _ => None,
+                    }
+                })
+                .collect());
+        }
+
+        JsonSchema::Object { properties, required: out_required }
+    }
 }
 
 impl IntoJsonSchema for Tool {
@@ -15,23 +95,15 @@ impl IntoJsonSchema for Tool {
                 name: self.name.to_string(),
                 description: Some(self.description.to_string()),
                 parameters: if self.input_schema.len() > 0 {
-                    let mut params = JsonSchema::Object {
-                        properties: BTreeMap::new(),
-                        required: None,
-                    };
+                    let mut params = None;
 
-                    for (key, value) in self.input_schema.iter() {
-                        if let serde_json::Value::Object(value_map) = value {
-                            if let Some(serde_json::Value::String(type_value)) =  value_map.get("type") {
-                                match type_value.as_str() {
-                                    "" => {}
-                                    _ => {}
-                                }
-                            }
+                    if let Some(serde_json::Value::String(type_value)) = self.input_schema.get("type") {
+                        if type_value.as_str() == "object" {
+                            params = Some(Box::new(self.input_schema.into_json_schema()));
                         }
                     }
 
-                    Some(Box::new(params))
+                    params
                 } else { None },
             },
         }
