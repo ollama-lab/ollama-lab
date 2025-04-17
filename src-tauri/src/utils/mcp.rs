@@ -94,17 +94,12 @@ impl IntoJsonSchema for Tool {
             function: FunctionDef {
                 name: self.name.to_string(),
                 description: Some(self.description.to_string()),
-                parameters: if self.input_schema.len() > 0 {
-                    let mut params = None;
-
-                    if let Some(serde_json::Value::String(type_value)) = self.input_schema.get("type") {
-                        if type_value.as_str() == "object" {
-                            params = Some(Box::new(self.input_schema.into_json_schema()));
-                        }
+                parameters: match self.input_schema.get("type") {
+                    Some(serde_json::Value::String(type_value)) if type_value.as_str() == "object" => {
+                        Some(Box::new(self.input_schema.into_json_schema()))
                     }
-
-                    params
-                } else { None },
+                    _ => None,
+                },
             },
         }
     }
@@ -114,9 +109,9 @@ impl IntoJsonSchema for Resource {
     fn into_json_schema(self) -> JsonSchema {
         JsonSchema::Function {
             function: FunctionDef {
+                // Maybe add URI somewhere?
                 name: self.raw.name,
                 description: self.raw.description,
-                // TODO: URI
                 parameters: None,
             },
         }
