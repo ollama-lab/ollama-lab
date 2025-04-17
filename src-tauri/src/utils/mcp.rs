@@ -9,6 +9,7 @@ pub trait TryToJsonSchema {
 }
 
 impl TryToJsonSchema for serde_json::Value {
+    /// Read Serde Value without moving it
     fn try_to_json_schema(&self) -> Option<JsonSchema> {
         match self {
             serde_json::Value::Object(schema) => {
