@@ -11,27 +11,15 @@ CREATE TABLE mcp_sources (
     label           TEXT,
     source          TEXT NOT NULL,
     transport_type  TEXT NOT NULL REFERENCES mcp_transport_types (name) ON UPDATE CASCADE,
-    session_id      INTEGER NOT NULL REFERENCES sessions (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    profile_id      INTEGER NOT NULL REFERENCES profiles (id) ON DELETE CASCADE ON UPDATE CASCADE,
     date_created    INTEGER NOT NULL DEFAULT (unixepoch())
 );
 
-CREATE TABLE default_mcp (
-    id              INTEGER NOT NULL PRIMARY KEY,
-    label           TEXT,
-    source          TEXT NOT NULL,
-    transport_type  TEXT NOT NULL REFERENCES mcp_transport_types (name) ON UPDATE CASCADE,
-    profile_id      INTEGER NOT NULL REFERENCES profiles (id) ON DELETE CASCADE ON UPDATE CASCADE
+CREATE TABLE session_enabled_mcp_sources (
+    session_id      INTEGER NOT NULL REFERENCES sessions (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    mcp_source_id   INTEGER NOT NULL REFERENCES mcp_sources (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    PRIMARY KEY (session_id, mcp_source_id)
 );
 
-CREATE TABLE chats_tool_calls (
-    id              INTEGER NOT NULL PRIMARY KEY,
-    name            TEXT NOT NULL,
-    chat_id         INTEGER NOT NULL REFERENCES chats (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
-CREATE TABLE chats_tool_calls_args (
-    id              INTEGER NOT NULL PRIMARY KEY,
-    name            TEXT NOT NULL,
-    value_json      TEXT NOT NULL,
-    tool_call_id    INTEGER NOT NULL REFERENCES chats_tool_calls (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
+ALTER TABLE chats
+ADD COLUMN tool_call_json TEXT;
