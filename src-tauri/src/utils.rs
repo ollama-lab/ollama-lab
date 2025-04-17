@@ -1,3 +1,4 @@
+pub mod config;
 pub mod crud;
 pub mod chats;
 pub mod images;

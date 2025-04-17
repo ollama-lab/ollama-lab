@@ -9,6 +9,7 @@ pub mod encoding;
 pub mod errors;
 pub mod events;
 pub mod image;
+pub mod mcp_config;
 pub mod models;
 pub mod paths;
 pub mod responses;

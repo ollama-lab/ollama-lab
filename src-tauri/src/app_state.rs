@@ -4,7 +4,7 @@ use ollama_rest::Ollama;
 use sqlx::SqlitePool;
 use tokio::sync::Mutex;
 
-use crate::{errors::Error, local_config_dir, paths::{db_path, local_data_dir}, settings::{self, Settings}};
+use crate::{errors::Error, local_config_dir, paths::{db_path, local_data_dir}, settings::{self, Settings}, utils::config::LoadConfigFile};
 
 pub struct AppState {
     pub conn_pool: SqlitePool,

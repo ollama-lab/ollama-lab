@@ -1,6 +1,6 @@
 use tauri::State;
 
-use crate::{app_state::AppState, errors::Error, settings::Settings};
+use crate::{app_state::AppState, errors::Error, settings::Settings, utils::config::SaveConfigFile};
 
 #[tauri::command]
 pub async fn get_settings(state: State<'_, AppState>) -> Result<Settings, Error> {
