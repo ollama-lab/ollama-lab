@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use image::ImageError;
 use ollama_rest::models::errors::ParsingError;
-use rmcp::ServiceError;
+use rmcp::{transport::sse::SseTransportError, ServiceError};
 use serde::Serialize;
 use sqlx::migrate::MigrateError;
 
@@ -27,6 +27,7 @@ pub enum Error {
     Message(String),
     ChatHalted,
     RmcpService(ServiceError),
+    RmcpSseTransport(SseTransportError),
 }
 
 impl Display for Error {
@@ -89,6 +90,10 @@ impl Display for Error {
                 Self::ChatHalted => "Chat stopped by user",
                 Self::RmcpService(err) => {
                     cache = Some(format!("RMCP error: {:?}", err));
+                    cache.as_ref().unwrap().as_str()
+                }
+                Self::RmcpSseTransport(err) => {
+                    cache = Some(format!("RMCP SSE transport error: {:?}", err));
                     cache.as_ref().unwrap().as_str()
                 }
             }
@@ -177,5 +182,11 @@ impl From<&str> for Error {
 impl From<ServiceError> for Error {
     fn from(value: ServiceError) -> Self {
         Self::RmcpService(value)
+    }
+}
+
+impl From<SseTransportError> for Error {
+    fn from(value: SseTransportError) -> Self {
+        Self::RmcpSseTransport(value)
     }
 }

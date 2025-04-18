@@ -28,3 +28,19 @@ pub(crate) fn db_path() -> Option<PathBuf> {
         dir
     })
 }
+
+pub(crate) fn settings_path(profile: &str) -> Option<PathBuf> {
+    local_config_dir()
+        .map(|mut dir| {
+            dir.push(format!("{}.settings.toml", profile));
+            dir
+        })
+}
+
+pub(crate) fn mcp_config_path(profile: &str) -> Option<PathBuf> {
+    local_config_dir()
+        .map(|mut dir| {
+            dir.push(format!("{}.mcp.toml", profile));
+            dir
+        })
+}
