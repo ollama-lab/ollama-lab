@@ -5,7 +5,7 @@ export const agentTemplateSchema = z.object({
   id: z.number().int(),
   name: z.string().trim().nullish().transform(nullIsUndefined),
   model: z.string().trim(),
-  systemPrompt: z.string().trim().optional(),
+  systemPrompt: z.string().trim().nullish().transform(nullIsUndefined),
   dateCreated: z.coerce.date(),
 });
 
