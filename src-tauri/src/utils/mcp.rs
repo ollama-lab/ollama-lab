@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use ollama_rest::models::json_schema::{FunctionDef, JsonSchema};
-use rmcp::{model::{JsonObject, Prompt, Resource, Tool}, service::ServiceRole, Peer, RoleClient, Service};
+use rmcp::{model::{JsonObject, Prompt, Resource, Tool}, Peer, RoleClient};
 use crate::errors::Error;
 
 pub trait TryToJsonSchema {
@@ -151,10 +151,7 @@ pub trait CompatTools {
     fn list_compatible_tools(&self) -> impl Future<Output = Result<Vec<JsonSchema>, Error>>;
 }
 
-impl<T> CompatTools for T
-where
-    T: Service<impl ServiceRole>,
-{
+impl CompatTools for Peer<RoleClient> {
     async fn list_compatible_tools(&self) -> Result<Vec<JsonSchema>, Error> {
         let mut ret = Vec::new();
 
