@@ -10,7 +10,7 @@ const FloatEntry: Component = () => {
     <Dialog>
       <DialogTrigger as={Badge} class="absolute bottom-0 right-0 z-[500] flex bg-background text-foreground border border-border rounded items-center gap-1 hover:bg-secondary cursor-pointer">
         <CodeIcon class="size-4" />
-        <span class="text-xs">Dev</span>
+        <span class="text-xs">Dev Mode</span>
       </DialogTrigger>
 
       <DialogContent>

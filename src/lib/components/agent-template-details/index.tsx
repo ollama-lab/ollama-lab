@@ -42,7 +42,7 @@ const AgentDetails: Component<{
       </div>
       <div class="flex flex-col px-2 py-2 bg-secondary text-secondary-foreground rounded gap-2">
         <div class="text-sm font-bold">System prompt</div>
-        <div class="whitespace-pre text-sm">
+        <div class="whitespace-pre-wrap text-sm">
           <Show when={hasSystemPrompt()} fallback={<span class="italic">(Empty)</span>}>
             {props.content.systemPrompt}
           </Show>
