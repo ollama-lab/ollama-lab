@@ -5,8 +5,15 @@ CREATE TABLE session_modes (
 INSERT INTO session_modes
 VALUES ('normal'), ('h2h');
 
+-- Session mode
+
 ALTER TABLE sessions
-ADD COLUMN mode TEXT NOT NULL DEFAULT 'normal' REFERENCES session_modes (name);
+ADD COLUMN mode TEXT REFERENCES session_modes (name);
+
+UPDATE sessions
+SET mode = 'normal';
+
+--
 
 CREATE TABLE agent_templates (
     id              INTEGER NOT NULL PRIMARY KEY,
