@@ -25,6 +25,9 @@ pub enum Error {
     Image(ImageError),
     Message(String),
     ChatHalted,
+    Http(reqwest::Error),
+    HtmlParse,
+    Url(url::ParseError),
 }
 
 impl Display for Error {
@@ -85,6 +88,15 @@ impl Display for Error {
                 }
                 Self::Message(msg) => msg,
                 Self::ChatHalted => "Chat stopped by user",
+                Self::Http(err) => {
+                    cache = Some(format!("{:?}", err));
+                    cache.as_ref().unwrap().as_str()
+                }
+                Self::HtmlParse => "HTML parsing failure",
+                Self::Url(err) => {
+                    cache = Some(format!("{:?}", err));
+                    cache.as_ref().unwrap().as_str()
+                }
             }
         )
     }
@@ -165,5 +177,23 @@ impl From<String> for Error {
 impl From<&str> for Error {
     fn from(value: &str) -> Self {
         Self::Message(value.to_string())
+    }
+}
+
+impl From<reqwest::Error> for Error {
+    fn from(value: reqwest::Error) -> Self {
+        Self::Http(value)
+    }
+}
+
+impl From<scraper::error::SelectorErrorKind<'_>> for Error {
+    fn from(_: scraper::error::SelectorErrorKind<'_>) -> Self {
+        Self::HtmlParse
+    }
+}
+
+impl From<url::ParseError> for Error {
+    fn from(value: url::ParseError) -> Self {
+        Self::Url(value)
     }
 }

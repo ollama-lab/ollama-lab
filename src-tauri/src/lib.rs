@@ -22,7 +22,6 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             commands::models::copy_model,
@@ -33,6 +32,7 @@ pub fn run() {
             commands::models::list_running_models,
             commands::models::pull_model,
             commands::models::set_default_model,
+            commands::models::search::search_model,
             commands::sessions::list_sessions,
             commands::sessions::get_session,
             commands::sessions::rename_session,

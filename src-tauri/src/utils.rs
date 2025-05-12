@@ -1,5 +1,6 @@
 pub mod crud;
 pub mod chats;
+pub mod http;
 pub mod images;
 pub mod length_index;
 pub mod sessions;
