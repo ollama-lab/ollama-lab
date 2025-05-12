@@ -1,5 +1,5 @@
 import { chatGenerationReturnSchema, type ChatGenerationReturn, type IncomingUserPrompt } from "~/lib/schemas/chat";
-import type { StreamingResponseEvent } from "~/lib/schemas/events/text-streams";
+import { streamingResponseEventSchema } from "~/lib/schemas/events/text-streams";
 import { Channel, invoke } from "@tauri-apps/api/core";
 import { SessionMode } from "../schemas/session";
 
@@ -25,10 +25,12 @@ function newTextStreamChannel({
   onCancel,
   onThoughtBegin,
   onThoughtEnd,
-}: PromptResponseEvents): Channel<StreamingResponseEvent> {
-  const channel = new Channel<StreamingResponseEvent>();
+}: PromptResponseEvents): Channel {
+  const channel = new Channel();
 
-  channel.onmessage = (ev) => {
+  channel.onmessage = (rawEv) => {
+    const ev = streamingResponseEventSchema.parse(rawEv);
+
     switch (ev.type) {
       case "userPrompt":
         afterUserPromptSubmitted?.(ev.id, ev.timestamp);
