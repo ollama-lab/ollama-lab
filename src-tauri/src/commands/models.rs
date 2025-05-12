@@ -12,6 +12,8 @@ use crate::{
     app_state::AppState, errors::Error, events::ProgressEvent, strings::ToEventString,
 };
 
+pub mod search;
+
 #[tauri::command]
 pub async fn list_local_models(state: State<'_, AppState>) -> Result<ModelListResponse, Error> {
     let ollama = &state.ollama;

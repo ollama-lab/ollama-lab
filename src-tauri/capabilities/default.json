@@ -8,17 +8,6 @@
   "permissions": [
     "core:default",
     "opener:default",
-    {
-      "identifier": "http:default",
-      "allow": [
-        {
-          "url": "https://ollama.com"
-        },
-        {
-          "url": "https://www.ollama.com"
-        }
-      ]
-    },
     "os:default",
     "process:default",
     "dialog:default"
