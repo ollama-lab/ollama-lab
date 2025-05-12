@@ -47,7 +47,6 @@ export type ModelInfo = z.infer<ModelInfoSchema>;
 
 export const runningModelSchema = z.object({
   name: z.string(),
-  modified_at: z.coerce.date(),
   size: z.number(),
   details: modelDetailsSchema,
   expires_at: z.coerce.date(),
