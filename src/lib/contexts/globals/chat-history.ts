@@ -78,8 +78,8 @@ export async function submitChat(
   mode: SessionMode,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
 ) {
-  let session = currentSession(mode) ?? undefined;
-  if (!session) {
+  let session = currentSession(mode);
+  if (session === undefined) {
     // TODO: Add settings option for default session name: 1) no name, 2) first prompt, 3) generated after first response
     // Currently it is `first prompt`
     let sessionTitle = prompt.text.split("\n").at(0) ?? null;
@@ -102,7 +102,7 @@ export async function submitChat(
   const parentId = lastChat()[mode]?.id;
 
   const ret = await submitUserPrompt(
-    session?.id,
+    session.id,
     prompt,
     parentId === undefined ? null : parentId,
     mode,
