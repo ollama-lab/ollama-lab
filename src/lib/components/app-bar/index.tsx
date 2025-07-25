@@ -4,7 +4,7 @@ import { TabLink } from "./tab-link";
 import { useLocation } from "@solidjs/router";
 import { Component, createMemo, For, JSX } from "solid-js";
 import { cn } from "~/lib/utils/class-names";
-import { isH2h } from "~/lib/contexts/globals/settings";
+import { isH2hEnabled } from "~/lib/contexts/globals/settings";
 
 const TabList: Component<{
   tabs: Section[];
@@ -48,7 +48,7 @@ const TopTabList: Component = () => {
       },
     ];
 
-    if (isH2h()) {
+    if (isH2hEnabled()) {
       tabList.splice(
         1, 0,
         {

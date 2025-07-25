@@ -1,9 +1,9 @@
 import { Component, createMemo, createResource, Suspense } from "solid-js";
 import { TextField, TextFieldLabel, TextFieldTextArea } from "../../ui/text-field";
-import { currentSession, setNewSession } from "~/lib/contexts/globals/current-session";
+import { currentSession } from "~/lib/contexts/globals/current-session";
 import { getSessionSystemPrompt, setSessionSystemPrompt } from "~/lib/commands/system-prompts";
-import { createSession } from "~/lib/commands/sessions";
 import { useSessionMode } from "~/lib/contexts/session-mode";
+import { newSession } from "~/lib/contexts/globals/sessions";
 
 const SessionSettings: Component = () => {
   const mode = useSessionMode();
@@ -20,10 +20,8 @@ const SessionSettings: Component = () => {
   const updateSystemPrompt = async (content: string) => {
     let id = currentH2hSession()?.id;
     if (id === undefined) {
-      const session = await createSession(mode(), "", null);
+      const session = await newSession(mode(), "", "New Chat");
       id = session.id;
-
-      await setNewSession(id, mode());
     }
 
     await setSessionSystemPrompt(id, content);

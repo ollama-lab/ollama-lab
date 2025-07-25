@@ -14,7 +14,7 @@ export function getCandidate(mode: SessionMode) {
   return candidate[mode];
 }
 
-export function createInitializaCandidate(mode: SessionMode) {
+export function createInitializeCandidate(mode: SessionMode) {
   createEffect(() => {
     initializeCandidate(mode);
   });

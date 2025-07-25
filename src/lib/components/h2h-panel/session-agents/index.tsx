@@ -1,16 +1,15 @@
 import { Component, createMemo, createResource, createSignal, For } from "solid-js";
 import { addSessionAgent, listAllAgents } from "~/lib/commands/agents";
-import { currentSession, setNewSession } from "~/lib/contexts/globals/current-session";
+import { currentSession } from "~/lib/contexts/globals/current-session";
 import { SessionAgentsItem } from "./item";
 import { Button } from "../../ui/button";
 import { PlusIcon } from "lucide-solid";
 import AgentCreationCommand from "../agent-creation-command";
-import { createSession } from "~/lib/commands/sessions";
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
-import { reloadSession } from "~/lib/contexts/globals/sessions";
 import { Motion } from "solid-motionone";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "../../ui/breadcrumb";
 import { useSessionMode } from "~/lib/contexts/session-mode";
+import { newSession } from "~/lib/contexts/globals/sessions";
 
 const SessionAgents: Component = () => {
   const mode = useSessionMode();
@@ -30,11 +29,8 @@ const SessionAgents: Component = () => {
   const createAgent = async (id: number) => {
     let sessionId2 = sessionId();
     if (sessionId2 === undefined) {
-      const newSession = await createSession(mode(), getCurrentModel(mode()) ?? "", undefined);
-      sessionId2 = newSession.id;
-
-      await reloadSession(sessionId2, mode());
-      await setNewSession(sessionId2, mode());
+      const theNewSession = await newSession(mode(), getCurrentModel(mode()) ?? "", "New Chat");
+      sessionId2 = theNewSession.id;
     }
 
     await addSessionAgent(id, sessionId2);
