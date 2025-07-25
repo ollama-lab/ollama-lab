@@ -52,6 +52,6 @@ export function unvoteRestart(id: string) {
 
 export { restartVotes, setSettingsStore as setCurrentSettings };
 
-export function isH2h() {
+export function isH2hEnabled() {
   return getCurrentSettings().h2h ?? DEFAULT_H2H;
 }

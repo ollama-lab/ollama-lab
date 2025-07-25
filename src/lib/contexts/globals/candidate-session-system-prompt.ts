@@ -22,6 +22,9 @@ export function getCandidateSessionSystemPrompt() {
   return candidate();
 }
 
+/**
+ * @deprecated Use `#applySessionSystemPrompt()` instead
+ */
 export async function setCandidateSessionSystemPrompt(mode: SessionMode, value?: string, otherId?: number) {
   const id = otherId ?? sessionId(mode);
   if (id !== undefined) {
@@ -29,4 +32,13 @@ export async function setCandidateSessionSystemPrompt(mode: SessionMode, value?:
   }
 
   setCandidate(value);
+}
+
+export async function applySessionSystemPrompt(mode: SessionMode, otherId?: number) {
+  const id = otherId ?? sessionId(mode);
+  const prompt = candidate();
+
+  if (id !== undefined && prompt) {
+    await setSessionSystemPrompt(id, prompt);
+  }
 }

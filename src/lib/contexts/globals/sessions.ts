@@ -1,7 +1,8 @@
 import { createStore, produce, reconcile } from "solid-js/store";
-import { getSession, listSessions } from "../../commands/sessions";
+import { createSession, getSession, listSessions } from "../../commands/sessions";
 import { SessionMode, sessionModeSchema, sessionSchema } from "~/lib/schemas/session";
 import { z } from "zod";
+import { applySession } from "./current-session";
 
 const sessionStoreSchema = z.record(sessionModeSchema, z.array(sessionSchema));
 type SessionStore = z.infer<typeof sessionStoreSchema>;
@@ -34,4 +35,25 @@ export async function reloadSession(id: number, mode: SessionMode) {
 
 export function getAllSessions(mode: SessionMode) {
   return sessions[mode];
+}
+
+export interface NewSessionProps {
+  /**
+   * Whether switching to the new session right away (default: `true`)
+   */
+  switchToIt?: boolean;
+}
+
+export async function newSession(mode: SessionMode, initialModel: string, title: string, props: NewSessionProps = {}) {
+  const session = await createSession(mode, initialModel, title);
+  setSessions(mode, (prev) => [
+    session,
+    ...(prev ?? [])
+  ]);
+
+  if (props.switchToIt ?? true) {
+    applySession(session, mode);
+  }
+
+  return session;
 }

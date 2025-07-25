@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { nullIsUndefined } from "../utils/schemas/transforms";
 
-export const sessionModeSchema = z.enum(["normal", "h2h"]).optional().default("normal");
+export const sessionModeSchema = z.enum(["normal", "h2h"]).default("normal");
 
 export type SessionModeSchema = typeof sessionModeSchema;
 export type SessionMode = z.infer<SessionModeSchema>;
