@@ -2,7 +2,7 @@ import { Component, onMount } from "solid-js";
 import { SessionList } from "~/lib/components/chat-sessions/session-list";
 import H2hPanel from "~/lib/components/h2h-panel";
 import { Resizable, ResizableHandle, ResizablePanel } from "~/lib/components/ui/resizable";
-import { createInitializaCandidate } from "~/lib/contexts/globals/candidate-model";
+import { createInitializeCandidate } from "~/lib/contexts/globals/candidate-model";
 import { reloadSessionSystemPrompt } from "~/lib/contexts/globals/candidate-session-system-prompt";
 import { createReloadChatHistory } from "~/lib/contexts/globals/chat-history";
 import { SessionModeProvider } from "~/lib/contexts/session-mode";
@@ -12,7 +12,7 @@ const HeadToHeadPage: Component = () => {
     reloadSessionSystemPrompt("h2h");
   });
 
-  createInitializaCandidate("h2h");
+  createInitializeCandidate("h2h");
   createReloadChatHistory("h2h");
 
   return (

@@ -1,18 +1,16 @@
 import { createStore, reconcile } from "solid-js/store";
 import type { Chat, ChatHistory, SessionMode } from "~/lib/schemas/session";
 import { createEffect, createMemo } from "solid-js";
-import { reloadSession } from "./sessions";
+import { newSession } from "./sessions";
 import { getCurrentBranch } from "~/lib/commands/chat-history";
 import { EditUserPrompt, IncomingUserPrompt, incomingUserPromptSchema } from "~/lib/schemas/chat";
-import { createSession } from "~/lib/commands/sessions";
 import { regenerateResponse, submitUserPrompt } from "~/lib/commands/chats";
 import { convertResponseEvents } from "~/lib/utils/chat-streams";
 import { switchBranch as switchBranchCommand } from "~/lib/commands/chat-history";
-import { currentSession, setCurrentSessionId, setNewSession } from "./current-session";
+import { currentSession, setCurrentSessionId } from "./current-session";
 import { getCurrentModel } from "./current-model";
 import { setCandidate } from "./candidate-model";
-import { getCandidateSessionSystemPrompt, setCandidateSessionSystemPrompt } from "./candidate-session-system-prompt";
-import { isH2h } from "./settings";
+import { applySessionSystemPrompt } from "./candidate-session-system-prompt";
 
 export interface PromptSubmissionEvents {
   onRespond?: () => void;
@@ -78,31 +76,26 @@ export async function submitChat(
   mode: SessionMode,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
 ) {
-  let session = currentSession(mode) ?? undefined;
-  if (!session) {
-    // TODO: Add settings option for default session name: 1) no name, 2) first prompt, 3) generated after first response
-    // Currently it is `first prompt`
-    let sessionTitle = prompt.text.split("\n").at(0) ?? null;
-    if ((!sessionTitle || sessionTitle.length < 1) && prompt.imagePaths && prompt.imagePaths.length > 0) {
-      sessionTitle = `Image${prompt.imagePaths.length > 1 ? "s" : ""}`;
+  let session = currentSession(mode);
+  if (session === undefined) {
+    // TODO: Add model-generated title after the first response completed
+    let sessionTitle = prompt.text.split("\n").at(0) ?? "";
+    if (sessionTitle.length < 1) {
+      if (prompt.imagePaths && prompt.imagePaths.length > 0) {
+        sessionTitle = `Image${prompt.imagePaths.length > 1 ? "s" : ""}`;
+      } else {
+        sessionTitle = "New Chat";
+      }
     }
 
-    const sessionSystemPrompt = isH2h() ? getCandidateSessionSystemPrompt() : undefined;
-
-    session = await createSession(mode, model, sessionTitle);
-
-    await reloadSession(session.id, mode);
-    await setNewSession(session.id, mode);
-
-    if (sessionSystemPrompt) {
-      await setCandidateSessionSystemPrompt(mode, sessionSystemPrompt, session.id);
-    }
+    session = await newSession(mode, model, sessionTitle);
+    await applySessionSystemPrompt(mode, session.id);
   }
 
   const parentId = lastChat()[mode]?.id;
 
   const ret = await submitUserPrompt(
-    session?.id,
+    session.id,
     prompt,
     parentId === undefined ? null : parentId,
     mode,
