@@ -12,6 +12,7 @@ const [settingsStore, setSettingsStore] = createStore<Settings>({
     "color-mode": "system",
     dark: null,
     light: null,
+    zoom: null,
   },
   ollama: {
     uri: null,
