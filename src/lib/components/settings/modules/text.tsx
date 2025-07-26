@@ -1,4 +1,4 @@
-import { Component, createMemo, createSignal } from "solid-js";
+import { children, Component, createMemo, createSignal, JSX } from "solid-js";
 import { InputType, TextField, TextFieldInput, TextFieldLabel } from "~/lib/components/ui/text-field";
 
 const TextSection: Component<{
@@ -9,12 +9,15 @@ const TextSection: Component<{
   required?: boolean;
   placeholder?: string;
   type?: InputType;
+  children?: JSX.Element;
 }> = (props) => {
   const name = createMemo(() => props.name);
   const inputType = createMemo(() => props.type ?? "text");
   const value = () => props.value;
 
   const [instantValue, setInstantValue] = createSignal<string | undefined>(value() ?? undefined);
+
+  const resolvedChildren = children(() => props.children);
 
   return (
     <div class="flex flex-col gap-1">
@@ -39,6 +42,7 @@ const TextSection: Component<{
             }
           }}
         />
+        {resolvedChildren()}
       </TextField>
     </div>
   );

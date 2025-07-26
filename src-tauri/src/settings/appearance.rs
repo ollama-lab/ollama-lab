@@ -7,6 +7,9 @@ pub struct AppearanceSettings {
 
     pub light: Option<String>,
     pub dark: Option<String>,
+
+    // Zoom factor (default: 1)
+    pub zoom: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

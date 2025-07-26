@@ -9,6 +9,7 @@ export const appearanceSettingsSchema = z.object({
   "color-mode": colorModeSchema,
   light: z.string().nullable(),
   dark: z.string().nullable(),
+  zoom: z.number().positive().nullable(),
 });
 
 export type AppearanceSettingsSchema = typeof appearanceSettingsSchema;
