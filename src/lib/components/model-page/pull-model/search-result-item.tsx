@@ -49,7 +49,7 @@ export const SearchResultItem: Component<{
         <span class="whitespace-pre-wrap flex-wrap">{searchItem().description}</span>
       </div>
       <div class="flex gap-2 w-full">
-        <div class="flex gap-2 items-center">
+        <div class="flex gap-2 items-center overflow-x-auto">
           <For each={searchItem().tags}>
             {(tag) => (
               <Switch>
