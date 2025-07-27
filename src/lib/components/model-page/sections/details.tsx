@@ -22,7 +22,7 @@ const DETAIL_ENTRIES: DetailEntry[] = [
   },
   {
     name: "Families",
-    valueFn: (value) => value.families.toString(),
+    valueFn: (value) => value.families?.toString() ?? "",
   },
   {
     name: "Parameter Size",

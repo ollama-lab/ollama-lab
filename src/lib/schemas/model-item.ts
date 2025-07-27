@@ -5,7 +5,7 @@ export const modelDetailsSchema = z.object({
   parent_model: z.string(),
   format: z.string(),
   family: z.string(),
-  families: z.array(z.string()),
+  families: z.array(z.string()).nullable(),
   parameter_size: z.string(),
   quantization_level: z.string(),
 });
