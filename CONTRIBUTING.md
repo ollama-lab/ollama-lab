@@ -1,5 +1,8 @@
 # Contribute to Ollama Lab
 
+> [!IMPORTANT]
+> If you use AI (e.g., LLM services) to write code, please disclose the AI tools that you use in your pull requests.
+
 ## Develop
 
 ### Prerequisites
@@ -62,10 +65,4 @@ cargo clean
 - `stable/*`: Stable; Released versions.
 - `test/*`: Preview versions.
 - `legacy`: Reserved for the old Ollama Lab.
-- Other: Dev branches for certain tasks.
-
-## Misc
-
-### AI-generated code
-
-If you use AI to write code, please disclose the AI tools that you have used in your pull requests.
+- Other: Dev branch
