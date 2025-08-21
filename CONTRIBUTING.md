@@ -68,9 +68,4 @@ cargo clean
 
 ### AI-generated code
 
-AI-generated code is **allowed** but **strongly unrecommended**, especially that from a [vibe coding](https://en.wikipedia.org/wiki/Vibe_coding) session.
-If you use AI to write code, please make sure:
-
-- You know what your AI is doing, and what parts of the project is changed by AI throughout your contribution.
-- Make sure the code is precise and intuitive enough. Because AI is known to generate tedious and obscure code.
-- Using AI doesn't mean you can ignore code writing conventions.
+If you use AI to write code, please disclose the AI tools that you have used in your pull requests.
