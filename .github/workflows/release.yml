@@ -2,9 +2,8 @@ name: "Release Tauri app"
 
 on:
   push:
-    branches:
-      - stable/*
-      - test/*
+    tags:
+      - v*
 
 jobs:
   publish-tauri:
