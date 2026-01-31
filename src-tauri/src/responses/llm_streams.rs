@@ -110,6 +110,7 @@ pub async fn stream_response(
         tools: None,
         keep_alive: None,
         options: None,
+        think: None,
         messages: chat_history
             .into_iter()
             .map(|item| Message {
@@ -117,6 +118,7 @@ pub async fn stream_response(
                 content: item.content,
                 images: image_map.remove(&item.id),
                 tool_calls: None,
+                thinking: item.thoughts,
             })
             .collect(),
     };
@@ -145,7 +147,7 @@ pub async fn stream_response(
             // None if it is in the first text chunk
             let mut date_now = None::<i64>;
 
-            let mut thought_start_on: Option<DateTime<Local>> = None;
+            let mut thinking_start_on: Option<DateTime<Local>> = None;
 
             while let Some(Ok(res)) = stream.next().await {
                 if res.done {
@@ -154,45 +156,37 @@ pub async fn stream_response(
                     break;
                 }
 
-                let chunk = res.message
-                    .map(|msg| msg.content)
-                    .unwrap_or_else(|| String::new());
+                if let Some(msg) = res.message {
+                    match msg.thinking {
+                        Some(think_chunk) => {
+                            if thinking_start_on.is_none() {
+                                thinking_start_on = Some(res.created_at);
+                                chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
+                            }
 
-                match thought_start_on {
-                    Some(start_on) => {
-                        match chunk.as_str() {
-                            // Match closing tag (i.e. `</think>`)
-                            "</think>" => {
+                            thoughts_buf2.lock().await.push_str(&think_chunk);
+                            chan_sender.send(StreamingResponseEvent::Text { chunk: think_chunk }).await?;
+                        }
+
+                        None => {
+                            if let Some(start_on) = thinking_start_on {
                                 let tf_milli = res.created_at.timestamp_millis() - start_on.timestamp_millis();
                                 let mut tf = thought_for2.lock().await;
                                 *tf = Some(tf_milli);
 
-                                thought_start_on = None;
+                                thinking_start_on = None;
 
                                 chan_sender.send(StreamingResponseEvent::ThoughtEnd{
                                     thought_for: Some(tf_milli),
                                 }).await?;
                             }
-                            _ => {
-                                thoughts_buf2.lock().await.push_str(chunk.as_str());
-                                chan_sender.send(StreamingResponseEvent::Text { chunk }).await?;
-                            }
-                        }
-                    }
-                    _ => {
-                        match chunk.as_str() {
-                            // Match leading `<think>` tag
-                            "<think>" if date_now.is_none() => {
-                                thought_start_on = Some(res.created_at);
-                                chan_sender.send(StreamingResponseEvent::ThoughtBegin).await?;
-                            }
 
-                            chunk_str => {
-                                output_buf2.lock().await.push_str(chunk_str);
-                                chan_sender.send(StreamingResponseEvent::Text{ chunk }).await?;
-                            }
+                            let chunk = msg.content;
+                            output_buf2.lock().await.push_str(&chunk);
+                            chan_sender.send(StreamingResponseEvent::Text { chunk }).await?;
                         }
                     }
+
                 }
 
                 date_now = Some(res.created_at.timestamp());
