@@ -30,7 +30,7 @@ tauri-plugin-dialog = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "^1.42", features = ["fs", "macros", "mio", "rt", "rt-multi-thread", "sync"] }
-ollama-rest = "0.5"
+ollama-rest = "0.7"
 sqlx = { version = "^0.8.3", features = ["chrono", "sqlite", "runtime-tokio"] }
 dirs = "6"
 toml = "^0.8.19"
