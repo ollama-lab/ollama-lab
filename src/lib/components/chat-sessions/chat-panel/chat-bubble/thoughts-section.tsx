@@ -42,12 +42,12 @@ const ThinkingHints: Component = () => {
         <Show
           when={thinking() && status() === "sending"}
           fallback={(
-            <HintSpan>Reasoning complete in {thoughtForString()}</HintSpan>
+            <HintSpan>Thought for {thoughtForString()}</HintSpan>
           )}
         >
           <HintSpan>
             <LoaderSpin class="size-4 duration-500" />
-            <span>Reasoning...</span>
+            <span>Thinking...</span>
           </HintSpan>
         </Show>
       </Presence>
