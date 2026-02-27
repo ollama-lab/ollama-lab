@@ -14,7 +14,7 @@ export async function getThumbnailBase64(path: string, cached: boolean = true): 
     }
   }
 
-  const result = await invoke<ImagePreview>("get_thumbnail_base64", { path })
+  const result = await invoke<ImagePreview>("get_thumbnail_base64", { path });
   if (cached) {
     setImageCache(path, {
       data: result,
@@ -27,4 +27,8 @@ export async function getThumbnailBase64(path: string, cached: boolean = true): 
 
 export async function getImagesByChatId(chatId: number): Promise<ImageReturn[]> {
   return await invoke<ImageReturn[]>("get_images_by_chat_id", { chatId });
+}
+
+export async function saveClipboardImage(payload: { rgba: number[]; width: number; height: number }): Promise<string> {
+  return await invoke<string>("save_clipboard_image", payload);
 }

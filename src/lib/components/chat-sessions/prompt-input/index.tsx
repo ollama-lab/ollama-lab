@@ -1,4 +1,5 @@
-import { Component, Show, createEffect, createMemo, createSignal, onCleanup } from "solid-js";
+import { Component, Show, createEffect, createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import { toast } from "solid-sonner";
 import { getChatHistory, submitChat } from "~/lib/contexts/globals/chat-history";
 import {
   clearInputPrompt,
@@ -7,23 +8,32 @@ import {
   setInputPrompt,
 } from "~/lib/contexts/globals/prompt-input";
 import { Button } from "../../ui/button";
-import { ArrowUpIcon, ChevronDownIcon, } from "lucide-solid";
+import { ArrowUpIcon, ChevronDownIcon } from "lucide-solid";
 import { cn } from "~/lib/utils/class-names";
 import { ImageInfoReturn, ImagePreview } from "../../custom-ui/image-preview";
-import { getThumbnailBase64 } from "~/lib/commands/image";
+import { getThumbnailBase64, saveClipboardImage } from "~/lib/commands/image";
 import { produce } from "solid-js/store";
 import { PromptInputToolbar } from "./toolbar";
 import { LoaderSpin } from "../../loader-spin";
 import { emit } from "@tauri-apps/api/event";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import autosize from "autosize";
 import { toSrcString } from "~/lib/utils/images";
 import { getCurrentModel } from "~/lib/contexts/globals/current-model";
 import { useSessionMode } from "~/lib/contexts/session-mode";
+import { readImage } from "@tauri-apps/plugin-clipboard-manager";
+import { mergePromptImagePaths } from "~/lib/utils/add-images";
 
 const [hidePromptBar, setHidePromptBar] = createSignal(false);
 
 export const PromptInput: Component = () => {
   const mode = useSessionMode();
+
+  const allowedImageExtensions = new Set(["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "heif", "ico"]);
+  const isSupportedImagePath = (path: string) => {
+    const ext = path.split(".").pop()?.toLowerCase();
+    return ext ? allowedImageExtensions.has(ext) : false;
+  };
 
   const isSubmittable = createMemo(() => isSubmittable_(mode()));
 
@@ -48,14 +58,19 @@ export const PromptInput: Component = () => {
   };
 
   const deletePreviewItem = (i: number) => {
-    setInputPrompt("imagePaths", produce((paths) => {
-      if (paths) {
-        paths.splice(i, 1);
-      }
-    }));
-  }
+    setInputPrompt(
+      "imagePaths",
+      produce((paths) => {
+        if (paths) {
+          paths.splice(i, 1);
+        }
+      }),
+    );
+  };
 
-  const busy = createMemo(() => status() === "responding" || getChatHistory(mode())?.chats.at(-1)?.status === "sending");
+  const busy = createMemo(
+    () => status() === "responding" || getChatHistory(mode())?.chats.at(-1)?.status === "sending",
+  );
 
   createEffect(() => {
     const ref = textEntryRef();
@@ -71,13 +86,39 @@ export const PromptInput: Component = () => {
     }
   });
 
+  onMount(() => {
+    let unlisten: (() => void) | undefined;
+
+    getCurrentWindow()
+      .onDragDropEvent((event) => {
+        if (event.payload.type !== "drop") {
+          return;
+        }
+
+        const imagePaths = event.payload.paths.filter(isSupportedImagePath);
+        if (imagePaths.length > 0) {
+          mergePromptImagePaths(imagePaths);
+          return;
+        }
+
+        if (event.payload.paths.length > 0) {
+          toast.warning("No supported image files found in drop.");
+        }
+      })
+      .then((cleanup) => {
+        unlisten = cleanup;
+      })
+      .catch((err) => {
+        toast.error(`Failed to enable drag-and-drop: ${String(err)}`);
+      });
+
+    onCleanup(() => {
+      unlisten?.();
+    });
+  });
+
   const SubmitButton = () => (
-    <Button
-      size="icon"
-      type="submit"
-      disabled={!!status() || !isSubmittable()}
-      title="Send prompt"
-    >
+    <Button size="icon" type="submit" disabled={!!status() || !isSubmittable()} title="Send prompt">
       <Show when={status() === "submitting"} fallback={<ArrowUpIcon class="size-6!" />}>
         <LoaderSpin class="size-6!" />
       </Show>
@@ -85,6 +126,61 @@ export const PromptInput: Component = () => {
   );
 
   const stopGeneration = async () => await emit("cancel-gen");
+
+  const handlePaste = async (ev: ClipboardEvent) => {
+    const items = Array.from(ev.clipboardData?.items ?? []);
+    const imageItem = items.find((item) => item.kind === "file" && item.type.startsWith("image/"));
+    const hasImage = !!imageItem;
+
+    if (!hasImage) {
+      return;
+    }
+
+    ev.preventDefault();
+
+    try {
+      if (imageItem) {
+        const file = imageItem.getAsFile();
+        if (file) {
+          const bitmap = await createImageBitmap(file);
+          try {
+            const canvas = document.createElement("canvas");
+            canvas.width = bitmap.width;
+            canvas.height = bitmap.height;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) {
+              throw new Error("Failed to read clipboard image");
+            }
+            ctx.drawImage(bitmap, 0, 0);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const path = await saveClipboardImage({
+              rgba: Array.from(imageData.data),
+              width: canvas.width,
+              height: canvas.height,
+            });
+
+            mergePromptImagePaths([path]);
+            return;
+          } finally {
+            bitmap.close();
+          }
+        }
+      }
+
+      const image = await readImage();
+      const size = await image.size();
+      const rgba = await image.rgba();
+      const path = await saveClipboardImage({
+        rgba: Array.from(rgba),
+        width: size.width,
+        height: size.height,
+      });
+
+      mergePromptImagePaths([path]);
+    } catch (err) {
+      toast.error(`Failed to paste image: ${String(err)}`);
+    }
+  };
 
   return (
     <form
@@ -107,7 +203,14 @@ export const PromptInput: Component = () => {
 
         setStatus("submitting");
 
-        submitChat(getInputPrompt(), model, mode(), { onRespond }).finally(clearStatus);
+        const prompt = getInputPrompt();
+        const submittedPrompt = {
+          ...prompt,
+          imagePaths: prompt.imagePaths ? [...prompt.imagePaths] : undefined,
+        };
+
+        setInputPrompt("imagePaths", undefined);
+        submitChat(submittedPrompt, model, mode(), { onRespond }).finally(clearStatus);
       }}
     >
       <Button variant="ghost" class="h-4 rounded-none -mx-3 py-0" onClick={() => setHidePromptBar((cur) => !cur)}>
@@ -115,11 +218,7 @@ export const PromptInput: Component = () => {
       </Button>
 
       <Show when={getInputPrompt().imagePaths}>
-        <ImagePreview
-          srcs={getInputPrompt().imagePaths ?? []}
-          fetcher={fetcher}
-          onDelete={deletePreviewItem}
-        />
+        <ImagePreview srcs={getInputPrompt().imagePaths ?? []} fetcher={fetcher} onDelete={deletePreviewItem} />
       </Show>
 
       <textarea
@@ -127,6 +226,7 @@ export const PromptInput: Component = () => {
         name="prompt"
         value={getInputPrompt().text}
         onInput={(ev) => setInputPrompt("text", ev.currentTarget.value)}
+        onPaste={handlePaste}
         class="w-full border-none outline-none resize-none bg-transparent max-h-[80dvh] md:max-h-[60dvh] lg:max-h-[30dvh] mx-2"
         placeholder="Enter your prompt here"
         onKeyPress={(ev) => {
@@ -144,12 +244,7 @@ export const PromptInput: Component = () => {
 
         <div class="shrink-0">
           <Show when={busy()} fallback={<SubmitButton />}>
-            <Button
-              size="icon"
-              type="button"
-              title="Stop generation"
-              onClick={stopGeneration}
-            >
+            <Button size="icon" type="button" title="Stop generation" onClick={stopGeneration}>
               <img src="/stop-solid.svg" alt="🔲" class="size-5 invert dark:invert-0" />
             </Button>
           </Show>

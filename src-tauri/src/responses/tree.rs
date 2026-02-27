@@ -1,7 +1,7 @@
 use models::NewChildNode;
 use sqlx::{Executor, Sqlite, Transaction};
 
-use crate::{errors::Error, models::chat::Chat, utils::images::save_image};
+use crate::{errors::Error, models::chat::Chat, utils::images::{is_clipboard_path, save_image}};
 
 pub mod models;
 
@@ -186,13 +186,18 @@ impl ChatTree {
 
         if let Some(images) = create_info.images {
             for image_path in images.into_iter() {
+                let origin = if is_clipboard_path(image_path) {
+                    "Clipboard".to_string()
+                } else {
+                    image_path.to_string()
+                };
                 let dest = save_image(image_path, true)?;
 
                 sqlx::query(r#"
                     INSERT INTO prompt_images (chat_id, origin, path)
                     VALUES ($1, $2, $3);
                 "#)
-                    .bind(ret.0).bind(image_path).bind(dest)
+                    .bind(ret.0).bind(origin).bind(dest)
                     .execute(&mut **tx)
                     .await?;
             }

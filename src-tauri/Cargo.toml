@@ -41,6 +41,8 @@ uuid = { version = "1.14", features = ["fast-rng", "v7"] }
 reqwest = "0.12"
 scraper = { version = "0.23", features = ["serde"] }
 url = { version = "^2.5.4", features = ["serde"] }
+moka = { version = "0.12.13", features = ["sync"] }
+tauri-plugin-clipboard-manager = "2.3.2"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 clap = { version = "^4.5.29", features = ["derive"] }

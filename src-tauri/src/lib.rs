@@ -20,6 +20,7 @@ pub mod utils;
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_opener::init())
@@ -53,6 +54,7 @@ pub fn run() {
             commands::images::get_compressed_image_base64,
             commands::images::get_thumbnail_base64,
             commands::images::get_images_by_chat_id,
+            commands::images::save_clipboard_image,
             commands::agents::get_session_agents,
             commands::agents::get_session_agent,
             commands::agents::get_global_session_agent,

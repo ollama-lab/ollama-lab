@@ -10,6 +10,7 @@
     "opener:default",
     "os:default",
     "process:default",
-    "dialog:default"
+    "dialog:default",
+    "clipboard-manager:allow-read-image"
   ]
 }
