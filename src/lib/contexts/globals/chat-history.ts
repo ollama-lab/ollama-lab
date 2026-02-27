@@ -1,7 +1,7 @@
 import { createStore, reconcile } from "solid-js/store";
 import type { Chat, ChatHistory, SessionMode } from "~/lib/schemas/session";
 import { createEffect, createMemo } from "solid-js";
-import { newSession } from "./sessions";
+import { newSession, reloadSessions } from "./sessions";
 import { getCurrentBranch } from "~/lib/commands/chat-history";
 import { EditUserPrompt, IncomingUserPrompt, incomingUserPromptSchema } from "~/lib/schemas/chat";
 import { regenerateResponse, submitUserPrompt } from "~/lib/commands/chats";
@@ -90,6 +90,7 @@ export async function submitChat(
 
     session = await newSession(mode, model, sessionTitle);
     await applySessionSystemPrompt(mode, session.id);
+    await reloadSessions(mode);
   }
 
   const parentId = lastChat()[mode]?.id;
