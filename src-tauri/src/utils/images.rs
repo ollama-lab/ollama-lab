@@ -162,16 +162,14 @@ pub fn save_image(origin: &str, reuse_local: bool) -> Result<String, Error> {
     }
 
     if reuse_local {
-        if let Some(mut assumed_path) = get_image_cache_path() {
-            if let Some(origin_file_name) = PathBuf::from(origin).file_name() {
-                assumed_path.push(origin_file_name);
-                if assumed_path.try_exists().unwrap_or(false) {
-                    if let Some(file_name) = assumed_path.file_name() {
-                        if let Some(file_name) = file_name.to_str() {
-                            return Ok(file_name.to_string());
-                        }
-                    }
-                }
+        if let Some(mut assumed_path) = get_image_cache_path()
+            && let Some(origin_file_name) = PathBuf::from(origin).file_name() {
+            assumed_path.push(origin_file_name);
+
+            if assumed_path.try_exists().unwrap_or(false)
+                && let Some(file_name) = assumed_path.file_name()
+                && let Some(file_name) = file_name.to_str() {
+                return Ok(file_name.to_string());
             }
         }
     }
