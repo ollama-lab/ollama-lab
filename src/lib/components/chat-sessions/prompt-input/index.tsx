@@ -29,6 +29,75 @@ const [hidePromptBar, setHidePromptBar] = createSignal(false);
 export const PromptInput: Component = () => {
   const mode = useSessionMode();
 
+  let undoStack: string[] = [];
+  let redoStack: string[] = [];
+  let checkpointText = "";
+
+  const resetInputHistory = () => {
+    undoStack = [];
+    redoStack = [];
+    checkpointText = getInputPrompt().text;
+  };
+
+  const pushUniqueState = (stack: string[], value: string) => {
+    if (stack.at(-1) !== value) {
+      stack.push(value);
+    }
+  };
+
+  const wordBoundaryPattern = /[\s\p{P}]/u;
+
+  const getChangedParts = (prev: string, next: string) => {
+    let start = 0;
+    const minLength = Math.min(prev.length, next.length);
+
+    while (start < minLength && prev[start] === next[start]) {
+      start += 1;
+    }
+
+    let prevEnd = prev.length - 1;
+    let nextEnd = next.length - 1;
+
+    while (prevEnd >= start && nextEnd >= start && prev[prevEnd] === next[nextEnd]) {
+      prevEnd -= 1;
+      nextEnd -= 1;
+    }
+
+    return {
+      removed: prev.slice(start, prevEnd + 1),
+      added: next.slice(start, nextEnd + 1),
+    };
+  };
+
+  const shouldCommitCheckpoint = (nativeEvent: InputEvent, prev: string, next: string) => {
+    if (prev === next) {
+      return false;
+    }
+
+    const { added, removed } = getChangedParts(prev, next);
+    const changedText = `${removed}${added}`;
+
+    if (nativeEvent.inputType === "insertFromPaste" || nativeEvent.inputType === "insertFromDrop") {
+      return true;
+    }
+
+    if (nativeEvent.inputType === "deleteWordBackward" || nativeEvent.inputType === "deleteWordForward") {
+      return true;
+    }
+
+    return wordBoundaryPattern.test(changedText);
+  };
+
+  const isUndoShortcut = (ev: KeyboardEvent) => {
+    // Ctrl/Control + Z
+    return (ev.ctrlKey || ev.metaKey) && !ev.altKey && !ev.shiftKey && ev.key.toLowerCase() === "z";
+  };
+
+  const isRedoShortcut = (ev: KeyboardEvent) => {
+    // Ctrl/Control + Shift + Z
+    return (ev.ctrlKey || ev.metaKey) && !ev.altKey && ev.shiftKey && ev.key.toLowerCase() === "z";
+  };
+
   const allowedImageExtensions = new Set(["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "heif", "ico"]);
   const isSupportedImagePath = (path: string) => {
     const ext = path.split(".").pop()?.toLowerCase();
@@ -45,6 +114,7 @@ export const PromptInput: Component = () => {
   const onRespond = () => {
     setStatus("responding");
     clearInputPrompt();
+    resetInputHistory();
   };
 
   const clearStatus = () => setStatus(undefined);
@@ -209,6 +279,7 @@ export const PromptInput: Component = () => {
           imagePaths: prompt.imagePaths ? [...prompt.imagePaths] : undefined,
         };
 
+        resetInputHistory();
         setInputPrompt("imagePaths", undefined);
         submitChat(submittedPrompt, model, mode(), { onRespond }).finally(clearStatus);
       }}
@@ -225,11 +296,69 @@ export const PromptInput: Component = () => {
         ref={setTextEntryRef}
         name="prompt"
         value={getInputPrompt().text}
-        onInput={(ev) => setInputPrompt("text", ev.currentTarget.value)}
+        onFocus={() => {
+          checkpointText = getInputPrompt().text;
+          undoStack = [];
+          redoStack = [];
+        }}
+        onBlur={resetInputHistory}
+        onInput={(ev) => {
+          const currentText = getInputPrompt().text;
+          const nextText = ev.currentTarget.value;
+
+          if (shouldCommitCheckpoint(ev as InputEvent, currentText, nextText)) {
+            pushUniqueState(undoStack, checkpointText);
+            checkpointText = nextText;
+            redoStack = [];
+          } else if (nextText !== currentText) {
+            redoStack = [];
+          }
+
+          setInputPrompt("text", nextText);
+        }}
         onPaste={handlePaste}
         class="w-full border-none outline-none resize-none bg-transparent max-h-[80dvh] md:max-h-[60dvh] lg:max-h-[30dvh] mx-2"
         placeholder="Enter your prompt here"
-        onKeyPress={(ev) => {
+        onKeyDown={(ev) => {
+          if (isUndoShortcut(ev)) {
+            ev.preventDefault();
+
+            const currentText = getInputPrompt().text;
+            if (currentText !== checkpointText) {
+              pushUniqueState(redoStack, currentText);
+              setInputPrompt("text", checkpointText);
+              return;
+            }
+
+            const previousText = undoStack.pop();
+            if (previousText === undefined) {
+              return;
+            }
+
+            pushUniqueState(redoStack, currentText);
+            checkpointText = previousText;
+            setInputPrompt("text", previousText);
+            return;
+          }
+
+          if (isRedoShortcut(ev)) {
+            if (redoStack.length === 0) {
+              return;
+            }
+
+            ev.preventDefault();
+
+            const nextText = redoStack.pop();
+            if (nextText === undefined) {
+              return;
+            }
+
+            pushUniqueState(undoStack, checkpointText);
+            checkpointText = nextText;
+            setInputPrompt("text", nextText);
+            return;
+          }
+
           if (ev.key === "Enter" && !ev.shiftKey && !ev.ctrlKey) {
             ev.preventDefault();
             formRef()?.requestSubmit();
