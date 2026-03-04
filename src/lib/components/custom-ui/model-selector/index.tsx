@@ -1,6 +1,6 @@
 import { ChevronsUpDownIcon } from "lucide-solid";
 import { createMemo, createSignal } from "solid-js";
-import { modelList } from "~/lib/contexts/globals/model-states";
+import { modelList, reloadModelStates } from "~/lib/contexts/globals/model-states";
 import { ModelListItem } from "~/lib/schemas/model-item";
 import {
   Command,
@@ -36,9 +36,14 @@ export function ModelSelector() {
     setOpen(false);
   };
 
+  const onSelectorClick = () => {
+    setOpen(true);
+    reloadModelStates();
+  };
+
   return (
     <>
-      <button class="flex gap-2 px-4 h-full items-center cursor-pointer" onClick={() => setOpen(true)}>
+      <button class="flex gap-2 px-4 h-full items-center cursor-pointer" onClick={onSelectorClick}>
         <span class="grow truncate text-start w-36 text-sm">{getCurrentModel(mode())}</span>
         <ChevronsUpDownIcon class="size-4" />
       </button>
