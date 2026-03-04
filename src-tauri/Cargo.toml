@@ -26,23 +26,23 @@ tauri-plugin-opener = "2"
 tauri-plugin-os = "2"
 tauri-plugin-process = "2"
 tauri-plugin-dialog = "2"
+tauri-plugin-clipboard-manager = "2"
 
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-tokio = { version = "^1.42", features = ["fs", "macros", "mio", "rt", "rt-multi-thread", "sync"] }
+tokio = { version = "1.42", features = ["fs", "macros", "mio", "rt", "rt-multi-thread", "sync"] }
 ollama-rest = "0.7"
-sqlx = { version = "^0.8.3", features = ["chrono", "sqlite", "runtime-tokio"] }
+sqlx = { version = "0.8.6", features = ["chrono", "sqlite", "runtime-tokio"] }
 dirs = "6"
-toml = "^0.8.19"
+toml = "0.8.19"
 
 base64 = "0.22.1"
-image = { version = "^0.25.5", features = ["bmp", "gif", "ico", "jpeg", "png", "tiff", "webp"] }
+image = { version = "0.25.5", features = ["bmp", "gif", "ico", "jpeg", "png", "tiff", "webp"] }
 uuid = { version = "1.14", features = ["fast-rng", "v7"] }
 reqwest = "0.12"
 scraper = { version = "0.23", features = ["serde"] }
-url = { version = "^2.5.4", features = ["serde"] }
+url = { version = "2.5.4", features = ["serde"] }
 moka = { version = "0.12.13", features = ["sync"] }
-tauri-plugin-clipboard-manager = "2.3.2"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
-clap = { version = "^4.5.29", features = ["derive"] }
+clap = { version = "4.5.60", features = ["derive"] }
