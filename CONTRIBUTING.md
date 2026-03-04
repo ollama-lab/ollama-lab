@@ -2,6 +2,7 @@
 
 > [!IMPORTANT]
 > If you use AI (e.g., LLM services) to write code, please disclose the AI tools that you use in your pull requests.
+> Also, any refactoring PR will be rejected no matter if it is written by AI.
 
 ## Develop
 
