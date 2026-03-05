@@ -93,6 +93,10 @@ This guidance is derived from:
 
 ## Miscellaneous
 
+## Non-obvious learnings
+
+- Streaming event contracts are cross-stack: changing `StreamingResponseEvent` in Rust must be mirrored in `src/lib/schemas/events/text-streams.ts`, `src/lib/commands/chats.ts`, and `src/lib/utils/chat-streams.ts` or runtime stream parsing breaks.
+
 ### Version bump
 
 To change the version, you need to update three files:
