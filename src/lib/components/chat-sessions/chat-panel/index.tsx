@@ -5,7 +5,7 @@ import { ChatPanelHeader } from "./header";
 
 export const ChatPanel: Component = () => {
   return (
-    <div class="flex flex-col w-full h-full overflow-y-hidden">
+    <div class="flex flex-col w-full h-full overflow-y-hidden" data-chat-shortcut-scope="true">
       <ChatPanelHeader />
 
       <div class="grow px-4 py-2 w-full overflow-y-auto">
@@ -17,4 +17,4 @@ export const ChatPanel: Component = () => {
       </div>
     </div>
   );
-}
+};

@@ -17,7 +17,11 @@ import { getCurrentModel } from "~/lib/contexts/globals/current-model";
 import { createDisplayNames, InputNames } from "~/lib/utils/agents";
 import { useSessionMode } from "~/lib/contexts/session-mode";
 
-export const BubbleSector: Component<{ agentNames?: InputNames }> = (props) => {
+export const BubbleSector: Component<{
+  agentNames?: InputNames;
+  highlighted?: boolean;
+  activeHighlight?: boolean;
+}> = (props) => {
   const mode = useSessionMode();
 
   const chat = useChatEntry();
@@ -32,104 +36,99 @@ export const BubbleSector: Component<{ agentNames?: InputNames }> = (props) => {
   const displayName = () => agentNames()?.displayName ?? model();
 
   return (
-    <Switch>
-      <Match when={role() === "user" || role() === "assistant"}>
-        <div
-          class={cn(
-            "group/bubble-sector flex py-1 gap-2 items-center",
-            role() === "user" ? "place-content-end" : "place-content-start",
-          )}
-        >
-          <div class="flex flex-col w-full">
-            <div class="flex gap-2 w-full">
-              <Show when={role() === "assistant"}>
-                <Avatar>
-                  {/* TODO: Dynamic avatar */}
-                  <AvatarImage src="/ollama.svg" alt="Ollama" class="bg-white p-1 pb-0" />
-                </Avatar>
-              </Show>
-
-              <div
-                class={cn(
-                  "flex flex-col gap-1 w-full",
-                  role() === "user" && "items-end",
-                )}
-              >
-                <span class="text-xs font-bold">
-                  <Switch>
-                    <Match when={role() === "assistant"}>
-                      {displayName()}
-                    </Match>
-                    <Match when={role() === "user"}>
-                      You
-                    </Match>
-                  </Switch>
-                </span>
-
-                <Show when={chat?.().imageCount}>
-                  {(imageCount) => (
-                    <Show when={imageCount() > 0}>
-                      <Show when={chat?.().id}>
-                        {(id) => (
-                          <ChatImagePreview chatId={id()} />
-                        )}
-                      </Show>
-                    </Show>
-                  )}
-                </Show>
-
+    <div
+      data-chat-id={chat?.().id}
+      class={cn(
+        props.highlighted && "rounded-md bg-yellow-500/10",
+        props.activeHighlight && "ring-1 ring-yellow-500/50 rounded-md",
+      )}
+    >
+      <Switch>
+        <Match when={role() === "user" || role() === "assistant"}>
+          <div
+            class={cn(
+              "group/bubble-sector flex py-1 gap-2 items-center",
+              role() === "user" ? "place-content-end" : "place-content-start",
+            )}
+          >
+            <div class="flex flex-col w-full">
+              <div class="flex gap-2 w-full">
                 <Show when={role() === "assistant"}>
-                  <ThoughtsSection />
+                  <Avatar>
+                    {/* TODO: Dynamic avatar */}
+                    <AvatarImage src="/ollama.svg" alt="Ollama" class="bg-white p-1 pb-0" />
+                  </Avatar>
                 </Show>
 
-                <Show when={editMode()} fallback={<Bubble />}>
-                  <BubbleInlineEditor
-                    defaultValue={chat?.().content}
-                    onCancel={() => setEditMode(false)}
-                    onSubmit={(newValue) => {
-                      const c = chat?.();
-                      const id = c?.id;
-                      const model = getCurrentModel(mode());
+                <div class={cn("flex flex-col gap-1 w-full", role() === "user" && "items-end")}>
+                  <span class="text-xs font-bold">
+                    <Switch>
+                      <Match when={role() === "assistant"}>{displayName()}</Match>
+                      <Match when={role() === "user"}>You</Match>
+                    </Switch>
+                  </span>
 
-                      if (id === undefined || !model) {
-                        return;
-                      }
+                  <Show when={chat?.().imageCount}>
+                    {(imageCount) => (
+                      <Show when={imageCount() > 0}>
+                        <Show when={chat?.().id}>{(id) => <ChatImagePreview chatId={id()} />}</Show>
+                      </Show>
+                    )}
+                  </Show>
 
-                      editPrompt({ text: newValue }, id, model, mode(), {
-                        onRespond() {
-                          setEditMode(false);
-                        },
-                      });
-                    }}
-                  />
-                </Show>
+                  <Show when={role() === "assistant"}>
+                    <ThoughtsSection />
+                  </Show>
 
-                <Show when={chat?.().versions}>
-                  <VersionPagination />
-                </Show>
+                  <Show when={editMode()} fallback={<Bubble />}>
+                    <BubbleInlineEditor
+                      defaultValue={chat?.().content}
+                      onCancel={() => setEditMode(false)}
+                      onSubmit={(newValue) => {
+                        const c = chat?.();
+                        const id = c?.id;
+                        const model = getCurrentModel(mode());
 
-                <EditModeProvider accessor={editMode} setter={setEditMode}>
-                  <SectorFooter />
-                </EditModeProvider>
+                        if (id === undefined || !model) {
+                          return;
+                        }
+
+                        editPrompt({ text: newValue }, id, model, mode(), {
+                          onRespond() {
+                            setEditMode(false);
+                          },
+                        });
+                      }}
+                    />
+                  </Show>
+
+                  <Show when={chat?.().versions}>
+                    <VersionPagination />
+                  </Show>
+
+                  <EditModeProvider accessor={editMode} setter={setEditMode}>
+                    <SectorFooter />
+                  </EditModeProvider>
+                </div>
               </div>
             </div>
-          </div>
 
-          <Show when={role() === "user"}>
-            <Switch>
-              <Match when={status() === "sending"}>
-                <LoaderSpin />
-              </Match>
-              <Match when={status() === "not sent"}>
-                <TriangleAlertIcon class="text-yellow-600" />
-              </Match>
-            </Switch>
-          </Show>
-        </div>
-      </Match>
-      <Match when={role() === "system"}>
-        <SystemPromptBlock />
-      </Match>
-    </Switch>
+            <Show when={role() === "user"}>
+              <Switch>
+                <Match when={status() === "sending"}>
+                  <LoaderSpin />
+                </Match>
+                <Match when={status() === "not sent"}>
+                  <TriangleAlertIcon class="text-yellow-600" />
+                </Match>
+              </Switch>
+            </Show>
+          </div>
+        </Match>
+        <Match when={role() === "system"}>
+          <SystemPromptBlock />
+        </Match>
+      </Switch>
+    </div>
   );
-}
+};
