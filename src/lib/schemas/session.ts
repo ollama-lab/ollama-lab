@@ -28,29 +28,37 @@ export const transmissionStatusSchema = z.enum(["preparing", "sending", "sent", 
 export type TransmissionStatusSchema = typeof transmissionStatusSchema;
 export type TransmissionStatus = z.infer<TransmissionStatusSchema>;
 
-export const chatSchema = z.object({
-  id: z.number().int(),
-  sessionId: z.number().int(),
-  role: roleSchema,
-  content: z.string().trim(),
-  imageCount: z.number().int().nonnegative().nullable(),
-  dateCreated: z.coerce.date().nullish().transform(nullIsUndefined),
-  dateEdited: z.coerce.date().nullish().transform(nullIsUndefined),
-  completed: z.boolean(),
-  status: transmissionStatusSchema.optional().default("sent"),
-  agentId: z.number().int().nullable(),
+export const chatSchema = z
+  .object({
+    id: z.number().int(),
+    sessionId: z.number().int(),
+    role: roleSchema,
+    content: z.string().trim(),
+    imageCount: z.number().int().nonnegative().nullable(),
+    dateCreated: z.coerce.date().nullish().transform(nullIsUndefined),
+    dateEdited: z.coerce.date().nullish().transform(nullIsUndefined),
+    completed: z.boolean(),
+    status: transmissionStatusSchema.optional().default("sent"),
+    agentId: z.number().int().nullable(),
 
-  model: z.string().trim().nullish().transform(nullIsUndefined),
+    model: z.string().trim().nullish().transform(nullIsUndefined),
 
-  versions: z.array(z.number().int()).nullish().transform(nullIsUndefined),
+    versions: z.array(z.number().int()).nullish().transform(nullIsUndefined),
 
-  thinking: z.boolean().nullish().transform(nullIsUndefined),
-  thoughts: z.string().trim().nullish().transform(nullIsUndefined),
-  thoughtFor: z.number().int().nonnegative().nullish().transform(nullIsUndefined),
-}).transform((item) => {
-  item.status = item.completed ? "sent" : "not sent";
-  return item;
-});
+    thinking: z.boolean().nullish().transform(nullIsUndefined),
+    thoughts: z.string().trim().nullish().transform(nullIsUndefined),
+    thoughtFor: z.number().int().nonnegative().nullish().transform(nullIsUndefined),
+    totalDuration: z.number().int().nonnegative().nullish().transform(nullIsUndefined),
+    loadDuration: z.number().int().nonnegative().nullish().transform(nullIsUndefined),
+    promptEvalCount: z.number().int().nonnegative().nullish().transform(nullIsUndefined),
+    promptEvalDuration: z.number().int().nonnegative().nullish().transform(nullIsUndefined),
+    evalCount: z.number().int().nonnegative().nullish().transform(nullIsUndefined),
+    evalDuration: z.number().int().nonnegative().nullish().transform(nullIsUndefined),
+  })
+  .transform((item) => {
+    item.status = item.completed ? "sent" : "not sent";
+    return item;
+  });
 
 export type ChatSchema = typeof chatSchema;
 export type Chat = z.infer<ChatSchema>;
@@ -59,21 +67,25 @@ export const chatHistorySchema = z.object({
   chats: z.array(chatSchema),
 });
 
-export type ChatHistorySchema = typeof chatHistorySchema; 
+export type ChatHistorySchema = typeof chatHistorySchema;
 export type ChatHistory = z.infer<ChatHistorySchema>;
 
-export const sessionRenameReturnSchema = z.object({
-  id: z.number().int(),
-  title: z.string().nullable(),
-}).nullable();
+export const sessionRenameReturnSchema = z
+  .object({
+    id: z.number().int(),
+    title: z.string().nullable(),
+  })
+  .nullable();
 
 export type SessionRenameReturnSchema = typeof sessionRenameReturnSchema;
 export type SessionRenameReturn = z.infer<SessionRenameReturnSchema>;
 
-export const sessionCurrentModelReturnSchema = z.object({
-  id: z.number().int(),
-  currentModel: z.string().nullable(),
-}).nullable();
+export const sessionCurrentModelReturnSchema = z
+  .object({
+    id: z.number().int(),
+    currentModel: z.string().nullable(),
+  })
+  .nullable();
 
 export type SessionCurrentModelReturnSchema = typeof sessionCurrentModelReturnSchema;
 export type SessionCurrentModelReturn = z.infer<SessionCurrentModelReturnSchema>;

@@ -17,6 +17,16 @@ use crate::{
     utils::images::get_chat_images
 };
 
+#[derive(Clone, Copy, Default)]
+struct ChatMetrics {
+    total_duration: Option<u64>,
+    load_duration: Option<u64>,
+    prompt_eval_count: Option<usize>,
+    prompt_eval_duration: Option<u64>,
+    eval_count: Option<usize>,
+    eval_duration: Option<u64>,
+}
+
 async fn record_assistant_response(
     final_date_now: Arc<Mutex<Option<(i64, bool)>>>,
     pool: &Pool<Sqlite>,
@@ -24,6 +34,7 @@ async fn record_assistant_response(
     output_buf: Arc<Mutex<String>>,
     thoughts_buf: Arc<Mutex<String>>,
     thought_for: Arc<Mutex<Option<i64>>>,
+    metrics: Arc<Mutex<Option<ChatMetrics>>>,
 ) -> Result<(), Error> {
     let (date_now, completed) = final_date_now
         .lock()
@@ -59,6 +70,54 @@ async fn record_assistant_response(
         .bind(thought_for.lock().await.take())
         .execute(&mut *transaction)
         .await?;
+    }
+
+    if let Some(metrics) = metrics.lock().await.take() {
+        let total_duration = metrics.total_duration.and_then(|n| i64::try_from(n).ok());
+        let load_duration = metrics.load_duration.and_then(|n| i64::try_from(n).ok());
+        let prompt_eval_count = metrics.prompt_eval_count.and_then(|n| i64::try_from(n).ok());
+        let prompt_eval_duration = metrics.prompt_eval_duration.and_then(|n| i64::try_from(n).ok());
+        let eval_count = metrics.eval_count.and_then(|n| i64::try_from(n).ok());
+        let eval_duration = metrics.eval_duration.and_then(|n| i64::try_from(n).ok());
+
+        if total_duration.is_some()
+            || load_duration.is_some()
+            || prompt_eval_count.is_some()
+            || prompt_eval_duration.is_some()
+            || eval_count.is_some()
+            || eval_duration.is_some()
+        {
+            sqlx::query(
+                r#"
+                INSERT INTO chat_metrics (
+                    chat_id,
+                    total_duration_nano,
+                    load_duration_nano,
+                    prompt_eval_count,
+                    prompt_eval_duration_nano,
+                    eval_count,
+                    eval_duration_nano
+                )
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                ON CONFLICT(chat_id) DO UPDATE SET
+                    total_duration_nano = excluded.total_duration_nano,
+                    load_duration_nano = excluded.load_duration_nano,
+                    prompt_eval_count = excluded.prompt_eval_count,
+                    prompt_eval_duration_nano = excluded.prompt_eval_duration_nano,
+                    eval_count = excluded.eval_count,
+                    eval_duration_nano = excluded.eval_duration_nano;
+            "#,
+            )
+            .bind(response_id)
+            .bind(total_duration)
+            .bind(load_duration)
+            .bind(prompt_eval_count)
+            .bind(prompt_eval_duration)
+            .bind(eval_count)
+            .bind(eval_duration)
+            .execute(&mut *transaction)
+            .await?;
+        }
     }
 
     transaction.commit().await?;
@@ -142,6 +201,11 @@ pub async fn stream_response(
     let final_date_now3 = final_date_now.clone();
     let final_date_now4 = final_date_now.clone();
 
+    let metrics = Arc::new(Mutex::new(None::<ChatMetrics>));
+    let metrics2 = metrics.clone();
+    let metrics3 = metrics.clone();
+    let metrics4 = metrics.clone();
+
     tokio::select! {
         Err(err) = async move {
             // None if it is in the first text chunk
@@ -151,7 +215,27 @@ pub async fn stream_response(
 
             while let Some(Ok(res)) = stream.next().await {
                 if res.done {
-                    chan_sender.send(StreamingResponseEvent::Done).await?;
+                    let done_metrics = ChatMetrics {
+                        total_duration: res.total_duration,
+                        load_duration: res.load_duration,
+                        prompt_eval_count: res.prompt_eval_count,
+                        prompt_eval_duration: res.prompt_eval_duration,
+                        eval_count: res.eval_count,
+                        eval_duration: res.eval_duration,
+                    };
+
+                    *metrics2.lock().await = Some(done_metrics);
+
+                    chan_sender
+                        .send(StreamingResponseEvent::Done {
+                            total_duration: done_metrics.total_duration,
+                            load_duration: done_metrics.load_duration,
+                            prompt_eval_count: done_metrics.prompt_eval_count,
+                            prompt_eval_duration: done_metrics.prompt_eval_duration,
+                            eval_count: done_metrics.eval_count,
+                            eval_duration: done_metrics.eval_duration,
+                        })
+                        .await?;
                     date_now = Some(res.created_at.timestamp());
                     break;
                 }
@@ -197,7 +281,15 @@ pub async fn stream_response(
             }
 
             // TODO: Figure out the bug that this is not working in normal mode
-            record_assistant_response(final_date_now4, pool, response_id, output_buf3, thoughts_buf3, thought_for3)
+            record_assistant_response(
+                final_date_now4,
+                pool,
+                response_id,
+                output_buf3,
+                thoughts_buf3,
+                thought_for3,
+                metrics4,
+            )
                 .await?;
 
             Ok::<(), Error>(())
@@ -207,6 +299,7 @@ pub async fn stream_response(
             }).await?;
 
             *final_date_now3.lock().await = Some((Utc::now().timestamp(), false));
+            _ = metrics3.lock().await.take();
         }
 
         Some(res) = async move {
@@ -221,13 +314,22 @@ pub async fn stream_response(
                 }).await?;
 
                 *final_date_now3.lock().await = Some((Utc::now().timestamp(), false));
+                _ = metrics3.lock().await.take();
             }
         }
     }
 
     
     // TODO: Figure out the bug that this is not working in H2H mode
-    record_assistant_response(final_date_now, pool, response_id, output_buf, thoughts_buf, thought_for)
+    record_assistant_response(
+        final_date_now,
+        pool,
+        response_id,
+        output_buf,
+        thoughts_buf,
+        thought_for,
+        metrics,
+    )
         .await?;
 
     Ok(())

@@ -35,14 +35,16 @@ impl ChatTree {
             sqlx::query_as::<_, Chat>(r#"
                 WITH RECURSIVE rec_chats (
                     id, session_id, role, content, image_count, completed, date_created, date_edited, model, parent_id, priority,
-                    thoughts, thought_for, agent_id
+                    thoughts, thought_for, total_duration, load_duration, prompt_eval_count, prompt_eval_duration,
+                    eval_count, eval_duration, agent_id
                 )
                 AS (
                     SELECT *
                     FROM (
                         SELECT
                             id, session_id, role, content, image_count, completed, date_created, date_edited, model, parent_id, priority,
-                            thoughts, thought_for, agent_id
+                            thoughts, thought_for, total_duration, load_duration, prompt_eval_count, prompt_eval_duration,
+                            eval_count, eval_duration, agent_id
                         FROM v_complete_chats
                         WHERE
                             session_id = $1
@@ -54,7 +56,9 @@ impl ChatTree {
                     UNION
                     SELECT
                         c1.id, c1.session_id, c1.role, c1.content, c1.image_count, c1.completed, c1.date_created,
-                        c1.date_edited, c1.model, c1.parent_id, c1.priority, c1.thoughts, c1.thought_for, c1.agent_id
+                        c1.date_edited, c1.model, c1.parent_id, c1.priority, c1.thoughts, c1.thought_for,
+                        c1.total_duration, c1.load_duration, c1.prompt_eval_count, c1.prompt_eval_duration,
+                        c1.eval_count, c1.eval_duration, c1.agent_id
                     FROM v_complete_chats AS c1, rec_chats
                     WHERE c1.session_id = $1
                         AND c1.parent_id = rec_chats.id

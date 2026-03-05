@@ -211,7 +211,7 @@ pub async fn stream_via_channel(
 
     while let Some(event) = rx.recv().await {
         match event {
-            StreamingResponseEvent::Done => {
+            StreamingResponseEvent::Done { .. } => {
                 is_finished = true;
                 rx.close();
             }

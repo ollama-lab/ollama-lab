@@ -1,5 +1,5 @@
 import { chatGenerationReturnSchema, type ChatGenerationReturn, type IncomingUserPrompt } from "~/lib/schemas/chat";
-import { streamingResponseEventSchema } from "~/lib/schemas/events/text-streams";
+import { streamingResponseEventSchema, type CompletionMetrics } from "~/lib/schemas/events/text-streams";
 import { Channel, invoke } from "@tauri-apps/api/core";
 import { SessionMode } from "../schemas/session";
 
@@ -8,7 +8,7 @@ export interface PromptResponseEvents {
   afterResponseCreated?: (id: number) => void;
   afterSystemPromptCreated?: (id: number, text: string) => void;
   onStreamText?: (chunk: string) => void;
-  onCompleteTextStreaming?: () => void;
+  onCompleteTextStreaming?: (metrics: CompletionMetrics) => void;
   onFail?: (msg: string | null) => void;
   onCancel?: (msg: string | null) => void;
   onThoughtBegin?: () => void;
@@ -49,7 +49,14 @@ function newTextStreamChannel({
         break;
 
       case "done":
-        onCompleteTextStreaming?.();
+        onCompleteTextStreaming?.({
+          totalDuration: ev.totalDuration,
+          loadDuration: ev.loadDuration,
+          promptEvalCount: ev.promptEvalCount,
+          promptEvalDuration: ev.promptEvalDuration,
+          evalCount: ev.evalCount,
+          evalDuration: ev.evalDuration,
+        });
         break;
 
       case "failure":
@@ -84,14 +91,16 @@ export async function submitUserPrompt(
   events: PromptResponseEvents = {},
   reuseSiblingImages: boolean = false,
 ): Promise<ChatGenerationReturn> {
-  return await chatGenerationReturnSchema.parseAsync(await invoke("submit_user_prompt", {
-    sessionId,
-    prompt,
-    onStream: newTextStreamChannel(events),
-    parentId,
-    reuseSiblingImages,
-    mode,
-  }));
+  return await chatGenerationReturnSchema.parseAsync(
+    await invoke("submit_user_prompt", {
+      sessionId,
+      prompt,
+      onStream: newTextStreamChannel(events),
+      parentId,
+      reuseSiblingImages,
+      mode,
+    }),
+  );
 }
 
 export async function regenerateResponse(
@@ -100,10 +109,12 @@ export async function regenerateResponse(
   model?: string,
   events: PromptResponseEvents = {},
 ): Promise<ChatGenerationReturn> {
-  return await chatGenerationReturnSchema.parseAsync(await invoke("regenerate_response", {
-    sessionId,
-    chatId,
-    model,
-    onStream: newTextStreamChannel(events),
-  }));
+  return await chatGenerationReturnSchema.parseAsync(
+    await invoke("regenerate_response", {
+      sessionId,
+      chatId,
+      model,
+      onStream: newTextStreamChannel(events),
+    }),
+  );
 }

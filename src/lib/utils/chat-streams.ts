@@ -1,5 +1,6 @@
 import type { PromptResponseEvents } from "~/lib/commands/chats";
 import type { IncomingUserPrompt } from "~/lib/schemas/chat";
+import type { CompletionMetrics } from "~/lib/schemas/events/text-streams";
 import { emit } from "@tauri-apps/api/event";
 import { toast } from "solid-sonner";
 import { Accessor } from "solid-js";
@@ -99,7 +100,7 @@ export function convertResponseEvents(
               content: "",
               thoughts: undefined,
               model: model ?? ch.chats[i].model,
-              versions: versions ? [...versions, id] : [ch.chats[i].id, id]
+              versions: versions ? [...versions, id] : [ch.chats[i].id, id],
             },
           ]),
         );
@@ -151,13 +152,21 @@ export function convertResponseEvents(
 
       onScrollDown?.();
     },
-    onCompleteTextStreaming(): void {
+    onCompleteTextStreaming(metrics: CompletionMetrics): void {
       const ch = getOrCreateHistory();
 
       const chat = ch.chats.at(-1);
       const index = ch.chats.length - 1;
       if (chat && chat.id === currentChatId) {
-        setChatHistoryStore("chatHistory", mode, "chats", index, "status", "sent");
+        setChatHistoryStore("chatHistory", mode, "chats", index, {
+          status: "sent",
+          totalDuration: metrics.totalDuration ?? undefined,
+          loadDuration: metrics.loadDuration ?? undefined,
+          promptEvalCount: metrics.promptEvalCount ?? undefined,
+          promptEvalDuration: metrics.promptEvalDuration ?? undefined,
+          evalCount: metrics.evalCount ?? undefined,
+          evalDuration: metrics.evalDuration ?? undefined,
+        });
       }
 
       currentChatId = undefined;

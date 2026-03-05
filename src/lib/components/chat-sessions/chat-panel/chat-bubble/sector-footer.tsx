@@ -2,6 +2,7 @@ import { createMemo, Show } from "solid-js";
 import { useChatEntry } from "~/lib/contexts/chat-entry";
 import { BubbleSectorFooterStatus } from "./bubble-sector/status";
 import { AssistantBubbleSectorFooterToolbar } from "./bubble-sector/assistant-toolbar";
+import { BubbleSectorFooterMetrics } from "./bubble-sector/metrics";
 import { SentDate } from "./sent-date";
 import { useEditMode } from "~/lib/contexts/edit-mode";
 import { UserBubbleSectorFooterToolbar } from "./bubble-sector/user-toolbar";
@@ -35,11 +36,14 @@ export function SectorFooter() {
         </Show>
       </Show>
 
-      <Show when={status() === "sent" && chat?.().dateCreated}>
-        {(dateSent) => (
-          <SentDate date={dateSent()} />
-        )}
+      <Show when={status() === "sent" && chat?.().dateCreated}>{(dateSent) => <SentDate date={dateSent()} />}</Show>
+
+      <Show when={role?.() === "assistant"}>
+        <Show when={status() === "sent"}>
+          <BubbleSectorFooterMetrics />
+        </Show>
       </Show>
+
       <Show when={role() === "user" && isEnded() && !editMode()}>
         <UserBubbleSectorFooterToolbar />
       </Show>

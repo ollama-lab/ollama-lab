@@ -39,6 +39,12 @@ gen_chat_models! [
     parent_id: Option<i64>,
     thoughts: Option<String>,
     thought_for: Option<i64>,
+    total_duration: Option<i64>,
+    load_duration: Option<i64>,
+    prompt_eval_count: Option<i64>,
+    prompt_eval_duration: Option<i64>,
+    eval_count: Option<i64>,
+    eval_duration: Option<i64>,
     agent_id: Option<i64>,
 ];
 
@@ -105,6 +111,12 @@ impl<'c> MountChatInfo<'c> for Chat {
             parent_id: self.parent_id,
             thoughts: self.thoughts,
             thought_for: self.thought_for,
+            total_duration: self.total_duration,
+            load_duration: self.load_duration,
+            prompt_eval_count: self.prompt_eval_count,
+            prompt_eval_duration: self.prompt_eval_duration,
+            eval_count: self.eval_count,
+            eval_duration: self.eval_duration,
             versions: Some(versions),
             agent_id: self.agent_id,
         })
@@ -160,6 +172,12 @@ impl<'c> MountChatInfo<'c> for Vec<Chat> {
                 parent_id: item.parent_id,
                 thoughts: item.thoughts,
                 thought_for: item.thought_for,
+                total_duration: item.total_duration,
+                load_duration: item.load_duration,
+                prompt_eval_count: item.prompt_eval_count,
+                prompt_eval_duration: item.prompt_eval_duration,
+                eval_count: item.eval_count,
+                eval_duration: item.eval_duration,
                 versions: version_map.remove(&item.parent_id),
                 agent_id: item.agent_id,
             })

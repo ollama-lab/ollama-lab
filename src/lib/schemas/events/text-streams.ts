@@ -1,6 +1,17 @@
 import { z } from "zod";
 import { unixTimestampIntoDate } from "~/lib/utils/schemas/transforms";
 
+const completionMetricsSchema = z.object({
+  totalDuration: z.number().int().nonnegative().nullable(),
+  loadDuration: z.number().int().nonnegative().nullable(),
+  promptEvalCount: z.number().int().nonnegative().nullable(),
+  promptEvalDuration: z.number().int().nonnegative().nullable(),
+  evalCount: z.number().int().nonnegative().nullable(),
+  evalDuration: z.number().int().nonnegative().nullable(),
+});
+
+export type CompletionMetrics = z.infer<typeof completionMetricsSchema>;
+
 export const streamingResponseEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("userPrompt"),
@@ -29,6 +40,7 @@ export const streamingResponseEventSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("done"),
+    ...completionMetricsSchema.shape,
   }),
   z.object({
     type: z.enum(["failure", "canceled"]),

@@ -15,16 +15,10 @@ pub enum ProgressEvent<'a> {
     Success { id: &'a str },
 
     #[serde(rename_all = "camelCase")]
-    Failure {
-        id: &'a str,
-        message: Option<String>,
-    },
+    Failure { id: &'a str, message: Option<String> },
 
     #[serde(rename_all = "camelCase")]
-    Canceled {
-        id: &'a str,
-        message: Option<String>,
-    },
+    Canceled { id: &'a str, message: Option<String> },
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -60,7 +54,15 @@ pub enum StreamingResponseEvent {
         thought_for: Option<i64>,
     },
 
-    Done,
+    #[serde(rename_all = "camelCase")]
+    Done {
+        total_duration: Option<u64>,
+        load_duration: Option<u64>,
+        prompt_eval_count: Option<usize>,
+        prompt_eval_duration: Option<u64>,
+        eval_count: Option<usize>,
+        eval_duration: Option<u64>,
+    },
 
     #[serde(rename_all = "camelCase")]
     Failure {
