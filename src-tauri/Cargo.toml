@@ -1,6 +1,6 @@
 [package]
 name = "ollama-lab"
-version = "0.4.9"
+version = "0.4.10"
 description = "Ollama Lab"
 publish = false
 
