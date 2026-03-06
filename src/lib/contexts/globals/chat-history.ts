@@ -1,16 +1,18 @@
 import { createStore, reconcile } from "solid-js/store";
 import type { Chat, ChatHistory, SessionMode } from "~/lib/schemas/session";
 import { createEffect, createMemo } from "solid-js";
-import { newSession, reloadSessions } from "./sessions";
+import { newSession, reloadSession, reloadSessions } from "./sessions";
 import { getCurrentBranch } from "~/lib/commands/chat-history";
 import { EditUserPrompt, IncomingUserPrompt, incomingUserPromptSchema } from "~/lib/schemas/chat";
 import { regenerateResponse, submitUserPrompt } from "~/lib/commands/chats";
+import { generateSessionTitle } from "~/lib/commands/sessions";
 import { convertResponseEvents } from "~/lib/utils/chat-streams";
 import { switchBranch as switchBranchCommand } from "~/lib/commands/chat-history";
-import { currentSession, setCurrentSessionId } from "./current-session";
+import { currentSession, reloadCurrentSession, setCurrentSessionId } from "./current-session";
 import { getCurrentModel } from "./current-model";
 import { setCandidate } from "./candidate-model";
 import { applySessionSystemPrompt } from "./candidate-session-system-prompt";
+import { getCurrentSettings } from "./settings";
 
 export interface PromptSubmissionEvents {
   onRespond?: () => void;
@@ -34,10 +36,13 @@ export function getChatHistory(mode: SessionMode) {
 }
 
 const lastChat = createMemo(() => {
-  return Object.entries(chatHistoryStore.chatHistory).reduce((acc, [key, value]) => {
-    acc[key] = value?.chats.at(-1);
-    return acc;
-  }, {} as Record<string, Chat | undefined>);
+  return Object.entries(chatHistoryStore.chatHistory).reduce(
+    (acc, [key, value]) => {
+      acc[key] = value?.chats.at(-1);
+      return acc;
+    },
+    {} as Record<string, Chat | undefined>,
+  );
 });
 
 export function createReloadChatHistory(mode: SessionMode) {
@@ -51,9 +56,13 @@ export async function reloadChatHistory(mode: SessionMode) {
   if (session) {
     setChatHistoryStore("loading", true);
     const result = await getCurrentBranch(session.id);
-    setChatHistoryStore("chatHistory", mode, reconcile({
-      chats: result,
-    }));
+    setChatHistoryStore(
+      "chatHistory",
+      mode,
+      reconcile({
+        chats: result,
+      }),
+    );
     setChatHistoryStore("loading", false);
   } else {
     setChatHistoryStore("chatHistory", mode, undefined);
@@ -76,9 +85,9 @@ export async function submitChat(
   mode: SessionMode,
   { onRespond, onScrollDown }: PromptSubmissionEvents = {},
 ) {
+  const wasNewSession = currentSession(mode) === undefined;
   let session = currentSession(mode);
   if (session === undefined) {
-    // TODO: Add model-generated title after the first response completed
     let sessionTitle = prompt.text.split("\n").at(0) ?? "";
     if (sessionTitle.length < 1) {
       if (prompt.imagePaths && prompt.imagePaths.length > 0) {
@@ -111,6 +120,25 @@ export async function submitChat(
     status: "sent",
     dateCreated: ret.dateCreated,
   });
+
+  if (wasNewSession && mode === "normal" && getCurrentSettings()["title-generation"].enabled) {
+    const current = getChatHistory(mode);
+    const response =
+      current?.chats.find((chat) => chat.id === ret.id && chat.role === "assistant")?.content?.trim() ?? "";
+
+    if (response.length > 0) {
+      void (async () => {
+        try {
+          await generateSessionTitle(session.id, session.title ?? "", prompt.text, response);
+          await reloadSession(session.id, mode);
+          await reloadCurrentSession(mode);
+          await reloadSessions(mode);
+        } catch {
+          // Keep fallback title when title generation fails.
+        }
+      })();
+    }
+  }
 }
 
 export async function regenerate(

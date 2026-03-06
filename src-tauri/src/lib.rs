@@ -40,6 +40,7 @@ pub fn run() {
             commands::sessions::set_session_model,
             commands::sessions::delete_session,
             commands::sessions::create_session,
+            commands::sessions::generate_session_title,
             commands::chats::submit_user_prompt,
             commands::chats::regenerate_response,
             commands::chats::chat_history::get_current_branch,

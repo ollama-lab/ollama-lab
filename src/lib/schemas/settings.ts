@@ -22,9 +22,19 @@ export const ollamaSettingsSchema = z.object({
 export type OllamaSettingsSchema = typeof ollamaSettingsSchema;
 export type OllamaSettings = z.infer<OllamaSettingsSchema>;
 
+export const titleGenerationSettingsSchema = z.object({
+  enabled: z.boolean(),
+  model: z.string().nullable(),
+  "system-prompt": z.string().nullable(),
+});
+
+export type TitleGenerationSettingsSchema = typeof titleGenerationSettingsSchema;
+export type TitleGenerationSettings = z.infer<TitleGenerationSettingsSchema>;
+
 export const settingsSchema = z.object({
   appearance: appearanceSettingsSchema,
   ollama: ollamaSettingsSchema,
+  "title-generation": titleGenerationSettingsSchema,
   h2h: z.boolean().nullable(),
 });
 

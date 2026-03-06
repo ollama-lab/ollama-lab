@@ -17,6 +17,11 @@ const [settingsStore, setSettingsStore] = createStore<Settings>({
   ollama: {
     uri: null,
   },
+  "title-generation": {
+    enabled: true,
+    model: null,
+    "system-prompt": null,
+  },
   h2h: null,
 });
 

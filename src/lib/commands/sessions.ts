@@ -1,4 +1,10 @@
-import { sessionSchema, type Session, type SessionCurrentModelReturn, type SessionMode, type SessionRenameReturn } from "~/lib/schemas/session";
+import {
+  sessionSchema,
+  type Session,
+  type SessionCurrentModelReturn,
+  type SessionMode,
+  type SessionRenameReturn,
+} from "~/lib/schemas/session";
 import { invoke } from "@tauri-apps/api/core";
 import { z } from "zod";
 
@@ -28,4 +34,18 @@ export async function setSessionModel(id: number, model: string): Promise<Sessio
 
 export async function createSession(mode: SessionMode, currentModel: string, title?: string | null): Promise<Session> {
   return await sessionSchema.parseAsync(await invoke("create_session", { currentModel, title, mode }));
+}
+
+export async function generateSessionTitle(
+  sessionId: number,
+  expectedCurrentTitle: string,
+  firstPrompt: string,
+  firstResponse: string,
+): Promise<SessionRenameReturn> {
+  return await invoke<SessionRenameReturn>("generate_session_title", {
+    sessionId,
+    expectedCurrentTitle,
+    firstPrompt,
+    firstResponse,
+  });
 }

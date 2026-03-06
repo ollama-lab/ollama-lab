@@ -1,5 +1,5 @@
 use std::{
-    fs::{create_dir_all, File},
+    fs::{File, create_dir_all},
     io::{Read, Write},
     path::Path,
 };
@@ -8,16 +8,20 @@ use appearance::AppearanceSettings;
 use error::Error;
 use ollama::OllamaSettings;
 use serde::{Deserialize, Serialize};
+use title_generation::TitleGenerationSettings;
 
 pub mod appearance;
 pub mod error;
 pub mod ollama;
+pub mod title_generation;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Settings {
     pub appearance: AppearanceSettings,
     pub ollama: OllamaSettings,
+    #[serde(default)]
+    pub title_generation: TitleGenerationSettings,
     pub h2h: Option<bool>,
 }
 

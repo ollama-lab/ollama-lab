@@ -7,6 +7,7 @@ import { LoaderSpin } from "~/lib/components/loader-spin";
 import { restartVotes } from "~/lib/contexts/globals/settings";
 import { DevModeSection } from "~/lib/components/settings/builtin-sections/dev-mode";
 import { ExperimentalSection } from "~/lib/components/settings/builtin-sections/experimental";
+import { TitleGenerationSection } from "~/lib/components/settings/builtin-sections/title-generation";
 
 export default function SettingsPage() {
   const [restarting, setRestarting] = createSignal(false);
@@ -16,6 +17,7 @@ export default function SettingsPage() {
       <div class="overflow-y-auto flex flex-col gap-3.5 grow px-2 py-2">
         <AppearanceSection />
         <OllamaSection />
+        <TitleGenerationSection />
         <ExperimentalSection />
         <DevModeSection />
       </div>
