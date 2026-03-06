@@ -1,5 +1,6 @@
 ---
 description: "find issue(s) on github"
+agent: build
 model: openai/gpt-5.1-codex-mini
 ---
 
