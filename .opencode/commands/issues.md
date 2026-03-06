@@ -4,7 +4,7 @@ agent: build
 model: openai/gpt-5.1-codex-mini
 ---
 
-Search through existing issues in ollama-lab/ollama-lab using the gh cli to find issues matching this query:
+Search through existing issues in openmodellab/ollama-lab using the gh cli to find issues matching this query:
 
 $ARGUMENTS
 
