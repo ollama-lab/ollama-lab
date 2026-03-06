@@ -23,12 +23,12 @@ export const SessionListItem: Component<{
   const [optimisticTitle, setOptimisticTitle] = createSignal<string | undefined>(undefined);
 
   const Title = () => (
-    <div class="flex items-center">
-      <div class="overflow-auto max-w-sm">
-        <span class="">{optimisticTitle() ?? title() ?? "New Chat"}</span>
+    <div class="flex min-w-0 grow items-center gap-2">
+      <div class="min-w-0 grow overflow-hidden">
+        <span class="block truncate">{optimisticTitle() ?? title() ?? "New Chat"}</span>
       </div>
       <Show when={currentSession(mode())?.id === sessionId() && getChatHistoryStore()?.loading}>
-        <LoaderSpin class="size-4" />
+        <LoaderSpin class="size-4 shrink-0" />
       </Show>
     </div>
   );
@@ -50,11 +50,11 @@ export const SessionListItem: Component<{
       tabindex={sessionId()}
       onDblClick={() => setRenameMode(true)}
     >
-      <div class="grow select-none text-sm gap-2 flex items-center overflow-y-auto h-8">
+      <div class="grow min-w-0 select-none text-sm flex items-center overflow-hidden">
         <Show when={renameMode()} fallback={<Title />}>
-          <TextField defaultValue={title() ?? ""} class="w-full">
+          <TextField defaultValue={title() ?? ""} class="w-full min-w-0">
             <TextFieldInput
-              class="text-foreground bg-background w-full"
+              class="w-full min-w-0 truncate bg-background text-foreground"
               onLoad={(ev) => ev.currentTarget.focus()}
               on:keydown={(ev) => {
                 switch (ev.key) {
@@ -103,4 +103,4 @@ export const SessionListItem: Component<{
       </Show>
     </div>
   );
-}
+};
