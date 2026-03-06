@@ -94,6 +94,7 @@ This guidance is derived from:
 ## Non-obvious learnings
 
 - Streaming event contracts are cross-stack: changing `StreamingResponseEvent` in Rust must be mirrored in `src/lib/schemas/events/text-streams.ts`, `src/lib/commands/chats.ts`, and `src/lib/utils/chat-streams.ts` or runtime stream parsing breaks.
+- Settings are also cross-stack contracts: adding a new settings field requires synchronized updates in `src-tauri/src/settings.rs` (with `#[serde(default)]` for backward-compatible config loads), `src/lib/schemas/settings.ts`, and `src/lib/contexts/globals/settings.ts` defaults.
 
 ## Miscellaneous
 

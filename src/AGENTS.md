@@ -7,3 +7,4 @@
 - In chat UI, the scroll container is the parent wrapper in `src/lib/components/chat-sessions/chat-panel/index.tsx` (`overflow-y-auto`), not `ChatFeeds` itself; auto-follow logic in `chat-feeds.tsx` must target `root.parentElement`.
 - Smooth streaming requires split behavior: smooth-scroll only when a new assistant reply starts (`preparing`), then follow token updates with `requestAnimationFrame` + `behavior: "auto"`; smoothing every chunk causes visible stutter.
 - If stream chunks are buffered in `src/lib/utils/chat-streams.ts`, force-flush at stream boundaries (`onCompleteTextStreaming`, `onFail`, `onCancel`, `onThoughtBegin`, `onThoughtEnd`) to prevent dropping tail tokens or mixing `thoughts`/`content`.
+- Session title generation is intentionally two-phase in `src/lib/contexts/globals/chat-history.ts`: create session with fallback title from the first prompt, then asynchronously call backend title generation only after the first assistant response completes.
