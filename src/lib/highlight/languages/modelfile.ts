@@ -1,33 +1,30 @@
-import { LanguageFn } from "highlight.js";
-
-const modelfileFn: LanguageFn = (hljs) => {
-  return {
-    name: "Ollama Model File",
-    case_insensitive: true,
-    keywords: {
-      keyword: [
-        "FROM",
-        "PARAMETER",
-        "TEMPLATE",
-        "SYSTEM",
-        "ADAPTER",
-        "LICENSE",
-        "MESSAGE",
+const modelfileLanguage = {
+  name: "modelfile",
+  displayName: "Ollama Model File",
+  scopeName: "source.modelfile",
+  aliases: [],
+  patterns: [
+    {
+      match: "#.*$",
+      name: "comment.line.number-sign.modelfile",
+    },
+    {
+      begin: '"""',
+      end: '"""',
+      name: "string.quoted.triple.modelfile",
+      patterns: [
+        {
+          match: "\\\\.",
+          name: "constant.character.escape.modelfile",
+        },
       ],
     },
-    contains: [
-      hljs.HASH_COMMENT_MODE,
-      {
-        scope: "string",
-        begin: /"""/,
-        end: /"""/,
-        relevance: 1,
-        contains: [
-          hljs.BACKSLASH_ESCAPE,
-        ],
-      },
-    ],
-  };
+    {
+      match: "\\b(?i:FROM|PARAMETER|TEMPLATE|SYSTEM|ADAPTER|LICENSE|MESSAGE)\\b",
+      name: "keyword.control.modelfile",
+    },
+  ],
+  repository: {},
 };
 
-export default modelfileFn;
+export default modelfileLanguage;

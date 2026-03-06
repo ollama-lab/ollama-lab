@@ -1,27 +1,26 @@
-import { LanguageFn } from "highlight.js";
-
-const chatmlFn: LanguageFn = () => {
-  return {
-    name: "ChatML",
-    contains: [
-      {
-        starts: /<\|im_start\|>/,
-        end: /<\|im_end\|>/,
-        keywords: {
-          built_in: [
-            "<|im_start|>",
-            "<|im_end|>",
-          ],
-        },
-        contains: [
-        ],
+const chatmlLanguage = {
+  name: "chatml",
+  displayName: "ChatML",
+  scopeName: "source.chatml",
+  aliases: [],
+  patterns: [
+    {
+      begin: "(<\\|im_start\\|>)",
+      beginCaptures: {
+        1: { name: "keyword.control.chatml" },
       },
-      {
-        scope: "tag",
-        match: /<(\/)?[\w\d_]+>/,
+      end: "(<\\|im_end\\|>)",
+      endCaptures: {
+        1: { name: "keyword.control.chatml" },
       },
-    ],
-  };
+      name: "meta.block.chatml",
+    },
+    {
+      match: "<(\\/)?[\\w\\d_]+>",
+      name: "entity.name.tag.chatml",
+    },
+  ],
+  repository: {},
 };
 
-export default chatmlFn;
+export default chatmlLanguage;

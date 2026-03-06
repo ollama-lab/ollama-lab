@@ -1,19 +1,21 @@
-import { LanguageFn } from "highlight.js";
-import goTextTemplateFn from "./go-template";
-import chatmlFn from "./chatml";
-
-const ollamaTemplateFn: LanguageFn = (hljs) => {
-  const base1 = goTextTemplateFn(hljs);
-  const base2 = chatmlFn(hljs);
-
-  return {
-    name: "Ollama Template",
-    keywords: base1.keywords,
-    contains: [
-      ...base1.contains,
-      ...base2.contains,
-    ],
-  };
+const ollamaTemplateLanguage = {
+  name: "ollama-template",
+  displayName: "Ollama Template",
+  scopeName: "source.ollama-template",
+  aliases: ["ollama/template"],
+  patterns: [
+    {
+      include: "source.go-template",
+    },
+    {
+      include: "source.chatml",
+    },
+    {
+      match: "<(\\/)?[\\w\\d_]+>",
+      name: "entity.name.tag.ollama-template",
+    },
+  ],
+  repository: {},
 };
 
-export default ollamaTemplateFn;
+export default ollamaTemplateLanguage;
