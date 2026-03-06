@@ -10,6 +10,7 @@ import {
   Show,
   untrack,
 } from "solid-js";
+import { ArrowDownIcon } from "lucide-solid";
 import { ChatEntryProvider } from "~/lib/contexts/chat-entry";
 import { getChatHistory } from "~/lib/contexts/globals/chat-history";
 import { cn } from "~/lib/utils/class-names";
@@ -58,17 +59,78 @@ export const ChatFeeds: Component = () => {
   const mode = useSessionMode();
 
   const [rootRef, setRootRef] = createSignal<HTMLDivElement>();
+  const [scrollAreaRef, setScrollAreaRef] = createSignal<HTMLDivElement>();
   const [findInputRef, setFindInputRef] = createSignal<HTMLInputElement>();
 
   const [autoScroll, setAutoScroll] = createSignal(true);
+  const [showJumpToLatest, setShowJumpToLatest] = createSignal(false);
   const [findOpen, setFindOpen] = createSignal(false);
   const [findQuery, setFindQuery] = createSignal("");
   const [activeMatchIndex, setActiveMatchIndex] = createSignal(0);
+
+  let followRaf: number | undefined;
+  let lastAssistantMessageId: number | undefined;
+
+  const NEAR_BOTTOM_THRESHOLD_PX = 96;
 
   const currentChatHistory = createMemo(() => getChatHistory(mode()));
   const chats = createMemo(() => currentChatHistory()?.chats ?? []);
 
   const normalizedQuery = createMemo(() => findQuery().trim().toLowerCase());
+
+  const latestChat = createMemo(() => chats().at(-1));
+  const assistantIsStreaming = createMemo(() => {
+    const chat = latestChat();
+    return chat?.role === "assistant" && (chat.status === "preparing" || chat.status === "sending");
+  });
+  const assistantStreamState = createMemo(() => {
+    const chat = latestChat();
+    if (!chat || chat.role !== "assistant") {
+      return undefined;
+    }
+
+    return {
+      id: chat.id,
+      status: chat.status,
+      contentLength: chat.content.length,
+      thoughtsLength: chat.thoughts?.length ?? 0,
+    };
+  });
+
+  const isNearBottom = (scrollArea: HTMLDivElement) => {
+    return scrollArea.scrollHeight - scrollArea.scrollTop - scrollArea.clientHeight <= NEAR_BOTTOM_THRESHOLD_PX;
+  };
+
+  const cancelFollowFrame = () => {
+    if (followRaf !== undefined) {
+      window.cancelAnimationFrame(followRaf);
+      followRaf = undefined;
+    }
+  };
+
+  const scrollToLatest = (behavior: ScrollBehavior = "auto") => {
+    const scrollArea = scrollAreaRef();
+    if (!scrollArea) {
+      return;
+    }
+
+    cancelFollowFrame();
+    followRaf = window.requestAnimationFrame(() => {
+      scrollArea.scrollTo({ top: scrollArea.scrollHeight, behavior });
+      followRaf = undefined;
+    });
+  };
+
+  const syncAutoFollowState = () => {
+    const scrollArea = scrollAreaRef();
+    if (!scrollArea) {
+      return;
+    }
+
+    const nearBottom = isNearBottom(scrollArea);
+    setAutoScroll(nearBottom);
+    setShowJumpToLatest(assistantIsStreaming() && !nearBottom);
+  };
 
   const matchedChatIds = createMemo(() => {
     const query = normalizedQuery();
@@ -164,18 +226,58 @@ export const ChatFeeds: Component = () => {
 
     window.addEventListener("keydown", onWindowKeyDown);
     onCleanup(() => {
+      cancelFollowFrame();
       window.removeEventListener("keydown", onWindowKeyDown);
     });
   });
 
   createEffect(() => {
-    const chat = currentChatHistory()?.chats.at(-1);
+    const root = rootRef();
+    const scrollArea = root?.parentElement;
+    if (!(scrollArea instanceof HTMLDivElement)) {
+      setScrollAreaRef(undefined);
+      return;
+    }
 
-    if (chat?.content || chat?.thoughts) {
-      const root = rootRef();
-      if (root && autoScroll()) {
-        root.parentElement?.scrollTo(0, root.scrollHeight);
+    setScrollAreaRef(scrollArea);
+
+    const onScroll = () => {
+      syncAutoFollowState();
+    };
+
+    scrollArea.addEventListener("scroll", onScroll, { passive: true });
+    syncAutoFollowState();
+
+    onCleanup(() => {
+      scrollArea.removeEventListener("scroll", onScroll);
+    });
+  });
+
+  createEffect(() => {
+    const chat = latestChat();
+    if (!chat || chat.role !== "assistant") {
+      return;
+    }
+
+    if (chat.status === "preparing" && chat.id !== lastAssistantMessageId) {
+      lastAssistantMessageId = chat.id;
+      if (autoScroll()) {
+        scrollToLatest("smooth");
       }
+    }
+  });
+
+  createEffect(() => {
+    const streamState = assistantStreamState();
+    if (!streamState) {
+      setShowJumpToLatest(false);
+      return;
+    }
+
+    syncAutoFollowState();
+
+    if (autoScroll() && (streamState.status === "sending" || streamState.status === "preparing")) {
+      scrollToLatest("auto");
     }
   });
 
@@ -231,21 +333,9 @@ export const ChatFeeds: Component = () => {
     <div
       ref={setRootRef}
       class={cn(
-        "flex flex-col flex-wrap text-wrap max-w-5xl mx-auto pb-4",
+        "relative flex flex-col flex-wrap text-wrap max-w-5xl mx-auto pb-4",
         !hasChatHistory() && "h-full place-content-center items-center",
       )}
-      onWheel={(ev) => {
-        if (ev.deltaY < 0) {
-          setAutoScroll(false);
-        } else {
-          const scrollArea = ev.currentTarget.parentElement;
-          if (scrollArea) {
-            if (ev.currentTarget.scrollHeight - scrollArea.scrollTop - scrollArea.clientHeight <= 0) {
-              setAutoScroll(true);
-            }
-          }
-        }
-      }}
     >
       <Show when={findOpen()}>
         <ChatFindBar
@@ -270,6 +360,21 @@ export const ChatFeeds: Component = () => {
           </ChatEntryProvider>
         )}
       </Index>
+
+      <Show when={showJumpToLatest()}>
+        <button
+          type="button"
+          class="sticky bottom-3 ml-auto mr-1 z-20 inline-flex items-center gap-1 rounded-full border border-border bg-background/90 px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur hover:bg-accent"
+          onClick={() => {
+            setAutoScroll(true);
+            setShowJumpToLatest(false);
+            scrollToLatest("smooth");
+          }}
+        >
+          <ArrowDownIcon class="size-3.5" />
+          Jump to latest
+        </button>
+      </Show>
     </div>
   );
 };

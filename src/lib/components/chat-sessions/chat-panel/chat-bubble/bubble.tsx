@@ -21,6 +21,11 @@ export function Bubble() {
     return text && text.length > 1;
   });
 
+  const isAssistantStreaming = createMemo(() => role() === "assistant" && status() === "sending");
+  const showStreamingMotion = createMemo(
+    () => role() === "assistant" && (status() === "preparing" || status() === "sending"),
+  );
+
   const containsNode = (node: Node | null) => {
     const container = bubbleRef();
     if (!container || !node) {
@@ -117,12 +122,19 @@ export function Bubble() {
       <ContextMenu onOpenChange={handleOpenChange}>
         <ContextMenuTrigger
           ref={setBubbleRef}
-          class={cn("py-2", role() === "user" && "bg-secondary/50 text-secondary-foreground px-5 rounded-xl")}
+          class={cn(
+            "py-2",
+            role() === "user" && "bg-secondary/50 text-secondary-foreground px-5 rounded-xl",
+            showStreamingMotion() && "assistant-streaming-bubble",
+          )}
           disabled={!selectedText()}
           onMouseUp={updateSelection}
           onKeyUp={updateSelection}
         >
           <MarkdownBlock markdown={content()} />
+          <Show when={isAssistantStreaming()}>
+            <span class="streaming-caret" aria-hidden="true" />
+          </Show>
           <Show when={status() === "preparing"}>
             <Progress value={null} class="w-full max-w-md" />
           </Show>

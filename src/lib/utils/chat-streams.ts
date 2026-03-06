@@ -22,6 +22,11 @@ export function convertResponseEvents(
   { regenerateFor }: ConvertResponseEventsProps = {},
 ): PromptResponseEvents {
   let currentChatId: number | undefined = undefined;
+  let contentBuffer = "";
+  let thinkingBuffer = "";
+  let flushTimer: number | undefined;
+
+  const STREAM_FLUSH_INTERVAL_MS = 33;
 
   function getOrCreateHistory() {
     const ch = chatHistory();
@@ -32,8 +37,68 @@ export function convertResponseEvents(
     return chatHistory()!;
   }
 
+  function clearFlushTimer() {
+    if (flushTimer !== undefined) {
+      window.clearTimeout(flushTimer);
+      flushTimer = undefined;
+    }
+  }
+
+  function resetStreamBuffer() {
+    clearFlushTimer();
+    contentBuffer = "";
+    thinkingBuffer = "";
+  }
+
+  function flushStreamBuffer() {
+    clearFlushTimer();
+
+    if (!contentBuffer && !thinkingBuffer) {
+      return;
+    }
+
+    const ch = getOrCreateHistory();
+    const index = ch.chats.length - 1;
+    const chat = ch.chats[index];
+
+    if (!chat || chat.id !== currentChatId) {
+      resetStreamBuffer();
+      return;
+    }
+
+    if (chat.status !== "sending") {
+      setChatHistoryStore("chatHistory", mode, "chats", index, "status", reconcile("sending"));
+    }
+
+    if (thinkingBuffer) {
+      const bufferedThoughts = thinkingBuffer;
+      thinkingBuffer = "";
+      setChatHistoryStore("chatHistory", mode, "chats", index, "thoughts", (t) => (t ?? "") + bufferedThoughts);
+    }
+
+    if (contentBuffer) {
+      const bufferedContent = contentBuffer;
+      contentBuffer = "";
+      setChatHistoryStore("chatHistory", mode, "chats", index, "content", (t) => (t ?? "") + bufferedContent);
+    }
+
+    onScrollDown?.();
+  }
+
+  function scheduleStreamFlush() {
+    if (flushTimer !== undefined) {
+      return;
+    }
+
+    flushTimer = window.setTimeout(() => {
+      flushStreamBuffer();
+    }, STREAM_FLUSH_INTERVAL_MS);
+  }
+
   return {
     afterUserPromptSubmitted(id: number, date: Date): void {
+      resetStreamBuffer();
+
       const ch = getOrCreateHistory();
 
       if (regenerateFor !== undefined) {
@@ -75,6 +140,7 @@ export function convertResponseEvents(
       onScrollDown?.();
     },
     afterResponseCreated(id: number): void {
+      resetStreamBuffer();
       currentChatId = id;
 
       const ch = getOrCreateHistory();
@@ -140,19 +206,17 @@ export function convertResponseEvents(
         return;
       }
 
-      const index = ch.chats.length - 1;
-
-      setChatHistoryStore("chatHistory", mode, "chats", index, "status", reconcile("sending"));
-
       if (chat.thinking) {
-        setChatHistoryStore("chatHistory", mode, "chats", index, "thoughts", (t) => (t ?? "") + chunk);
+        thinkingBuffer += chunk;
       } else {
-        setChatHistoryStore("chatHistory", mode, "chats", index, "content", (t) => (t ?? "") + chunk);
+        contentBuffer += chunk;
       }
 
-      onScrollDown?.();
+      scheduleStreamFlush();
     },
     onCompleteTextStreaming(metrics: CompletionMetrics): void {
+      flushStreamBuffer();
+
       const ch = getOrCreateHistory();
 
       const chat = ch.chats.at(-1);
@@ -170,8 +234,11 @@ export function convertResponseEvents(
       }
 
       currentChatId = undefined;
+      resetStreamBuffer();
     },
     onFail(msg): void {
+      flushStreamBuffer();
+
       const ch = getOrCreateHistory();
 
       const chat = ch.chats.at(-1);
@@ -181,12 +248,15 @@ export function convertResponseEvents(
       }
 
       currentChatId = undefined;
+      resetStreamBuffer();
 
       if (msg) {
         toast.error(msg);
       }
     },
     onCancel(): void {
+      flushStreamBuffer();
+
       const ch = getOrCreateHistory();
 
       const chat = ch.chats.at(-1);
@@ -196,8 +266,11 @@ export function convertResponseEvents(
       }
 
       currentChatId = undefined;
+      resetStreamBuffer();
     },
     onThoughtBegin(): void {
+      flushStreamBuffer();
+
       const ch = getOrCreateHistory();
 
       const chat = ch.chats.at(-1);
@@ -210,6 +283,8 @@ export function convertResponseEvents(
       }
     },
     onThoughtEnd(thoughtFor: number | null): void {
+      flushStreamBuffer();
+
       const ch = getOrCreateHistory();
 
       const chat = ch.chats.at(-1);

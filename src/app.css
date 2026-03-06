@@ -77,9 +77,22 @@
     }
   }
 
+  @keyframes stream-bubble-in {
+    0% {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-caret-blink: caret-blink 1.25s ease-out infinite;
+  --animate-stream-bubble-in: stream-bubble-in 0.22s ease-out both;
 
   @keyframes indeterminate-progress {
     0% {
@@ -109,11 +122,11 @@
 
   @keyframes flash-out {
     0% {
-      background-color: #FF00002C;
+      background-color: #ff00002c;
     }
 
     100% {
-      background-color: #FF000000;
+      background-color: #ff000000;
     }
   }
 
@@ -209,16 +222,44 @@
   }
 }
 
-@utilities {
-  .step {
-    counter-increment: step;
+@layer components {
+  .assistant-streaming-bubble {
+    animation: var(--animate-stream-bubble-in);
+    will-change: transform, opacity;
   }
 
-  .step:before {
-    @apply absolute w-9 h-9 bg-muted rounded-full font-mono font-medium text-center text-base inline-flex items-center justify-center -indent-px border-4 border-background;
-    @apply ml-[-50px] mt-[-4px];
-    content: counter(step);
+  .streaming-caret {
+    display: inline-block;
+    width: 0.58ch;
+    height: 1.1em;
+    margin-left: 0.1rem;
+    vertical-align: text-bottom;
+    background-color: currentColor;
+    opacity: 0.85;
+    animation: caret-blink 1.1s steps(1, end) infinite;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .assistant-streaming-bubble {
+      animation: none;
+      will-change: auto;
+    }
+
+    .streaming-caret {
+      animation: none;
+      opacity: 0.55;
+    }
+  }
+}
+
+.step {
+  counter-increment: step;
+}
+
+.step:before {
+  @apply absolute w-9 h-9 bg-muted rounded-full font-mono font-medium text-center text-base inline-flex items-center justify-center -indent-px border-4 border-background;
+  @apply ml-[-50px] mt-[-4px];
+  content: counter(step);
 }
 
 @media (max-width: 640px) {
