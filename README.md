@@ -7,6 +7,10 @@ We make Ollama easy-to-use for everyone.
 
 > [!NOTE]
 >
+> This project is currently under maintenance mode. New features will not be planned in the near future.
+
+> [!NOTE]
+>
 > Since February 27, 2026, this project contains code written by AI with heavy human supervision. If you're contributing to this project
 > using an AI tool, please make sure you have reviewed the code, and do not create any pull request for **unchecked**
 > AI-generated code.
