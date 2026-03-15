@@ -44,8 +44,15 @@ pub async fn launch_normal_chat(
 
     let mut parent_id = parent_id;
 
-    if prompt.use_system_prompt.unwrap_or(false) && parent_id.is_none() {
-        let ret = add_model_system_prompt(&tree, &mut tx, &on_stream, profile_id, session.current_model.as_str())
+    if prompt.use_system_prompt.unwrap_or(false) {
+        let ret = add_model_system_prompt(
+            &tree,
+            &mut tx,
+            &on_stream,
+            parent_id,
+            profile_id,
+            session.current_model.as_str(),
+        )
             .await?;
 
         if let Some(new_parent_id) = ret.parent_id {

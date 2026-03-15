@@ -24,6 +24,7 @@ pub async fn add_model_system_prompt(
     tree: &ChatTree,
     tx: &mut Transaction<'_, Sqlite>,
     channel: &ResponseStreamingChannel,
+    parent_id: Option<i64>,
     profile_id: i64,
     model: &str,
 ) -> Result<SystemPromptAdditionReturn, Error> {
@@ -38,7 +39,7 @@ pub async fn add_model_system_prompt(
         let system_prompt_ret = tree
             .new_child(
                 tx,
-                None,
+                parent_id,
                 NewChildNode {
                     content: content.as_str(),
                     role: Role::System,
